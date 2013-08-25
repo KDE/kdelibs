@@ -48,29 +48,35 @@ Q_COREAPP_STARTUP_FUNCTION(prepareEnvironment);
 class KdePlatformTheme_UnitTest : public QObject
 {
     Q_OBJECT
+    private:
+        KdePlatformTheme *m_qpa;
     private Q_SLOTS:
+        void initTests()
+        {
+            m_qpa = new KdePlatformTheme();
+        }
+
         void testPlatformHints()
         {
-            KdePlatformTheme *qpa = new KdePlatformTheme();
-            QCOMPARE(qpa->themeHint(QPlatformTheme::CursorFlashTime).toInt(), 1042);
-            QCOMPARE(qpa->themeHint(QPlatformTheme::MouseDoubleClickInterval).toInt(), 4343);
-            QCOMPARE(qpa->themeHint(QPlatformTheme::StartDragDistance).toInt(), 15);
-            QCOMPARE(qpa->themeHint(QPlatformTheme::StartDragTime).toInt(), 555);
-            QCOMPARE(qpa->themeHint(QPlatformTheme::ToolButtonStyle).toInt(), (int) Qt::ToolButtonTextOnly);
-            QCOMPARE(qpa->themeHint(QPlatformTheme::ToolBarIconSize).toInt(), 2);
-            QCOMPARE(qpa->themeHint(QPlatformTheme::ItemViewActivateItemOnSingleClick).toBool(), false);
-            QCOMPARE(qpa->themeHint(QPlatformTheme::SystemIconThemeName).toString(), QLatin1String("non-existent-icon-theme"));
-            QCOMPARE(qpa->themeHint(QPlatformTheme::SystemIconFallbackThemeName).toString(), QLatin1String("hicolor"));
-            QVERIFY(qpa->themeHint(QPlatformTheme::IconThemeSearchPaths).toString().isEmpty());
+            QCOMPARE(m_qpa->themeHint(QPlatformTheme::CursorFlashTime).toInt(), 1042);
+            QCOMPARE(m_qpa->themeHint(QPlatformTheme::MouseDoubleClickInterval).toInt(), 4343);
+            QCOMPARE(m_qpa->themeHint(QPlatformTheme::StartDragDistance).toInt(), 15);
+            QCOMPARE(m_qpa->themeHint(QPlatformTheme::StartDragTime).toInt(), 555);
+            QCOMPARE(m_qpa->themeHint(QPlatformTheme::ToolButtonStyle).toInt(), (int) Qt::ToolButtonTextOnly);
+            QCOMPARE(m_qpa->themeHint(QPlatformTheme::ToolBarIconSize).toInt(), 2);
+            QCOMPARE(m_qpa->themeHint(QPlatformTheme::ItemViewActivateItemOnSingleClick).toBool(), false);
+            QCOMPARE(m_qpa->themeHint(QPlatformTheme::SystemIconThemeName).toString(), QLatin1String("non-existent-icon-theme"));
+            QCOMPARE(m_qpa->themeHint(QPlatformTheme::SystemIconFallbackThemeName).toString(), QLatin1String("hicolor"));
+            QVERIFY(m_qpa->themeHint(QPlatformTheme::IconThemeSearchPaths).toString().isEmpty());
             QStringList styles;
             styles << "non-existent-widget-style" << "oxygen" << "fusion" << "windows";
-            QCOMPARE(qpa->themeHint(QPlatformTheme::StyleNames).toStringList(), styles);
-            QCOMPARE(qpa->themeHint(QPlatformTheme::DialogButtonBoxLayout).toInt(), (int) QDialogButtonBox::KdeLayout);
-            QCOMPARE(qpa->themeHint(QPlatformTheme::DialogButtonBoxButtonsHaveIcons).toBool(), false);
-            QCOMPARE(qpa->themeHint(QPlatformTheme::UseFullScreenForPopupMenu).toBool(), true);
-            QCOMPARE(qpa->themeHint(QPlatformTheme::KeyboardScheme).toInt(), (int) QPlatformTheme::KdeKeyboardScheme);
-            QCOMPARE(qpa->themeHint(QPlatformTheme::UiEffects).toInt(), 0);
-            QCOMPARE(qpa->themeHint(QPlatformTheme::IconPixmapSizes).value<QList<int> >(), QList<int>() << 512 << 256 << 128 << 64 << 32 << 22 << 16 << 8);
+            QCOMPARE(m_qpa->themeHint(QPlatformTheme::StyleNames).toStringList(), styles);
+            QCOMPARE(m_qpa->themeHint(QPlatformTheme::DialogButtonBoxLayout).toInt(), (int) QDialogButtonBox::KdeLayout);
+            QCOMPARE(m_qpa->themeHint(QPlatformTheme::DialogButtonBoxButtonsHaveIcons).toBool(), false);
+            QCOMPARE(m_qpa->themeHint(QPlatformTheme::UseFullScreenForPopupMenu).toBool(), true);
+            QCOMPARE(m_qpa->themeHint(QPlatformTheme::KeyboardScheme).toInt(), (int) QPlatformTheme::KdeKeyboardScheme);
+            QCOMPARE(m_qpa->themeHint(QPlatformTheme::UiEffects).toInt(), 0);
+            QCOMPARE(m_qpa->themeHint(QPlatformTheme::IconPixmapSizes).value<QList<int> >(), QList<int>() << 512 << 256 << 128 << 64 << 32 << 22 << 16 << 8);
         }
 };
 
