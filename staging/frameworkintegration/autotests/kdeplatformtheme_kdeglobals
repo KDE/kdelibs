@@ -93,3 +93,15 @@ ForegroundNeutral=0,128,0
 ForegroundNormal=0,128,0
 ForegroundPositive=0,128,0
 ForegroundVisited=0,128,0
+
+[WM]
+activeFont=OxyActiveTest,9,-1,5,50,0,0,0,0,0
+
+[General]
+desktopFont=OxyDesktopTest,9,-1,5,50,0,0,0,0,0
+fixed=OxyFixedTest Mono,10,-1,5,50,0,0,0,0,0
+font=OxyFontTest,9,-1,5,50,0,0,0,0,0
+menuFont=OxyMenuTest,9,-1,5,50,0,0,0,0,0
+smallestReadableFont=OxySmallestReadableTest,8,-1,5,50,0,0,0,0,0
+taskbarFont=OxyTaskbarTest,9,-1,5,50,0,0,0,0,0
+toolBarFont=OxyToolbarTest,8,-1,5,50,0,0,0,0,0

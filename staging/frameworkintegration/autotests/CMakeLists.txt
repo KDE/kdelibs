@@ -22,3 +22,8 @@ frameworkintegration_tests(
   ../src/platformtheme/kdeplatformtheme.cpp
   ../src/platformtheme/kfontsettingsdata.cpp
 )
+
+frameworkintegration_tests(
+  kfontsettingsdata_unittest
+  ../src/platformtheme/kfontsettingsdata.cpp
+)
