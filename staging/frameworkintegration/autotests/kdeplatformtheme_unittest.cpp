@@ -27,6 +27,7 @@
 #include <QFile>
 #include <QString>
 #include <QPalette>
+#include <QIconEngine>
 #include <QDialogButtonBox>
 
 static void prepareEnvironment()
@@ -111,6 +112,12 @@ class KdePlatformTheme_UnitTest : public QObject
                 QCOMPARE(palette->brush(states[i], QPalette::Link), greenBrush);
                 QCOMPARE(palette->brush(states[i], QPalette::LinkVisited), greenBrush);
             }
+        }
+
+        void testPlatformIconEngine()
+        {
+            QIconEngine *engine = m_qpa->createIconEngine(QStringLiteral("test-icon"));
+            QCOMPARE(engine->key(), QStringLiteral("KIconEngine"));
         }
 };
 
