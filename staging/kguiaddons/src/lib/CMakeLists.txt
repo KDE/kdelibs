@@ -6,6 +6,7 @@ set(kguiaddons_LIB_SRCS
  colors/kcolormimedata.cpp
  text/kwordwrap.cpp
  fonts/kfontutils.cpp
+ util/kiconutils.cpp
  util/klocalimagecacheimpl.cpp
  util/kmodifierkeyinfo.cpp
  util/kmodifierkeyinfoprovider.cpp
@@ -49,6 +50,7 @@ install( FILES
  colors/kcolormimedata.h
  text/kwordwrap.h
  fonts/kfontutils.h
+ util/kiconutils.h
  util/kimagecache.h
  util/klocalimagecacheimpl.h
  util/kmodifierkeyinfo.h
