@@ -128,6 +128,11 @@ class KdePlatformTheme_UnitTest : public QObject
 
         void testPlatformIconChanges()
         {
+            QByteArray configPath = qgetenv("XDG_CONFIG_HOME");
+            configPath.append("/kdeglobals");
+            QFile::remove(configPath);
+            QFile::copy(CHANGED_CONFIGFILE, configPath);
+
             QDBusConnection::sessionBus().connect(QString(), "/KIconLoader", "org.kde.KIconLoader",
                                                    "iconChanged",  &m_loop, SLOT(quit()));
 
@@ -136,7 +141,7 @@ class KdePlatformTheme_UnitTest : public QObject
             QDBusConnection::sessionBus().send(message);
             m_loop.exec();
 
-            QCOMPARE(m_qpa->themeHint(QPlatformTheme::ToolBarIconSize).toInt(), 22);
+            QCOMPARE(m_qpa->themeHint(QPlatformTheme::ToolBarIconSize).toInt(), 11);
         }
 };
 
