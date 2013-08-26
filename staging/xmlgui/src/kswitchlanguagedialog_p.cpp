@@ -325,16 +325,22 @@ KSwitchLanguageDialogPrivate::KSwitchLanguageDialogPrivate(
 
 void KSwitchLanguageDialogPrivate::fillApplicationLanguages(KLanguageButton *button)
 {
+    QLocale defaultLocale;
+    QLocale cLocale(QLocale::C);
+    QLocale::setDefault(cLocale);
+
     //we start with 2, because the 0 is AnyLanguage and 1 is C
     for ( int i = 2; i <= QLocale::LastLanguage; ++i )
     {
         QLocale l(static_cast<QLocale::Language>(i));
         QString languageCode = l.name();
-        if (KLocalizedString::isApplicationTranslatedInto(languageCode))
+        if (l != cLocale && KLocalizedString::isApplicationTranslatedInto(languageCode))
         {
             button->insertLanguage(languageCode);
         }
     }
+
+    QLocale::setDefault(defaultLocale);
 }
 
 QStringList KSwitchLanguageDialogPrivate::applicationLanguageList()
