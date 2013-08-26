@@ -110,6 +110,12 @@ void KHintsSettings::iconChanged(int group)
     }
 
     m_hints[QPlatformTheme::ToolBarIconSize] = currentSize;
+
+    //If we are a QGuiApplication, there is nothing more to do.
+    if (!qobject_cast<QApplication*>(QCoreApplication::instance())) {
+        return;
+    }
+
     QWidgetList widgets = QApplication::allWidgets();
     Q_FOREACH(QWidget* widget, widgets) {
         if (qobject_cast<QToolBar*>(widget) || qobject_cast<QMainWindow*>(widget)) {
