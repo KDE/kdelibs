@@ -153,6 +153,12 @@ bool KRun::isExecutableFile(const QUrl& url, const QString &mimetype)
     return false;
 }
 
+void KRun::handleError(int kioErrorCode, const QString &errorMsg)
+{
+    Q_UNUSED(kioErrorCode);
+    KMessageBox::error(d->m_window, errorMsg);
+}
+
 // This is called by foundMimeType, since it knows the mimetype of the URL
 bool KRun::runUrl(const QUrl& u, const QString& _mimetype, QWidget* window, bool tempFile, bool runExecutables, const QString& suggestedFileName, const QByteArray& asn)
 {
@@ -1169,9 +1175,8 @@ void KRun::init()
 {
     //qDebug() << "INIT called";
     if (!d->m_strURL.isValid()) {
-        // TODO KDE5: call virtual method on error (see BrowserRun::init)
         d->m_showingDialog = true;
-        KMessageBox::error(d->m_window, i18n("Malformed URL\n%1", d->m_strURL.errorString()));
+        handleError(KIO::ERR_MALFORMED_URL, i18n("Malformed URL\n%1", d->m_strURL.errorString()));
         qWarning() << d->m_strURL.errorString();
         d->m_showingDialog = false;
         d->m_bFault = true;
@@ -1182,7 +1187,7 @@ void KRun::init()
     if (!KAuthorized::authorizeUrlAction("open", QUrl(), d->m_strURL)) {
         QString msg = KIO::buildErrorString(KIO::ERR_ACCESS_DENIED, d->m_strURL.toDisplayString());
         d->m_showingDialog = true;
-        KMessageBox::error(d->m_window, msg);
+        handleError(KIO::ERR_ACCESS_DENIED, msg);
         d->m_showingDialog = false;
         d->m_bFault = true;
         d->m_bFinished = true;
@@ -1198,7 +1203,7 @@ void KRun::init()
         const QString localPath = d->m_strURL.toLocalFile();
         if (!QFile::exists(localPath)) {
             d->m_showingDialog = true;
-            KMessageBox::error(d->m_window,
+            handleError(KIO::ERR_DOES_NOT_EXIST,
                                       i18n("<qt>Unable to run the command specified. "
                                       "The file or folder <b>%1</b> does not exist.</qt>" ,
                                       localPath.toHtmlEscaped()));
@@ -1222,7 +1227,7 @@ void KRun::init()
             // Unknown mimetype because the file is unreadable, no point in showing an open-with dialog (#261002)
             const QString msg = KIO::buildErrorString(KIO::ERR_ACCESS_DENIED, localPath);
             d->m_showingDialog = true;
-            KMessageBox::error(d->m_window, msg);
+            handleError(KIO::ERR_ACCESS_DENIED, msg);
             d->m_showingDialog = false;
             d->m_bFault = true;
             d->m_bFinished = true;

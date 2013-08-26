@@ -217,7 +217,7 @@ class KRunImpl : public KRun
 {
 public:
     KRunImpl(const QUrl& url)
-        : KRun(url, 0, false) {}
+        : KRun(url, 0, false), m_errCode(-1) {}
 
     virtual void foundMimeType(const QString& type) {
         m_mimeType = type;
@@ -225,9 +225,18 @@ public:
         setFinished(true);
     }
 
+    virtual void handleError(int kioErrorCode, const QString &err) Q_DECL_OVERRIDE {
+        m_errCode = kioErrorCode;
+        m_errText = err;
+    }
+
     QString mimeTypeFound() const { return m_mimeType; }
+    int errorCode() const { return m_errCode; }
+    QString errorText() const { return m_errText; }
 
 private:
+    int m_errCode;
+    QString m_errText;
     QString m_mimeType;
 };
 
@@ -263,6 +272,8 @@ void KRunUnitTest::testMimeTypeBrokenLink()
     QVERIFY(spyFinished.wait(1000));
     QVERIFY(krun->mimeTypeFound().isEmpty());
     QCOMPARE(spyError.count(), 1);
+    QCOMPARE(krun->errorCode(), int(KIO::ERR_DOES_NOT_EXIST));
+    QVERIFY(krun->errorText().contains("does not exist"));
     QTest::qWait(100); // let auto-deletion proceed.
 }
 

@@ -448,6 +448,12 @@ protected:
     virtual void killJob();
 
     /**
+     * Called when KRun detects an error. Reimplement to avoid messageboxes.
+     * @since 5.0
+     */
+    virtual void handleError(int kioErrorCode, const QString &errorMsg);
+
+    /**
      * Sets the url.
      */
     void setUrl(const QUrl &url);
