@@ -26,10 +26,27 @@
 
 #include <qpa/qplatformtheme.h>
 
+#include <ksharedconfig.h>
+
 class KHintsSettings : public QObject
 {
     Q_OBJECT
     public:
+        /**
+        * An identifier for change signals.
+        * @note Copied from KGlobalSettings
+        */
+        enum ChangeType { PaletteChanged = 0, FontChanged, StyleChanged,
+                      SettingsChanged, IconChanged, CursorChanged,
+                      ToolbarStyleChanged, ClipboardConfigChanged,
+                      BlockShortcuts, NaturalSortingChanged };
+        /**
+        * Valid values for the settingsChanged signal
+        * @note Copied from KGlobalSettings
+        */
+        enum SettingsCategory { SETTINGS_MOUSE, SETTINGS_COMPLETION, SETTINGS_PATHS,
+                            SETTINGS_POPUPMENU, SETTINGS_QT, SETTINGS_SHORTCUTS,
+                            SETTINGS_LOCALE, SETTINGS_STYLE };
         explicit KHintsSettings();
 
         inline QVariant hint(QPlatformTheme::ThemeHint hint)
@@ -39,9 +56,11 @@ class KHintsSettings : public QObject
 
     private Q_SLOTS:
         void setupIconLoader();
+        void slotNotifyChange(int type, int arg);
 
     private:
         void iconChanged(int group);
+        void updateQtSettings(KConfigGroup &cg);
 
         QStringList xdgIconThemePaths() const;
         QHash<QPlatformTheme::ThemeHint, QVariant> m_hints;

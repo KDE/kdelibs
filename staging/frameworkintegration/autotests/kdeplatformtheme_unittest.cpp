@@ -20,6 +20,7 @@
 
 #include "kdeplatformtheme_config.h"
 #include "../src/platformtheme/kdeplatformtheme.h"
+#include "../src/platformtheme/khintssettings.h"
 
 #include <Qt>
 #include <QTest>
@@ -28,6 +29,7 @@
 #include <QString>
 #include <QPalette>
 #include <QIconEngine>
+#include <QApplication>
 #include <QDialogButtonBox>
 
 #include <QDBusConnection>
@@ -35,6 +37,7 @@
 #include <QDBusMessage>
 
 #include <kiconloader.h>
+
 static void prepareEnvironment()
 {
     qputenv("KDEHOME", QFile::encodeName(QDir::homePath() + QStringLiteral("/.kde5-unit-test-platformtheme")));
@@ -142,6 +145,23 @@ class KdePlatformTheme_UnitTest : public QObject
             m_loop.exec();
 
             QCOMPARE(m_qpa->themeHint(QPlatformTheme::ToolBarIconSize).toInt(), 11);
+        }
+
+        void testPlatformHintChanges()
+        {
+            QDBusConnection::sessionBus().connect(QString(), "/KGlobalSettings", "org.kde.KGlobalSettings",
+                                                   "notifyChange",  &m_loop, SLOT(quit()));
+
+            QDBusMessage message = QDBusMessage::createSignal("/KGlobalSettings", "org.kde.KGlobalSettings", "notifyChange" );
+            QList<QVariant> args;
+            args.append(static_cast<int>(KHintsSettings::SettingsChanged));
+            args.append(KHintsSettings::SETTINGS_QT);
+            message.setArguments(args);
+            QDBusConnection::sessionBus().send(message);
+            m_loop.exec();
+
+            QCOMPARE(m_qpa->themeHint(QPlatformTheme::CursorFlashTime).toInt(), 1022);
+            QCOMPARE(qApp->cursorFlashTime(), 1022);
         }
 };
 

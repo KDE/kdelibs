@@ -22,13 +22,18 @@
 
 #include "khintssettings.h"
 
+#include <QDebug>
 #include <QDir>
 #include <QString>
 #include <QFileInfo>
 #include <QToolBar>
 #include <QMainWindow>
 #include <QApplication>
+#include <QGuiApplication>
 #include <QDialogButtonBox>
+
+#include <QDBusConnection>
+#include <QDBusInterface>
 
 #include <kiconloader.h>
 #include <kconfiggroup.h>
@@ -70,6 +75,9 @@ KHintsSettings::KHintsSettings() : QObject(0)
     m_hints[QPlatformTheme::UiEffects] = cg.readEntry("GraphicEffectsLevel", 0) != 0 ? QPlatformTheme::GeneralUiEffect : 0;
     m_hints[QPlatformTheme::IconPixmapSizes] = QVariant::fromValue(QList<int>() << 512 << 256 << 128 << 64 << 32 << 22 << 16 << 8);
 
+    QDBusConnection::sessionBus().connect(QString(), QStringLiteral("/KGlobalSettings"), QStringLiteral("org.kde.KGlobalSettings"),
+                                                   QStringLiteral("notifyChange"), this, SLOT(slotNotifyChange(int, int)));
+
     QMetaObject::invokeMethod(this, "setupIconLoader", Qt::QueuedConnection);
 }
 
@@ -99,6 +107,25 @@ void KHintsSettings::setupIconLoader()
     connect(KIconLoader::global(), &KIconLoader::iconChanged, this, &KHintsSettings::iconChanged);
 }
 
+void KHintsSettings::slotNotifyChange(int type, int arg)
+{
+    switch(type) {
+    case SettingsChanged: {
+        KSharedConfig::Ptr ptr = KSharedConfig::openConfig("kdeglobals");
+        ptr->reparseConfiguration();
+        KConfigGroup cg(ptr, "KDE");
+
+        SettingsCategory category = static_cast<SettingsCategory>(arg);
+        if (category == SETTINGS_QT) {
+            updateQtSettings(cg);
+        }
+        break;
+    }
+    default:
+        qWarning() << "Unknown type of change in KGlobalSettings::slotNotifyChange: " << type;
+    }
+}
+
 void KHintsSettings::iconChanged(int group)
 {
     KIconLoader::Group iconGroup = (KIconLoader::Group) group;
@@ -124,5 +151,16 @@ void KHintsSettings::iconChanged(int group)
             QEvent event(QEvent::StyleChange);
             QApplication::sendEvent(widget, &event);
         }
+    }
+}
+
+void KHintsSettings::updateQtSettings(KConfigGroup &cg)
+{
+    int flash = qBound(200, cg.readEntry("CursorBlinkRate", 1000), 2000);
+    m_hints[QPlatformTheme::CursorFlashTime] = flash;
+
+    QApplication *app = qobject_cast<QApplication*>(QCoreApplication::instance());
+    if (app) {
+        app->setCursorFlashTime(flash);
     }
 }
