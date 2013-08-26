@@ -34,6 +34,7 @@
 #include <QDBusInterface>
 #include <QDBusMessage>
 
+#include <kiconloader.h>
 static void prepareEnvironment()
 {
     qputenv("KDEHOME", QFile::encodeName(QDir::homePath() + QStringLiteral("/.kde5-unit-test-platformtheme")));
@@ -131,7 +132,7 @@ class KdePlatformTheme_UnitTest : public QObject
                                                    "iconChanged",  &m_loop, SLOT(quit()));
 
             QDBusMessage message = QDBusMessage::createSignal("/KIconLoader", "org.kde.KIconLoader", "iconChanged" );
-            message.setArguments(QList<QVariant>() << int(1));
+            message.setArguments(QList<QVariant>() << int(KIconLoader::Toolbar));
             QDBusConnection::sessionBus().send(message);
             m_loop.exec();
 
