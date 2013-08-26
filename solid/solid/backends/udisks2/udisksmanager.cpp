@@ -220,7 +220,7 @@ void Manager::slotInterfacesRemoved(const QDBusObjectPath &object_path, const QS
 
     Device device(udi);
 
-    if (!udi.isEmpty() && (interfaces.isEmpty() || device.interfaces().isEmpty())) {
+    if (!udi.isEmpty() && (interfaces.isEmpty() || device.interfaces().isEmpty() || device.mightBeOpticalDisc())) {
         Q_EMIT deviceRemoved(udi);
         m_deviceCache.removeAll(udi);
         DeviceBackend::destroyBackend(udi);

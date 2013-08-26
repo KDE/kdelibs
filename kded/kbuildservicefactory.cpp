@@ -183,7 +183,7 @@ void KBuildServiceFactory::collectInheritedServices(const QString& mimeTypeName,
                 KServiceOffer offer(*itserv);
                 offer.setMimeTypeInheritanceLevel(mimeTypeInheritanceLevel);
                 //kDebug(7021) << "INHERITANCE: Adding service" << (*itserv).service()->entryPath() << "to" << mimeTypeName << "mimeTypeInheritanceLevel=" << mimeTypeInheritanceLevel;
-                m_offerHash.addInheritedServiceOffer( mimeTypeName, offer );
+                m_offerHash.addServiceOffer( mimeTypeName, offer );
             }
         }
     }
