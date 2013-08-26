@@ -227,17 +227,44 @@ void KServicePrivate::init( const KDesktopFile *config, KService* q )
                            << "has an empty mimetype!";
             continue;
         }
-        int initialPreference = m_initialPreference;
-        if ( st_it.hasNext() ) {
-            // TODO better syntax - separate group with mimetype=number entries?
-            bool isNumber;
-            const int val = st_it.peekNext().toInt(&isNumber);
-            if (isNumber) {
-                initialPreference = val;
-                st_it.next();
+
+        // The following searches through the list for duplicate, inherited mimetypes
+        // For example, if application/rtf and text/plain are both listed application/rtf is removed
+        // since it is inherited from text/plain
+        // This is a reworked fix for revision 871cccc8a88a600c8f850a020d44bfc5f5858caa
+        bool shouldAdd = true;
+        KMimeType::Ptr mimeType1 = KMimeTypeRepository::self()->findMimeTypeByName(st);
+        if (mimeType1) {
+            foreach(const QString mime2, lstServiceTypes) {
+                // Don't compare the mimetype with itself
+                if (st == mime2) {
+                    continue;
+                }
+
+                // is checks for inheritance and aliases, so this should suffice
+                if (mimeType1->is(mime2)) {
+                    shouldAdd = false;
+                    break;
+                }
             }
         }
-        m_serviceTypes.push_back(KService::ServiceTypeAndPreference(initialPreference, st));
+
+        // Only add unique mimetypes
+        if (shouldAdd) {
+            int initialPreference = m_initialPreference;
+            if (st_it.hasNext()) {
+                // TODO better syntax - separate group with mimetype=number entries?
+                bool isNumber;
+                const int val = st_it.peekNext().toInt(&isNumber);
+                if (isNumber) {
+                    initialPreference = val;
+                    st_it.next();
+                }
+            }
+            m_serviceTypes.push_back(KService::ServiceTypeAndPreference(initialPreference, st));
+        } else {
+            //kDebug(servicesDebugArea())<<"Not adding"<<st<<"from"<<entryPath;
+        }
     }
 
     if (entryMap.contains(QLatin1String("Actions"))) {
