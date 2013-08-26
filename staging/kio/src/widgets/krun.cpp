@@ -153,10 +153,22 @@ bool KRun::isExecutableFile(const QUrl& url, const QString &mimetype)
     return false;
 }
 
-void KRun::handleError(int kioErrorCode, const QString &errorMsg)
+void KRun::handleInitError(int kioErrorCode, const QString &errorMsg)
 {
     Q_UNUSED(kioErrorCode);
+    d->m_showingDialog = true;
     KMessageBox::error(d->m_window, errorMsg);
+    d->m_showingDialog = false;
+}
+
+void KRun::handleError(KJob *job)
+{
+    Q_ASSERT(job);
+    if (job) {
+        d->m_showingDialog = true;
+        job->uiDelegate()->showErrorMessage();
+        d->m_showingDialog = false;
+    }
 }
 
 // This is called by foundMimeType, since it knows the mimetype of the URL
@@ -1170,10 +1182,8 @@ void KRun::init()
 {
     //qDebug() << "INIT called";
     if (!d->m_strURL.isValid()) {
-        d->m_showingDialog = true;
-        handleError(KIO::ERR_MALFORMED_URL, i18n("Malformed URL\n%1", d->m_strURL.errorString()));
+        handleInitError(KIO::ERR_MALFORMED_URL, i18n("Malformed URL\n%1", d->m_strURL.errorString()));
         qWarning() << d->m_strURL.errorString();
-        d->m_showingDialog = false;
         d->m_bFault = true;
         d->m_bFinished = true;
         d->startTimer();
@@ -1181,9 +1191,7 @@ void KRun::init()
     }
     if (!KAuthorized::authorizeUrlAction("open", QUrl(), d->m_strURL)) {
         QString msg = KIO::buildErrorString(KIO::ERR_ACCESS_DENIED, d->m_strURL.toDisplayString());
-        d->m_showingDialog = true;
-        handleError(KIO::ERR_ACCESS_DENIED, msg);
-        d->m_showingDialog = false;
+        handleInitError(KIO::ERR_ACCESS_DENIED, msg);
         d->m_bFault = true;
         d->m_bFinished = true;
         d->startTimer();
@@ -1197,12 +1205,10 @@ void KRun::init()
     } else if (d->m_strURL.isLocalFile()) {
         const QString localPath = d->m_strURL.toLocalFile();
         if (!QFile::exists(localPath)) {
-            d->m_showingDialog = true;
-            handleError(KIO::ERR_DOES_NOT_EXIST,
+            handleInitError(KIO::ERR_DOES_NOT_EXIST,
                                       i18n("<qt>Unable to run the command specified. "
                                       "The file or folder <b>%1</b> does not exist.</qt>" ,
                                       localPath.toHtmlEscaped()));
-            d->m_showingDialog = false;
             d->m_bFault = true;
             d->m_bFinished = true;
             d->startTimer();
@@ -1221,9 +1227,7 @@ void KRun::init()
         } else if (mime.isDefault() && !QFileInfo(localPath).isReadable()) {
             // Unknown mimetype because the file is unreadable, no point in showing an open-with dialog (#261002)
             const QString msg = KIO::buildErrorString(KIO::ERR_ACCESS_DENIED, localPath);
-            d->m_showingDialog = true;
-            handleError(KIO::ERR_ACCESS_DENIED, msg);
-            d->m_showingDialog = false;
+            handleInitError(KIO::ERR_ACCESS_DENIED, msg);
             d->m_bFault = true;
             d->m_bFinished = true;
             d->startTimer();
@@ -1393,11 +1397,9 @@ void KRun::slotStatResult(KJob * job)
         // ERR_NO_CONTENT is not an error, but an indication no further
         // actions needs to be taken.
         if (errCode != KIO::ERR_NO_CONTENT) {
-            d->m_showingDialog = true;
             qWarning() << this << "ERROR" << job->error() << job->errorString();
-            job->uiDelegate()->showErrorMessage();
+            handleError(job);
             //qDebug() << this << " KRun returning from showErrorDialog, starting timer to delete us";
-            d->m_showingDialog = false;
             d->m_bFault = true;
         }
 
@@ -1463,11 +1465,8 @@ void KRun::slotScanFinished(KJob *job)
         // ERR_NO_CONTENT is not an error, but an indication no further
         // actions needs to be taken.
         if (errCode != KIO::ERR_NO_CONTENT) {
-            d->m_showingDialog = true;
             qWarning() << this << "ERROR (stat):" << job->error() << ' ' << job->errorString();
-            job->uiDelegate()->showErrorMessage();
-            //qDebug() << this << " KRun returning from showErrorDialog, starting timer to delete us";
-            d->m_showingDialog = false;
+            handleError(job);
 
             d->m_bFault = true;
         }

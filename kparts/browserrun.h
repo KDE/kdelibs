@@ -161,13 +161,9 @@ namespace KParts {
          */
         virtual void init();
         /**
-         * Called when an error happens.
-         * NOTE: @p job could be 0L, if you passed hideErrorDialog=true.
-         * The default implementation shows a message box, but only when job != 0 ....
-         * It is strongly recommended to reimplement this method if
-         * you passed hideErrorDialog=true.
+         * Reimplemented from KRun
          */
-        virtual void handleError( KJob * job );
+        void handleError( KJob * job ) Q_DECL_OVERRIDE;
 
         /**
          * NotHandled means that foundMimeType should call KRun::foundMimeType,
@@ -206,7 +202,6 @@ namespace KParts {
         void slotBrowserScanFinished(KJob *job);
         void slotBrowserMimetype(KIO::Job *job, const QString &type);
         void slotCopyToTempFileResult(KJob *job);
-        virtual void slotStatResult( KJob *job );
 
     private:
         void redirectToError( int error, const QString& errorText );

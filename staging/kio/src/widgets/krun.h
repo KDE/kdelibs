@@ -442,10 +442,19 @@ protected:
     virtual void killJob();
 
     /**
-     * Called when KRun detects an error. Reimplement to avoid messageboxes.
+     * Called when KRun detects an error during the init phase.
+     *
+     * The default implementation shows a message box.
      * @since 5.0
      */
-    virtual void handleError(int kioErrorCode, const QString &errorMsg);
+    virtual void handleInitError(int kioErrorCode, const QString &errorMsg);
+
+    /**
+     * Called when a KIO job started by KRun gives an error.
+     *
+     * The default implementation shows a message box.
+     */
+    virtual void handleError(KJob * job);
 
     /**
      * Sets the url.

@@ -191,10 +191,7 @@ void BrowserRun::slotBrowserScanFinished(KJob *job)
   }
   else
   {
-      if ( job->error() )
-          handleError( job );
-      else
-          KRun::slotScanFinished(job);
+      KRun::slotScanFinished(job);
   }
 }
 
@@ -473,18 +470,9 @@ void BrowserRun::saveUrlUsingKIO(const QUrl & srcUrl, const QUrl & destUrl,
     new DownloadJobWatcher(job, metaData);
 }
 
-void BrowserRun::slotStatResult( KJob *job )
-{
-    if ( job->error() ) {
-        // qDebug() << job->errorString();
-        handleError( job );
-    } else
-        KRun::slotStatResult( job );
-}
-
 void BrowserRun::handleError( KJob * job )
 {
-    if ( !job ) { // Shouldn't happen, see docu.
+    if ( !job ) { // Shouldn't happen
         qWarning() << "handleError called with job=0! hideErrorDialog=" << d->m_bHideErrorDialog;
         return;
     }
@@ -507,7 +495,7 @@ void BrowserRun::handleError( KJob * job )
     }
 
     // Reuse code in KRun, to benefit from d->m_showingError etc.
-    KRun::slotStatResult( job );
+    KRun::handleError( job );
 }
 
 // static
