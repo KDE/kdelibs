@@ -59,6 +59,16 @@ class KdePlatformTheme_UnitTest : public QObject
 {
     Q_OBJECT
     private:
+        void sendNotifyChange(KHintsSettings::ChangeType type, int arg)
+        {
+            QDBusMessage message = QDBusMessage::createSignal("/KGlobalSettings", "org.kde.KGlobalSettings", "notifyChange" );
+            QList<QVariant> args;
+            args.append(static_cast<int>(type));
+            args.append(arg);
+            message.setArguments(args);
+            QDBusConnection::sessionBus().send(message);
+        }
+
         QEventLoop m_loop;
         KdePlatformTheme *m_qpa;
     private Q_SLOTS:
@@ -152,23 +162,13 @@ class KdePlatformTheme_UnitTest : public QObject
             QDBusConnection::sessionBus().connect(QString(), "/KGlobalSettings", "org.kde.KGlobalSettings",
                                                    "notifyChange",  &m_loop, SLOT(quit()));
 
-            QDBusMessage message = QDBusMessage::createSignal("/KGlobalSettings", "org.kde.KGlobalSettings", "notifyChange" );
-            QList<QVariant> args;
-            args.append(static_cast<int>(KHintsSettings::SettingsChanged));
-            args.append(KHintsSettings::SETTINGS_QT);
-            message.setArguments(args);
-            QDBusConnection::sessionBus().send(message);
+            sendNotifyChange(KHintsSettings::SettingsChanged, KHintsSettings::SETTINGS_QT);
             m_loop.exec();
 
             QCOMPARE(m_qpa->themeHint(QPlatformTheme::CursorFlashTime).toInt(), 1022);
             QCOMPARE(qApp->cursorFlashTime(), 1022);
 
-            message = QDBusMessage::createSignal("/KGlobalSettings", "org.kde.KGlobalSettings", "notifyChange" );
-            args.clear();
-            args.append(static_cast<int>(KHintsSettings::SettingsChanged));
-            args.append(KHintsSettings::SETTINGS_MOUSE);
-            message.setArguments(args);
-            QDBusConnection::sessionBus().send(message);
+            sendNotifyChange(KHintsSettings::SettingsChanged, KHintsSettings::SETTINGS_MOUSE);
             m_loop.exec();
 
             QCOMPARE(m_qpa->themeHint(QPlatformTheme::MouseDoubleClickInterval).toInt(), 401);
