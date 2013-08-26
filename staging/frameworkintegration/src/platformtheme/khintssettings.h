@@ -1,5 +1,5 @@
 /*  This file is part of the KDE libraries
- *  Copyright 2013 Kevin Ottens <ervin+bluesystems@kde.org>
+ *  Copyright 2013 Alejandro Fiestas Olivares <afiestas@kde.org>
  *
  *  This library is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -18,37 +18,33 @@
  *  Boston, MA 02110-1301, USA.
  */
 
-#ifndef KDEPLATFORMTHEME_H
-#define KDEPLATFORMTHEME_H
+#ifndef KHINTS_SETTINGS_H
+#define KHINTS_SETTINGS_H
+
+#include <QObject>
+#include <QVariant>
 
 #include <qpa/qplatformtheme.h>
 
-#include <QHash>
-#include <QObject>
-
-class KHintsSettings;
-class KFontSettingsData;
-class QIconEngine;
-
-class KdePlatformTheme : public QPlatformTheme
+class KHintsSettings : public QObject
 {
-public:
-    KdePlatformTheme();
-    ~KdePlatformTheme();
+    Q_OBJECT
+    public:
+        explicit KHintsSettings();
 
-    virtual QVariant themeHint(ThemeHint hint) const;
-    virtual const QPalette *palette(Palette type = SystemPalette) const;
-    virtual const QFont *font(Font type) const;
-    virtual QIconEngine *createIconEngine(const QString &iconName) const;
+        inline QVariant hint(QPlatformTheme::ThemeHint hint)
+        {
+            return m_hints[hint];
+        }
 
-private:
-    void loadSettings();
-    void loadPalettes();
-    void iconChanged(int group);
+    private Q_SLOTS:
+        void setupIconLoader();
 
-    KHintsSettings *m_hints;
-    QHash<Palette, QPalette*> m_palettes;
-    KFontSettingsData* m_fontsData;
+    private:
+        void iconChanged(int group);
+
+        QStringList xdgIconThemePaths() const;
+        QHash<QPlatformTheme::ThemeHint, QVariant> m_hints;
 };
 
-#endif // KDEPLATFORMTHEME_H
+#endif //KHINTS_SETTINGS_H

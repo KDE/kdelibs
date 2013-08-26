@@ -22,6 +22,7 @@ frameworkintegration_tests(
   kdeplatformtheme_unittest
   ../src/platformtheme/kdeplatformtheme.cpp
   ../src/platformtheme/kfontsettingsdata.cpp
+  ../src/platformtheme/khintssettings.cpp
 )
 
 frameworkintegration_tests(
