@@ -37,7 +37,8 @@
 
 KHintsSettings::KHintsSettings() : QObject(0)
 {
-    KConfigGroup cg(KSharedConfig::openConfig("kdeglobals"), "KDE");
+    KSharedConfig::Ptr ptr = KSharedConfig::openConfig("kdeglobals");
+    KConfigGroup cg(ptr, "KDE");
 
     m_hints[QPlatformTheme::CursorFlashTime] = qBound(200, cg.readEntry("CursorBlinkRate", 1000), 2000);
     m_hints[QPlatformTheme::MouseDoubleClickInterval] = cg.readEntry("DoubleClickInterval", 400);
@@ -52,7 +53,8 @@ KHintsSettings::KHintsSettings() : QObject(0)
                              : buttonStyle == "textonly" ? Qt::ToolButtonTextOnly
                              : Qt::ToolButtonIconOnly;
 
-    m_hints[QPlatformTheme::ToolBarIconSize] = cg.readEntry("ToolbarIconsSize", 22);
+    KConfigGroup cgToolbarIcon(ptr, "ToolbarIcons");
+    m_hints[QPlatformTheme::ToolBarIconSize] = cgToolbarIcon.readEntry("Size", 22);
     m_hints[QPlatformTheme::ItemViewActivateItemOnSingleClick] = cg.readEntry("SingleClick", true);
     m_hints[QPlatformTheme::SystemIconThemeName] = cg.readEntry("IconsTheme", "oxygen");
     m_hints[QPlatformTheme::SystemIconFallbackThemeName] = "hicolor";

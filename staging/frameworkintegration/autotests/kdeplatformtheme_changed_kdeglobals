@@ -4,13 +4,15 @@ DoubleClickInterval=4343
 StartDragDist=15
 StartDragTime=555
 ToolButtonStyle=textonly
-ToolbarIconsSize=21
 SingleClick=false
 IconsTheme=non-existent-icon-theme
 WidgetStyle=non-existent-widget-style
 ShowIconsInMenuItems=false
 ShowIconsOnPushButtons=false
 GraphicEffectsLevel=0
+
+[ToolbarIcons]
+Size=11
 
 [ColorEffects:Active]
 ChangeSelectionColor=false
