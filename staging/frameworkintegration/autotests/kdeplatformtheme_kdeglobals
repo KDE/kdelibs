@@ -10,6 +10,8 @@ WidgetStyle=non-existent-widget-style
 ShowIconsInMenuItems=false
 ShowIconsOnPushButtons=false
 GraphicEffectsLevel=0
+WheelScrollLines=1234
+ShowIconsInMenuItems=true
 
 [ToolbarIcons]
 Size=2

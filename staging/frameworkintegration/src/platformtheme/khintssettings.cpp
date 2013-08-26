@@ -75,6 +75,14 @@ KHintsSettings::KHintsSettings() : QObject(0)
     m_hints[QPlatformTheme::UiEffects] = cg.readEntry("GraphicEffectsLevel", 0) != 0 ? QPlatformTheme::GeneralUiEffect : 0;
     m_hints[QPlatformTheme::IconPixmapSizes] = QVariant::fromValue(QList<int>() << 512 << 256 << 128 << 64 << 32 << 22 << 16 << 8);
 
+    //TODO Check if we can add themeHints for these two options
+    if (qobject_cast<QApplication*>(QCoreApplication::instance())) {
+        QApplication::setWheelScrollLines(cg.readEntry("WheelScrollLines", QApplication::wheelScrollLines()));
+    }
+
+    bool showIcons = cg.readEntry("ShowIconsInMenuItems", !QApplication::testAttribute(Qt::AA_DontShowIconsInMenus));
+    QCoreApplication::setAttribute(Qt::AA_DontShowIconsInMenus, !showIcons);
+
     QDBusConnection::sessionBus().connect(QString(), QStringLiteral("/KGlobalSettings"), QStringLiteral("org.kde.KGlobalSettings"),
                                                    QStringLiteral("notifyChange"), this, SLOT(slotNotifyChange(int, int)));
 

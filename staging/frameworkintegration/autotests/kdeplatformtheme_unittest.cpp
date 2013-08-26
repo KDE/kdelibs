@@ -98,6 +98,9 @@ class KdePlatformTheme_UnitTest : public QObject
             QCOMPARE(m_qpa->themeHint(QPlatformTheme::KeyboardScheme).toInt(), (int) QPlatformTheme::KdeKeyboardScheme);
             QCOMPARE(m_qpa->themeHint(QPlatformTheme::UiEffects).toInt(), 0);
             QCOMPARE(m_qpa->themeHint(QPlatformTheme::IconPixmapSizes).value<QList<int> >(), QList<int>() << 512 << 256 << 128 << 64 << 32 << 22 << 16 << 8);
+
+            QCOMPARE(qApp->wheelScrollLines(), 1234);
+            QCOMPARE(qApp->testAttribute(Qt::AA_DontShowIconsInMenus), false);
         }
 
         void testPlatformPalette()
