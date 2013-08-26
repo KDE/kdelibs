@@ -173,6 +173,12 @@ class KdePlatformTheme_UnitTest : public QObject
 
             QCOMPARE(m_qpa->themeHint(QPlatformTheme::MouseDoubleClickInterval).toInt(), 401);
             QCOMPARE(qApp->doubleClickInterval(), 401);
+
+            QCOMPARE(m_qpa->themeHint(QPlatformTheme::StartDragDistance).toInt(), 35);
+            QCOMPARE(qApp->startDragDistance(), 35);
+
+            QCOMPARE(m_qpa->themeHint(QPlatformTheme::StartDragTime).toInt(), 501);
+            QCOMPARE(qApp->startDragTime(), 501);
         }
 };
 

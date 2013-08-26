@@ -1,8 +1,8 @@
 [KDE]
 CursorBlinkRate=1022
 DoubleClickInterval=401
-StartDragDist=15
-StartDragTime=555
+StartDragDist=35
+StartDragTime=501
 ToolButtonStyle=textonly
 SingleClick=false
 IconsTheme=non-existent-icon-theme

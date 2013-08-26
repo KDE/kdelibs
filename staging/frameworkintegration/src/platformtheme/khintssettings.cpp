@@ -162,9 +162,16 @@ void KHintsSettings::updateQtSettings(KConfigGroup &cg)
     int doubleClickInterval = cg.readEntry("DoubleClickInterval", 400);
     m_hints[QPlatformTheme::MouseDoubleClickInterval] = doubleClickInterval;
 
+    int startDragDistance = cg.readEntry("StartDragDist", 10);
+    m_hints[QPlatformTheme::StartDragDistance] = startDragDistance;
+
+    int startDragTime = cg.readEntry("StartDragTime", 10);
+    m_hints[QPlatformTheme::StartDragTime] = startDragTime;
     QApplication *app = qobject_cast<QApplication*>(QCoreApplication::instance());
     if (app) {
         app->setCursorFlashTime(flash);
         app->setDoubleClickInterval(doubleClickInterval);
+        app->setStartDragDistance(startDragDistance);
+        app->setStartDragTime(startDragTime);
     }
 }
