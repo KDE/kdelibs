@@ -449,6 +449,7 @@ void KIconLoaderPrivate::drawOverlays(const KIconLoader *iconLoader, KIconLoader
 
 void KIconLoaderPrivate::_k_refreshIcons(int group)
 {
+    KSharedConfig::openConfig()->reparseConfiguration();
     q->newIconLoader();
     emit q->iconChanged(group);
 }
