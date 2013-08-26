@@ -175,11 +175,16 @@ void KHintsSettings::updateQtSettings(KConfigGroup &cg)
 
     int startDragTime = cg.readEntry("StartDragTime", 10);
     m_hints[QPlatformTheme::StartDragTime] = startDragTime;
+
+    bool showIcons = cg.readEntry("ShowIconsInMenuItems", !QApplication::testAttribute(Qt::AA_DontShowIconsInMenus));
+    QCoreApplication::setAttribute(Qt::AA_DontShowIconsInMenus, !showIcons);
+
     QApplication *app = qobject_cast<QApplication*>(QCoreApplication::instance());
     if (app) {
         app->setCursorFlashTime(flash);
         app->setDoubleClickInterval(doubleClickInterval);
         app->setStartDragDistance(startDragDistance);
         app->setStartDragTime(startDragTime);
+        QApplication::setWheelScrollLines(cg.readEntry("WheelScrollLines", QApplication::wheelScrollLines()));
     }
 }

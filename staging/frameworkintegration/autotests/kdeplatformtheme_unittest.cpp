@@ -182,6 +182,9 @@ class KdePlatformTheme_UnitTest : public QObject
 
             QCOMPARE(m_qpa->themeHint(QPlatformTheme::StartDragTime).toInt(), 501);
             QCOMPARE(qApp->startDragTime(), 501);
+
+            QCOMPARE(qApp->wheelScrollLines(), 122);
+            QCOMPARE(qApp->testAttribute(Qt::AA_DontShowIconsInMenus), true);
         }
 };
 
