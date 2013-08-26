@@ -247,21 +247,15 @@ public:
      * Use only when you know the full command line. Otherwise use the other
      * static methods, or KRun's constructor.
      *
-     * @p cmd must be a shell command. You must not append "&"
+     * @param cmd must be a shell command. You must not append "&"
      * to it, since the function will do that for you.
      * @param window The top-level widget of the app that invoked this object.
+     * @param workingDirectory directory to use for relative paths, so that
+     * a command like "kwrite file.txt" finds file.txt from the right place
      *
      * @return @c true on success, @c false on error
      */
-    static bool runCommand(const QString &cmd, QWidget* window);
-
-    /**
-     * Overload that also takes a working directory, so that a command like
-     * "kwrite file.txt" finds file.txt from the right place.
-     * @since 4.4
-     */
-    static bool runCommand(const QString &cmd, QWidget* window, const QString& workingDirectory);
-    // TODO KDE5: merge the above with 2-args runCommand, using QString()
+    static bool runCommand(const QString &cmd, QWidget* window, const QString& workingDirectory = QString());
 
     /**
      * Same as the other runCommand(), but it also takes the name of the

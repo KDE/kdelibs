@@ -1093,11 +1093,6 @@ bool KRun::run(const QString& _exec, const QList<QUrl>& _urls, QWidget* window, 
     return run(*service, _urls, window, false, QString(), asn);
 }
 
-bool KRun::runCommand(const QString &cmd, QWidget* window)
-{
-    return runCommand(cmd, window, QString());
-}
-
 bool KRun::runCommand(const QString& cmd, QWidget* window, const QString& workingDirectory)
 {
     if (cmd.isEmpty()) {
