@@ -30,6 +30,10 @@
 #include <QIconEngine>
 #include <QDialogButtonBox>
 
+#include <QDBusConnection>
+#include <QDBusInterface>
+#include <QDBusMessage>
+
 static void prepareEnvironment()
 {
     qputenv("KDEHOME", QFile::encodeName(QDir::homePath() + QStringLiteral("/.kde5-unit-test-platformtheme")));
@@ -118,6 +122,20 @@ class KdePlatformTheme_UnitTest : public QObject
         {
             QIconEngine *engine = m_qpa->createIconEngine(QStringLiteral("test-icon"));
             QCOMPARE(engine->key(), QStringLiteral("KIconEngine"));
+        }
+
+        void testPlatformIconChanges()
+        {
+            QEventLoop loop;
+            QDBusConnection::sessionBus().connect(QString(), "/KIconLoader", "org.kde.KIconLoader",
+                                                   "iconChanged",  &loop, SLOT(quit()));
+
+            QDBusMessage message = QDBusMessage::createSignal("/KIconLoader", "org.kde.KIconLoader", "iconChanged" );
+            message.setArguments(QList<QVariant>() << int(1));
+            QDBusConnection::sessionBus().send(message);
+            loop.exec();
+
+            QCOMPARE(m_qpa->themeHint(QPlatformTheme::ToolBarIconSize).toInt(), 22);
         }
 };
 
