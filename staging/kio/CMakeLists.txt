@@ -28,7 +28,7 @@ find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS DBus Widgets Test)
 
 add_subdirectory(src)
 add_subdirectory(autotests)
-#add_subdirectory(tests)
+add_subdirectory(tests)
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
 set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KIO")

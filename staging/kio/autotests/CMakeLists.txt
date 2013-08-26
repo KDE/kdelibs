@@ -23,3 +23,21 @@ kiocore_unit_tests(
  upurltest
 )
 
+macro(KIOWIDGETS_UNIT_TESTS)
+  foreach(_testname ${ARGN})
+    add_executable(${_testname} ${_testname}.cpp)
+    add_test(kiowidgets-${_testname} ${_testname})
+    target_link_libraries(${_testname}
+       KIOCore
+       KIOWidgets
+       Qt5::Test
+    )
+    ecm_mark_as_test(${_testname})
+  endforeach()
+endmacro(KIOWIDGETS_UNIT_TESTS)
+
+kiowidgets_unit_tests(
+ krununittest
+)
+
+set_target_properties(krununittest PROPERTIES COMPILE_FLAGS "-DCMAKE_INSTALL_PREFIX=\\\"${CMAKE_INSTALL_PREFIX}\\\" -DLIBEXEC_INSTALL_DIR=\\\"${LIBEXEC_INSTALL_DIR}\\\"")

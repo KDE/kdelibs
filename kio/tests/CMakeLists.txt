@@ -18,7 +18,6 @@ ENDMACRO(KIO_EXECUTABLE_TESTS)
 # jobtest seems to trigger a ctest problem; jobtest finishes and ctest waits for ever
 
 KIO_UNIT_TESTS(
-  krununittest
   kprotocolinfotest
   jobtest
   jobguitest
@@ -34,12 +33,9 @@ KIO_UNIT_TESTS(
   clipboardupdatertest
 )
 
-set_target_properties(krununittest PROPERTIES COMPILE_FLAGS "-DCMAKE_INSTALL_PREFIX=\\\"${CMAKE_INSTALL_PREFIX}\\\" -DLIBEXEC_INSTALL_DIR=\\\"${LIBEXEC_INSTALL_DIR}\\\"")
-
 KIO_EXECUTABLE_TESTS(
   ksycocatest
   getalltest
-  kruntest
   kioslavetest
   speed
   kscantest
