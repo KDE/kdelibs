@@ -30,6 +30,7 @@
 
 #include <QItemSelectionModel>
 
+class QTimer;
 class KWidgetItemDelegate;
 
 class KWidgetItemDelegatePrivate
@@ -48,11 +49,13 @@ public:
     void _k_slotLayoutChanged();
     void _k_slotModelReset();
     void _k_slotSelectionChanged (const QItemSelection &selected, const QItemSelection &deselected);
+    void _k_sizeHintChanged(const QModelIndex &index);
 
     void updateRowRange(const QModelIndex &parent, int start, int end, bool isRemoving);
     QStyleOptionViewItemV4 optionView(const QModelIndex &index);
 
 public Q_SLOTS:
+    void initializeModelRequested();
     void initializeModel(const QModelIndex &parent = QModelIndex());
 
 protected:
@@ -64,6 +67,7 @@ public:
     QAbstractItemModel *model;
     QItemSelectionModel *selectionModel;
     bool viewDestroyed;
+    QTimer *initializeTimer;
 
     KWidgetItemDelegate *q;
 };

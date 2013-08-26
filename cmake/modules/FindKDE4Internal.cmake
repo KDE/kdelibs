@@ -592,11 +592,71 @@ if (CMAKE_COMPILER_IS_GNUCC OR CMAKE_C_COMPILER_ID MATCHES Clang)
        ${CMAKE_C_IMPLICIT_INCLUDE_DIRECTORIES} ${_dirs})
 endif (CMAKE_COMPILER_IS_GNUCC OR CMAKE_C_COMPILER_ID MATCHES Clang)
 
-if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES Clang)
+if (CMAKE_COMPILER_IS_GNUCXX)
    _DETERMINE_GCC_SYSTEM_INCLUDE_DIRS(c++ _dirs)
    set(CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES ${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES} ${_dirs})
 
-endif (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES Clang)
+endif (CMAKE_COMPILER_IS_GNUCXX)
+
+
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+   _DETERMINE_GCC_SYSTEM_INCLUDE_DIRS(c++ _dirs)
+   set(CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES
+       ${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES} ${_dirs})
+
+   set(KDE4_ENABLE_EXCEPTIONS "-fexceptions -UQT_NO_EXCEPTIONS")
+   # Select flags.
+   set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g -DNDEBUG -DQT_NO_DEBUG")
+   set(CMAKE_CXX_FLAGS_RELEASE        "-O2 -DNDEBUG -DQT_NO_DEBUG")
+   set(CMAKE_CXX_FLAGS_DEBUG          "-g -O2 -fno-inline")
+   set(CMAKE_CXX_FLAGS_DEBUGFULL      "-g3 -fno-inline")
+   set(CMAKE_CXX_FLAGS_PROFILE        "-g3 -fno-inline -ftest-coverage -fprofile-arcs")
+   set(CMAKE_C_FLAGS_RELWITHDEBINFO   "-O2 -g -DNDEBUG -DQT_NO_DEBUG")
+   set(CMAKE_C_FLAGS_RELEASE          "-O2 -DNDEBUG -DQT_NO_DEBUG")
+   set(CMAKE_C_FLAGS_DEBUG            "-g -O2 -fno-inline")
+   set(CMAKE_C_FLAGS_DEBUGFULL        "-g3 -fno-inline")
+   set(CMAKE_C_FLAGS_PROFILE          "-g3 -fno-inline -ftest-coverage -fprofile-arcs")
+
+   set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -Wno-long-long -std=iso9899:1990 -Wundef -Wcast-align -Werror-implicit-function-declaration -Wchar-subscripts -Wall -W -Wpointer-arith -Wwrite-strings -Wformat-security -Wmissing-format-attribute -fno-common")
+   # As of Qt 4.6.x we need to override the new exception macros if we want compile with -fno-exceptions
+   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wnon-virtual-dtor -Wno-long-long -Wundef -Wcast-align -Wchar-subscripts -Wall -W -Wpointer-arith -Wformat-security -Woverloaded-virtual -fno-exceptions -DQT_NO_EXCEPTIONS -fno-common -fvisibility=hidden -Werror=return-type -fvisibility-inlines-hidden")
+   set(KDE4_C_FLAGS    "-fvisibility=hidden")
+
+   # There is a lot of code out there that includes headers that throw
+   # exceptions, but we disable exceptions by default.
+   # GCC, MSVC and ICC do not complain about these cases when the exceptions
+   # are thrown inside some template code that is not expanded/used, which is
+   # what happens most of the time.
+   # We have to follow suit and be less strict in order not to break the build
+   # in many places.
+   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fdelayed-template-parsing")
+
+   # At least kdepim exports one function with C linkage that returns a
+   # QString in a plugin, but clang does not like that.
+   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-return-type-c-linkage")
+
+   set(KDE4_CXX_FPIE_FLAGS "-fPIE")
+   set(KDE4_PIE_LDFLAGS    "-pie")
+
+   if (CMAKE_SYSTEM_NAME STREQUAL GNU)
+      set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -pthread")
+      set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -pthread")
+   endif (CMAKE_SYSTEM_NAME STREQUAL GNU)
+
+   set(__KDE_HAVE_GCC_VISIBILITY TRUE)
+
+   # check that Qt defines Q_DECL_EXPORT as __attribute__ ((visibility("default")))
+   # if it doesn't and KDE compiles with hidden default visibiltiy plugins will break
+   set(_source "#include <QtCore/QtGlobal>\n int main()\n {\n #ifndef QT_VISIBILITY_AVAILABLE \n #error QT_VISIBILITY_AVAILABLE is not available\n #endif \n }\n")
+   set(_source_file ${CMAKE_BINARY_DIR}/CMakeTmp/check_qt_visibility.cpp)
+   file(WRITE "${_source_file}" "${_source}")
+   set(_include_dirs "-DINCLUDE_DIRECTORIES:STRING=${QT_INCLUDES}")
+   try_compile(_compile_result ${CMAKE_BINARY_DIR} ${_source_file} CMAKE_FLAGS "${_include_dirs}" OUTPUT_VARIABLE _compile_output_var)
+   if(NOT _compile_result)
+       message("${_compile_output_var}")
+       message(FATAL_ERROR "Qt compiled without support for -fvisibility=hidden. This will break plugins and linking of some applications. Please fix your Qt installation (try passing --reduce-exports to configure).")
+   endif(NOT _compile_result)
+endif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 
 
 ###########    end of platform specific stuff  ##########################

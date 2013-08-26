@@ -186,8 +186,15 @@ QVariant KFilePlacesItem::deviceData(int role) const
             if (m_access) {
                 return QUrl::fromLocalFile(m_access->filePath());
             } else if (m_disc && (m_disc->availableContent() & Solid::OpticalDisc::Audio)!=0) {
-                QString device = d.as<Solid::Block>()->device();
-                return QUrl(QString("audiocd:/?device=%1").arg(device));
+                Solid::Block *block = d.as<Solid::Block>();
+                if (block) {
+                    QString device = block->device();
+                    return QUrl(QString("audiocd:/?device=%1").arg(device));
+                }
+                // We failed to get the block device. Assume audiocd:/ can
+                // figure it out, but cannot handle multiple disc drives.
+                // See https://bugs.kde.org/show_bug.cgi?id=314544#c40
+                return QUrl(QString("audiocd:/"));
             } else if (m_mtp) {
                 return QUrl(QString("mtp:udi=%1").arg(d.udi()));
             } else {

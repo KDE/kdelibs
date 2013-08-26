@@ -76,7 +76,7 @@ void UserNotificationHandler::processRequest()
 
         if (m_cachedResults.contains(key)) {
             result = *(m_cachedResults[key]);
-        } else {
+        } else if (r->slave->job()) {
             SimpleJobPrivate* jobPrivate = SimpleJobPrivate::get(r->slave->job());
             if (jobPrivate) {
                 result = jobPrivate->requestMessageBox(r->type,

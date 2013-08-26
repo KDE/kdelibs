@@ -312,16 +312,22 @@ void KDirWatchPrivate::inotifyEventReceived()
       if ( path.length() && isNoisyFile( cpath.data() ) )
         continue;
 
+      // Is set to true if the new event is a directory, false otherwise. This prevents a stat call in clientsForFileOrDir
+      const bool isDir = (event->mask & (IN_ISDIR));
+
       // now we're in deep trouble of finding the
       // associated entries
       // for now, we suck and iterate
       for ( EntryMap::Iterator it = m_mapEntries.begin();
             it != m_mapEntries.end();  ) {
+
         Entry* e = &( *it );
         ++it;
         if ( e->wd == event->wd ) {
           const bool wasDirty = e->dirty;
           e->dirty = true;
+
+          const QString tpath = e->path + QLatin1Char('/') + path;
 
           //if (s_verboseDebug) {
           //  qDebug() << "got event" << "0x"+QString::number(event->mask, 16) << "for" << e->path;
@@ -347,7 +353,6 @@ void KDirWatchPrivate::inotifyEventReceived()
             //e->wd = -1;
           }
           if ( event->mask & (IN_CREATE|IN_MOVED_TO) ) {
-            const QString tpath = e->path + QLatin1Char('/') + path;
             Entry* sub_entry = e->findSubEntry(tpath);
 
             if (s_verboseDebug) {
@@ -361,8 +366,7 @@ void KDirWatchPrivate::inotifyEventReceived()
               sub_entry->dirty = true;
               rescan_timer.start(0); // process this asap, to start watching that dir
             } else if (e->isDir && !e->m_clients.empty()) {
-              bool isDir = false;
-              const QList<Client *> clients = e->clientsForFileOrDir(tpath, &isDir);
+              const QList<Client *> clients = e->inotifyClientsForFileOrDir(isDir);
               Q_FOREACH(Client *client, clients) {
                 // See discussion in addEntry for why we don't addEntry for individual
                 // files in WatchFiles mode with inotify.
@@ -382,7 +386,6 @@ void KDirWatchPrivate::inotifyEventReceived()
             }
           }
           if (event->mask & (IN_DELETE|IN_MOVED_FROM)) {
-            const QString tpath = e->path + QLatin1Char('/') + path;
             if (s_verboseDebug) {
               qDebug() << "-->got DELETE signal for" << tpath;
             }
@@ -392,14 +395,7 @@ void KDirWatchPrivate::inotifyEventReceived()
               // watched file as it would have its own watch descriptor, so
               // no addEntry/ removeEntry bookkeeping should be required.  Emit
               // the event immediately if any clients are interested.
-              QT_STATBUF stat_buf;
-              // Unlike clientsForFileOrDir, the stat can fail here (item deleted),
-              // so in that case we'll just take both kinds of clients and emit Deleted.
-              KDirWatch::WatchModes flag = KDirWatch::WatchSubDirs | KDirWatch::WatchFiles;
-              if (QT_STAT(QFile::encodeName(tpath).constData(), &stat_buf) == 0) {
-                bool isDir = (stat_buf.st_mode & QT_STAT_MASK) == QT_STAT_DIR;
-                flag = isDir ? KDirWatch::WatchSubDirs : KDirWatch::WatchFiles;
-              }
+              KDirWatch::WatchModes flag = isDir ? KDirWatch::WatchSubDirs : KDirWatch::WatchFiles;
               int counter = 0;
               Q_FOREACH(client, e->m_clients) { // krazy:exclude=Q_FOREACH
                   if (client->m_watchModes & flag) {
@@ -413,7 +409,6 @@ void KDirWatchPrivate::inotifyEventReceived()
           }
           if (event->mask & (IN_MODIFY|IN_ATTRIB)) {
             if ((e->isDir) && (!e->m_clients.empty())) {
-              const QString tpath = e->path + QLatin1Char('/') + path;
               if (s_verboseDebug) {
                 qDebug() << "-->got MODIFY signal for" << (tpath);
               }
@@ -548,6 +543,20 @@ QList<KDirWatchPrivate::Client *> KDirWatchPrivate::Entry::clientsForFileOrDir(c
     //qDebug() << "ERROR: couldn't stat" << tpath;
     // In this case isDir is not set, but ret is empty anyway
     // so isDir won't be used.
+  }
+  return ret;
+}
+
+// inotify specific function that doesn't call KDE::stat to figure out if we have a file or folder.
+// isDir is determined through inotify's "IN_ISDIR" flag in KDirWatchPrivate::inotifyEventReceived
+QList<KDirWatchPrivate::Client *> KDirWatchPrivate::Entry::inotifyClientsForFileOrDir(bool isDir) const
+{
+  QList<Client *> ret;
+  const KDirWatch::WatchModes flag = isDir ? KDirWatch::WatchSubDirs : KDirWatch::WatchFiles;
+  Q_FOREACH(Client *client, this->m_clients) {
+    if (client->m_watchModes & flag) {
+      ret.append(client);
+    }
   }
   return ret;
 }

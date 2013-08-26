@@ -173,6 +173,7 @@ public:
     void propagate_dirty();
 
     QList<Client *> clientsForFileOrDir(const QString& tpath, bool* isDir) const;
+    QList<Client *> inotifyClientsForFileOrDir(bool isDir) const;
 
 #if HAVE_FAM
     FAMRequest fr;

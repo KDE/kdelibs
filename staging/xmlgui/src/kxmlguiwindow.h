@@ -114,7 +114,7 @@ public:
     virtual ~KXmlGuiWindow();
 
     /**
-     * Enables the build of a standard help menu when calling createGUI().
+     * Enables the build of a standard help menu when calling createGUI/setupGUI().
      *
      * The default behavior is to build one, you must call this function
      * to disable it
@@ -129,7 +129,9 @@ public:
     virtual KXMLGUIFactory *guiFactory();
 
     /**
-     * Create a GUI given a local XML file.
+     * Create a GUI given a local XML file. In a regular app you usually want to use
+     * setupGUI() instead of this one since it does more things for free
+     * like setting up the toolbar/shortcut edit actions, etc.
      *
      * If @p xmlfile is NULL,
      * then it will try to construct a local XML filename like
