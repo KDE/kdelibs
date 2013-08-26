@@ -21,7 +21,7 @@
 #ifndef MKDIRJOB_H
 #define MKDIRJOB_H
 
-#include "kiocore_export.h"
+#include <kio/kiocore_export.h>
 #include "jobclasses.h"
 
 namespace KIO {

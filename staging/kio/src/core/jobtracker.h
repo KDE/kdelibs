@@ -19,7 +19,7 @@
 #ifndef KIO_JOBTRACKER_H
 #define KIO_JOBTRACKER_H
 
-#include "kiocore_export.h"
+#include <kio/kiocore_export.h>
 
 class KJobTrackerInterface;
 

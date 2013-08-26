@@ -20,7 +20,7 @@
 #ifndef _FORWARDING_SLAVE_BASE_H_
 #define _FORWARDING_SLAVE_BASE_H_
 
-#include "kiocore_export.h"
+#include <kio/kiocore_export.h>
 #include <kio/slavebase.h>
 #include <kio/jobclasses.h>
 

@@ -22,7 +22,7 @@
 #ifndef KIO_CONNECTION_H
 #define KIO_CONNECTION_H
 
-#include "kiocore_export.h"
+#include <kio/kiocore_export.h>
 
 #include <QUrl>
 #include <QtCore/QObject>

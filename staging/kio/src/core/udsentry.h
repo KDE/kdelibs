@@ -27,7 +27,7 @@
 #include <QtCore/QSharedData>
 #include <QtCore/QMetaType>
 
-#include "kiocore_export.h"
+#include <kio/kiocore_export.h>
 
 namespace KIO
 {

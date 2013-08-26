@@ -20,7 +20,7 @@
 #ifndef DIRECTORYSIZEJOB_H
 #define DIRECTORYSIZEJOB_H
 
-#include "kiocore_export.h"
+#include <kio/kiocore_export.h>
 #include "job.h"
 #include <kfileitem.h>
 

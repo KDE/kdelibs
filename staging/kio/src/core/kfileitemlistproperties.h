@@ -23,7 +23,7 @@
 #ifndef KFILEITEMLISTPROPERTIES_H
 #define KFILEITEMLISTPROPERTIES_H
 
-#include <kiocore_export.h>
+#include <kio/kiocore_export.h>
 
 #include <QtCore/QSharedDataPointer>
 #include <QtCore/QList>

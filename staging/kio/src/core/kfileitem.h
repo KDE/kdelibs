@@ -22,7 +22,7 @@
 
 #include <sys/stat.h>
 
-#include "kio/kiocore_export.h"
+#include <kio/kiocore_export.h>
 #include <kio/global.h>
 #include <kacl.h>
 #include <kio/udsentry.h>

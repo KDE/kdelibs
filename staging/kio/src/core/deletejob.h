@@ -24,7 +24,7 @@
 
 #include <QtCore/QStringList>
 
-#include "kiocore_export.h"
+#include <kio/kiocore_export.h>
 #include "global.h"
 
 #include "jobclasses.h"

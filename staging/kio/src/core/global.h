@@ -19,7 +19,7 @@
 #ifndef KIO_GLOBAL_H
 #define KIO_GLOBAL_H
 
-#include "kiocore_export.h"
+#include <kio/kiocore_export.h>
 
 #include <QtCore/QString>
 

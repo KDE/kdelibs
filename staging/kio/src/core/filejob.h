@@ -21,7 +21,7 @@
 #ifndef KIO_FILEJOB_H
 #define KIO_FILEJOB_H
 
-#include "kiocore_export.h"
+#include <kio/kiocore_export.h>
 #include <kio/jobclasses.h>
 
 namespace KIO {

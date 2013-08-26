@@ -26,7 +26,7 @@
 #include <QtCore/QStringList>
 
 #include <kio/global.h> // filesize_t
-#include "kiocore_export.h"
+#include <kio/kiocore_export.h>
 #include <kio/metadata.h>
 #include <kio/udsentry.h>
 

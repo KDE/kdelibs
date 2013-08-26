@@ -21,7 +21,7 @@
 #include <QMap>
 #include <QString>
 #include <QVariant>
-#include "kiocore_export.h"
+#include <kio/kiocore_export.h>
 
 namespace KIO
 {

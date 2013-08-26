@@ -24,7 +24,7 @@
 #include <QtNetwork/QSslSocket>
 #include <QtNetwork/QSslConfiguration>
 
-#include "kiocore_export.h"
+#include <kio/kiocore_export.h>
 
 class QHostAddress;
 
