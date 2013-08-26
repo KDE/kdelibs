@@ -55,6 +55,7 @@ class KdePlatformTheme_UnitTest : public QObject
 {
     Q_OBJECT
     private:
+        QEventLoop m_loop;
         KdePlatformTheme *m_qpa;
     private Q_SLOTS:
         void initTestCase()
@@ -126,14 +127,13 @@ class KdePlatformTheme_UnitTest : public QObject
 
         void testPlatformIconChanges()
         {
-            QEventLoop loop;
             QDBusConnection::sessionBus().connect(QString(), "/KIconLoader", "org.kde.KIconLoader",
-                                                   "iconChanged",  &loop, SLOT(quit()));
+                                                   "iconChanged",  &m_loop, SLOT(quit()));
 
             QDBusMessage message = QDBusMessage::createSignal("/KIconLoader", "org.kde.KIconLoader", "iconChanged" );
             message.setArguments(QList<QVariant>() << int(1));
             QDBusConnection::sessionBus().send(message);
-            loop.exec();
+            m_loop.exec();
 
             QCOMPARE(m_qpa->themeHint(QPlatformTheme::ToolBarIconSize).toInt(), 22);
         }
