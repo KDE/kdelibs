@@ -116,7 +116,7 @@ void KHintsSettings::slotNotifyChange(int type, int arg)
         KConfigGroup cg(ptr, "KDE");
 
         SettingsCategory category = static_cast<SettingsCategory>(arg);
-        if (category == SETTINGS_QT) {
+        if (category == SETTINGS_QT || category == SETTINGS_MOUSE) {
             updateQtSettings(cg);
         }
         break;
@@ -159,8 +159,12 @@ void KHintsSettings::updateQtSettings(KConfigGroup &cg)
     int flash = qBound(200, cg.readEntry("CursorBlinkRate", 1000), 2000);
     m_hints[QPlatformTheme::CursorFlashTime] = flash;
 
+    int doubleClickInterval = cg.readEntry("DoubleClickInterval", 400);
+    m_hints[QPlatformTheme::MouseDoubleClickInterval] = doubleClickInterval;
+
     QApplication *app = qobject_cast<QApplication*>(QCoreApplication::instance());
     if (app) {
         app->setCursorFlashTime(flash);
+        app->setDoubleClickInterval(doubleClickInterval);
     }
 }

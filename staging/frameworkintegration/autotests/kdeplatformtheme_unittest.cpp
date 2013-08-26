@@ -162,6 +162,17 @@ class KdePlatformTheme_UnitTest : public QObject
 
             QCOMPARE(m_qpa->themeHint(QPlatformTheme::CursorFlashTime).toInt(), 1022);
             QCOMPARE(qApp->cursorFlashTime(), 1022);
+
+            message = QDBusMessage::createSignal("/KGlobalSettings", "org.kde.KGlobalSettings", "notifyChange" );
+            args.clear();
+            args.append(static_cast<int>(KHintsSettings::SettingsChanged));
+            args.append(KHintsSettings::SETTINGS_MOUSE);
+            message.setArguments(args);
+            QDBusConnection::sessionBus().send(message);
+            m_loop.exec();
+
+            QCOMPARE(m_qpa->themeHint(QPlatformTheme::MouseDoubleClickInterval).toInt(), 401);
+            QCOMPARE(qApp->doubleClickInterval(), 401);
         }
 };
 
