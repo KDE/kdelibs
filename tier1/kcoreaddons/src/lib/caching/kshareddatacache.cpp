@@ -25,6 +25,7 @@
 #include "kshareddatacache_p.h" // Various auxiliary support code
 
 #include "qstandardpaths.h"
+#include <qplatformdefs.h>
 
 #include <krandom.h>
 
@@ -1065,7 +1066,7 @@ class KSharedDataCache::Private
             // Use mmap directly instead of QFile::map since the QFile (and its
             // shared mapping) will disappear unless we hang onto the QFile for no
             // reason (see the note below, we don't care about the file per se...)
-            mapAddress = ::mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, file.handle(), 0);
+            mapAddress = QT_MMAP(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, file.handle(), 0);
 
             // So... it is possible that someone else has mapped this cache already
             // with a larger size. If that's the case we need to at least match
@@ -1096,7 +1097,7 @@ class KSharedDataCache::Private
                     unsigned actualPageSize = mapped->cachePageSize();
                     ::munmap(mapAddress, size);
                     size = SharedMemory::totalSize(cacheSize, actualPageSize);
-                    mapAddress = ::mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, file.handle(), 0);
+                    mapAddress = QT_MMAP(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, file.handle(), 0);
                 }
             }
         }
@@ -1120,7 +1121,7 @@ class KSharedDataCache::Private
             qWarning() << "Failed to establish shared memory mapping, will fallback"
                           << "to private memory -- memory usage will increase";
 
-            mapAddress = ::mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+            mapAddress = QT_MMAP(NULL, size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
         }
 
         // Well now we're really hosed. We can still work, but we can't even cache
@@ -1315,7 +1316,7 @@ class KSharedDataCache::Private
                     return;
                 }
 
-                void *newMap = ::mmap(0, testSize, PROT_READ | PROT_WRITE,
+                void *newMap = QT_MMAP(0, testSize, PROT_READ | PROT_WRITE,
                                       MAP_SHARED, f.handle(), 0);
                 if (newMap == MAP_FAILED) {
                     qCritical() << "Unopen to re-map the cache into memory"
