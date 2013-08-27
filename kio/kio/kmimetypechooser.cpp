@@ -20,14 +20,13 @@
 
 #include <klocalizedstring.h>
 #include <qmimedatabase.h>
-#include <kshell.h>
 #include <ksharedconfig.h>
-#include <krun.h>
 
 #include <QApplication>
 #include <QDialogButtonBox>
 #include <QLabel>
 #include <QLayout>
+#include <QProcess>
 #include <QPushButton>
 #include <QTreeWidget>
 #include <kconfiggroup.h>
@@ -214,16 +213,16 @@ void KMimeTypeChooserPrivate::_k_editMimeType()
     //            q, SLOT(_k_slotSycocaDatabaseChanged(QStringList)) );
 #pragma message("KF5 TODO: use QFileSystemWatcher to be told when keditfiletype changed a mimetype")
 
-    QString keditfiletype = QString::fromLatin1("keditfiletype");
-    // TODO: Port to QProcess
-    // Then move this class to the kwidgets framework, no more kio dependency.
-    KRun::runCommand( keditfiletype
+    // TODO: Move this class to the kwidgets framework, no more kio dependency.
+
+    QStringList args;
 #ifndef Q_OS_WIN
-                      + " --parent " + QString::number( (ulong)q->topLevelWidget()->winId())
+    args << "--parent" << QString::number((ulong)q->topLevelWidget()->winId());
 #endif
-                      + " --caption " + KShell::quoteArg(QGuiApplication::applicationDisplayName())
-                      + ' ' + KShell::quoteArg(mt),
-                      keditfiletype, keditfiletype /*unused*/, q->topLevelWidget());
+    args << "--caption" << QGuiApplication::applicationDisplayName();
+    args << mt;
+
+    QProcess::startDetached(QStringLiteral("keditfiletype"), args);
 }
 
 void KMimeTypeChooserPrivate::_k_slotCurrentChanged(QTreeWidgetItem* item)
