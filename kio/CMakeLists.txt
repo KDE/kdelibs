@@ -144,7 +144,7 @@ kde4_add_ui_files(kio_LIB_SRCS
    kssl/keygenwizard2.ui
 )
 
-kde4_add_library(kio ${LIBRARY_TYPE} ${kio_LIB_SRCS})
+add_library(kio ${LIBRARY_TYPE} ${kio_LIB_SRCS})
 generate_export_header(kio)
 
 set(kio_INCLUDES

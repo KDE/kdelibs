@@ -3,7 +3,7 @@ include(ECMMarkAsTest)
 
 ########### next target ###############
 set(krossqtsplugin_LIB_SRCS plugin.cpp)
-kde4_add_library(krossqtsplugin ${LIBRARY_TYPE} ${krossqtsplugin_LIB_SRCS})
+add_library(krossqtsplugin ${LIBRARY_TYPE} ${krossqtsplugin_LIB_SRCS})
 target_link_libraries(krossqtsplugin Qt5::UiTools ${KCoreAddons_LIBRARIES} KConfigCore KI18n krosscore Qt5::Script Qt5::Widgets Qt5::Gui)
 if (NOT CYGWIN)
     set_target_properties(krossqtsplugin PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION})

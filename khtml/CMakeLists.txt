@@ -590,7 +590,7 @@ qt5_add_dbus_interface(khtml_LIB_SRCS ${kcookiejar_XML} kcookiejar_interface)
 
 kde4_add_ui_files(khtml_LIB_SRCS kjserrordlgbase.ui htmlpageinfo.ui )
 
-kde4_add_library(khtml ${LIBRARY_TYPE} ${khtml_LIB_SRCS})
+add_library(khtml ${LIBRARY_TYPE} ${khtml_LIB_SRCS})
 
 target_link_libraries(khtml
   ${KDE4_KPARTS_LIBS}

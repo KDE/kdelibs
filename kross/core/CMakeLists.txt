@@ -9,7 +9,7 @@ set(krosscore_LIB_SRCS
    object.cpp
 )
 
-kde4_add_library(krosscore ${LIBRARY_TYPE} ${krosscore_LIB_SRCS})
+add_library(krosscore ${LIBRARY_TYPE} ${krosscore_LIB_SRCS})
 target_link_libraries(krosscore KI18n Qt5::Script Qt5::Xml Qt5::Widgets KConfigCore)
 target_link_libraries(krosscore LINK_INTERFACE_LIBRARIES Qt5::Script Qt5::Xml)
 

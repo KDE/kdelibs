@@ -1,6 +1,6 @@
 
 # build the analyzer as a module
-kde4_add_library(dummy MODULE dummyanalyzers.cpp)
+add_library(dummy MODULE dummyanalyzers.cpp)
 
 # link with the required libraries
 target_link_libraries(dummy ${STRIGI_STREAMANALYZER_LIBRARY})

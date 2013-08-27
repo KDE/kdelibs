@@ -14,7 +14,7 @@ set(kdewebkit_LIB_SRCS
     kwebpluginfactory.cpp
 )
 
-kde4_add_library(kdewebkit ${LIBRARY_TYPE}
+add_library(kdewebkit ${LIBRARY_TYPE}
     ${kdewebkit_LIB_SRCS}
 )
 generate_export_header(kdewebkit)

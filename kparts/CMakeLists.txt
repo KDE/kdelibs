@@ -28,7 +28,7 @@ set(kparts_LIB_SRCS
    listingextension.cpp
    )
 
-kde4_add_library(kparts ${LIBRARY_TYPE} ${kparts_LIB_SRCS})
+add_library(kparts ${LIBRARY_TYPE} ${kparts_LIB_SRCS})
 generate_export_header(kparts)
 
 target_link_libraries(kparts  kio ${KCoreAddons_LIBRARIES} KI18n XmlGui KWindowSystem KNotifications KIconThemes KTextWidgets)

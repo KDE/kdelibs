@@ -64,7 +64,7 @@ endif (HAVE_AVAHI)
 ########### next target ###############
 
 
-kde4_add_library(kdnssd ${LIBRARY_TYPE} ${kdnssd_LIB_SRCS})
+add_library(kdnssd ${LIBRARY_TYPE} ${kdnssd_LIB_SRCS})
 generate_export_header(kdnssd
   EXPORT_FILE_NAME dnssd_export.h
 )

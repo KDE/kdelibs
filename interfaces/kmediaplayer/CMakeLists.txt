@@ -11,7 +11,7 @@ kmediaplayeradaptor.cpp
 )
 
 
-kde4_add_library(kmediaplayer ${LIBRARY_TYPE} ${kmediaplayer_LIB_SRCS})
+add_library(kmediaplayer ${LIBRARY_TYPE} ${kmediaplayer_LIB_SRCS})
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/kmediaplayer)
 generate_export_header(kmediaplayer EXPORT_FILE_NAME kmediaplayer/kmediaplayer_export.h)
 

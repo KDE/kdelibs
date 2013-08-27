@@ -20,7 +20,7 @@ set( knotifyconfig_UI knotifyconfigactionswidgetbase.ui )
 
 kde4_add_ui_files(knotifyconfig_LIB_SRCS ${knotifyconfig_UI} )
 
-kde4_add_library(knotifyconfig ${LIBRARY_TYPE} ${knotifyconfig_LIB_SRCS})
+add_library(knotifyconfig ${LIBRARY_TYPE} ${knotifyconfig_LIB_SRCS})
 generate_export_header(knotifyconfig)
 
 # Needs KIO for KUrlRequester

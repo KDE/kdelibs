@@ -36,7 +36,7 @@ set(kfile_LIB_SRCS
   kurlnavigatormenu.cpp
 )
 
-kde4_add_library(kfile ${LIBRARY_TYPE} ${kfile_LIB_SRCS})
+add_library(kfile ${LIBRARY_TYPE} ${kfile_LIB_SRCS})
 generate_export_header(kfile)
 target_link_libraries(kfile
    ${KDE4_KIO_LIBS}

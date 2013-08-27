@@ -15,7 +15,7 @@ set(kcmutils_LIB_SRCS
     ksettings/componentsdialog.cpp
 )
 
-kde4_add_library(kcmutils ${LIBRARY_TYPE} ${kcmutils_LIB_SRCS})
+add_library(kcmutils ${LIBRARY_TYPE} ${kcmutils_LIB_SRCS})
 generate_export_header(kcmutils)
 
 target_link_libraries(kcmutils
@@ -61,7 +61,7 @@ set(kprintutils_LIB_SRCS
     kprintpreview.cpp
 )
 
-kde4_add_library(kprintutils ${LIBRARY_TYPE} ${kprintutils_LIB_SRCS})
+add_library(kprintutils ${LIBRARY_TYPE} ${kprintutils_LIB_SRCS})
 generate_export_header(kprintutils)
 
 target_link_libraries(kprintutils
@@ -92,7 +92,7 @@ set(kutils_LIB_SRCS
     dummy.cpp
 )
 
-kde4_add_library(kutils ${LIBRARY_TYPE} ${kutils_LIB_SRCS})
+add_library(kutils ${LIBRARY_TYPE} ${kutils_LIB_SRCS})
 
 find_package(Qt5PrintSupport 5.2.0 REQUIRED NO_MODULE)
 
