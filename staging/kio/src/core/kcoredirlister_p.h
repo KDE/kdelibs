@@ -318,7 +318,11 @@ private:
       {
         if ( KDirWatch::exists() && url.isLocalFile() )
             KDirWatch::self()->removeDir(m_canonicalPath);
-        sendSignal( false, url );
+        // Since sendSignal goes through D-Bus, QCoreApplication has to be available
+        // which might not be the case anymore from a global static dtor like the
+        // lister cache
+        if ( QCoreApplication::instance() )
+            sendSignal( false, url );
       }
       lstItems.clear();
     }
