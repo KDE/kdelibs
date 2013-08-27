@@ -181,10 +181,6 @@ void KHintsSettings::updateQtSettings(KConfigGroup &cg)
 
     QApplication *app = qobject_cast<QApplication*>(QCoreApplication::instance());
     if (app) {
-        app->setCursorFlashTime(flash);
-        app->setDoubleClickInterval(doubleClickInterval);
-        app->setStartDragDistance(startDragDistance);
-        app->setStartDragTime(startDragTime);
         QApplication::setWheelScrollLines(cg.readEntry("WheelScrollLines", QApplication::wheelScrollLines()));
     }
 }
