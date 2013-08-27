@@ -30,7 +30,7 @@ int Solid::Backends::UDev::input_str_to_bitmask(const QByteArray& value, long in
     memset (bitmask, 0, max_size);
     QList<QByteArray> bits = value.split(' ');
     for (i = bits.length() - 1, j = 0; i >= 0; i--, j++) {
-        if (j > max_bits) {
+        if (j >= max_bits) {
             qWarning() << "Solid::Backends::UDev::input_str_to_bitmask can't handle some bits" << bits;
             return num_bits_set;
         }
