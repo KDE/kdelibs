@@ -474,11 +474,6 @@ macro (KDE4_ADD_LIBRARY _target_NAME _lib_TYPE)
    set_target_properties(${_target_NAME} PROPERTIES DEFINE_SYMBOL ${_symbol})
 endmacro (KDE4_ADD_LIBRARY _target_NAME _lib_TYPE)
 
-macro(kf5_add_library _target_NAME _lib_TYPE)
-  kde4_add_library(${_target_NAME} ${_lib_TYPE} ${ARGN})
-  generate_export_header(${_target_NAME})
-endmacro()
-
 # TODO: Move this to kde4support
 if (_kdeBootStrapping)
   include("${CMAKE_SOURCE_DIR}/tier2/kauth/cmake/KAuthMacros.cmake")
