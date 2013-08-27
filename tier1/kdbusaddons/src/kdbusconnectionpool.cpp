@@ -61,8 +61,7 @@ static QThreadStorage<KDBusConnectionPoolPrivate *> s_perThreadConnection;
 
 QDBusConnection KDBusConnectionPool::threadConnection()
 {
-    QCoreApplication * const app = QCoreApplication::instance();
-    if (app && app->thread() == QThread::currentThread()) {
+    if (QCoreApplication::instance()->thread() == QThread::currentThread()) {
         return QDBusConnection::sessionBus();
     }
     if (!s_perThreadConnection.hasLocalData()) {
