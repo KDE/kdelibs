@@ -1898,10 +1898,10 @@ void KUrl::setRef( const QString& fragment )
 
 QString KUrl::ref() const
 {
-  if ( fragment().isNull() )
+  if ( !hasFragment() )
     return QString();
   else
-    return QString::fromLatin1( QUrl::toPercentEncoding( fragment() ) );
+    return QString::fromLatin1( encodedFragment() );
 }
 
 bool KUrl::isParentOf( const KUrl& u ) const
