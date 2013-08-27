@@ -1,12 +1,6 @@
 @PACKAGE_INIT@
 
-# Any changes in this ".cmake" file will be overwritten by CMake, the source is the ".cmake.in" file.
-
-if(NOT TARGET KF5::KCoreAddons)
-   set(KAuth_NOT_FOUND_MESSAGE "KAuth depends on the package KCoreAddons, which is missing. Use find_package() to find it before KAuth.")
-   set(KAuth_FOUND FALSE)
-   return()
-endif()
+find_dependency(KCoreAddons "${PACKAGE_VERSION}")
 
 set(KAuth_INSTALL_PREFIX "@PACKAGE_CMAKE_INSTALL_PREFIX@")
 set_and_check(KAuth_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")
