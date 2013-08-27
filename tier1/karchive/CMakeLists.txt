@@ -10,7 +10,8 @@ find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 
 include(FeatureSummary)
 
-find_package(Qt5Test 5.2.0 REQUIRED NO_MODULE)
+set(REQUIRED_QT_VERSION 5.2.0)
+find_package(Qt5Test ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE)
 
 find_package(ZLIB)
 set_package_properties(ZLIB PROPERTIES

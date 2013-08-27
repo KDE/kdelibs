@@ -8,10 +8,11 @@ set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
 find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 
-find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS Widgets Test DBus)
+set(REQUIRED_QT_VERSION 5.2.0)
+find_package(Qt5 ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE COMPONENTS Widgets Test DBus)
 
 if(NOT WIN32)
-    find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS X11Extras)
+    find_package(Qt5 ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE COMPONENTS X11Extras)
 endif(NOT WIN32)
 
 include(FeatureSummary)
