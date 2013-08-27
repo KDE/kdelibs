@@ -169,19 +169,13 @@ class KdePlatformTheme_UnitTest : public QObject
             m_loop.exec();
 
             QCOMPARE(m_qpa->themeHint(QPlatformTheme::CursorFlashTime).toInt(), 1022);
-            QCOMPARE(qApp->cursorFlashTime(), 1022);
 
             sendNotifyChange(KHintsSettings::SettingsChanged, KHintsSettings::SETTINGS_MOUSE);
             m_loop.exec();
 
             QCOMPARE(m_qpa->themeHint(QPlatformTheme::MouseDoubleClickInterval).toInt(), 401);
-            QCOMPARE(qApp->doubleClickInterval(), 401);
-
             QCOMPARE(m_qpa->themeHint(QPlatformTheme::StartDragDistance).toInt(), 35);
-            QCOMPARE(qApp->startDragDistance(), 35);
-
             QCOMPARE(m_qpa->themeHint(QPlatformTheme::StartDragTime).toInt(), 501);
-            QCOMPARE(qApp->startDragTime(), 501);
 
             QCOMPARE(qApp->wheelScrollLines(), 122);
             QCOMPARE(qApp->testAttribute(Qt::AA_DontShowIconsInMenus), true);
