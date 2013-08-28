@@ -59,12 +59,14 @@ class KdePlatformTheme_UnitTest : public QObject
 {
     Q_OBJECT
     private:
-        void sendNotifyChange(KHintsSettings::ChangeType type, int arg)
+        void sendNotifyChange(KHintsSettings::ChangeType type, int arg = -1)
         {
             QDBusMessage message = QDBusMessage::createSignal("/KGlobalSettings", "org.kde.KGlobalSettings", "notifyChange" );
             QList<QVariant> args;
             args.append(static_cast<int>(type));
-            args.append(arg);
+            if (arg >= 0) {
+                args.append(arg);
+            }
             message.setArguments(args);
             QDBusConnection::sessionBus().send(message);
         }
