@@ -310,7 +310,7 @@ public:
     }
 };
 
-SOLID_GLOBAL_STATIC(SharedContentTypesCache, sharedContentTypesCache)
+Q_GLOBAL_STATIC(SharedContentTypesCache, sharedContentTypesCache)
 
 OpticalDisc::Identity::Identity() : m_detectTime(0), m_size(0), m_labelHash(0)
 {
