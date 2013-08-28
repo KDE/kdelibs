@@ -458,7 +458,8 @@ void SimpleJob::slotFinished( )
                     org::kde::KDirNotify::emitFileRenamed(src, dst);
 
                 org::kde::KDirNotify::emitFileMoved(src, dst);
-                uiDelegateExtension()->updateUrlInClipboard(src, dst);
+                if (d->m_uiDelegateExtension)
+                    d->m_uiDelegateExtension->updateUrlInClipboard(src, dst);
             }
         }
         emitResult();
@@ -533,11 +534,10 @@ int SimpleJobPrivate::requestMessageBox(int _type, const QString& text, const QS
                                        const QString& dontAskAgainName,
                                        const KIO::MetaData& sslMetaData)
 {
-    Q_Q(SimpleJob);
-    if (uiDelegate) {
+    if (m_uiDelegateExtension) {
         const JobUiDelegateExtension::MessageBoxType type = static_cast<JobUiDelegateExtension::MessageBoxType>(_type);
-        return q->uiDelegateExtension()->requestMessageBox(type, text, caption, buttonYes, buttonNo,
-                                                           iconYes, iconNo, dontAskAgainName, sslMetaData);
+        return m_uiDelegateExtension->requestMessageBox(type, text, caption, buttonYes, buttonNo,
+                                                        iconYes, iconNo, dontAskAgainName, sslMetaData);
     }
     qWarning() << "JobUiDelegate not set! Returing -1";
     return -1;
@@ -2099,12 +2099,12 @@ void FileCopyJobPrivate::slotCanResume( KIO::Job* job, KIO::filesize_t offset )
         {
             RenameDialog_Result res = R_RESUME;
 
-            if (!KProtocolManager::autoResume() && !(m_flags & Overwrite))
+            if (!KProtocolManager::autoResume() && !(m_flags & Overwrite) && m_uiDelegateExtension)
             {
                 QString newPath;
                 KIO::Job* job = ( q->parentJob() ) ? q->parentJob() : q;
                 // Ask confirmation about resuming previous transfer
-                res = q->uiDelegateExtension()->askFileRename(
+                res = m_uiDelegateExtension->askFileRename(
                       job, i18n("File Already Exists"),
                       m_src,
                       m_dest,
@@ -2348,7 +2348,8 @@ FileCopyJob *KIO::file_move( const QUrl& src, const QUrl& dest, int permissions,
                              JobFlags flags )
 {
     FileCopyJob* job = FileCopyJobPrivate::newJob(src, dest, permissions, true, flags);
-    job->uiDelegateExtension()->createClipboardUpdater(job, JobUiDelegateExtension::UpdateContent);
+    if (job->uiDelegateExtension())
+        job->uiDelegateExtension()->createClipboardUpdater(job, JobUiDelegateExtension::UpdateContent);
     return job;
 }
 
@@ -2356,7 +2357,8 @@ SimpleJob *KIO::file_delete( const QUrl& src, JobFlags flags )
 {
     KIO_ARGS << src << qint8(true); // isFile
     SimpleJob* job = SimpleJobPrivate::newJob(src, CMD_DEL, packedArgs, flags);
-    job->uiDelegateExtension()->createClipboardUpdater(job, JobUiDelegateExtension::RemoveContent);
+    if (job->uiDelegateExtension())
+        job->uiDelegateExtension()->createClipboardUpdater(job, JobUiDelegateExtension::RemoveContent);
     return job;
 }
 

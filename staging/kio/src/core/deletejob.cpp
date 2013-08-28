@@ -476,14 +476,16 @@ DeleteJob *KIO::del(const QUrl& src, JobFlags flags)
     QList<QUrl> srcList;
     srcList.append( src );
     DeleteJob* job = DeleteJobPrivate::newJob(srcList, flags);
-    job->uiDelegateExtension()->createClipboardUpdater(job, JobUiDelegateExtension::RemoveContent);
+    if (job->uiDelegateExtension())
+        job->uiDelegateExtension()->createClipboardUpdater(job, JobUiDelegateExtension::RemoveContent);
     return job;
 }
 
 DeleteJob *KIO::del( const QList<QUrl>& src, JobFlags flags )
 {
     DeleteJob* job = DeleteJobPrivate::newJob(src, flags);
-    job->uiDelegateExtension()->createClipboardUpdater(job, JobUiDelegateExtension::RemoveContent);
+    if (job->uiDelegateExtension())
+        job->uiDelegateExtension()->createClipboardUpdater(job, JobUiDelegateExtension::RemoveContent);
     return job;
 }
 
