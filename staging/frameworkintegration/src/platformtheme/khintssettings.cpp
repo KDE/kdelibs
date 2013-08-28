@@ -50,13 +50,7 @@ KHintsSettings::KHintsSettings() : QObject(0)
     m_hints[QPlatformTheme::StartDragDistance] = cg.readEntry("StartDragDist", 10);
     m_hints[QPlatformTheme::StartDragTime] = cg.readEntry("StartDragTime", 500);
 
-    const QString buttonStyle = cg.readEntry("ToolButtonStyle", "TextBesideIcon").toLower();
-    m_hints[QPlatformTheme::ToolButtonStyle] = buttonStyle == "textbesideicon" ? Qt::ToolButtonTextBesideIcon
-                             : buttonStyle == "icontextright" ? Qt::ToolButtonTextBesideIcon
-                             : buttonStyle == "textundericon" ? Qt::ToolButtonTextUnderIcon
-                             : buttonStyle == "icontextbottom" ? Qt::ToolButtonTextUnderIcon
-                             : buttonStyle == "textonly" ? Qt::ToolButtonTextOnly
-                             : Qt::ToolButtonIconOnly;
+    m_hints[QPlatformTheme::ToolButtonStyle] = toolButtonStyle(cg);
 
     KConfigGroup cgToolbarIcon(ptr, "ToolbarIcons");
     m_hints[QPlatformTheme::ToolBarIconSize] = cgToolbarIcon.readEntry("Size", 22);
@@ -183,4 +177,15 @@ void KHintsSettings::updateQtSettings(KConfigGroup &cg)
     if (app) {
         QApplication::setWheelScrollLines(cg.readEntry("WheelScrollLines", QApplication::wheelScrollLines()));
     }
+}
+
+Qt::ToolButtonStyle KHintsSettings::toolButtonStyle(const KConfigGroup& cg) const
+{
+    const QString buttonStyle = cg.readEntry("ToolButtonStyle", "TextBesideIcon").toLower();
+    return buttonStyle == "textbesideicon" ? Qt::ToolButtonTextBesideIcon
+                             : buttonStyle == "icontextright" ? Qt::ToolButtonTextBesideIcon
+                             : buttonStyle == "textundericon" ? Qt::ToolButtonTextUnderIcon
+                             : buttonStyle == "icontextbottom" ? Qt::ToolButtonTextUnderIcon
+                             : buttonStyle == "textonly" ? Qt::ToolButtonTextOnly
+                             : Qt::ToolButtonIconOnly;
 }

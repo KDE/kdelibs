@@ -61,6 +61,7 @@ class KHintsSettings : public QObject
     private:
         void iconChanged(int group);
         void updateQtSettings(KConfigGroup &cg);
+        Qt::ToolButtonStyle toolButtonStyle(const KConfigGroup &cg) const;
 
         QStringList xdgIconThemePaths() const;
         QHash<QPlatformTheme::ThemeHint, QVariant> m_hints;
