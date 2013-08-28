@@ -543,8 +543,9 @@ KUrl::KUrl( const KUrl& _u, const QString& _rel_url )
     *this = _u;
     QByteArray strRef_encoded = rUrl.mid(1).toLatin1();
     if ( strRef_encoded.isNull() )
-        strRef_encoded = ""; // we know there was an (empty) html ref, we saw the '#'
-    setEncodedFragment( strRef_encoded );
+        setFragment(QString::fromLatin1("")); // we know there was an (empty) html ref, we saw the '#'
+    else
+        setFragment(QUrl::fromPercentEncoding(strRef_encoded));
   }
   else if ( isRelativeUrl( rUrl ) )
   {

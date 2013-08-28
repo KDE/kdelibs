@@ -325,16 +325,14 @@ void KUrlTest::testSimpleMethods() // to test parsing, mostly
   QCOMPARE( url1.encodedHtmlRef(), QString("%23") );
   QCOMPARE( url1.htmlRef(), QString("#") );
 
-#if 0 // TODO
   url1 = KUrl(url1, "#%6a");
-  QCOMPARE( url1.url(), QString("file:///home/dfaure/my#%6a") );
+  QCOMPARE( url1.url(), QString("file:///home/dfaure/my#j") );
   QVERIFY( url1.hasRef() );
   QVERIFY( url1.hasHTMLRef() );
   QVERIFY( !url1.hasSubUrl() );
   QCOMPARE( url1.ref(), QString("j") );
-  QCOMPARE( url1.encodedHtmlRef().toLower(), QString("%6a") );
+  QCOMPARE( url1.encodedHtmlRef(), QString("j") );
   QCOMPARE( url1.htmlRef(), QString("j") );
-#endif
 
   u1 = "file:///home/dfaure/my#myref";
   url1 = u1;
@@ -1134,8 +1132,8 @@ void KUrlTest::testBaseURL() // those are tests for the KUrl(base,relative) cons
      QCOMPARE( waba2.url(), QString("http://www.website.com/directory/?hello#ref") );
   }
   {
-      KUrl waba2( waba1, "#%72%22method"); // #243217
-     QCOMPARE( waba2.url(), QString("http://www.website.com/directory/?hello#%72%22method") );
+     KUrl waba2( waba1, "#%72%22method"); // #243217
+     QCOMPARE( waba2.url(), QString("http://www.website.com/directory/?hello#r%22method") );
   }
   {
      KUrl base( "http://faure@www.kde.org" ); // no path
