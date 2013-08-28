@@ -198,10 +198,10 @@ install( FILES
  kcmodule.desktop
  kcmoduleinit.desktop
  kdatatool.desktop
+ kfileplugin.desktop
  kscan.desktop
  kurifilterplugin.desktop
  kfile/kpropertiesdialogplugin.desktop
- kio/kfileitemactionplugin.desktop
  kfile/kiofilemodule.desktop
 DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
 
