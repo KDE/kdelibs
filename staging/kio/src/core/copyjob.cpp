@@ -2161,7 +2161,9 @@ CopyJob *KIO::move(const QUrl& src, const QUrl& dest, JobFlags flags)
     QList<QUrl> srcList;
     srcList.append( src );
     CopyJob* job = CopyJobPrivate::newJob(srcList, dest, CopyJob::Move, false, flags);
-    job->uiDelegateExtension()->createClipboardUpdater(job, JobUiDelegateExtension::UpdateContent);
+    if (job->uiDelegateExtension()) {
+        job->uiDelegateExtension()->createClipboardUpdater(job, JobUiDelegateExtension::UpdateContent);
+    }
     return job;
 }
 
@@ -2171,7 +2173,9 @@ CopyJob *KIO::moveAs(const QUrl& src, const QUrl& dest, JobFlags flags)
     QList<QUrl> srcList;
     srcList.append( src );
     CopyJob* job = CopyJobPrivate::newJob(srcList, dest, CopyJob::Move, true, flags);
-    job->uiDelegateExtension()->createClipboardUpdater(job, JobUiDelegateExtension::UpdateContent);
+    if (job->uiDelegateExtension()) {
+        job->uiDelegateExtension()->createClipboardUpdater(job, JobUiDelegateExtension::UpdateContent);
+    }
     return job;
 }
 
@@ -2179,7 +2183,9 @@ CopyJob *KIO::move( const QList<QUrl>& src, const QUrl& dest, JobFlags flags)
 {
     //qDebug() << src << dest;
     CopyJob* job = CopyJobPrivate::newJob(src, dest, CopyJob::Move, false, flags);
-    job->uiDelegateExtension()->createClipboardUpdater(job, JobUiDelegateExtension::UpdateContent);
+    if (job->uiDelegateExtension()) {
+        job->uiDelegateExtension()->createClipboardUpdater(job, JobUiDelegateExtension::UpdateContent);
+    }
     return job;
 }
 
