@@ -334,6 +334,15 @@ void KUrlTest::testSimpleMethods() // to test parsing, mostly
   QCOMPARE( url1.encodedHtmlRef(), QString("j") );
   QCOMPARE( url1.htmlRef(), QString("j") );
 
+  url1 = KUrl(url1, "#");
+  QCOMPARE( url1.url(), QString("file:///home/dfaure/my#") );
+  QVERIFY( url1.hasRef() );
+  QVERIFY( url1.hasHTMLRef() );
+  QVERIFY( !url1.hasSubUrl() );
+  QSTREMPTY(url1.ref());
+  QSTREMPTY(url1.encodedHtmlRef());
+  QSTREMPTY(url1.htmlRef());
+
   u1 = "file:///home/dfaure/my#myref";
   url1 = u1;
   QCOMPARE( url1.url(), QString("file:///home/dfaure/my#myref") );
