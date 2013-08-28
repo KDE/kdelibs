@@ -19,6 +19,7 @@ set(kiowidgets_SRCS
   accessmanager.cpp
   accessmanagerreply_p.cpp
   fileundomanager.cpp
+  kfileitemactions.cpp
   delegateanimationhandler.cpp
   imagefilter.cpp
   kfileitemdelegate.cpp
@@ -124,6 +125,7 @@ install( FILES
    DESTINATION ${INCLUDE_INSTALL_DIR}/kio COMPONENT Devel)
 
 install( FILES
+  kfileitemactions.h
   kfileitemdelegate.h
   kautomount.h
   kdesktopfileactions.h
@@ -142,4 +144,8 @@ install( FILES
   kurlcompletion.h
   kurifilter.h
    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
+
+install( FILES
+  kfileitemactionplugin.desktop
+   DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
 

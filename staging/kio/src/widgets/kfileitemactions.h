@@ -23,7 +23,7 @@
 
 #include <kservice.h>
 #include <kfileitem.h>
-#include <kio/kio_export.h>
+#include <kio/kiowidgets_export.h>
 
 class KFileItemListProperties;
 class QAction;
@@ -41,7 +41,7 @@ class KFileItemActionsPrivate;
  *
  * @since 4.3
  */
-class KIO_EXPORT KFileItemActions : public QObject
+class KIOWIDGETS_EXPORT KFileItemActions : public QObject
 {
     Q_OBJECT
 public:

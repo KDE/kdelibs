@@ -52,7 +52,6 @@ set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_CURRE
 set(kiocore_STAT_SRCS
   kio/defaultviewadapter.cpp
   kio/kdbusservicestarter.cpp
-  kio/kfileitemactions.cpp
   kio/kimageio.cpp
   kio/kmimetypechooser.cpp
   kio/kscan.cpp
@@ -199,7 +198,6 @@ install( FILES
  kcmodule.desktop
  kcmoduleinit.desktop
  kdatatool.desktop
- kfileplugin.desktop
  kscan.desktop
  kurifilterplugin.desktop
  kfile/kpropertiesdialogplugin.desktop
@@ -214,7 +212,6 @@ install(  FILES
 
 install( FILES
   kio/kdbusservicestarter.h
-  kio/kfileitemactions.h
   kio/kimageio.h
   kio/kmimetypechooser.h
   kio/kscan.h
