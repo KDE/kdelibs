@@ -20,36 +20,37 @@
 #ifndef kfileshare_h
 #define kfileshare_h
 
-#include <kio/kio_export.h>
+#include <kde4support_export.h>
 class QString;
 
 /**
  * Common functionality for the file sharing
  * (communication with the backend)
+ * @deprecated since 5.0, use KSambaShare and KNFSShare.
  */
 namespace KFileShare
 {
     /**
      * Reads the file share configuration file
      */
-    KIO_EXPORT void readConfig();
+    KDE4SUPPORT_DEPRECATED_EXPORT void readConfig();
 
     /**
      * Reads the list of shared folders
      */
-    KIO_EXPORT void readShareList();
+    KDE4SUPPORT_DEPRECATED_EXPORT void readShareList();
 
 
     /**
      * Call this to know if a directory is currently shared
      */
-    KIO_EXPORT bool isDirectoryShared( const QString& path );
+    KDE4SUPPORT_DEPRECATED_EXPORT bool isDirectoryShared( const QString& path );
 
     enum Authorization { NotInitialized, ErrorNotFound, Authorized, UserNotAllowed };
     /**
      * Call this to know if the current user is authorized to share directories
      */
-    KIO_EXPORT Authorization authorization();
+    KDE4SUPPORT_DEPRECATED_EXPORT Authorization authorization();
 
     /**
      * Uses a suid perl script to share the given path 
@@ -58,7 +59,7 @@ namespace KFileShare
      * @param shared whether the path should be shared or not
      * @returns whether the perl script was successful
      */
-    KIO_EXPORT bool setShared( const QString& path, bool shared );
+    KDE4SUPPORT_DEPRECATED_EXPORT bool setShared( const QString& path, bool shared );
 
     /**
      * The used share mode.
@@ -74,7 +75,7 @@ namespace KFileShare
      * If this is false, file sharing is disabled and
      * nobody can share files.
      */
-    KIO_EXPORT bool sharingEnabled();
+    KDE4SUPPORT_DEPRECATED_EXPORT bool sharingEnabled();
 
     /**
      * Returns whether file sharing is restricted.
@@ -82,29 +83,29 @@ namespace KFileShare
      * If it is restricted only users in the configured
      * file share group can share files.
      */
-    KIO_EXPORT bool isRestricted();
+    KDE4SUPPORT_DEPRECATED_EXPORT bool isRestricted();
 
     /**
      * Returns the group that is used for file sharing.
      * That is, all users in that group are allowed to
      * share files if file sharing is restricted.
      */
-    KIO_EXPORT QString fileShareGroup();
+    KDE4SUPPORT_DEPRECATED_EXPORT QString fileShareGroup();
 
     /**
      * Returns the configured share mode
      */
-    KIO_EXPORT ShareMode shareMode();
+    KDE4SUPPORT_DEPRECATED_EXPORT ShareMode shareMode();
 
     /**
      * Returns whether Samba is enabled
      */
-    KIO_EXPORT bool sambaEnabled();
+    KDE4SUPPORT_DEPRECATED_EXPORT bool sambaEnabled();
 
     /** 
      * Returns whether NFS is enabled
      */
-    KIO_EXPORT bool nfsEnabled();
+    KDE4SUPPORT_DEPRECATED_EXPORT bool nfsEnabled();
 }
 
 #endif

@@ -53,7 +53,6 @@ set(kiocore_STAT_SRCS
   kio/defaultviewadapter.cpp
   kio/kdbusservicestarter.cpp
   kio/kfileitemactions.cpp
-  kio/kfileshare.cpp
   kio/kimageio.cpp
   kio/kmimetypechooser.cpp
   kio/kscan.cpp
@@ -216,7 +215,6 @@ install(  FILES
 install( FILES
   kio/kdbusservicestarter.h
   kio/kfileitemactions.h
-  kio/kfileshare.h
   kio/kimageio.h
   kio/kmimetypechooser.h
   kio/kscan.h

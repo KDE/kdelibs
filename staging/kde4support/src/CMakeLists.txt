@@ -116,6 +116,7 @@ set(libkde4support_SRCS
     kio/kfilemetainfowidget.cpp
     kio/kdiskfreespace.cpp
     kio/metainfojob.cpp
+    kio/kfileshare.cpp
     kio/kfileitemactionplugin.cpp
     kio/passworddialog.cpp
     kio/kmimetyperesolver.cpp
@@ -292,6 +293,8 @@ install(FILES
     kio/kfilemetainfo.h
     kio/predicateproperties.h
     kio/kfilewriteplugin.h
+    kio/kfileshare.h
+    kio/kfileitemactionplugin.h
 
     kdeui/kaccelgen.h
     kdeui/kaction.h
@@ -357,7 +360,6 @@ endif ()
 # kio/*.h
 install(FILES
     kio/metainfojob.h
-    kio/kfileitemactionplugin.h
     kio/passworddialog.h
     DESTINATION ${INCLUDE_INSTALL_DIR}/kio COMPONENT Devel
 )
