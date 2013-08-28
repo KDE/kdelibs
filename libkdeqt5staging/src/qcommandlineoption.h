@@ -43,8 +43,8 @@
 #define QCOMMANDLINEOPTION_H
 
 #include "kdeqt5staging_export.h"
-#include <QtCore/qstringlist.h>
-#include <QtCore/qshareddata.h>
+#include <qstringlist.h>
+#include <qshareddata.h>
 
 QT_BEGIN_NAMESPACE
 

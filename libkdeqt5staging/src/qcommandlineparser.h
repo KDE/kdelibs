@@ -43,10 +43,10 @@
 #define QCOMMANDLINEPARSER_H
 
 #include "kdeqt5staging_export.h"
-#include <QtCore/qstringlist.h>
+#include <qstringlist.h>
 
-#include <QtCore/qcoreapplication.h>
-#include <QtCore/qcommandlineoption.h>
+#include <qcoreapplication.h>
+#include <qcommandlineoption.h>
 
 QT_BEGIN_NAMESPACE
 
