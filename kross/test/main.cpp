@@ -151,11 +151,12 @@ int main(int argc, char **argv)
     //about.addAuthor(ki18n("Sebastian Sauer"), ki18n("Author"), "mail@dipe.org");
 
     QCommandLineParser parser;
-    parser.addHelpOption(QCoreApplication::translate("main", "KDE application to test the Kross framework."));
-    // TODO parser->addOption(QCommandLineOption(QStringList() << "+file", QCoreApplication::translate("main", "Scriptfile")));
+    parser.setApplicationDescription(QCoreApplication::translate("main", "KDE application to test the Kross framework."));
+    parser.addHelpOption();
+    parser.addPositionalArgument("file", QCoreApplication::translate("main", "Scriptfile"));
     parser.process(*app);
 
-    const QStringList args = parser.remainingArguments();
+    const QStringList args = parser.positionalArguments();
     if (args.count() < 1) {
         std::cerr << "No scriptfile to execute defined. See --help" << std::endl;
         return ERROR_HELP;

@@ -127,8 +127,8 @@ KonfUpdate::KonfUpdate(QCommandLineParser * parser)
             return;
         }
         updateFiles.append(file);
-    } else if (parser->remainingArguments().count()) {
-        updateFiles += parser->remainingArguments();
+    } else if (parser->positionalArguments().count()) {
+        updateFiles += parser->positionalArguments();
     } else {
         if (cg.readEntry("autoUpdateDisabled", false))
             return;
@@ -951,7 +951,8 @@ int main(int argc, char **argv)
 
     QCommandLineParser parser;
     parser.addVersionOption();
-    parser.addHelpOption(QCoreApplication::translate("main", "KDE Tool for updating user configuration files"));
+    parser.setApplicationDescription(QCoreApplication::translate("main", "KDE Tool for updating user configuration files"));
+    parser.addHelpOption();
     parser.addOption(QCommandLineOption(QStringList() << "debug", QCoreApplication::translate("main", "Keep output results from scripts")));
     parser.addOption(QCommandLineOption(QStringList() << "check", QCoreApplication::translate("main", "Check whether config file itself requires updating"), "update-file"));
     //parser.addOption(QCommandLineOption(QStringList() << "+[file]", QCoreApplication::translate("main", "File to read update instructions from")));

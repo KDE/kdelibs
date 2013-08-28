@@ -42,10 +42,11 @@
 #ifndef QCOMMANDLINEPARSER_H
 #define QCOMMANDLINEPARSER_H
 
-#include <qstringlist.h>
+#include "kdeqt5staging_export.h"
+#include <QtCore/qstringlist.h>
 
-#include <qcoreapplication.h>
-#include <qcommandlineoption.h>
+#include <QtCore/qcoreapplication.h>
+#include <QtCore/qcommandlineoption.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -59,16 +60,26 @@ public:
     QCommandLineParser();
     ~QCommandLineParser();
 
+    enum SingleDashWordOptionMode {
+        ParseAsCompactedShortOptions,
+        ParseAsLongOptions
+    };
+    void setSingleDashWordOptionMode(SingleDashWordOptionMode parsingMode);
+
     bool addOption(const QCommandLineOption &commandLineOption);
 
-    void addVersionOption();
-    void addHelpOption(const QString &description);
+    QCommandLineOption addVersionOption();
+    QCommandLineOption addHelpOption();
+    void setApplicationDescription(const QString &description);
     QString applicationDescription() const;
-    void setRemainingArgumentsHelpText(const QString &helpText);
+    void addPositionalArgument(const QString &name, const QString &description, const QString &syntax = QString());
+    void clearPositionalArguments();
 
+    void process(const QStringList &arguments);
     void process(const QCoreApplication &app);
 
-    void parse(const QStringList &arguments);
+    bool parse(const QStringList &arguments);
+    QString errorText() const;
 
     bool isSet(const QString &name) const;
     QString value(const QString &name) const;
@@ -78,11 +89,12 @@ public:
     QString value(const QCommandLineOption &option) const;
     QStringList values(const QCommandLineOption &option) const;
 
-    QStringList remainingArguments() const;
+    QStringList positionalArguments() const;
     QStringList optionNames() const;
     QStringList unknownOptionNames() const;
 
-    void showHelp();
+    Q_NORETURN void showHelp(int exitCode = 0);
+    QString helpText() const;
 
 private:
     Q_DISABLE_COPY(QCommandLineParser)

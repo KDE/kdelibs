@@ -87,7 +87,8 @@ int main( int argc, char **argv ) {
 
     QCommandLineParser parser;
     parser.addVersionOption();
-    parser.addHelpOption(description);
+    parser.setApplicationDescription(description);
+    parser.addHelpOption();
     //options.add("+file", ki18n( "Input file" ) );
     parser.addOption(QCommandLineOption(QStringList() << "o", QCoreApplication::translate("main", "Output file"), "file"));
     parser.addOption(QCommandLineOption(QStringList() << "n", QCoreApplication::translate("main", "Name of the plugin class to generate"), "plugin name", "WidgetsPlugin"));
@@ -98,12 +99,12 @@ int main( int argc, char **argv ) {
     //about.addAuthor( ki18n("Ian Reinhart Geiser"), KLocalizedString(), "geiseri@kde.org" );
     //about.addAuthor( ki18n("Daniel Molkentin"), KLocalizedString(), "molkentin@kde.org" );
 
-    if (parser.remainingArguments().count() < 1) {
+    if (parser.positionalArguments().count() < 1) {
         parser.showHelp();
         return 1;
     }
 
-    QFileInfo fi(parser.remainingArguments().at(0));
+    QFileInfo fi(parser.positionalArguments().at(0));
 
     QString outputFile = parser.value( "o" );
     QString pluginName = parser.value( "n" );

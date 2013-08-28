@@ -1,6 +1,7 @@
 /****************************************************************************
 **
 ** Copyright (C) 2013 Laszlo Papp <lpapp@kde.org>
+** Copyright (C) 2013 David Faure <faure@kde.org>
 ** Contact: http://www.qt-project.org/legal
 **
 ** This file is part of the QtCore module of the Qt Toolkit.
@@ -51,6 +52,8 @@ public:
     inline QCommandLineOptionPrivate()
     { }
 
+    void setNames(const QStringList &nameList);
+
     //! The list of names used for this option.
     QStringList names;
 
@@ -87,19 +90,26 @@ public:
 /*!
     Constructs a command line option object with the given arguments.
 
-    The name of the option is set to \a name and the description to \a description.
-    It is customary to add a "." at the end of the description.
+    The name of the option is set to \a name.
+    The name can be either short or long. If the name is one character in
+    length, it is considered a short name. Option names must not be empty,
+    must not start with a dash or a slash character, must not contain a \c{=}
+    and cannot be repeated.
+
+    The description is set to \a description. It is customary to add a "."
+    at the end of the description.
+
     In addition, the \a valueName can be set if the option expects a value.
     The default value for the option is set to \a defaultValue.
 
-    \sa setNames(), setDescription(), setValueName(), setDefaultValues()
+    \sa setDescription(), setValueName(), setDefaultValues()
 */
 QCommandLineOption::QCommandLineOption(const QString &name, const QString &description,
                                        const QString &valueName,
                                        const QString &defaultValue)
     : d(new QCommandLineOptionPrivate)
 {
-    setNames(QStringList(name));
+    d->setNames(QStringList(name));
     setValueName(valueName);
     setDescription(description);
     setDefaultValue(defaultValue);
@@ -111,19 +121,26 @@ QCommandLineOption::QCommandLineOption(const QString &name, const QString &descr
     This overload allows to set multiple names for the option, for instance
     \c{o} and \c{output}.
 
-    The names of the option are set to \a names and the description to \a description.
-    It is customary to add a "." at the end of the description.
+    The names of the option are set to \a names.
+    The names can be either short or long. Any name in the list that is one
+    character in length is a short name. Option names must not be empty,
+    must not start with a dash or a slash character, must not contain a \c{=}
+    and cannot be repeated.
+
+    The description is set to \a description. It is customary to add a "."
+    at the end of the description.
+
     In addition, the \a valueName can be set if the option expects a value.
     The default value for the option is set to \a defaultValue.
 
-    \sa setNames(), setDescription(), setValueName(), setDefaultValues()
+    \sa setDescription(), setValueName(), setDefaultValues()
 */
 QCommandLineOption::QCommandLineOption(const QStringList &names, const QString &description,
                                        const QString &valueName,
                                        const QString &defaultValue)
     : d(new QCommandLineOptionPrivate)
 {
-    setNames(names);
+    d->setNames(names);
     setValueName(valueName);
     setDescription(description);
     setDefaultValue(defaultValue);
@@ -135,8 +152,8 @@ QCommandLineOption::QCommandLineOption(const QStringList &names, const QString &
 
     \sa operator=()
 */
-QCommandLineOption::QCommandLineOption(const QCommandLineOption &other):
-    d(other.d)
+QCommandLineOption::QCommandLineOption(const QCommandLineOption &other)
+    : d(other.d)
 {
 }
 
@@ -166,27 +183,18 @@ QCommandLineOption &QCommandLineOption::operator=(const QCommandLineOption &othe
 
 /*!
     Returns the names set for this option.
-
-    \sa setNames()
  */
 QStringList QCommandLineOption::names() const
 {
     return d->names;
 }
 
-/*!
-    Sets the list of names used for this option to \a names.
-
-    The name can be either short or long. Any name in the list that is one
-    character in length is a short name. Option names must not be empty,
-    must not start with a dash or a slash character, must not contain a \c{=}
-    and cannot be repeated.
-
-    \sa names()
- */
-void QCommandLineOption::setNames(const QStringList &names)
+void QCommandLineOptionPrivate::setNames(const QStringList &nameList)
 {
-    foreach (const QString &name, names) {
+    names.clear();
+    if (nameList.isEmpty())
+        qWarning("Options must have at least one name");
+    foreach (const QString &name, nameList) {
         if (name.isEmpty())
             qWarning("Option names cannot be empty");
         else if (name.startsWith(QLatin1Char('-')))
@@ -196,7 +204,7 @@ void QCommandLineOption::setNames(const QStringList &names)
         else if (name.contains(QLatin1Char('=')))
             qWarning("Option names cannot contain a '='");
         else
-            d->names.append(name);
+            names.append(name);
     }
 }
 
@@ -269,10 +277,9 @@ QString QCommandLineOption::description() const
  */
 void QCommandLineOption::setDefaultValue(const QString &defaultValue)
 {
-    if (defaultValue.isEmpty())
-        d->defaultValues.clear();
-    else
-        d->defaultValues = QStringList() << defaultValue;
+    d->defaultValues.clear();
+    if (!defaultValue.isEmpty())
+        d->defaultValues << defaultValue;
 }
 
 /*!

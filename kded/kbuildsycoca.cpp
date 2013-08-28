@@ -633,7 +633,8 @@ extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
 
    QCommandLineParser parser;
    parser.addVersionOption();
-   parser.addHelpOption(QCoreApplication::translate("main", "Rebuilds the system configuration cache."));
+   parser.setApplicationDescription(QCoreApplication::translate("main", "Rebuilds the system configuration cache."));
+   parser.addHelpOption();
    parser.addOption(QCommandLineOption(QStringList() << "nosignal", QCoreApplication::translate("main", "Do not signal applications to update")));
    parser.addOption(QCommandLineOption(QStringList() << "noincremental", QCoreApplication::translate("main", "Disable incremental update, re-read everything")));
    parser.addOption(QCommandLineOption(QStringList() << "checkstamps", QCoreApplication::translate("main", "Check file timestamps")));

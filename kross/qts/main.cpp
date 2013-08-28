@@ -70,11 +70,12 @@ int main(int argc, char **argv)
     // Initialize command line args
     // Tell which options are supported and parse them.
     QCommandLineParser parser;
-    parser.addHelpOption(QCoreApplication::translate("main", "KDE application to run Kross scripts."));
+    parser.setApplicationDescription(QCoreApplication::translate("main", "KDE application to run Kross scripts."));
+    parser.addHelpOption();
     parser.addOption(QCommandLineOption(QStringList() << "+file", QCoreApplication::translate("main", "Scriptfile")));
     parser.process(*app);
 
-    const QStringList args = parser.remainingArguments();
+    const QStringList args = parser.positionalArguments();
     // If no options are defined.
     if (args.count() < 1) {
         parser.showHelp();

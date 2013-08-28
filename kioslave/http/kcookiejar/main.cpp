@@ -39,7 +39,8 @@ int main(int argc, char *argv[])
 
     QCommandLineParser parser;
     parser.addVersionOption();
-    parser.addHelpOption(description);
+    parser.setApplicationDescription(description);
+    parser.addHelpOption();
     parser.addOption(QCommandLineOption(QStringList() << "shutdown", QCoreApplication::translate("main", "Shut down cookie jar")));
     parser.addOption(QCommandLineOption(QStringList() << "remove", QCoreApplication::translate("main", "Remove cookies for domain"), "domain"));
     parser.addOption(QCommandLineOption(QStringList() << "remove-all", QCoreApplication::translate("main", "Remove all cookies")));

@@ -97,7 +97,8 @@ int main(int argc, char **argv) {
     app.setApplicationVersion("5.0");
 
     QCommandLineParser parser;
-    parser.addHelpOption(QCoreApplication::translate("main", "KDE Translator for XML"));
+    parser.setApplicationDescription(QCoreApplication::translate("main", "KDE Translator for XML"));
+    parser.addHelpOption();
     parser.addVersionOption();
     parser.addOption(QCommandLineOption(QStringList() << "stylesheet", QCoreApplication::translate("main", "Stylesheet to use"), "xsl"));
     parser.addOption(QCommandLineOption(QStringList() << "stdout", QCoreApplication::translate("main", "Output whole document to stdout")));
@@ -107,10 +108,10 @@ int main(int argc, char **argv) {
     parser.addOption(QCommandLineOption(QStringList() << "cache", QCoreApplication::translate("main", "Create a cache file for the document"), "file"));
     parser.addOption(QCommandLineOption(QStringList() << "srcdir", QCoreApplication::translate("main", "Set the srcdir, for kdelibs"), "dir"));
     parser.addOption(QCommandLineOption(QStringList() << "param", QCoreApplication::translate("main", "Parameters to pass to the stylesheet"), "key=value"));
-    // TODO how to document the remaining arguments? parser.addOption(QCommandLineOption(QStringList() << "+xml", QCoreApplication::translate("main", "The file to transform")));
+    parser.addPositionalArgument("xml", QCoreApplication::translate("main", "The file to transform"));
     parser.process(app);
 
-    if (parser.remainingArguments().count() != 1) {
+    if (parser.positionalArguments().count() != 1) {
         parser.showHelp();
         return ( 1 );
     }
@@ -125,7 +126,7 @@ int main(int argc, char **argv) {
 
     LIBXML_TEST_VERSION
 
-    const QString checkFilename = parser.remainingArguments().first();
+    const QString checkFilename = parser.positionalArguments().first();
     CheckFileResult ckr = checkFile( checkFilename );
     if ( ckr != CheckFileSuccess )
     {

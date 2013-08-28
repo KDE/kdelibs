@@ -489,7 +489,8 @@ int main(int argc, char **argv) {
   {
     QCommandLineParser parser;
     parser.addVersionOption();
-    parser.addHelpOption("Test for kioslaves");
+    parser.setApplicationDescription("Test for kioslaves");
+    parser.addHelpOption();
     parser.addOption(QCommandLineOption(QStringList() << "s" << "src", "Source URL", "url"));
     parser.addOption(QCommandLineOption(QStringList() << "d" << "dest", "Destination URL", "url"));
     parser.addOption(QCommandLineOption(QStringList() << "o" << "operation", "Operation (list,listrecursive,stat,get,put,copy,move,del,mkdir)", "operation"));

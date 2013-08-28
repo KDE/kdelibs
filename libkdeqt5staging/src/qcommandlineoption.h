@@ -43,18 +43,17 @@
 #define QCOMMANDLINEOPTION_H
 
 #include "kdeqt5staging_export.h"
-#include <qstringlist.h>
-#include <qshareddata.h>
+#include <QtCore/qstringlist.h>
+#include <QtCore/qshareddata.h>
 
 QT_BEGIN_NAMESPACE
-
 
 class QCommandLineOptionPrivate;
 
 class KDEQT5STAGING_EXPORT QCommandLineOption
 {
 public:
-    explicit QCommandLineOption(const QString &name = QString(), const QString &description = QString(),
+    explicit QCommandLineOption(const QString &name, const QString &description = QString(),
                                 const QString &valueName = QString(),
                                 const QString &defaultValue = QString());
     explicit QCommandLineOption(const QStringList &names, const QString &description = QString(),
@@ -73,7 +72,6 @@ public:
     inline void swap(QCommandLineOption &other)
     { qSwap(d, other.d); }
 
-    void setNames(const QStringList &names);
     QStringList names() const;
 
     void setValueName(const QString &name);
