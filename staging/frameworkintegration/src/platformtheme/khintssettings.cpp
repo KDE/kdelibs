@@ -159,7 +159,7 @@ void KHintsSettings::iconChanged(int group)
 
     m_hints[QPlatformTheme::ToolBarIconSize] = currentSize;
 
-    //If we are a QGuiApplication, there is nothing more to do.
+    //If we are not a QApplication, means that we are a QGuiApplication, then we do nothing.
     if (!qobject_cast<QApplication*>(QCoreApplication::instance())) {
         return;
     }
