@@ -35,7 +35,7 @@ void KPtyProcessTest::test_suspend_pty()
 {
     KPtyProcess p;
     p.setPtyChannels(KPtyProcess::AllChannels);
-    p.setProgram("ping", QStringList() << "-i" << "0.5" << "localhost");
+    p.setProgram("/bin/sh", QStringList() << "-c" << "while true; do echo KPtyProcess_test; sleep 1; done");
     p.start();
 
     // verify that data is available to read from the pty
@@ -54,7 +54,7 @@ void KPtyProcessTest::test_suspend_pty()
     QVERIFY(!p.pty()->isSuspended());
 
     // verify that data is available once more
-    QVERIFY(p.pty()->waitForReadyRead(1500));
+    QVERIFY(p.pty()->waitForReadyRead(2000));
     p.pty()->readAll();
 
     p.terminate();
