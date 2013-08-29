@@ -30,6 +30,7 @@
 #include <QPalette>
 #include <QDebug>
 #include <QIconEngine>
+#include <QToolButton>
 #include <QApplication>
 #include <QDialogButtonBox>
 
@@ -56,6 +57,19 @@ static void prepareEnvironment()
 
 Q_COREAPP_STARTUP_FUNCTION(prepareEnvironment);
 
+class QTestToolButton : public QToolButton
+{
+    virtual bool event(QEvent* e)
+    {
+        if (e->type() == QEvent::StyleChange) {
+            gotEvent = true;
+        }
+        return QToolButton::event(e);
+    }
+    public:
+        bool gotEvent;
+};
+
 class KdePlatformTheme_UnitTest : public QObject
 {
     Q_OBJECT
@@ -73,11 +87,13 @@ class KdePlatformTheme_UnitTest : public QObject
         }
 
         QEventLoop m_loop;
+        QTestToolButton m_toolBtn;
         KdePlatformTheme *m_qpa;
     private Q_SLOTS:
         void initTestCase()
         {
             m_qpa = new KdePlatformTheme();
+            m_toolBtn.gotEvent = false;
         }
 
         void testPlatformHints()
@@ -187,6 +203,7 @@ class KdePlatformTheme_UnitTest : public QObject
             m_loop.exec();
 
             QCOMPARE(m_qpa->themeHint(QPlatformTheme::ToolButtonStyle).toInt(), (int) Qt::ToolButtonTextUnderIcon);
+            QCOMPARE(m_toolBtn.gotEvent, true);
         }
 };
 
