@@ -181,6 +181,11 @@ class KdePlatformTheme_UnitTest : public QObject
 
             QCOMPARE(qApp->wheelScrollLines(), 122);
             QCOMPARE(qApp->testAttribute(Qt::AA_DontShowIconsInMenus), true);
+
+            sendNotifyChange(KHintsSettings::ToolbarStyleChanged, 2);
+            m_loop.exec();
+
+            QCOMPARE(m_qpa->themeHint(QPlatformTheme::ToolButtonStyle).toInt(), (int) Qt::ToolButtonTextUnderIcon);
         }
 };
 

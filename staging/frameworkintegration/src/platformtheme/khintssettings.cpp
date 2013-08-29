@@ -27,6 +27,7 @@
 #include <QString>
 #include <QFileInfo>
 #include <QToolBar>
+#include <QToolButton>
 #include <QMainWindow>
 #include <QApplication>
 #include <QGuiApplication>
@@ -120,6 +121,22 @@ void KHintsSettings::slotNotifyChange(int type, int arg)
         SettingsCategory category = static_cast<SettingsCategory>(arg);
         if (category == SETTINGS_QT || category == SETTINGS_MOUSE) {
             updateQtSettings(cg);
+        }
+        break;
+    }
+    case ToolbarStyleChanged: {
+        KSharedConfig::Ptr ptr = KSharedConfig::openConfig("kdeglobals");
+        ptr->reparseConfiguration();
+        KConfigGroup cg(ptr, "KDE");
+        m_hints[QPlatformTheme::ToolButtonStyle] = toolButtonStyle(cg);
+        //from gtksymbol.cpp
+        QWidgetList widgets = QApplication::allWidgets();
+        for (int i = 0; i < widgets.size(); ++i) {
+            QWidget *widget = widgets.at(i);
+            if (qobject_cast<QToolButton*>(widget)) {
+                QEvent event(QEvent::StyleChange);
+                QApplication::sendEvent(widget, &event);
+            }
         }
         break;
     }
