@@ -28,6 +28,7 @@
 #include <QFile>
 #include <QString>
 #include <QPalette>
+#include <QDebug>
 #include <QIconEngine>
 #include <QApplication>
 #include <QDialogButtonBox>
