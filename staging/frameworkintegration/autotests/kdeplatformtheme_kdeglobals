@@ -5,13 +5,15 @@ StartDragDist=15
 StartDragTime=555
 ToolButtonStyle=textonly
 SingleClick=false
-IconsTheme=non-existent-icon-theme
 WidgetStyle=non-existent-widget-style
 ShowIconsInMenuItems=false
 ShowIconsOnPushButtons=false
 GraphicEffectsLevel=0
 WheelScrollLines=1234
 ShowIconsInMenuItems=true
+
+[Icons]
+Theme=non-existent-icon-theme
 
 [MainToolbarIcons]
 Size=2
