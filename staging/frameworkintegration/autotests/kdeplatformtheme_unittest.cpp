@@ -172,7 +172,7 @@ class KdePlatformTheme_UnitTest : public QObject
                                                    "iconChanged",  &m_loop, SLOT(quit()));
 
             QDBusMessage message = QDBusMessage::createSignal("/KIconLoader", "org.kde.KIconLoader", "iconChanged" );
-            message.setArguments(QList<QVariant>() << int(KIconLoader::Toolbar));
+            message.setArguments(QList<QVariant>() << int(KIconLoader::MainToolbar));
             QDBusConnection::sessionBus().send(message);
             m_loop.exec();
 

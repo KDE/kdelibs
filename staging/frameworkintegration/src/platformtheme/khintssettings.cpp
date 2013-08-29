@@ -53,7 +53,7 @@ KHintsSettings::KHintsSettings() : QObject(0)
 
     m_hints[QPlatformTheme::ToolButtonStyle] = toolButtonStyle(cg);
 
-    KConfigGroup cgToolbarIcon(ptr, "ToolbarIcons");
+    KConfigGroup cgToolbarIcon(ptr, "MainToolbarIcons");
     m_hints[QPlatformTheme::ToolBarIconSize] = cgToolbarIcon.readEntry("Size", 22);
     m_hints[QPlatformTheme::ItemViewActivateItemOnSingleClick] = cg.readEntry("SingleClick", true);
     m_hints[QPlatformTheme::SystemIconThemeName] = cg.readEntry("IconsTheme", "oxygen");
@@ -148,11 +148,11 @@ void KHintsSettings::slotNotifyChange(int type, int arg)
 void KHintsSettings::iconChanged(int group)
 {
     KIconLoader::Group iconGroup = (KIconLoader::Group) group;
-    if (iconGroup != KIconLoader::Toolbar) {
+    if (iconGroup != KIconLoader::MainToolbar) {
         return;
     }
 
-    const int currentSize = KIconLoader::global()->currentSize(KIconLoader::Toolbar);
+    const int currentSize = KIconLoader::global()->currentSize(KIconLoader::MainToolbar);
     if (m_hints[QPlatformTheme::ToolBarIconSize] == currentSize) {
         return;
     }

@@ -13,7 +13,7 @@ GraphicEffectsLevel=0
 WheelScrollLines=122
 ShowIconsInMenuItems=false
 
-[ToolbarIcons]
+[MainToolbarIcons]
 Size=11
 
 [ColorEffects:Active]
