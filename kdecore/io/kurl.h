@@ -572,8 +572,8 @@ public:
 
   /**
    * Sets the reference/fragment part (everything after '#').
-   * If you have an encoded fragment already (as a QByteArray), you can call setFragment directly.
-   * @param fragment the unencoded reference (or QString() to remove it).
+   * If you have an encoded fragment already (as a QByteArray), you can call setEncodedFragment directly.
+   * @param fragment the @em encoded reference (or QString() to remove it).
    */
   void setRef( const QString& fragment );
 
