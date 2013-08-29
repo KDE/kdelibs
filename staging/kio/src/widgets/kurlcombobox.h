@@ -19,7 +19,7 @@
 #ifndef KURLCOMBOBOX_H
 #define KURLCOMBOBOX_H
 
-#include <kio/kio_export.h>
+#include <kio/kiowidgets_export.h>
 
 #include <QtCore/QList>
 #include <QtCore/QMap>
@@ -45,7 +45,7 @@ class KUrlComboBoxPrivate;
  * @short A combo box showing a number of recent URLs/directories
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
-class KIO_EXPORT KUrlComboBox : public KComboBox
+class KIOWIDGETS_EXPORT KUrlComboBox : public KComboBox
 {
     Q_OBJECT
     Q_PROPERTY(QStringList urls READ urls WRITE setUrls DESIGNABLE true)

@@ -99,7 +99,6 @@ set(kfile_STAT_SRCS
   kfile/kpreviewwidgetbase.cpp
   kfile/kpropertiesdialog.cpp
   kfile/krecentdirs.cpp
-  kfile/kurlcombobox.cpp
   kfile/kurlrequesterdialog.cpp
   kfile/getgrouplist-fake.c
   kfile/kfilemetapreview.cpp
@@ -224,7 +223,6 @@ install( FILES
   kfile/kpropertiesdialog.h
   kfile/kpropsdialog.h
   kfile/krecentdirs.h
-  kfile/kurlcombobox.h
   kfile/kurlrequesterdialog.h
   bookmarks/kbookmark.h
   bookmarks/kbookmarkexporter.h
