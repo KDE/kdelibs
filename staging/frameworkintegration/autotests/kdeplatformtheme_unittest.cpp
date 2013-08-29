@@ -192,6 +192,7 @@ class KdePlatformTheme_UnitTest : public QObject
             sendNotifyChange(KHintsSettings::SettingsChanged, KHintsSettings::SETTINGS_MOUSE);
             m_loop.exec();
 
+            QCOMPARE(m_qpa->themeHint(QPlatformTheme::ItemViewActivateItemOnSingleClick).toBool(), true);
             QCOMPARE(m_qpa->themeHint(QPlatformTheme::MouseDoubleClickInterval).toInt(), 401);
             QCOMPARE(m_qpa->themeHint(QPlatformTheme::StartDragDistance).toInt(), 35);
             QCOMPARE(m_qpa->themeHint(QPlatformTheme::StartDragTime).toInt(), 501);

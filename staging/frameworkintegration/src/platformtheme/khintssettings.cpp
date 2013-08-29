@@ -187,6 +187,8 @@ void KHintsSettings::updateQtSettings(KConfigGroup &cg)
     int startDragTime = cg.readEntry("StartDragTime", 10);
     m_hints[QPlatformTheme::StartDragTime] = startDragTime;
 
+    m_hints[QPlatformTheme::ItemViewActivateItemOnSingleClick] = cg.readEntry("SingleClick", true);
+
     bool showIcons = cg.readEntry("ShowIconsInMenuItems", !QApplication::testAttribute(Qt::AA_DontShowIconsInMenus));
     QCoreApplication::setAttribute(Qt::AA_DontShowIconsInMenus, !showIcons);
 
