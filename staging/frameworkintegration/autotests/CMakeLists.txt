@@ -15,7 +15,7 @@ macro(FRAMEWORKINTEGRATION_TESTS _testname)
     add_executable(${_testname} ${_testname}.cpp ${ARGN})
     add_test(frameworkintegration-${_testname} ${_testname})
     ecm_mark_as_test(${_testname})
-    target_link_libraries(${_testname} Qt5::Test Qt5::DBus KConfigWidgets KConfigCore KIconThemes)
+    target_link_libraries(${_testname} Qt5::Test Qt5::DBus KConfigWidgets KConfigCore KIconThemes KStyle)
 endmacro()
 
 frameworkintegration_tests(
@@ -28,4 +28,8 @@ frameworkintegration_tests(
 frameworkintegration_tests(
   kfontsettingsdata_unittest
   ../src/platformtheme/kfontsettingsdata.cpp
+)
+
+frameworkintegration_tests(
+  kstyle_unittest
 )

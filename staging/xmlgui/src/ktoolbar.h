@@ -48,6 +48,10 @@ class KXMLGUIClient;
   * construction. It will reread this config group on a
   * KApplication::appearanceChanged() signal.
   *
+  * @note If you can't depend on KXmlGui but you want to integrate with KDE, you can use QToolBar with:
+  *    Set ToolButtonStyle to Qt::ToolButtonFollowStyle, this will make QToolBar use the settings for "Main Toolbar"
+  *    Additionally set QToolBar::setProperty("otherToolbar", true) to use settings for "Other toolbars"
+  *    Settings from "Other toolbars" will only work on widget styles derived from KStyle
   * @author Reginald Stadlbauer <reggie@kde.org>, Stephan Kulow <coolo@kde.org>, Sven Radej <radej@kde.org>, Hamish Rodda <rodda@kde.org>.
   */
 class XMLGUI_EXPORT KToolBar : public QToolBar

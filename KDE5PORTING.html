@@ -386,6 +386,18 @@ In styles based on KStyle, this will work out of the box.
 </li>
 <li>KStyle: Was copied as K4Style in KDE4Support framework. New KStyle class has been trimmed down and reimplements only necessary methods to enforce some of the user settings (for example icons).
 K4Style users should use K_EXPORT_K4STYLE instead of K_EXPORT_STYLE</li>
+<li>ToolBar has moved to XMLGUI. If you don't want to depend on XMLGUI, use QToolBar instead, with the following setup:
+   <ul>
+   <li>Set ToolButtonStyle to Qt::ToolButtonFollowStyle, this will make QToolBar use the settings for "Main Toolbar"</li>
+   <li>Additionally set QToolBar::setProperty("otherToolbar", true) to use settings for "Other toolbars"</li>
+   <li>
+    <pre>QToolBar *toolbar = new QToolBar();
+toolbar->setToolButtonStyle(Qt::ToolButtonFollowStyle);
+toolbar->setProperty("otherToolbar", true);</pre>
+   </li>
+
+   Settings from "Other toolbars" will only work on  a widget style that derives from KStyle
+</li>
 </ul>
 
 <h4 align="right"><a href="#TOC">Return to the Table of Contents</a></h4>

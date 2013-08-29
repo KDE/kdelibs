@@ -4,6 +4,7 @@ DoubleClickInterval=4343
 StartDragDist=15
 StartDragTime=555
 ToolButtonStyle=textonly
+ToolButtonStyleOtherToolbars=textundericon
 SingleClick=false
 widgetStyle=non-existent-widget-style
 ShowIconsInMenuItems=false

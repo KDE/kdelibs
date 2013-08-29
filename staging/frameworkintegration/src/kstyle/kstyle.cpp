@@ -60,6 +60,7 @@
 #include <QScrollBar>
 #include <QStyleOption>
 #include <QPushButton>
+#include <QToolBar>
 
 #include <kconfiggroup.h>
 #include <QDebug>
@@ -2571,6 +2572,35 @@ int KStyle::styleHint (StyleHint hint, const QStyleOption* option, const QWidget
         {
             KConfigGroup g(KSharedConfig::openConfig(), "KDE-Global GUI Settings");
             return g.readEntry("GraphicEffectsLevel", 0);
+        }
+
+        case SH_ToolButtonStyle:
+        {
+            KConfigGroup g(KSharedConfig::openConfig(), "KDE");
+
+            bool useOthertoolbars = false;
+            const QWidget *parent = widget->parentWidget();
+
+            //If the widget parent is a QToolBar and the magic property is set
+            if (parent && qobject_cast< const QToolBar* >(parent)) {
+                if (parent->property("otherToolbar").isValid()) {
+                    useOthertoolbars = true;
+                }
+            }
+
+            QString buttonStyle;
+            if (useOthertoolbars) {
+                buttonStyle = g.readEntry("ToolButtonStyleOtherToolbars", "NoText").toLower();
+            } else {
+                buttonStyle = g.readEntry("ToolButtonStyle", "TextBesideIcon").toLower();
+            }
+
+            return buttonStyle == QLatin1String("textbesideicon") ? Qt::ToolButtonTextBesideIcon
+                             : buttonStyle == QLatin1String("icontextright") ? Qt::ToolButtonTextBesideIcon
+                             : buttonStyle == QLatin1String("textundericon") ? Qt::ToolButtonTextUnderIcon
+                             : buttonStyle == QLatin1String("icontextbottom") ? Qt::ToolButtonTextUnderIcon
+                             : buttonStyle == QLatin1String("textonly") ? Qt::ToolButtonTextOnly
+                             : Qt::ToolButtonIconOnly;
         }
         default:
             break;
