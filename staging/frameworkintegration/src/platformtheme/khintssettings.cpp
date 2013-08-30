@@ -141,6 +141,28 @@ void KHintsSettings::slotNotifyChange(int type, int arg)
         }
         break;
     }
+    case StyleChanged: {
+        QApplication *app = qobject_cast<QApplication*>(QCoreApplication::instance());
+        if (!app) {
+            return;
+        }
+
+        KSharedConfig::Ptr ptr = KSharedConfig::openConfig("kdeglobals");
+        ptr->reparseConfiguration();
+        KConfigGroup cg(ptr, "KDE");
+        const QString theme = cg.readEntry("widgetStyle", QString());
+        if (theme.isEmpty()) {
+            return;
+        }
+
+        m_hints[QPlatformTheme::StyleNames] = (QStringList() << theme
+                                         << "oxygen"
+                                         << "fusion"
+                                         << "windows");
+        app->setStyle(theme);
+        //TODO Refresh the palette
+        break;
+    }
     default:
         qWarning() << "Unknown type of change in KGlobalSettings::slotNotifyChange: " << type;
     }

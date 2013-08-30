@@ -205,6 +205,13 @@ class KdePlatformTheme_UnitTest : public QObject
 
             QCOMPARE(m_qpa->themeHint(QPlatformTheme::ToolButtonStyle).toInt(), (int) Qt::ToolButtonTextUnderIcon);
             QCOMPARE(m_toolBtn.gotEvent, true);
+
+            sendNotifyChange(KHintsSettings::StyleChanged, 2);
+            m_loop.exec();
+
+            QStringList styles;
+            styles << "another-non-existent-widget-style" << "oxygen" << "fusion" << "windows";
+            QCOMPARE(m_qpa->themeHint(QPlatformTheme::StyleNames).toStringList(), styles);
         }
 };
 
