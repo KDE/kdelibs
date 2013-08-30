@@ -60,7 +60,7 @@ KHintsSettings::KHintsSettings() : QObject(0)
     m_hints[QPlatformTheme::SystemIconThemeName] = cgIcons.readEntry("Theme", "oxygen");
     m_hints[QPlatformTheme::SystemIconFallbackThemeName] = "hicolor";
     m_hints[QPlatformTheme::IconThemeSearchPaths] = xdgIconThemePaths();
-    m_hints[QPlatformTheme::StyleNames] = (QStringList() << cg.readEntry("WidgetStyle", QString())
+    m_hints[QPlatformTheme::StyleNames] = (QStringList() << cg.readEntry("widgetStyle", QString())
                                          << "oxygen"
                                          << "fusion"
                                          << "windows");
