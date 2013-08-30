@@ -212,6 +212,11 @@ class KdePlatformTheme_UnitTest : public QObject
             QStringList styles;
             styles << "another-non-existent-widget-style" << "oxygen" << "fusion" << "windows";
             QCOMPARE(m_qpa->themeHint(QPlatformTheme::StyleNames).toStringList(), styles);
+
+            sendNotifyChange(KHintsSettings::SettingsChanged, KHintsSettings::SETTINGS_STYLE);
+            m_loop.exec();
+
+            QCOMPARE(m_qpa->themeHint(QPlatformTheme::DialogButtonBoxButtonsHaveIcons).toBool(), true);
         }
 };
 

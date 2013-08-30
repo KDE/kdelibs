@@ -122,6 +122,8 @@ void KHintsSettings::slotNotifyChange(int type, int arg)
         SettingsCategory category = static_cast<SettingsCategory>(arg);
         if (category == SETTINGS_QT || category == SETTINGS_MOUSE) {
             updateQtSettings(cg);
+        } else if (category == SETTINGS_STYLE) {
+            m_hints[QPlatformTheme::DialogButtonBoxButtonsHaveIcons] = cg.readEntry("ShowIconsOnPushButtons", true);
         }
         break;
     }
