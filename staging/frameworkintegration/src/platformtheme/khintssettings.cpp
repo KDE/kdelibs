@@ -124,6 +124,7 @@ void KHintsSettings::slotNotifyChange(int type, int arg)
             updateQtSettings(cg);
         } else if (category == SETTINGS_STYLE) {
             m_hints[QPlatformTheme::DialogButtonBoxButtonsHaveIcons] = cg.readEntry("ShowIconsOnPushButtons", true);
+            m_hints[QPlatformTheme::UiEffects] = cg.readEntry("GraphicEffectsLevel", 0) != 0 ? QPlatformTheme::GeneralUiEffect : 0;
         }
         break;
     }

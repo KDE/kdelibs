@@ -8,7 +8,7 @@ SingleClick=true
 widgetStyle=another-non-existent-widget-style
 ShowIconsInMenuItems=false
 ShowIconsOnPushButtons=true
-GraphicEffectsLevel=0
+GraphicEffectsLevel=1
 WheelScrollLines=122
 ShowIconsInMenuItems=false
 
