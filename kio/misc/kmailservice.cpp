@@ -25,12 +25,14 @@ int main( int argc, char **argv )
 {
     QGuiApplication a(argc, argv);
 
-    if (argc != 1) {
+    const QStringList args = a.arguments();
+
+    if (args.count() != 2) {
         fprintf(stderr, "Usage: kmailservice <url>\n");
         return 1;
     }
 
-    QDesktopServices::openUrl(QUrl(argv[1]));
+    QDesktopServices::openUrl(QUrl(args.at(1)));
 
     return 0;
 }
