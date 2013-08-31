@@ -219,6 +219,44 @@ class KdePlatformTheme_UnitTest : public QObject
 
             QCOMPARE(m_qpa->themeHint(QPlatformTheme::SystemIconThemeName).toString(), QLatin1String("other-non-existent"));
         }
+
+        void testPlatformPaletteChanges()
+        {
+            QDBusConnection::sessionBus().connect(QString(), "/KGlobalSettings", "org.kde.KGlobalSettings",
+                                                   "notifyChange",  &m_loop, SLOT(quit()));
+            sendNotifyChange(KHintsSettings::PaletteChanged, 0);
+            m_loop.exec();
+
+            const QPalette *palette = m_qpa->palette();
+            QPalette::ColorGroup states[3] = {QPalette::Active, QPalette::Inactive, QPalette::Disabled};
+            QColor redColor(QColor(174,11,11));
+            QBrush redBrush(redColor);
+            for ( int i = 0; i < 3 ; i++ ) {
+                QCOMPARE(palette->brush(states[i], QPalette::ButtonText), redBrush);
+                QCOMPARE(palette->brush(states[i], QPalette::WindowText), redBrush);
+                QCOMPARE(palette->brush(states[i], QPalette::Window), redBrush);
+                QCOMPARE(palette->brush(states[i], QPalette::Base), redBrush);
+                QCOMPARE(palette->brush(states[i], QPalette::Text), redBrush);
+                QCOMPARE(palette->brush(states[i], QPalette::Button), redBrush);
+                QCOMPARE(palette->brush(states[i], QPalette::ButtonText), redBrush);
+                QCOMPARE(palette->brush(states[i], QPalette::Highlight), redBrush);
+                QCOMPARE(palette->brush(states[i], QPalette::HighlightedText), redBrush);
+                QCOMPARE(palette->brush(states[i], QPalette::ToolTipBase), redBrush);
+                QCOMPARE(palette->brush(states[i], QPalette::ToolTipText), redBrush);
+
+                //KColorScheme applies modifications and we can't disable them, so I extracted
+                //the values and blindly compare them.
+                QCOMPARE(palette->color(states[i], QPalette::Light).red(), 230);
+                QCOMPARE(palette->color(states[i], QPalette::Midlight).red(), 203);
+                QCOMPARE(palette->color(states[i], QPalette::Mid).red(), 149);
+                QCOMPARE(palette->color(states[i], QPalette::Dark).red(), 84);
+                QCOMPARE(palette->color(states[i], QPalette::Shadow).red(), 60);
+
+                QCOMPARE(palette->brush(states[i], QPalette::AlternateBase), redBrush);
+                QCOMPARE(palette->brush(states[i], QPalette::Link), redBrush);
+                QCOMPARE(palette->brush(states[i], QPalette::LinkVisited), redBrush);
+            }
+        }
 };
 
 QTEST_MAIN(KdePlatformTheme_UnitTest)
