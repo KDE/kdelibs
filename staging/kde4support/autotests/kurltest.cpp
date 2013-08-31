@@ -664,9 +664,8 @@ void KUrlTest::testSetFileName() // and addPath
   QCOMPARE( u2.url(), QString("http://www.kde.org/subdir") ); // unchanged
 
   QUrl qurl2 = QUrl::fromEncoded( "print:/specials/Print%20To%20File%20(PDF%252FAcrobat)", QUrl::TolerantMode );
-  // Note the behavior change: Qt4's path() is now path(QUrl::FullyDecoded)
-  QCOMPARE(qurl2.path(), QString::fromLatin1("/specials/Print To File (PDF%252FAcrobat)"));
-  QCOMPARE(qurl2.path(QUrl::FullyDecoded), QString::fromLatin1("/specials/Print To File (PDF%2FAcrobat)"));
+  QCOMPARE(qurl2.path(), QString::fromLatin1("/specials/Print To File (PDF%2FAcrobat)"));
+  QCOMPARE(qurl2.path(QUrl::PrettyDecoded), QString::fromLatin1("/specials/Print To File (PDF%252FAcrobat)"));
   QCOMPARE(qurl2.toString(), QString::fromLatin1("print:/specials/Print To File (PDF%252FAcrobat)"));
   QCOMPARE( qurl2.toEncoded(), QByteArray("print:/specials/Print%20To%20File%20(PDF%252FAcrobat)") );
 
@@ -1700,8 +1699,8 @@ void KUrlTest::testMailto()
       QUrl mailtoUrl;
       mailtoUrl.setScheme("mailto");
       mailtoUrl.setPath("a%b");
-      QCOMPARE(mailtoUrl.path(), QString("a%25b")); // The path is encoded in Qt5...
-      QCOMPARE(mailtoUrl.path(QUrl::FullyDecoded), QString("a%b"));
+      QCOMPARE(mailtoUrl.path(), QString("a%b"));
+      QCOMPARE(mailtoUrl.path(QUrl::FullyEncoded), QString("a%25b"));
       QCOMPARE(mailtoUrl.toString(), QString("mailto:a%25b"));
       QCOMPARE(QString::fromLatin1(mailtoUrl.toEncoded()), QString::fromLatin1("mailto:a%25b"));
   }
