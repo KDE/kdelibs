@@ -52,6 +52,7 @@ set(kwidgetsaddons_SRCS
   kassistantdialog.cpp
   kmessagewidget.cpp
   knewpassworddialog.cpp
+  lineediturldropeventfilter.cpp
 )
 
 set(kwidgetsaddon_UI
@@ -128,6 +129,7 @@ install(FILES
   kassistantdialog.h
   kmessagewidget.h
   knewpassworddialog.h
+  lineediturldropeventfilter.h
   ${CMAKE_CURRENT_BINARY_DIR}/kwidgetsaddons_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )

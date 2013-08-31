@@ -157,7 +157,9 @@ class KCOMPLETION_EXPORT KLineEdit : public QLineEdit, public KCompletionBase //
 #ifndef KDE_NO_DEPRECATED
     Q_PROPERTY( bool contextMenuEnabled READ isContextMenuEnabled WRITE setContextMenuEnabled )
 #endif
+#ifndef KDE_NO_DEPRECATED
     Q_PROPERTY( bool urlDropsEnabled READ urlDropsEnabled WRITE setUrlDropsEnabled )
+#endif
     Q_PROPERTY( bool trapEnterKeyEvent READ trapReturnKey WRITE setTrapReturnKey )
     Q_PROPERTY( bool squeezedTextEnabled READ isSqueezedTextEnabled WRITE setSqueezedTextEnabled )
 #ifndef KDE_NO_DEPRECATED
@@ -244,8 +246,11 @@ public:
      * behavior of QLineEdit is used, which inserts the encoded URL.
      *
      * @param enable If @p true, insert decoded URLs
+     * @deprecated since 5.0. Use installEventFilter with a LineEditUrlDropEventFilter
      */
-    void setUrlDropsEnabled( bool enable );
+#ifndef KDE_NO_DEPRECATED
+    KCOMPLETION_DEPRECATED void setUrlDropsEnabled( bool enable );
+#endif
 
     /**
      * Returns @p true when decoded URL drops are enabled
@@ -600,13 +605,6 @@ protected:
     * See QLineEdit::createStandardContextMenu().
     */
     QMenu* createStandardContextMenu();
-
-    /**
-    * Re-implemented to handle URI drops.
-    *
-    * See QLineEdit::dropEvent().
-    */
-    virtual void dropEvent( QDropEvent * );
 
     /**
     * This function simply sets the lineedit text and

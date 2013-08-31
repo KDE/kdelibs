@@ -152,7 +152,9 @@ class KCOMPLETION_EXPORT KComboBox : public QComboBox, public KCompletionBase //
 {
   Q_OBJECT
   Q_PROPERTY( bool autoCompletion READ autoCompletion WRITE setAutoCompletion )
+#ifndef KDE_NO_DEPRECATED
   Q_PROPERTY( bool urlDropsEnabled READ urlDropsEnabled WRITE setUrlDropsEnabled )
+#endif
   Q_PROPERTY( bool trapReturnKey READ trapReturnKey WRITE setTrapReturnKey )
 
 public:
@@ -301,8 +303,11 @@ public:
      * behavior of QComboBox is used, which inserts the encoded URL.
      *
      * @param enable If @p true, insert decoded URLs
+     * @deprecated since 5.0. Use lineEdit()->installEventFilter with a LineEditUrlDropEventFilter
      */
-    void setUrlDropsEnabled( bool enable );
+#ifndef KDE_NO_DEPRECATED
+    KCOMPLETION_DEPRECATED void setUrlDropsEnabled( bool enable );
+#endif
 
     /**
      * Returns @p true when decoded URL drops are enabled

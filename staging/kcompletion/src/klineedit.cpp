@@ -38,6 +38,7 @@
 #include <kstandardshortcut.h>
 #include <kurlmimedata.h>
 #include <kiconloader.h>
+#include <lineediturldropeventfilter.h>
 
 #include <QtCore/QTimer>
 #include <QAction>
@@ -76,6 +77,8 @@ public:
         clearButton = 0;
         clickInClear = false;
         wideEnoughForClear = true;
+
+        urlDropEventFilter = new LineEditUrlDropEventFilter(qq);
 
         // i18n: Placeholder text in line edit widgets is the text appearing
         // before any user input, briefly explaining to the user what to type
@@ -171,6 +174,8 @@ public:
 
     KCompletionBox *completionBox;
 
+    LineEditUrlDropEventFilter* urlDropEventFilter;
+
     bool italicizePlaceholder:1;
 
     QAction *noCompletionAction, *shellCompletionAction, *autoCompletionAction, *popupCompletionAction, *shortAutoCompletionAction, *popupAutoCompletionAction, *defaultAction;
@@ -240,6 +245,9 @@ void KLineEdit::initWidget()
                       mode == KCompletion::CompletionPopupAuto ||
                       mode == KCompletion::CompletionAuto);
     connect( this, SIGNAL(selectionChanged()), this, SLOT(slotRestoreSelectionColors()));
+
+    if (d->handleURLDrops)
+        installEventFilter(d->urlDropEventFilter);
 
     const QPalette p = palette();
     if ( !d->previousHighlightedTextColor.isValid() )
@@ -1290,43 +1298,6 @@ void KLineEdit::completionMenuActivated( QAction  *act)
     }
 }
 
-void KLineEdit::dropEvent(QDropEvent *e)
-{
-    if( d->handleURLDrops )
-    {
-        const QList<QUrl> urlList = KUrlMimeData::urlsFromMimeData(e->mimeData());
-        if ( !urlList.isEmpty() )
-        {
-            // Let's replace the current text with the dropped URL(s), rather than appending.
-            // Makes more sense in general (#188129), e.g. konq location bar and kurlrequester
-            // can only hold one url anyway. OK this code supports multiple urls being dropped,
-            // but that's not the common case [and it breaks if they contain spaces... this is why
-            // kfiledialog uses double quotes around filenames in multiple-selection mode]...
-            //
-            // Anyway, if some apps prefer "append" then we should have a
-            // setUrlDropsSupport( {NoUrlDrops, SingleUrlDrops, MultipleUrlDrops} )
-            // where Single replaces and Multiple appends.
-            QString dropText;
-            //QString dropText = text();
-            QList<QUrl>::ConstIterator it;
-            for( it = urlList.begin() ; it != urlList.end() ; ++it )
-            {
-                if(!dropText.isEmpty())
-                    dropText+=' ';
-
-                dropText += (*it).toString(); // Qt5 TODO toDisplayString()
-            }
-
-            setText(dropText);
-            setCursorPosition(dropText.length());
-
-            e->accept();
-            return;
-        }
-    }
-    QLineEdit::dropEvent(e);
-}
-
 bool KLineEdit::event( QEvent* ev )
 {
     KCursor::autoHideEventFilter( this, ev );
@@ -1377,7 +1348,13 @@ bool KLineEdit::event( QEvent* ev )
 
 void KLineEdit::setUrlDropsEnabled(bool enable)
 {
-    d->handleURLDrops=enable;
+    if (enable && !d->handleURLDrops) {
+        installEventFilter(d->urlDropEventFilter);
+        d->handleURLDrops = true;
+    } else if (!enable && d->handleURLDrops) {
+        removeEventFilter(d->urlDropEventFilter);
+        d->handleURLDrops = false;
+    }
 }
 
 bool KLineEdit::urlDropsEnabled() const
