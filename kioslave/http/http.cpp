@@ -2673,8 +2673,9 @@ bool HTTPProtocol::sendQuery()
   resetConnectionSettings();
 
   // Send the data to the remote machine...
-  ssize_t written = write(header.toLatin1(), header.length());
-  bool sendOk = (written == (ssize_t) header.length());
+  const QByteArray headerBytes = header.toLatin1();
+  ssize_t written = write(headerBytes.constData(), headerBytes.length());
+  bool sendOk = (written == (ssize_t) headerBytes.length());
   if (!sendOk)
   {
     kDebug(7113) << "Connection broken! (" << m_request.url.host() << ")"
