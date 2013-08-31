@@ -113,11 +113,12 @@ void KHintsSettings::setupIconLoader()
 
 void KHintsSettings::slotNotifyChange(int type, int arg)
 {
+    KSharedConfig::Ptr ptr = KSharedConfig::openConfig("kdeglobals");
+    ptr->reparseConfiguration();
+    KConfigGroup cg(ptr, "KDE");
+
     switch(type) {
     case SettingsChanged: {
-        KSharedConfig::Ptr ptr = KSharedConfig::openConfig("kdeglobals");
-        ptr->reparseConfiguration();
-        KConfigGroup cg(ptr, "KDE");
 
         SettingsCategory category = static_cast<SettingsCategory>(arg);
         if (category == SETTINGS_QT || category == SETTINGS_MOUSE) {
@@ -129,9 +130,6 @@ void KHintsSettings::slotNotifyChange(int type, int arg)
         break;
     }
     case ToolbarStyleChanged: {
-        KSharedConfig::Ptr ptr = KSharedConfig::openConfig("kdeglobals");
-        ptr->reparseConfiguration();
-        KConfigGroup cg(ptr, "KDE");
         m_hints[QPlatformTheme::ToolButtonStyle] = toolButtonStyle(cg);
         //from gtksymbol.cpp
         QWidgetList widgets = QApplication::allWidgets();
@@ -153,9 +151,6 @@ void KHintsSettings::slotNotifyChange(int type, int arg)
             return;
         }
 
-        KSharedConfig::Ptr ptr = KSharedConfig::openConfig("kdeglobals");
-        ptr->reparseConfiguration();
-        KConfigGroup cg(ptr, "KDE");
         const QString theme = cg.readEntry("widgetStyle", QString());
         if (theme.isEmpty()) {
             return;
