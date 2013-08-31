@@ -42,15 +42,11 @@
 
 static void prepareEnvironment()
 {
-    qputenv("KDEHOME", QFile::encodeName(QDir::homePath() + QStringLiteral("/.kde5-unit-test-platformtheme")));
-    qputenv("XDG_DATA_HOME", QFile::encodeName(QDir::homePath() + QStringLiteral("/.kde5-unit-test-platformtheme/xdg/local")));
-    QByteArray configPath = QFile::encodeName(QDir::homePath() + QStringLiteral("/.kde5-unit-test-platformtheme/xdg/config"));
-    qputenv("XDG_CONFIG_HOME", configPath);
-    qputenv("KDE_SKIP_KDERC", "1");
-    qunsetenv("KDE_COLOR_DEBUG");
+    QStandardPaths::setTestModeEnabled(true);
 
-    QDir().mkpath(configPath);
+    QString configPath = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
     configPath.append("/kdeglobals");
+
     QFile::remove(configPath);
     QFile::copy(CONFIGFILE, configPath);
 }
@@ -163,7 +159,7 @@ class KdePlatformTheme_UnitTest : public QObject
 
         void testPlatformIconChanges()
         {
-            QByteArray configPath = qgetenv("XDG_CONFIG_HOME");
+            QString configPath = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
             configPath.append("/kdeglobals");
             QFile::remove(configPath);
             QFile::copy(CHANGED_CONFIGFILE, configPath);
