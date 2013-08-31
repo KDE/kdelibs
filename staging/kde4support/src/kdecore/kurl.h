@@ -583,9 +583,9 @@ public:
   QString query() const;
 
   /**
-   * Returns the reference (or "fragment") of the URL.
-   * The reference is @em never decoded automatically.
-   * @return the undecoded reference, or QString() if there is none
+   * Returns the @em encoded reference (or "fragment") of the URL (everything after '#').
+   * @return the encoded reference, or QString("") if the reference part is empty,
+   *   or QString() if the URL has no reference.
    * @deprecated use QUrl::fragment(QUrl::FullyEncoded)
    */
   QString ref() const;
@@ -593,7 +593,7 @@ public:
   /**
    * Sets the reference/fragment part (everything after '#').
    * If you have an encoded fragment already (as a QByteArray), you can call setFragment directly.
-   * @param fragment the unencoded reference (or QString() to remove it).
+   * @param fragment the @em encoded reference (or QString() to remove it).
    * @deprecated use QUrl::setFragment()
    */
   void setRef( const QString& fragment );
@@ -608,8 +608,9 @@ public:
   bool hasRef() const;
 
   /**
-   * Returns the HTML reference (the part of the URL after "#").
-   * @return The HTML-style reference.
+   * Returns the @em unencoded reference (or "fragment") of the URL (everything after '#').
+   * @return the unencoded reference, or QString("") if the reference part is empty,
+   *   or QString() if the URL has no reference.
    * @see split
    * @see hasSubUrl
    * @see encodedHtmlRef
@@ -618,9 +619,10 @@ public:
   QString htmlRef() const;
 
   /**
-   * Returns the HTML reference (the part of the URL after "#") in
-   * encoded form.
-   * @return The HTML-style reference in its original form.
+   * Returns the @em encoded reference (or "fragment") of the URL (everything after '#').
+   * @return the encoded reference, or QString("") if the reference part is empty,
+   *   or QString() if the URL has no reference.
+   * @see ref
    * @deprecated use QUrl::fragment(QUrl::FullyEncoded)
    */
   QString encodedHtmlRef() const;

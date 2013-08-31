@@ -2644,7 +2644,7 @@ bool HTTPProtocol::sendQuery()
   resetConnectionSettings();
 
   // Send the data to the remote machine...
-  QByteArray headerBytes = header.toLatin1();
+  const QByteArray headerBytes = header.toLatin1();
   ssize_t written = write(headerBytes.constData(), headerBytes.length());
   bool sendOk = (written == (ssize_t) headerBytes.length());
   if (!sendOk)

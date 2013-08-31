@@ -127,7 +127,7 @@ void KUrlTest::testEmptyNullReference()
 void KUrlTest::testSetRef()
 {
   KUrl url1 = KUrl( QByteArray( "http://www.kde.org/foo.cgi#foo=bar" ) );
-  QCOMPARE( url1.ref(), QString("foo=bar" ) ); // KDE3: was foo=bar, KDE4: foo%3Dbar, KF5 (Qt5.2): foo=bar
+  QCOMPARE( url1.ref(), QString("foo=bar" ) ); // KDE3: was foo=bar, KDE4 (until 4.11): foo%3Dbar, KF5 (Qt5.2): foo=bar
 #if 0// ditto (TODO)
   url1.setRef( "toto=titi&kde=rocks" );
   QCOMPARE( url1.ref(), QString("toto=titi&kde=rocks" ) );
@@ -251,6 +251,25 @@ void KUrlTest::testSimpleMethods() // to test parsing, mostly
   QCOMPARE(ulong.host(),QString("swww.gad.de") );
   QCOMPARE(ulong.path(),QString("/servlet/CookieAccepted") );
 
+  // RFC 3986 section 3.5 says:
+  // fragment = *( pchar / "/" / "?" )
+  // where:
+  // pchar = unreserved / pct-encoded / sub-delims / ":" / "@"
+  //         unreserved  = ALPHA / DIGIT / "-" / "." / "_" / "~"
+  //         pct-encoded = "%" HEXDIG HEXDIG
+  //         sub-delims  = sub-delims  = "!" / "$" / "&" / "'" / "(" / ")" /  "*" / "+" / "," / ";" / "="
+  KUrl url0;
+  url0 = QString("http://www.kde.org#/?:@-._~!$&'()*+,;="); // These fragment's chars should not be %-encoded
+  QCOMPARE( url0.ref(),     QString("/?:@-._~!$&'()*+,;=") );
+  QCOMPARE( url0.htmlRef(), QString("/?:@-._~!$&'()*+,;=") );
+  QCOMPARE( url0.url(), QString("http://www.kde.org#/?:@-._~!$&'()*+,;=") );
+
+  url0 = QString("http://www.kde.org#/?:@-._~!$&'()*+,;=%A");
+  QCOMPARE( url0.ref(),     QString("/?:@-._~!$&'()*+,;=%25A") );
+  QCOMPARE( url0.htmlRef(), QString("/?:@-._~!$&'()*+,;=%A") );
+  QCOMPARE( url0.url(), QString("http://www.kde.org#/?:@-._~!$&'()*+,;=%25A") );
+
+
   KUrl fileURL( "file:///home/dfaure/myfile" );
   QCOMPARE( fileURL.url(), QString("file:///home/dfaure/myfile") );
   QCOMPARE( fileURL.path(), QString("/home/dfaure/myfile") );
@@ -300,16 +319,23 @@ void KUrlTest::testSimpleMethods() // to test parsing, mostly
   QCOMPARE( url1.encodedHtmlRef(), QString("%23") );
   QCOMPARE( url1.htmlRef(), QString("#") );
 
-#if 0 // TODO
   url1 = KUrl(url1, "#%6a");
-  QCOMPARE( url1.url(), QString("file:///home/dfaure/my#%6a") );
+  QCOMPARE( url1.url(), QString("file:///home/dfaure/my#j") );
   QVERIFY( url1.hasRef() );
   QVERIFY( url1.hasHTMLRef() );
   QVERIFY( !url1.hasSubUrl() );
   QCOMPARE( url1.ref(), QString("j") );
-  QCOMPARE( url1.encodedHtmlRef().toLower(), QString("%6a") );
+  QCOMPARE( url1.encodedHtmlRef(), QString("j") );
   QCOMPARE( url1.htmlRef(), QString("j") );
-#endif
+
+  url1 = KUrl(url1, "#");
+  QCOMPARE( url1.url(), QString("file:///home/dfaure/my#") );
+  QVERIFY( url1.hasRef() );
+  QVERIFY( url1.hasHTMLRef() );
+  QVERIFY( !url1.hasSubUrl() );
+  QSTREMPTY(url1.ref());
+  QSTREMPTY(url1.encodedHtmlRef());
+  QSTREMPTY(url1.htmlRef());
 
   u1 = "file:///home/dfaure/my#myref";
   url1 = u1;
@@ -566,7 +592,7 @@ void KUrlTest::testPathAndQuery()
 #else
   // So we treat it as part of the fragment
   KUrl tobi0("http://some.host.net/path/to/file#foo?bar");
-  QCOMPARE( tobi0.ref(), QString("foo?bar") ); // was foo%3Fbar, but no need to encode it (Qt 5.2)
+  QCOMPARE( tobi0.ref(), QString("foo?bar") ); // was foo%3Fbar until KDE 4.11, but no need to encode it (Qt 5.2)
   QCOMPARE( tobi0.query(), QString() );
   QCOMPARE( tobi0.prettyUrl(), QString("http://some.host.net/path/to/file#foo?bar") );
 #endif
@@ -1113,7 +1139,7 @@ void KUrlTest::testBaseURL() // those are tests for the KUrl(base,relative) cons
      QCOMPARE( waba2.url(), QString("http://www.website.com/directory/?hello#ref") );
   }
   {
-      KUrl waba2( waba1, "#%72%22method"); // #243217
+     KUrl waba2( waba1, "#%72%22method"); // #243217
      QCOMPARE( waba2.url(), QString("http://www.website.com/directory/?hello#r%22method") );
   }
   {
