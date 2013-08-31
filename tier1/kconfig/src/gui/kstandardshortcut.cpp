@@ -212,7 +212,7 @@ static void initialize(StandardShortcut id)
 
     if (cg.hasKey(info->name)) {
         QString s = cg.readEntry(info->name);
-        if (s != "none")
+        if (s != QLatin1String("none"))
             info->cut = QKeySequence::listFromString(s);
         else
             info->cut = QList<QKeySequence>();
@@ -251,7 +251,7 @@ void saveShortcut(StandardShortcut id, const QList<QKeySequence> &newShortcut)
 
 QString name(StandardShortcut id)
 {
-    return guardedStandardShortcutInfo(id)->name;
+    return QString::fromLatin1(guardedStandardShortcutInfo(id)->name);
 }
 
 QString label(StandardShortcut id)

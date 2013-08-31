@@ -139,24 +139,24 @@ void BrowserRun::scanFile()
     if ( d->m_part ) {
         const QString proto = d->m_part->url().scheme();
 
-      if (proto == "https" || proto == "webdavs") {
-            metaData.insert("main_frame_request", "TRUE" );
-            metaData.insert("ssl_was_in_use", "TRUE" );
-           // metaData.insert("ssl_activate_warnings", "TRUE" );
-      } else if (proto == "http" || proto == "webdav") {
-           // metaData.insert("ssl_activate_warnings", "TRUE" );
-            metaData.insert("ssl_was_in_use", "FALSE" );
+      if (proto == QLatin1String("https") || proto == QLatin1String("webdavs")) {
+            metaData.insert(QStringLiteral("main_frame_request"), QStringLiteral("TRUE"));
+            metaData.insert(QStringLiteral("ssl_was_in_use"), QStringLiteral("TRUE"));
+           // metaData.insert(QStringLiteral("ssl_activate_warnings"), QStringLiteral("TRUE"));
+      } else if (proto == QLatin1String("http") || proto == QLatin1String("webdav")) {
+           // metaData.insert(QStringLiteral("ssl_activate_warnings"), QStringLiteral("TRUE"));
+            metaData.insert(QStringLiteral("ssl_was_in_use"), QStringLiteral("FALSE"));
       }
 
       // Set the PropagateHttpHeader meta-data if it has not already been set...
-        if (!metaData.contains("PropagateHttpHeader"))
-            metaData.insert("PropagateHttpHeader", "TRUE");
+        if (!metaData.contains(QStringLiteral("PropagateHttpHeader")))
+            metaData.insert(QStringLiteral("PropagateHttpHeader"), QStringLiteral("TRUE"));
   }
 
   KIO::TransferJob *job;
     if ( d->m_browserArgs.doPost() && KRun::url().scheme().startsWith(QLatin1String("http"))) {
         job = KIO::http_post( KRun::url(), d->m_browserArgs.postData, KIO::HideProgressInfo );
-        job->addMetaData( "content-type", d->m_browserArgs.contentType() );
+        job->addMetaData(QStringLiteral("content-type"), d->m_browserArgs.contentType() );
     } else {
         job = KIO::get(KRun::url(),
                        d->m_args.reload() ? KIO::Reload : KIO::NoReload,
@@ -164,7 +164,7 @@ void BrowserRun::scanFile()
   }
 
     if ( d->m_bRemoveReferrer )
-        metaData.remove("referrer");
+        metaData.remove(QStringLiteral("referrer"));
 
     job->addMetaData( metaData );
     KJobWidgets::setWindow(job, d->m_window);
@@ -187,7 +187,7 @@ void BrowserRun::slotBrowserScanFinished(KJob *job)
       // Update our URL in case of a redirection
       KRun::setUrl( static_cast<KIO::TransferJob *>(job)->url() );
       setJob( 0 );
-      mimeTypeDetermined( "inode/directory" );
+      mimeTypeDetermined(QStringLiteral("inode/directory"));
   }
   else
   {
@@ -223,12 +223,12 @@ void BrowserRun::slotBrowserMimetype( KIO::Job *_job, const QString &type )
 
         // Suggested filename given by the server (e.g. HTTP content-disposition)
         // When set, we should really be saving instead of embedding
-        const QString suggestedFileName = job->queryMetaData("content-disposition-filename");
+        const QString suggestedFileName = job->queryMetaData(QStringLiteral("content-disposition-filename"));
         setSuggestedFileName(suggestedFileName); // store it (in KRun)
         //qDebug() << "suggestedFileName=" << suggestedFileName;
-        d->m_contentDisposition = job->queryMetaData("content-disposition-type");
+        d->m_contentDisposition = job->queryMetaData(QStringLiteral("content-disposition-type"));
 
-        const QString modificationTime = job->queryMetaData("content-disposition-modification-date");
+        const QString modificationTime = job->queryMetaData(QStringLiteral("content-disposition-modification-date"));
         if (!modificationTime.isEmpty()) {
             d->m_args.metaData().insert(QLatin1String("content-disposition-modification-date"), modificationTime);
         }
@@ -266,7 +266,7 @@ BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable(const QString& _
     QString mimeType( _mimeType );
     Q_ASSERT( !hasFinished() ); // only come here if the mimetype couldn't be embedded
     // Support for saving remote files.
-    if ( mimeType != "inode/directory" && // dirs can't be saved
+    if (mimeType != QLatin1String("inode/directory") && // dirs can't be saved
          !KRun::url().isLocalFile() )
     {
         if ( isTextExecutable(mimeType) )
@@ -299,7 +299,7 @@ BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable(const QString& _
                 d->m_mimeType = mimeType;
                 QString extension;
                 QString fileName = suggestedFileName().isEmpty() ? KRun::url().fileName() : suggestedFileName();
-                int extensionPos = fileName.lastIndexOf( '.' );
+                int extensionPos = fileName.lastIndexOf(QLatin1Char('.'));
                 if ( extensionPos != -1 )
                     extension = fileName.mid( extensionPos ); // keep the '.'
                 QTemporaryFile tempFile(QDir::tempPath() + QLatin1Char('/') + QCoreApplication::applicationName() + QLatin1String("XXXXXX") + extension);
@@ -395,7 +395,7 @@ void KParts::BrowserRun::saveUrl(const QUrl & url, const QString & suggestedFile
     // only use the downloadmanager for non-local urls
     if ( !url.isLocalFile() )
     {
-        KConfigGroup cfg = KSharedConfig::openConfig("konquerorrc", KConfig::NoGlobals)->group("HTML Settings");
+        KConfigGroup cfg = KSharedConfig::openConfig(QStringLiteral("konquerorrc"), KConfig::NoGlobals)->group("HTML Settings");
         QString downloadManger = cfg.readPathEntry("DownloadManager", QString());
         if (!downloadManger.isEmpty())
         {
@@ -416,9 +416,9 @@ void KParts::BrowserRun::saveUrl(const QUrl & url, const QString & suggestedFile
                 // the duplicated code) with shiny new KDownload class for 3.2 (pfeiffer)
                 // Until the shiny new class comes about, send the suggestedFileName
                 // along with the actual URL to download. (DA)
-                cmd += ' ' + KShell::quoteArg(url.toString());
+                cmd += QLatin1Char(' ') + KShell::quoteArg(url.toString());
                 if ( !suggestedFileName.isEmpty() )
-                    cmd += ' ' + KShell::quoteArg(suggestedFileName);
+                    cmd += QLatin1Char(' ') + KShell::quoteArg(suggestedFileName);
 
                 // qDebug() << "Calling command" << cmd;
                 // slave is already on hold (slotBrowserMimetype())
@@ -463,8 +463,8 @@ void BrowserRun::saveUrlUsingKIO(const QUrl & srcUrl, const QUrl & destUrl,
         job->setModificationTime(QDateTime::fromString(modificationTime, Qt::RFC2822Date));
     }
     job->setMetaData(metaData);
-    job->addMetaData("MaxCacheSize", "0"); // Don't store in http cache.
-    job->addMetaData("cache", "cache"); // Use entry from cache if available.
+    job->addMetaData(QStringLiteral("MaxCacheSize"), QStringLiteral("0")); // Don't store in http cache.
+    job->addMetaData(QStringLiteral("cache"), QStringLiteral("cache")); // Use entry from cache if available.
     KJobWidgets::setWindow(job, window);
     job->ui()->setAutoErrorHandlingEnabled( true );
     new DownloadJobWatcher(job, metaData);
@@ -507,9 +507,9 @@ QUrl BrowserRun::makeErrorUrl(int error, const QString& errorText, const QUrl& i
      * error = int kio error code, errText = QString error text from kio
      * The sub-url is the URL that we were trying to open.
      */
-    QUrl newURL(QString("error:/?error=%1&errText=%2")
-                .arg( error )
-                .arg( QString::fromUtf8( QUrl::toPercentEncoding( errorText ) ) ) );
+    QUrl newURL(QString::fromLatin1("error:/?error=%1&errText=%2")
+                .arg(error)
+                .arg(QString::fromUtf8(QUrl::toPercentEncoding(errorText))));
 
     QString cleanedOrigUrl = initialUrl.toString();
     QUrl runURL(cleanedOrigUrl);
@@ -536,7 +536,7 @@ void BrowserRun::redirectToError( int error, const QString& errorText )
      */
     KRun::setUrl(makeErrorUrl(error, errorText, url()));
     setJob( 0 );
-    mimeTypeDetermined( "text/html" );
+    mimeTypeDetermined(QStringLiteral("text/html"));
 }
 
 void BrowserRun::slotCopyToTempFileResult(KJob *job)
@@ -553,8 +553,8 @@ void BrowserRun::slotCopyToTempFileResult(KJob *job)
 
 bool BrowserRun::isTextExecutable( const QString &mimeType )
 {
-    return ( mimeType == "application/x-desktop" ||
-             mimeType == "application/x-shellscript" );
+    return ( mimeType == QLatin1String("application/x-desktop") ||
+             mimeType == QLatin1String("application/x-shellscript") );
 }
 
 bool BrowserRun::hideErrorDialog() const
@@ -571,7 +571,7 @@ bool BrowserRun::serverSuggestsSave() const
 {
     // RfC 2183, section 2.8:
     // Unrecognized disposition types should be treated as `attachment'.
-    return !contentDisposition().isEmpty() && (contentDisposition() != "inline");
+    return !contentDisposition().isEmpty() && (contentDisposition() != QLatin1String("inline"));
 }
 
 KParts::OpenUrlArguments& KParts::BrowserRun::arguments()

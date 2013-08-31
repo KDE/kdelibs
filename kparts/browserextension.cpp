@@ -607,42 +607,41 @@ void BrowserExtension::slotCompleted()
 
 void BrowserExtension::pasteRequest()
 {
-    QString plain( "plain" );
+    QString plain(QStringLiteral("plain"));
     QString url = QApplication::clipboard()->text(plain, QClipboard::Selection).trimmed();
     // Remove linefeeds and any whitespace surrounding it.
-    url.remove(QRegExp("[\\ ]*\\n+[\\ ]*"));
+    url.remove(QRegExp(QStringLiteral("[\\ ]*\\n+[\\ ]*")));
 
     // Check if it's a URL
     QStringList filters = KUriFilter::self()->pluginNames();
-    filters.removeAll( "kuriikwsfilter" );
-    filters.removeAll( "localdomainurifilter" );
+    filters.removeAll(QStringLiteral("kuriikwsfilter"));
+    filters.removeAll(QStringLiteral("localdomainurifilter"));
     KUriFilterData filterData;
     filterData.setData( url );
     filterData.setCheckForExecutables( false );
     if ( KUriFilter::self()->filterUri( filterData, filters ) )
     {
         switch ( filterData.uriType() )
-	{
-	    case KUriFilterData::LocalFile:
-	    case KUriFilterData::LocalDir:
-	    case KUriFilterData::NetProtocol:
-	        slotOpenUrlRequest( filterData.uri() );
-		break;
-	    case KUriFilterData::Error:
-		KMessageBox::sorry( d->m_part->widget(), filterData.errorMsg() );
-		break;
-	    default:
-		break;
-	}
+        {
+            case KUriFilterData::LocalFile:
+            case KUriFilterData::LocalDir:
+            case KUriFilterData::NetProtocol:
+                slotOpenUrlRequest( filterData.uri() );
+                break;
+            case KUriFilterData::Error:
+                KMessageBox::sorry( d->m_part->widget(), filterData.errorMsg() );
+                break;
+            default:
+                break;
+        }
     }
-    else if ( KUriFilter::self()->filterUri( filterData,
-                    QStringList( QLatin1String( "kuriikwsfilter" ) ) ) &&
-              url.length() < 250 )
+    else if (KUriFilter::self()->filterUri(filterData, QStringList(QStringLiteral("kuriikwsfilter"))) &&
+              url.length() < 250)
     {
-        if ( KMessageBox::questionYesNo( d->m_part->widget(),
-		    i18n( "<qt>Do you want to search the Internet for <b>%1</b>?</qt>" ,  url.toHtmlEscaped() ),
-		    i18n( "Internet Search" ), KGuiItem( i18n( "&Search" ), "edit-find"),
-		    KStandardGuiItem::cancel(), "MiddleClickSearch" ) == KMessageBox::Yes)
+        if (KMessageBox::questionYesNo(d->m_part->widget(),
+                    i18n("<qt>Do you want to search the Internet for <b>%1</b>?</qt>", url.toHtmlEscaped()),
+                    i18n("Internet Search"), KGuiItem(i18n("&Search"), QStringLiteral("edit-find")),
+                    KStandardGuiItem::cancel(), QStringLiteral("MiddleClickSearch")) == KMessageBox::Yes)
           slotOpenUrlRequest( filterData.uri() );
     }
 }

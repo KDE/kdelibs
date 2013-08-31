@@ -17,7 +17,6 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#define QT_NO_CAST_FROM_ASCII
 #include "autostart.h"
 
 #include <kautostart.h>

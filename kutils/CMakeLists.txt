@@ -1,5 +1,7 @@
 project(kutils)
 
+remove_definitions(-DQT_NO_CAST_FROM_ASCII)
+
 ########### kcmutils ###############
 set(kcmutils_LIB_SRCS
     kcmoduleinfo.cpp

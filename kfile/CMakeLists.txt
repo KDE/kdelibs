@@ -1,5 +1,7 @@
 project(kfile)
 
+remove_definitions(-DQT_NO_CAST_FROM_ASCII)
+
 configure_file(config-kfile.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kfile.h )
 macro_bool_to_01(X11_Xrender_FOUND HAVE_XRENDER)
 

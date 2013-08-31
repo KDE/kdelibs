@@ -146,7 +146,7 @@ extern "C" Q_DECL_EXPORT int kdemain( int argc, char**argv )
 
    // We need a QCoreApplication to get a DBus event loop
    QCoreApplication app(argc, argv);
-   app.setApplicationName("klauncher");
+   app.setApplicationName(QStringLiteral("klauncher"));
 
    KLocalizedString::setApplicationDomain("kdelibs4");
 

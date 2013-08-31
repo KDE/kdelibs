@@ -61,7 +61,7 @@ HistoryProvider::HistoryProvider( QObject *parent )
 {
     Q_ASSERT(!historyProviderPrivate()->q);
     historyProviderPrivate()->q = this;
-    setObjectName("history provider");
+    setObjectName(QStringLiteral("history provider"));
 }
 
 HistoryProvider::~HistoryProvider()

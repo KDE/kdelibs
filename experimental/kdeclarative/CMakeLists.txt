@@ -7,6 +7,8 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/..
 		    ${CMAKE_CURRENT_BINARY_DIR}/..
 		    )
 
+remove_definitions(-DQT_NO_CAST_FROM_ASCII)
+
 set(kdeclarative_LIB_SRCS
     configpropertymap.cpp
     qmlobject.cpp

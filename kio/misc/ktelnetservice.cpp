@@ -20,6 +20,8 @@
    Boston, MA 02110-1301, USA.
 */
 
+#undef QT_NO_CAST_FROM_ASCII
+
 #include <QApplication>
 #include <ktoolinvocation.h>
 #include <kcoreauthorized.h>
@@ -49,49 +51,46 @@ int main(int argc, char **argv)
         cmd << "--noclose";
 
     cmd << "-e";
-        if ( url.scheme() == "telnet" )
-            cmd << "telnet";
-        else if ( url.scheme() == "ssh" )
-            cmd << "ssh";
-        else if ( url.scheme() == "rlogin" )
-            cmd << "rlogin";
-        else {
-            qCritical() << "Invalid protocol " << url.scheme() << endl;
-            return 2;
-        }
+    if ( url.scheme() == "telnet" )
+        cmd << "telnet";
+    else if ( url.scheme() == "ssh" )
+        cmd << "ssh";
+    else if ( url.scheme() == "rlogin" )
+        cmd << "rlogin";
+    else {
+        qCritical() << "Invalid protocol " << url.scheme() << endl;
+        return 2;
+    }
 
-        if (!KAuthorized::authorize("shell_access"))
-        {
-            KMessageBox::sorry(0,
-                i18n("You do not have permission to access the %1 protocol.", url.scheme()));
-            return 3;
-        }
+    if (!KAuthorized::authorize("shell_access")) {
+        KMessageBox::sorry(0,
+            i18n("You do not have permission to access the %1 protocol.", url.scheme()));
+        return 3;
+    }
 
-    if (!url.userName().isEmpty())
-    {
+    if (!url.userName().isEmpty()) {
         cmd << "-l";
         cmd << url.userName();
     }
 
-        QString host;
-        if (!url.host().isEmpty())
-           host = url.host(); // telnet://host
-        else if (!url.path().isEmpty())
-           host = url.path(); // telnet:host
+    QString host;
+    if (!url.host().isEmpty())
+       host = url.host(); // telnet://host
+    else if (!url.path().isEmpty())
+       host = url.path(); // telnet:host
 
-        if (host.isEmpty() || host.startsWith('-'))
-        {
-            qCritical() << "Invalid hostname " << host << endl;
-            return 2;
-        }
+    if (host.isEmpty() || host.startsWith('-')) {
+        qCritical() << "Invalid hostname " << host << endl;
+        return 2;
+    }
 
-        cmd << host;
+    cmd << host;
 
-    if (url.port() > 0){
-            if ( url.scheme() == "ssh" )
-        cmd << "-p" << QString::number(url.port());
+    if (url.port() > 0) {
+        if (url.scheme() == QLatin1String("ssh"))
+            cmd << "-p" << QString::number(url.port());
         else
-        cmd << QString::number(url.port());
+            cmd << QString::number(url.port());
     }
 
     KToolInvocation::kdeinitExec(terminal, cmd);

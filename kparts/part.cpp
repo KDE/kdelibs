@@ -559,7 +559,7 @@ bool ReadOnlyPart::openUrl( const QUrl &url )
     if (d->m_url.isLocalFile()) {
         d->m_file = d->m_url.toLocalFile();
         return d->openLocalFile();
-    } else if (KProtocolInfo::protocolClass(url.scheme()) == ":local") {
+    } else if (KProtocolInfo::protocolClass(url.scheme()) == QLatin1String(":local")) {
         // Maybe we can use a "local path", to avoid a temp copy?
         KIO::JobFlags flags = d->m_showProgressInfo ? KIO::DefaultFlags : KIO::HideProgressInfo;
         d->m_statJob = KIO::mostLocalUrl(d->m_url, flags);
@@ -615,7 +615,7 @@ void ReadOnlyPartPrivate::openRemoteFile()
     QString ext = fileInfo.completeSuffix();
     QString extension;
     if (!ext.isEmpty() && !m_url.hasQuery()) // not if the URL has a query, e.g. cgi.pl?something
-        extension = '.'+ext; // keep the '.'
+        extension = QLatin1Char('.') + ext; // keep the '.'
     QTemporaryFile tempFile(QDir::tempPath() + QLatin1Char('/') + q->componentData().componentName() + QLatin1String("XXXXXX") + extension);
     tempFile.setAutoRemove(false);
     tempFile.open();
@@ -718,13 +718,13 @@ void ReadOnlyPart::guiActivateEvent( GUIActivateEvent * event )
 {
     Q_D(ReadOnlyPart);
 
-    if (event->activated())
-    {
-        if (!d->m_url.isEmpty())
-        {
+    if (event->activated()) {
+        if (!d->m_url.isEmpty()) {
             // qDebug() << d->m_url;
             emit setWindowCaption(d->m_url.toDisplayString());
-        } else emit setWindowCaption( "" );
+        } else {
+            emit setWindowCaption(QString());
+        }
     }
 }
 

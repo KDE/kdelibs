@@ -83,7 +83,7 @@ bool PtyProcess::checkPid(pid_t pid)
     KConfigGroup cg(config, "super-user-command");
     QString superUserCommand = cg.readEntry("super-user-command", "sudo");
     //sudo does not accept signals from user so we except it
-    if (superUserCommand == "sudo") {
+    if (superUserCommand == QLatin1String("sudo")) {
         return true;
     } else {
         return kill(pid, 0) == 0;
@@ -338,7 +338,7 @@ int PtyProcess::exec(const QByteArray &command, const QList<QByteArray> &args)
         path = command;
     else
     {
-        QString file = QStandardPaths::findExecutable(command);
+        QString file = QStandardPaths::findExecutable(QFile::decodeName(command));
         if (file.isEmpty())
         {
             qCritical() << "[" << __FILE__ << ":" << __LINE__ << "] " << command << "not found.";

@@ -140,7 +140,7 @@ HtmlSettingsInterface::JavaScriptAdvice HtmlSettingsInterface::textToJavascriptA
 void HtmlSettingsInterface::splitDomainAdvice(const QString& adviceStr, QString& domain, HtmlSettingsInterface::JavaScriptAdvice& javaAdvice, HtmlSettingsInterface::JavaScriptAdvice& javaScriptAdvice)
 {
     const QString tmp(adviceStr);
-    const int splitIndex = tmp.indexOf(':');
+    const int splitIndex = tmp.indexOf(QLatin1Char(':'));
 
     if (splitIndex == -1) {
         domain = adviceStr.toLower();

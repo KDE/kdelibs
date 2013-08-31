@@ -1,6 +1,7 @@
 project(knewstuff3)
 
 add_definitions(-DKDE_DEFAULT_DEBUG_AREA=550)
+remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
 find_package(LibAttica 1.0.0 NO_MODULE)
 set_package_properties(LibAttica PROPERTIES DESCRIPTION "A Qt library that implements the Open Collaboration Services API"

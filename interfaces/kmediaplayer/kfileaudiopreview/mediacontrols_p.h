@@ -47,12 +47,12 @@ class MediaControlsPrivate
             int size = parent->style()->pixelMetric(QStyle::PM_ToolBarIconSize);
             QSize iconSize(size, size);
             playButton.setIconSize(iconSize);
-            playButton.setIcon(QIcon::fromTheme("media-playback-start"));
+            playButton.setIcon(QIcon::fromTheme(QStringLiteral("media-playback-start")));
             playButton.setToolTip(i18n("start playback"));
             playButton.setAutoRaise(true);
 
             pauseButton.setIconSize(iconSize);
-            pauseButton.setIcon(QIcon::fromTheme("media-playback-pause"));
+            pauseButton.setIcon(QIcon::fromTheme(QStringLiteral("media-playback-pause")));
             pauseButton.setToolTip(i18n("pause playback"));
             pauseButton.hide();
             pauseButton.setAutoRaise(true);

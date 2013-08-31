@@ -42,7 +42,7 @@ static void runTest(const QString &header, const QByteArray &result)
 
     foreach (const QByteArray &ba, results) {
         QList<QByteArray> values = ba.split('\t');
-        const QString key(values.takeFirst());
+        const QString key(QString::fromLatin1(values.takeFirst()));
 
         QVERIFY(parameters.contains(key));
 

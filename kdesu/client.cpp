@@ -56,7 +56,7 @@ KDEsuClient::KDEsuClient()
     :d(new KDEsuClientPrivate)
 {
 #if HAVE_X11
-    QString display = QString::fromLatin1(qgetenv("DISPLAY"));
+    QString display = QString::fromLocal8Bit(qgetenv("DISPLAY"));
     if (display.isEmpty())
     {
         qWarning() << "[" << __FILE__ << ":" << __LINE__ << "] " << "$DISPLAY is not set.";
@@ -64,12 +64,12 @@ KDEsuClient::KDEsuClient()
     }
 
     // strip the screen number from the display
-    display.remove(QRegExp("\\.[0-9]+$"));
+    display.remove(QRegExp(QStringLiteral("\\.[0-9]+$")));
 #else
-    QByteArray display("NODISPLAY");
+    QString display = QStringLiteral("NODISPLAY");
 #endif
 
-    d->sock = QFile::encodeName( QStandardPaths::writableLocation(QStandardPaths::RuntimeLocation) + QLatin1Char('/') + QString("kdesud_").append(display));
+    d->sock = QFile::encodeName( QStandardPaths::writableLocation(QStandardPaths::RuntimeLocation) + QStringLiteral("/kdesud_") + display);
     connect();
 }
 
@@ -395,9 +395,9 @@ int KDEsuClient::stopServer()
 
 static QString findDaemon()
 {
-    QString daemon = CMAKE_INSTALL_PREFIX "/" LIBEXEC_INSTALL_DIR "/kdesud";
+    QString daemon = QFile::decodeName(CMAKE_INSTALL_PREFIX "/" LIBEXEC_INSTALL_DIR "/kdesud");
     if (!QFile::exists(daemon)) { // if not in libexec, find it in PATH
-        daemon = QStandardPaths::findExecutable("kdesud");
+        daemon = QStandardPaths::findExecutable(QStringLiteral("kdesud"));
         if (daemon.isEmpty()) {
             qWarning() << "kdesud daemon not found.";
         }

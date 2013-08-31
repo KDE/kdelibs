@@ -398,7 +398,7 @@ void ScriptableLiveConnectExtension::liveConnectEvent(const unsigned long, const
         // qDebug() << "Host can't evaluate ECMAScript";
     }
 
-    // Compute a string to evaluate. We ned to escape a lot of stuff
+    // Compute a string to evaluate. We need to escape a lot of stuff
     // since we're composing a bunch of strings into one.
     QString script;
     script.sprintf("%s(", event.toLatin1().constData());
@@ -409,15 +409,15 @@ void ScriptableLiveConnectExtension::liveConnectEvent(const unsigned long, const
 
     for ( ; i != argsEnd; ++i) {
         if (i != argsBegin)
-            script += ",";
+            script += QLatin1Char(',');
         if ((*i).first == KParts::LiveConnectExtension::TypeString) {
-            script += "\"";
-            script += QString((*i).second).replace('\\', "\\\\").replace('"', "\\\"");
-            script += "\"";
+            script += QLatin1Char('"') +
+                QString((*i).second).replace(QLatin1Char('\\'), QStringLiteral("\\\\")).replace(QLatin1Char('"'), QStringLiteral("\\\"")) +
+                QLatin1Char('"');
         } else
             script += (*i).second;
     }
-    script += ")";
+    script += QLatin1Char(')');
 
     // qDebug() << script;
 

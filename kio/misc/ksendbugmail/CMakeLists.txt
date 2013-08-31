@@ -1,3 +1,5 @@
+remove_definitions(-DQT_NO_CAST_FROM_ASCII)
+
 include_directories(
    ${CMAKE_SOURCE_DIR}/staging/kio/src/core # kemailsettings.h
    ${CMAKE_BINARY_DIR}/staging/kio/src/include # kio/kio_export.h

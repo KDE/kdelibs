@@ -1,7 +1,6 @@
-
 add_subdirectory( tests )
 
-####### kcookiejar4: command line tool for talking to the kded kcookiejar module #######
+####### kcookiejar: command line tool for talking to the kded kcookiejar module #######
 
 set(kcookiejar_SRCS
 main.cpp

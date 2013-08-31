@@ -62,10 +62,10 @@ public:
         const int spacingHint = style()->pixelMetric(QStyle::PM_DefaultLayoutSpacing);
 
         // Use askSave or askEmbedOrSave from filetypesrc
-        dontAskConfig = KSharedConfig::openConfig("filetypesrc", KConfig::NoGlobals);
+        dontAskConfig = KSharedConfig::openConfig(QStringLiteral("filetypesrc"), KConfig::NoGlobals);
 
         setWindowTitle(url.host());
-        setObjectName("questionYesNoCancel");
+        setObjectName(QStringLiteral("questionYesNoCancel"));
 
         QVBoxLayout *mainLayout = new QVBoxLayout(this);
         mainLayout->setSpacing(spacingHint * 2); // provide extra spacing
@@ -79,7 +79,7 @@ public:
         QLabel *iconLabel = new QLabel(this);
         QStyleOption option;
         option.initFrom(this);
-        QIcon icon = QIcon::fromTheme("dialog-information");
+        QIcon icon = QIcon::fromTheme(QStringLiteral("dialog-information"));
         iconLabel->setPixmap(icon.pixmap(style()->pixelMetric(QStyle::PM_MessageBoxIconSize, &option, this)));
 
         hLayout->addWidget(iconLabel, 0, Qt::AlignCenter);
@@ -115,20 +115,20 @@ public:
         buttonBox = new QDialogButtonBox(this);
 
         saveButton = buttonBox->addButton(QDialogButtonBox::Yes);
-        saveButton->setObjectName("saveButton");
+        saveButton->setObjectName(QStringLiteral("saveButton"));
         KGuiItem::assign(saveButton, KStandardGuiItem::saveAs());
         saveButton->setDefault(true);
 
         openDefaultButton = new QPushButton;
-        openDefaultButton->setObjectName("openDefaultButton");
+        openDefaultButton->setObjectName(QStringLiteral("openDefaultButton"));
         buttonBox->addButton(openDefaultButton, QDialogButtonBox::ActionRole);
 
         openWithButton = new QPushButton;
-        openWithButton->setObjectName("openWithButton");
+        openWithButton->setObjectName(QStringLiteral("openWithButton"));
         buttonBox->addButton(openWithButton, QDialogButtonBox::ActionRole);
 
         QPushButton *cancelButton = buttonBox->addButton(QDialogButtonBox::Cancel);
-        cancelButton->setObjectName("cancelButton");
+        cancelButton->setObjectName(QStringLiteral("cancelButton"));
 
         connect(saveButton, SIGNAL(clicked()), this, SLOT(slotYesClicked()));
         connect(openDefaultButton, SIGNAL(clicked()), this, SLOT(slotOpenDefaultClicked()));
@@ -144,13 +144,13 @@ public:
     {
         KConfigGroup cg(dontAskConfig, "Notification Messages"); // group name comes from KMessageBox
         const QString dontAsk = cg.readEntry(dontShowAgainName, QString()).toLower();
-        if (dontAsk == "yes" || dontAsk == "true") {
+        if (dontAsk == QLatin1String("yes") || dontAsk == QLatin1String("true")) {
             return Save;
-        } else if (dontAsk == "no" || dontAsk == "false") {
+        } else if (dontAsk == QLatin1String("no") || dontAsk == QLatin1String("false")) {
             return OpenDefault;
         }
 
-        KNotification::event("messageQuestion", // why does KMessageBox uses Information for questionYesNoCancel?
+        KNotification::event(QStringLiteral("messageQuestion"), // why does KMessageBox uses Information for questionYesNoCancel?
                              questionLabel->text(), // also include mimetype?
                              QPixmap(),
                              window());
@@ -232,7 +232,7 @@ BrowserOpenOrSaveQuestion::~BrowserOpenOrSaveQuestion()
 
 static QAction* createAppAction(const KService::Ptr& service, QObject* parent)
 {
-    QString actionName(service->name().replace('&', "&&"));
+    QString actionName(service->name().replace(QLatin1Char('&'), QStringLiteral("&&")));
     actionName = i18nc("@action:inmenu", "Open &with %1", actionName);
 
     QAction *act = new QAction(parent);
@@ -248,7 +248,7 @@ BrowserOpenOrSaveQuestion::Result BrowserOpenOrSaveQuestion::askOpenOrSave()
     d->questionLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
     d->openWithButton->hide();
 
-    KGuiItem openWithDialogItem(i18nc("@label:button", "&Open with..."), "document-open");
+    KGuiItem openWithDialogItem(i18nc("@label:button", "&Open with..."), QStringLiteral("document-open"));
 
     // I thought about using KFileItemActions, but we don't want a submenu, nor the slots....
     // and we want no menu at all if there's only one offer.
@@ -268,7 +268,7 @@ BrowserOpenOrSaveQuestion::Result BrowserOpenOrSaveQuestion::askOpenOrSave()
             QMenu* menu = new QMenu(d);
             if (apps.count() > 1) {
                 // Provide an additional button with a menu of associated apps
-                KGuiItem openWithItem(i18nc("@label:button", "&Open with"), "document-open");
+                KGuiItem openWithItem(i18nc("@label:button", "&Open with"), QStringLiteral("document-open"));
                 KGuiItem::assign(d->openWithButton, openWithItem);
                 d->openWithButton->setMenu(menu);
                 QObject::connect(menu, SIGNAL(triggered(QAction*)), d, SLOT(slotAppSelected(QAction*)));
@@ -277,7 +277,7 @@ BrowserOpenOrSaveQuestion::Result BrowserOpenOrSaveQuestion::askOpenOrSave()
                     menu->addAction(act);
                 }
                 QAction* openWithDialogAction = new QAction(d);
-                openWithDialogAction->setIcon(QIcon::fromTheme("document-open"));
+                openWithDialogAction->setIcon(QIcon::fromTheme(QStringLiteral("document-open")));
                 openWithDialogAction->setText(openWithDialogItem.text());
                 menu->addAction(openWithDialogAction);
             } else {
@@ -318,12 +318,12 @@ bool BrowserOpenOrSaveQuestionPrivate::autoEmbedMimeType(int flags)
     // - multipart/* ("server push", see kmultipart)
     // KEEP IN SYNC!!!
     if (flags != (int)BrowserRun::AttachmentDisposition && mime.isValid() && (
-            mime.inherits("text/html") ||
-            mime.inherits("application/xml") ||
-            mime.inherits("inode/directory") ||
+            mime.inherits(QStringLiteral("text/html")) ||
+            mime.inherits(QStringLiteral("application/xml")) ||
+            mime.inherits(QStringLiteral("inode/directory")) ||
             mimeType.startsWith(QLatin1String("image")) ||
-            mime.inherits("multipart/x-mixed-replace") ||
-            mime.inherits("multipart/replace")))
+            mime.inherits(QStringLiteral("multipart/x-mixed-replace")) ||
+            mime.inherits(QStringLiteral("multipart/replace"))))
         return true;
     return false;
 }
@@ -334,7 +334,7 @@ BrowserOpenOrSaveQuestion::Result BrowserOpenOrSaveQuestion::askEmbedOrSave(int 
         return Embed;
 
     // don't use KStandardGuiItem::open() here which has trailing ellipsis!
-    KGuiItem::assign(d->openDefaultButton, KGuiItem(i18nc("@label:button", "&Open"), "document-open"));
+    KGuiItem::assign(d->openDefaultButton, KGuiItem(i18nc("@label:button", "&Open"), QStringLiteral("document-open")));
     d->openWithButton->hide();
 
     d->questionLabel->setText(i18nc("@info", "Open '%1'?", d->url.toDisplayString(QUrl::PreferLocalFile)));

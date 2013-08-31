@@ -1,5 +1,7 @@
 project(kdewebkit)
 
+remove_definitions(-DQT_NO_CAST_FROM_ASCII)
+
 add_feature_info(QtWebkitWidgets Qt5WebKitWidgets_FOUND "Needed for building kdelibs" "http://trac.webkit.org/wiki/QtWebKit")
 
 if(NOT Qt5WebKitWidgets_FOUND)

@@ -1,6 +1,7 @@
 project(dnssd)
 include(ConfigureChecks.cmake)
 configure_file(config-dnssd.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-dnssd.h )
+remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
 find_package(Avahi)
 macro_bool_to_01(AVAHI_FOUND HAVE_AVAHI)

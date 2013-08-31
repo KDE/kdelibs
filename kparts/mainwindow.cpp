@@ -69,15 +69,6 @@ MainWindow::MainWindow( QWidget* parent, Qt::WindowFlags f )
   PartBase::setPartObject( this );
 }
 
-#ifndef KDE_NO_DEPRECATED
-MainWindow::MainWindow( QWidget* parent, const char *name, Qt::WindowFlags f )
-  : KXmlGuiWindow( parent, f ),d(new MainWindowPrivate())
-{
-  setObjectName( name );
-  PartBase::setPartObject( this );
-}
-#endif
-
 MainWindow::~MainWindow()
 {
   delete d;
@@ -174,12 +165,11 @@ void MainWindow::createShellGUI( bool create )
         }
 
         QString f = xmlFile();
-        setXMLFile(QStandardPaths::locate(QStandardPaths::ConfigLocation, "ui/ui_standards.rc"));
-        if ( !f.isEmpty() )
-            setXMLFile( f, true );
-        else
-        {
-            QString auto_file( componentName() + "ui.rc" );
+        setXMLFile(QStandardPaths::locate(QStandardPaths::ConfigLocation, QStringLiteral("ui/ui_standards.rc")));
+        if (!f.isEmpty()) {
+            setXMLFile(f, true);
+        } else {
+            QString auto_file(componentName() + QStringLiteral("ui.rc"));
             setXMLFile( auto_file, true );
         }
 

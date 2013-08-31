@@ -1,5 +1,7 @@
 project(kio)
 
+remove_definitions(-DQT_NO_CAST_FROM_ASCII)
+
 add_definitions(-DQT_NO_URL_CAST_FROM_STRING)
 
 if(KDE_PLATFORM_FEATURE_BINARY_INCOMPATIBLE_FEATURE_REDUCTION)

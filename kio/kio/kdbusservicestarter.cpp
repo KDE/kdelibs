@@ -66,8 +66,8 @@ int KDBusServiceStarter::findServiceFor( const QString& serviceType,
     // We want one that provides a DBus interface
     QString constraint = _constraint;
     if ( !constraint.isEmpty() )
-        constraint += " and ";
-    constraint += "exist [X-DBUS-ServiceName]";
+        constraint += QLatin1String(" and ");
+    constraint += QLatin1String("exist [X-DBUS-ServiceName]");
     const KService::List offers = KServiceTypeTrader::self()->query(serviceType, constraint);
     if ( offers.isEmpty() ) {
         if ( error )
@@ -76,7 +76,7 @@ int KDBusServiceStarter::findServiceFor( const QString& serviceType,
         return -1;
     }
     KService::Ptr ptr = offers.first();
-    QString dbusService = ptr->property("X-DBUS-ServiceName").toString();
+    QString dbusService = ptr->property(QStringLiteral("X-DBUS-ServiceName")).toString();
 
     if ( !QDBusConnection::sessionBus().interface()->isServiceRegistered( dbusService ) )
     {
