@@ -213,6 +213,11 @@ class KdePlatformTheme_UnitTest : public QObject
             m_loop.exec();
 
             QCOMPARE(m_qpa->themeHint(QPlatformTheme::DialogButtonBoxButtonsHaveIcons).toBool(), true);
+
+            sendNotifyChange(KHintsSettings::IconChanged, 4);
+            m_loop.exec();
+
+            QCOMPARE(m_qpa->themeHint(QPlatformTheme::SystemIconThemeName).toString(), QLatin1String("other-non-existent"));
         }
 };
 

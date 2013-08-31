@@ -144,6 +144,9 @@ void KHintsSettings::slotNotifyChange(int type, int arg)
         }
         break;
     }
+    case IconChanged:
+        iconChanged(arg); //Once the KCM is ported to use IconChanged, this should not be needed
+        break;
     case StyleChanged: {
         QApplication *app = qobject_cast<QApplication*>(QCoreApplication::instance());
         if (!app) {
@@ -175,6 +178,9 @@ void KHintsSettings::iconChanged(int group)
 {
     KIconLoader::Group iconGroup = (KIconLoader::Group) group;
     if (iconGroup != KIconLoader::MainToolbar) {
+        KSharedConfig::Ptr ptr = KSharedConfig::openConfig("kdeglobals");
+        KConfigGroup cgIcons(ptr, "Icons");
+        m_hints[QPlatformTheme::SystemIconThemeName] = cgIcons.readEntry("Theme", "oxygen");
         return;
     }
 
