@@ -27,6 +27,7 @@
 #include <QString>
 #include <QFileInfo>
 #include <QToolBar>
+#include <QPalette>
 #include <QToolButton>
 #include <QMainWindow>
 #include <QApplication>
@@ -83,6 +84,13 @@ KHintsSettings::KHintsSettings() : QObject(0)
                                                    QStringLiteral("notifyChange"), this, SLOT(slotNotifyChange(int, int)));
 
     QMetaObject::invokeMethod(this, "setupIconLoader", Qt::QueuedConnection);
+
+    loadPalettes();
+}
+
+KHintsSettings::~KHintsSettings()
+{
+    qDeleteAll(m_palettes);
 }
 
 QStringList KHintsSettings::xdgIconThemePaths() const
@@ -118,6 +126,9 @@ void KHintsSettings::slotNotifyChange(int type, int arg)
     KConfigGroup cg(ptr, "KDE");
 
     switch(type) {
+    case PaletteChanged:
+        loadPalettes();
+        break;
     case SettingsChanged: {
 
         SettingsCategory category = static_cast<SettingsCategory>(arg);
@@ -234,4 +245,13 @@ Qt::ToolButtonStyle KHintsSettings::toolButtonStyle(const KConfigGroup& cg) cons
                              : buttonStyle == "icontextbottom" ? Qt::ToolButtonTextUnderIcon
                              : buttonStyle == "textonly" ? Qt::ToolButtonTextOnly
                              : Qt::ToolButtonIconOnly;
+}
+
+void KHintsSettings::loadPalettes()
+{
+    qDeleteAll(m_palettes);
+    m_palettes.clear();
+
+    KSharedConfig::Ptr globals = KSharedConfig::openConfig("kdeglobals");
+    m_palettes[QPlatformTheme::SystemPalette] = new QPalette(KColorScheme::createApplicationPalette(globals));
 }

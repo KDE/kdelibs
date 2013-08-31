@@ -45,7 +45,6 @@ KdePlatformTheme::~KdePlatformTheme()
 {
     delete m_fontsData;
     delete m_hints;
-    qDeleteAll(m_palettes);
 }
 
 QVariant KdePlatformTheme::themeHint(QPlatformTheme::ThemeHint hintType) const
@@ -60,9 +59,9 @@ QVariant KdePlatformTheme::themeHint(QPlatformTheme::ThemeHint hintType) const
 
 const QPalette *KdePlatformTheme::palette(Palette type) const
 {
-    QHash<Palette, QPalette*>::const_iterator it = m_palettes.constFind(type);
-    if (it != m_palettes.constEnd())
-        return *it;
+    QPalette *palette = m_hints->palette(type);
+    if (palette)
+        return palette;
     else
         return QPlatformTheme::palette(type);
 }
@@ -111,17 +110,6 @@ QIconEngine *KdePlatformTheme::createIconEngine(const QString &iconName) const
 
 void KdePlatformTheme::loadSettings()
 {
-    loadPalettes();
-
     m_fontsData = new KFontSettingsData;
     m_hints = new KHintsSettings;
-}
-
-void KdePlatformTheme::loadPalettes()
-{
-    qDeleteAll(m_palettes);
-    m_palettes.clear();
-
-    KSharedConfig::Ptr globals = KSharedConfig::openConfig("kdeglobals");
-    m_palettes[SystemPalette] = new QPalette(KColorScheme::createApplicationPalette(globals));
 }

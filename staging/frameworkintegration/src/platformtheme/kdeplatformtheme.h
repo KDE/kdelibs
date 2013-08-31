@@ -43,11 +43,9 @@ public:
 
 private:
     void loadSettings();
-    void loadPalettes();
     void iconChanged(int group);
 
     KHintsSettings *m_hints;
-    QHash<Palette, QPalette*> m_palettes;
     KFontSettingsData* m_fontsData;
 };
 

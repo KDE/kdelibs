@@ -28,6 +28,7 @@
 
 #include <ksharedconfig.h>
 
+class QPalette;
 class KHintsSettings : public QObject
 {
     Q_OBJECT
@@ -48,10 +49,18 @@ class KHintsSettings : public QObject
                             SETTINGS_POPUPMENU, SETTINGS_QT, SETTINGS_SHORTCUTS,
                             SETTINGS_LOCALE, SETTINGS_STYLE };
         explicit KHintsSettings();
+        virtual ~KHintsSettings();
 
         inline QVariant hint(QPlatformTheme::ThemeHint hint)
         {
             return m_hints[hint];
+        }
+        inline QPalette* palette(QPlatformTheme::Palette type)
+        {
+            if (!m_palettes.contains(type)) {
+                return 0;
+            }
+            return m_palettes[type];
         }
 
     private Q_SLOTS:
@@ -59,11 +68,13 @@ class KHintsSettings : public QObject
         void slotNotifyChange(int type, int arg);
 
     private:
+        void loadPalettes();
         void iconChanged(int group);
         void updateQtSettings(KConfigGroup &cg);
         Qt::ToolButtonStyle toolButtonStyle(const KConfigGroup &cg) const;
 
         QStringList xdgIconThemePaths() const;
+        QHash<QPlatformTheme::Palette, QPalette*> m_palettes;
         QHash<QPlatformTheme::ThemeHint, QVariant> m_hints;
 };
 
