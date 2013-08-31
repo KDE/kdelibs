@@ -271,7 +271,7 @@ void TestObject::connectCallTestFunction(Kross::Action* krossAction, QObject* se
         signalName = QString("2%1").arg(signal);
     }
 
-    connect(sender, signalName.toLatin1(), this, SLOT(callTestFunction()));
+    connect(sender, signalName.toLatin1().constData(), this, SLOT(callTestFunction()));
 }
 
 void TestObject::callTestFunction()
@@ -290,7 +290,7 @@ void TestObject::connectCallTestFunctionException(Kross::Action* krossAction, QO
         signalName = QString("2%1").arg(signal);
     }
 
-    connect(sender, signalName.toLatin1(), this, SLOT(callTestFunctionException()));
+    connect(sender, signalName.toLatin1().constData(), this, SLOT(callTestFunctionException()));
 }
 
 void TestObject::callTestFunctionException()

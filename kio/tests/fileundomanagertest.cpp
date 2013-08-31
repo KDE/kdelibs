@@ -91,11 +91,11 @@ static void createTestSymlink( const QString& path )
 {
     // Create symlink if it doesn't exist yet
     QT_STATBUF buf;
-    if ( QT_LSTAT( QFile::encodeName( path ), &buf ) != 0 ) {
-        bool ok = symlink( "/IDontExist", QFile::encodeName( path ) ) == 0; // broken symlink
+    if (QT_LSTAT(QFile::encodeName(path).constData(), &buf) != 0) {
+        bool ok = symlink("/IDontExist", QFile::encodeName(path).constData()) == 0; // broken symlink
         if ( !ok )
             qFatal("couldn't create symlink: %s", strerror(errno));
-        QVERIFY( QT_LSTAT( QFile::encodeName( path ), &buf ) == 0 );
+        QVERIFY(QT_LSTAT(QFile::encodeName(path).constData(), &buf) == 0);
         QVERIFY( (buf.st_mode & QT_STAT_MASK) == QT_STAT_LNK );
     } else {
         QVERIFY( (buf.st_mode & QT_STAT_MASK) == QT_STAT_LNK );
@@ -486,7 +486,7 @@ static void setTimeStamp( const QString& path )
     struct utimbuf utbuf;
     utbuf.actime = tp.tv_sec + 30; // 30 seconds in the future
     utbuf.modtime = tp.tv_sec + 60; // 60 second in the future
-    utime( QFile::encodeName( path ), &utbuf );
+    utime(QFile::encodeName(path).constData(), &utbuf);
     qDebug( "Time changed for %s", qPrintable( path ) );
 #endif
 }

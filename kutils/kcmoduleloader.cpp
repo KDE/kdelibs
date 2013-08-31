@@ -99,9 +99,9 @@ KCModule* KCModuleLoader::loadModule(const KCModuleInfo& mod, ErrorReporting rep
                 KCModule *(*create)(QWidget *, const char *);
                 QByteArray factorymethod("create_");
                 factorymethod += mod.handle().toLatin1();
-                create = reinterpret_cast<KCModule *(*)(QWidget *, const char*)>(lib.resolveFunction(factorymethod));
+                create = reinterpret_cast<KCModule *(*)(QWidget *, const char*)>(lib.resolveFunction(factorymethod.constData()));
                 if (create) {
-                    return create(parent, mod.handle().toLatin1());
+                    return create(parent, mod.handle().toLatin1().constData());
                     qFatal("This module still uses a custom factory method (%s). This is not supported anymore. Please fix the module.", factorymethod.constData());
                 } else {
                     qWarning() << "This module has no valid entry symbol at all. The reason could be that it's still using K_EXPORT_COMPONENT_FACTORY with a custom X-KDE-FactoryName which is not supported anymore";

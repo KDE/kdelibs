@@ -78,25 +78,25 @@ KLocalizedString TranslationModule::substituteArguments( const KLocalizedString 
 
 QString TranslationModule::i18n( const QString &text, const QVariantList &arguments ) const
 {
-    KLocalizedString ls = ki18n(text.toUtf8());
+    KLocalizedString ls = ki18n(text.toUtf8().constData());
     return substituteArguments( ls, arguments ).toString();
 }
 
 QString TranslationModule::i18nc( const QString &context, const QString &text, const QVariantList &arguments ) const
 {
-    KLocalizedString ls = ki18nc(context.toUtf8(), text.toUtf8());
+    KLocalizedString ls = ki18nc(context.toUtf8().constData(), text.toUtf8().constData());
     return substituteArguments( ls, arguments ).toString();
 }
 
 QString TranslationModule::i18np( const QString &singular, const QString &plural, int number, const QVariantList &arguments ) const
 {
-    KLocalizedString ls = ki18np(singular.toUtf8(), plural.toUtf8()).subs(number);
+    KLocalizedString ls = ki18np(singular.toUtf8().constData(), plural.toUtf8().constData()).subs(number);
     return substituteArguments( ls, arguments, 98 ).toString();
 }
 
 QString TranslationModule::i18ncp( const QString &context, const QString &singular, const QString &plural,  int number, const QVariantList &arguments ) const
 {
-    KLocalizedString ls = ki18ncp(context.toUtf8(), singular.toUtf8(), plural.toUtf8()).subs( number );
+    KLocalizedString ls = ki18ncp(context.toUtf8().constData(), singular.toUtf8().constData(), plural.toUtf8().constData()).subs( number );
     return substituteArguments( ls, arguments, 98 ).toString();
 }
 

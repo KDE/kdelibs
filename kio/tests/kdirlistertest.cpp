@@ -259,7 +259,7 @@ void KDirListerTest::testNewItemsInSymlink() // #213799
     QVERIFY(tempFile.open());
     const QString symPath = tempFile.fileName() + "_link";
     tempFile.close();
-    bool symlinkOk = ::symlink(QFile::encodeName(path), QFile::encodeName(symPath)) == 0;
+    bool symlinkOk = ::symlink(QFile::encodeName(path).constData(), QFile::encodeName(symPath).constData()) == 0;
     QVERIFY(symlinkOk);
     MyDirLister dirLister2;
     m_items2.clear();

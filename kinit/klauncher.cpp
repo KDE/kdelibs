@@ -564,7 +564,7 @@ KLauncher::requestDone(KLaunchRequest *request)
               (request->startup_dpy == XDisplayString( mCached_dpy )))
             dpy = mCached_dpy;
          if( dpy == NULL )
-            dpy = XOpenDisplay(request->startup_dpy);
+            dpy = XOpenDisplay(request->startup_dpy.constData());
          if( dpy )
          {
             KStartupInfoId id;
@@ -911,7 +911,7 @@ KLauncher::send_service_startup_info( KLaunchRequest *request, KService::Ptr ser
     if (!dpy_str.isEmpty() && mCached_dpy != NULL && dpy_str != XDisplayString(mCached_dpy))
         dpy = mCached_dpy;
     if (dpy == NULL)
-        dpy = XOpenDisplay(dpy_str);
+        dpy = XOpenDisplay(dpy_str.constData());
     request->startup_id = id.id();
     if (dpy == NULL) {
         cancel_service_startup_info( request, startup_id, envs );

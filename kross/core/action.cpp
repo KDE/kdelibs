@@ -178,8 +178,8 @@ void Action::fromDomElement(const QDomElement& element, const QStringList& searc
 
     d->version = QVariant( element.attribute("version",QString(d->version)) ).toInt();
 
-    setText( i18n( element.attribute("text").toUtf8() ) );
-    setDescription( i18n( element.attribute("comment").toUtf8() ) );
+    setText(i18n(element.attribute("text").toUtf8().constData()));
+    setDescription(i18n(element.attribute("comment").toUtf8().constData()));
     setEnabled( true );
     setInterpreter( element.attribute("interpreter") );
     setEnabled( QVariant(element.attribute("enabled","true")).toBool() && isEnabled() );

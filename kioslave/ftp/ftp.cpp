@@ -2403,7 +2403,7 @@ Ftp::StatusCode Ftp::ftpCopyPut(int& iError, int& iCopyFile, const QString &sCop
     return statusClientError;
   }
 
-  iCopyFile = QT_OPEN(QFile::encodeName(sCopyFile), O_RDONLY);
+  iCopyFile = QT_OPEN(QFile::encodeName(sCopyFile).constData(), O_RDONLY);
   if(iCopyFile == -1)
   {
     iError = ERR_CANNOT_OPEN_FOR_READING;
@@ -2475,7 +2475,7 @@ Ftp::StatusCode Ftp::ftpCopyGet(int& iError, int& iCopyFile, const QString &sCop
   // open the output file ...
   KIO::fileoffset_t hCopyOffset = 0;
   if (bResume) {
-    iCopyFile = QT_OPEN(QFile::encodeName(sPart), O_RDWR);  // append if resuming
+    iCopyFile = QT_OPEN(QFile::encodeName(sPart).constData(), O_RDWR);  // append if resuming
     hCopyOffset = QT_LSEEK(iCopyFile, 0, SEEK_END);
     if(hCopyOffset < 0)
     {
@@ -2485,7 +2485,7 @@ Ftp::StatusCode Ftp::ftpCopyGet(int& iError, int& iCopyFile, const QString &sCop
     // qDebug() << "resuming at " << hCopyOffset;
   }
   else {
-    iCopyFile = QT_OPEN(QFile::encodeName(dest), O_CREAT | O_TRUNC | O_WRONLY, initialMode);
+    iCopyFile = QT_OPEN(QFile::encodeName(dest).constData(), O_CREAT | O_TRUNC | O_WRONLY, initialMode);
   }
 
   if(iCopyFile == -1)

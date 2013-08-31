@@ -85,7 +85,7 @@ int KDEsuClient::connect()
 {
     if (d->sockfd >= 0)
         close(d->sockfd);
-    if (access(d->sock, R_OK|W_OK))
+    if (access(d->sock.constData(), R_OK|W_OK))
     {
         d->sockfd = -1;
         return -1;
@@ -99,7 +99,7 @@ int KDEsuClient::connect()
     }
     struct sockaddr_un addr;
     addr.sun_family = AF_UNIX;
-    strcpy(addr.sun_path, d->sock);
+    strcpy(addr.sun_path, d->sock.constData());
 
     if (::connect(d->sockfd, (struct sockaddr *) &addr, SUN_LEN(&addr)) < 0)
     {
@@ -131,7 +131,7 @@ int KDEsuClient::connect()
     // to delete it after we connect but shouldn't be able to
     // create a socket that is owned by us.
     QT_STATBUF s;
-    if (QT_LSTAT(d->sock, &s)!=0)
+    if (QT_LSTAT(d->sock.constData(), &s)!=0)
     {
         qWarning() << "stat failed (" << d->sock << ")";
         close(d->sockfd); d->sockfd = -1;
@@ -195,7 +195,7 @@ int KDEsuClient::command(const QByteArray &cmd, QByteArray *result)
     if (d->sockfd < 0)
         return -1;
 
-    if (send(d->sockfd, cmd, cmd.length(), 0) != (int) cmd.length())
+    if (send(d->sockfd, cmd.constData(), cmd.length(), 0) != (int) cmd.length())
         return -1;
 
     char buf[1024];

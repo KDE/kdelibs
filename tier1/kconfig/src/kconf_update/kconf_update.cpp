@@ -805,7 +805,7 @@ void KonfUpdate::gotScript(const QString &_script)
         }
         cfg.sync();
 #ifndef _WIN32_WCE
-        result = system(QFile::encodeName(QString("%1 < %2 > %3 2> %4").arg(cmd, scriptIn.fileName(), scriptOut.fileName(), scriptErr.fileName())));
+        result = system(QFile::encodeName(QString("%1 < %2 > %3 2> %4").arg(cmd, scriptIn.fileName(), scriptOut.fileName(), scriptErr.fileName())).constData());
 #else
         QString path_ = QDir::convertSeparators ( QFileInfo ( cmd ).absoluteFilePath() );
         QString file_ = QFileInfo ( cmd ).fileName();
@@ -830,7 +830,7 @@ void KonfUpdate::gotScript(const QString &_script)
     } else {
         // No config file
 #ifndef _WIN32_WCE
-        result = system(QFile::encodeName(QString("%1 2> %2").arg(cmd, scriptErr.fileName())));
+        result = system(QFile::encodeName(QString("%1 2> %2").arg(cmd, scriptErr.fileName())).constData());
 #else
         QString path_ = QDir::convertSeparators ( QFileInfo ( cmd ).absoluteFilePath() );
         QString file_ = QFileInfo ( cmd ).fileName();

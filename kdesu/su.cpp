@@ -146,7 +146,7 @@ int SuProcess::exec(const char *password, int check)
         command = __PATH_SU;
     }
 
-    if (::access(command, X_OK) != 0)
+    if (::access(command.constData(), X_OK) != 0)
     {
         command = QFile::encodeName(QStandardPaths::findExecutable(d->m_superUserCommand.toLatin1()));
         if (command.isEmpty())

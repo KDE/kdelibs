@@ -263,7 +263,7 @@ QByteArray PtyProcess::readLine(bool block)
 void PtyProcess::writeLine(const QByteArray &line, bool addnl)
 {
     if (!line.isEmpty())
-        write(fd(), line, line.length());
+        write(fd(), line.constData(), line.length());
     if (addnl)
         write(fd(), "\n", 1);
 }
@@ -350,13 +350,13 @@ int PtyProcess::exec(const QByteArray &command, const QList<QByteArray> &args)
     const char **argp = (const char **)malloc((args.count()+2)*sizeof(char *));
 
     i = 0;
-    argp[i++] = path;
+    argp[i++] = path.constData();
     for (QList<QByteArray>::ConstIterator it=args.begin(); it!=args.end(); ++it, ++i)
-        argp[i] = *it;
+        argp[i] = (*it).constData();
 
     argp[i] = NULL;
 
-    execv(path, const_cast<char **>(argp));
+    execv(path.constData(), const_cast<char **>(argp));
     qCritical() << "[" << __FILE__ << ":" << __LINE__ << "] " << "execv(" << path << "):" << strerror(errno);
     _exit(1);
     return -1; // Shut up compiler. Never reached.

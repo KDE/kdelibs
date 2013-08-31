@@ -207,7 +207,7 @@ void QObjectBinding::publishQObject( KJS::ExecState *exec, KJS::JSObject *target
         QMetaMethod member = metaObject->method(idx);
         if(validSlot(member, imp->access()))
         {
-            target->put(exec, KJS::Identifier( extractMemberName( member ) ),
+            target->put(exec, KJS::Identifier(extractMemberName(member).constData()),
                         new SlotBinding(exec,member), KJS::DontDelete|KJS::ReadOnly|KJS::Function);
         }
     }
@@ -549,7 +549,7 @@ PointerBase *getArg( KJS::ExecState *exec, const QList<QByteArray> &types, const
                         if (qObj) {
                             QByteArray typeName = types[idx].constData();
                             typeName.replace("*", ""); //krazy:exclude=doublequote_chars
-                            if (qObj->inherits(typeName))
+                            if (qObj->inherits(typeName.constData()))
                                 return new Value<void*>(qObj);
                         }
                     }

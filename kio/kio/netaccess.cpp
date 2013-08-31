@@ -298,7 +298,7 @@ void NetAccess::removeTempFile(const QString& name)
     return;
   if (tmpfiles->contains(name))
   {
-    unlink(QFile::encodeName(name));
+    QFile::remove(name);
     tmpfiles->removeAll(name);
   }
 }

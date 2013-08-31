@@ -1204,7 +1204,7 @@ QByteArray KSSLCertificate::toNetscape() {
     ASN1_OCTET_STRING hdr;
     QTemporaryFile ktf;
     ktf.open();
-    FILE *ktf_fs = QT_FOPEN(QFile::encodeName(ktf.fileName()), "r+");
+    FILE *ktf_fs = QT_FOPEN(QFile::encodeName(ktf.fileName()).constData(), "r+");
 
     hdr.data = (unsigned char *)NETSCAPE_CERT_HDR;
     hdr.length = strlen(NETSCAPE_CERT_HDR);
@@ -1229,7 +1229,7 @@ QString KSSLCertificate::toText() {
 #if KSSL_HAVE_SSL
     QTemporaryFile ktf;
     ktf.open();
-    FILE *ktf_fs = QT_FOPEN(QFile::encodeName(ktf.fileName()), "r+");
+    FILE *ktf_fs = QT_FOPEN(QFile::encodeName(ktf.fileName()).constData(), "r+");
 
     d->kossl->X509_print(ktf_fs, getCert());
     fclose(ktf_fs);

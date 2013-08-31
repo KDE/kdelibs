@@ -329,7 +329,7 @@ void KjsScript::execute()
                     QByteArray receiverslot = QString("1%1").arg(signature).toLatin1();
                     KJSEmbed::SlotProxy* receiver = new KJSEmbed::SlotProxy(kjsglobal, exec->dynamicInterpreter(), object, signature.toLatin1());
 
-                    if( connect(object, sendersignal, receiver, receiverslot) ) {
+                    if (connect(object, sendersignal.constData(), receiver, receiverslot.constData())) {
                         krossdebug( QString("KjsScript::execute connected function=%1 with object=%2 signal=%3").arg(name.data()).arg(object->objectName()).arg(signature) );
                     }
                     else {

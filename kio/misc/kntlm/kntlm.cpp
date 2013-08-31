@@ -322,7 +322,7 @@ QByteArray KNTLM::lmHash (const QString &password)
     DES_KEY ks;
     const char *magic = "KGS!@#$%";
 
-    strncpy (keyBytes.data(), password.toUpper().toLatin1(), 14);
+    strncpy (keyBytes.data(), password.toUpper().toLocal8Bit().constData(), 14);
 
     convertKey ( (unsigned char *) keyBytes.data(), &ks);
     ntlm_des_ecb_encrypt (magic, 8, &ks, (unsigned char *) hash.data());

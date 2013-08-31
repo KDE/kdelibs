@@ -23,8 +23,6 @@
    Boston, MA 02110-1301, USA.
 */
 
-#define QT_NO_CAST_FROM_ASCII
-
 #include "file.h"
 
 #include <config-kioslave-file.h>
@@ -479,16 +477,14 @@ void FileProtocol::symlink( const QString &target, const QUrl &destUrl, KIO::Job
 {
     const QString dest = destUrl.toLocalFile();
     // Assume dest is local too (wouldn't be here otherwise)
-    if ( ::symlink( QFile::encodeName(target), QFile::encodeName(dest) ) == -1 )
-    {
+    if (::symlink(QFile::encodeName(target).constData(), QFile::encodeName(dest).constData()) == -1) {
         // Does the destination already exist ?
         if ( errno == EEXIST )
         {
             if ( (flags & KIO::Overwrite) )
             {
                 // Try to delete the destination
-                if ( unlink( QFile::encodeName(dest) ) != 0 )
-                {
+                if (unlink(QFile::encodeName(dest).constData()) != 0) {
                     error(KIO::ERR_CANNOT_DELETE, dest);
                     return;
                 }
@@ -498,7 +494,7 @@ void FileProtocol::symlink( const QString &target, const QUrl &destUrl, KIO::Job
             else
             {
                 QT_STATBUF buff_dest;
-                if (QT_LSTAT(QFile::encodeName(dest), &buff_dest) == 0 && ((buff_dest.st_mode & QT_STAT_MASK) == QT_STAT_DIR))
+                if (QT_LSTAT(QFile::encodeName(dest).constData(), &buff_dest) == 0 && ((buff_dest.st_mode & QT_STAT_MASK) == QT_STAT_DIR))
                     error(KIO::ERR_DIR_ALREADY_EXIST, dest);
                 else
                     error(KIO::ERR_FILE_ALREADY_EXIST, dest);
@@ -569,7 +565,7 @@ void FileProtocol::chown( const QUrl& url, const QString& owner, const QString& 
 
     // get uid from given owner
     {
-        struct passwd *p = ::getpwnam(owner.toLatin1());
+        struct passwd *p = ::getpwnam(owner.toLocal8Bit().constData());
 
         if ( ! p ) {
             error( KIO::ERR_SLAVE_DEFINED,
@@ -582,7 +578,7 @@ void FileProtocol::chown( const QUrl& url, const QString& owner, const QString& 
 
     // get gid from given group
     {
-        struct group *p = ::getgrnam(group.toLatin1());
+        struct group *p = ::getgrnam(group.toLocal8Bit().constData());
 
         if ( ! p ) {
             error( KIO::ERR_SLAVE_DEFINED,
@@ -593,7 +589,7 @@ void FileProtocol::chown( const QUrl& url, const QString& owner, const QString& 
         gid = p->gr_gid;
     }
 
-    if ( ::chown(_path, uid, gid) == -1 ) {
+    if (::chown(_path.constData(), uid, gid) == -1) {
         switch ( errno ) {
             case EPERM:
             case EACCES:

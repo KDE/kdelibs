@@ -400,7 +400,7 @@ void JobTest::moveLocalFile( const QString& src, const QString& dest )
 static void moveLocalSymlink( const QString& src, const QString& dest )
 {
     QT_STATBUF buf;
-    QVERIFY ( QT_LSTAT( QFile::encodeName( src ), &buf ) == 0 );
+    QVERIFY(QT_LSTAT(QFile::encodeName(src).constData(), &buf) == 0);
     QUrl u = QUrl::fromLocalFile( src );
     QUrl d = QUrl::fromLocalFile( dest );
 
@@ -412,7 +412,7 @@ static void moveLocalSymlink( const QString& src, const QString& dest )
     if ( !ok )
         qWarning() << job->error();
     QVERIFY( ok );
-    QVERIFY ( QT_LSTAT( QFile::encodeName( dest ), &buf ) == 0 );
+    QVERIFY(QT_LSTAT(QFile::encodeName(dest).constData(), &buf) == 0);
     QVERIFY( !QFile::exists( src ) ); // not there anymore
 
     // move it back with KIO::move()
@@ -421,8 +421,8 @@ static void moveLocalSymlink( const QString& src, const QString& dest )
     job->setUiDelegateExtension(0);
     ok = job->exec();
     QVERIFY( ok );
-    QVERIFY ( QT_LSTAT( QFile::encodeName( dest ), &buf ) != 0 ); // doesn't exist anymore
-    QVERIFY ( QT_LSTAT( QFile::encodeName( src ), &buf ) == 0 ); // it's back
+    QVERIFY(QT_LSTAT(QFile::encodeName(dest).constData(), &buf) != 0); // doesn't exist anymore
+    QVERIFY(QT_LSTAT(QFile::encodeName(src).constData(), &buf) == 0); // it's back
 }
 
 void JobTest::moveLocalDirectory( const QString& src, const QString& dest )
@@ -564,7 +564,7 @@ void JobTest::listRecursive()
     const QString src = homeTmpDir();
 #ifndef Q_OS_WIN
     // Add a symlink to a dir, to make sure we don't recurse into those
-    bool symlinkOk = symlink( "dirFromHome", QFile::encodeName( src + "/dirFromHome_link" ) ) == 0;
+    bool symlinkOk = symlink("dirFromHome", QFile::encodeName(src + "/dirFromHome_link").constData()) == 0;
     QVERIFY( symlinkOk );
 #endif
     KIO::ListJob* job = KIO::listRecursive( QUrl::fromLocalFile(src), KIO::HideProgressInfo );
@@ -1151,10 +1151,10 @@ void JobTest::deleteDirectory()
     createTestFile(dest + "/.hidden");
 #ifndef Q_OS_WIN
     // A broken symlink:
-    createTestSymlink(dest+"/broken_symlink");
+    createTestSymlink(dest + "/broken_symlink");
     // A symlink to a dir:
-    bool symlink_ok = symlink( QFile::encodeName(QFileInfo(QFINDTESTDATA("jobtest.cpp")).absolutePath()),
-                               QFile::encodeName(dest + "/symlink_to_dir" ) ) == 0;
+    bool symlink_ok = symlink(QFile::encodeName(QFileInfo(QFINDTESTDATA("jobtest.cpp")).absolutePath()).constData(),
+                              QFile::encodeName(dest + "/symlink_to_dir").constData()) == 0;
     if ( !symlink_ok )
         qFatal("couldn't create symlink: %s", strerror(errno));
 #endif
@@ -1178,7 +1178,7 @@ void JobTest::deleteSymlink(bool using_fast_path)
     const QString dest = homeTmpDir() + "/dirFromHome_link";
     if (!QFile::exists(dest)) {
         // Add a symlink to a dir, to make sure we don't recurse into those
-        bool symlinkOk = symlink(QFile::encodeName(src), QFile::encodeName(dest)) == 0;
+        bool symlinkOk = symlink(QFile::encodeName(src).constData(), QFile::encodeName(dest).constData()) == 0;
         QVERIFY( symlinkOk );
         QVERIFY(QFile::exists(dest));
     }

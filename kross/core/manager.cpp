@@ -307,7 +307,7 @@ QObject* Manager::module(const QString& modulename)
 
     QByteArray libraryname = QString("krossmodule%1").arg(modulename).toLower().toLatin1();
 
-    if( void* funcPtr = loadLibrary(libraryname, "krossmodule") ) {
+    if( void* funcPtr = loadLibrary(libraryname.constData(), "krossmodule") ) {
         def_module_func func = (def_module_func) funcPtr;
         Q_ASSERT( func );
         QObject* module = (QObject*) (func)(); // call the function

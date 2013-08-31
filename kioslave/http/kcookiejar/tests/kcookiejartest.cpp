@@ -220,7 +220,7 @@ static void processLine(QString line)
 
 static void runRegression(const QString &filename)
 {
-   FILE *file = QT_FOPEN(QFile::encodeName( filename ), "r");
+   FILE *file = QT_FOPEN(QFile::encodeName(filename).constData(), "r");
    if (!file)
       FAIL(QString("Can't open '%1'").arg(filename));
 

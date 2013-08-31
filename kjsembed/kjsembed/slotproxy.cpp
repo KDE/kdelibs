@@ -38,7 +38,7 @@ using namespace KJSEmbed;
 SlotProxy::SlotProxy(KJS::JSObject *obj, KJS::Interpreter *interpreter, QObject *parent, const QByteArray &signature)
     : QObject(parent), m_interpreter(interpreter), m_object(obj)
 {
-    m_signature = QMetaObject::normalizedSignature( signature );
+    m_signature = QMetaObject::normalizedSignature(signature.constData());
     uint signatureSize = m_signature.size() + 1;
 
     // content:
@@ -88,7 +88,7 @@ const QMetaObject *SlotProxy::metaObject() const
 void *SlotProxy::qt_metacast(const char *_clname)
 {
     if (!_clname) return 0;
-    if (!strcmp(_clname, m_stringData))
+    if (!strcmp(_clname, m_stringData.constData()))
         return static_cast<void*>(const_cast<SlotProxy*>(this));
     return QObject::qt_metacast(_clname);
 }
@@ -158,7 +158,7 @@ KJS::JSValue *SlotProxy::callMethod( const QByteArray & methodName, void **_a )
 KJS::List SlotProxy::convertArguments(KJS::ExecState *exec, void **_a )
 {
     KJS::List args;
-    int offset = metaObject()->indexOfMethod(m_signature);
+    int offset = metaObject()->indexOfMethod(m_signature.constData());
     QMetaMethod method = metaObject()->method(offset);
     QList<QByteArray> params = method.parameterTypes();
     int idx = 1;

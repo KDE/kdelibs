@@ -51,7 +51,7 @@ static void setTimeStamp( const QString& path, const QDateTime& mtime )
     struct utimbuf utbuf;
     utbuf.actime = mtime.toTime_t();
     utbuf.modtime = utbuf.actime;
-    utime( QFile::encodeName( path ), &utbuf );
+    utime(QFile::encodeName(path).constData(), &utbuf);
     //qDebug( "Time changed for %s", qPrintable( path ) );
 #elif defined(Q_OS_WIN)
     struct _utimbuf utbuf;
@@ -76,11 +76,11 @@ static void createTestFile( const QString& path, bool plainText = false )
 static void createTestSymlink( const QString& path, const QByteArray& target = "/IDontExist" )
 {
     QFile::remove(path);
-    bool ok = symlink( target.constData(), QFile::encodeName( path ) ) == 0; // broken symlink
+    bool ok = symlink(target.constData(), QFile::encodeName(path).constData()) == 0; // broken symlink
     if ( !ok )
         qFatal("couldn't create symlink: %s", strerror(errno));
     QT_STATBUF buf;
-    QVERIFY( QT_LSTAT( QFile::encodeName( path ), &buf ) == 0 );
+    QVERIFY(QT_LSTAT(QFile::encodeName(path).constData(), &buf) == 0);
     QVERIFY( (buf.st_mode & QT_STAT_MASK) == QT_STAT_LNK );
     //qDebug( "symlink %s created", qPrintable( path ) );
     QVERIFY( QFileInfo( path ).isSymLink() );

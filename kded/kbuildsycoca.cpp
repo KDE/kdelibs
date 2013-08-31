@@ -800,7 +800,7 @@ extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
         // These directories may have been created with 0700 permission
         // better delete them if they are empty
         QString appsDir = QStandardPaths::writableLocation(QStandardPaths::ApplicationsLocation);
-        ::rmdir(QFile::encodeName(appsDir));
+        QDir().remove(appsDir);
         // was doing the same with servicetypes, but I don't think any of these gets created-by-mistake anymore.
       }
    }

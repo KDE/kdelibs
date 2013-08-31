@@ -696,7 +696,7 @@ void FileProtocol::put( const QUrl& url, int _mode, KIO::JobFlags _flags )
                 // modification time
                 utbuf[1].tv_sec = dt.toTime_t();
                 utbuf[1].tv_usec = dt.time().msec() * 1000;
-                utimes( QFile::encodeName(dest_orig), utbuf );
+                utimes( QFile::encodeName(dest_orig).constData(), utbuf );
             }
         }
 
@@ -834,7 +834,7 @@ void FileProtocol::special( const QByteArray &data)
 	if (ok)
 	    finished();
 	else
-	    mount( ro, fstype.toLatin1(), dev, point );
+	    mount(ro, fstype.toLatin1().constData(), dev, point);
 
       }
       break;

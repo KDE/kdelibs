@@ -39,7 +39,7 @@ QString RootContext::i18n(const QString &message, const QString &param1, const Q
         return QString();
     }
 
-    KLocalizedString trMessage = ki18n(message.toUtf8());
+    KLocalizedString trMessage = ki18n(message.toUtf8().constData());
 
     if (!param1.isNull()) {
         trMessage = trMessage.subs(param1);
@@ -83,7 +83,7 @@ QString RootContext::i18nc(const QString &context, const QString &message, const
         return QString();
     }
 
-    KLocalizedString trMessage = ki18nc(context.toUtf8(), message.toUtf8());
+    KLocalizedString trMessage = ki18nc(context.toUtf8().constData(), message.toUtf8().constData());
 
     if (!param1.isNull()) {
         trMessage = trMessage.subs(param1);
@@ -126,7 +126,7 @@ QString RootContext::i18np(const QString &singular, const QString &plural, const
         return QString();
     }
 
-    KLocalizedString trMessage = ki18np(singular.toUtf8(), plural.toUtf8());
+    KLocalizedString trMessage = ki18np(singular.toUtf8().constData(), plural.toUtf8().constData());
 
     if (!param1.isNull()) {
         trMessage = trMessage.subs(param1);
@@ -169,7 +169,7 @@ QString RootContext::i18ncp(const QString &context, const QString &singular, con
         return QString();
     }
 
-    KLocalizedString trMessage = ki18ncp(context.toUtf8(), singular.toUtf8(), plural.toUtf8());
+    KLocalizedString trMessage = ki18ncp(context.toUtf8().constData(), singular.toUtf8().constData(), plural.toUtf8().constData());
 
     if (!param1.isNull()) {
         trMessage = trMessage.subs(param1);

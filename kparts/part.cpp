@@ -975,7 +975,7 @@ bool ReadWritePart::saveToUrl()
         delete tempFile;
         QUrl uploadUrl = QUrl::fromLocalFile(uploadFile);
         // Create hardlink
-        if (::link(QFile::encodeName(d->m_file), QFile::encodeName(uploadFile)) != 0)
+        if (::link(QFile::encodeName(d->m_file).constData(), QFile::encodeName(uploadFile).constData()) != 0)
         {
             // Uh oh, some error happened.
             return false;

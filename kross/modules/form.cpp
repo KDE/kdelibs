@@ -141,7 +141,7 @@ FormFileWidget::~FormFileWidget()
 void FormFileWidget::setMode(const QString& mode)
 {
     QMetaEnum e = metaObject()->enumerator( metaObject()->indexOfEnumerator("Mode") );
-    KFileWidget::OperationMode m = (KFileWidget::OperationMode) e.keysToValue( mode.toLatin1() );
+    KFileWidget::OperationMode m = (KFileWidget::OperationMode) e.keysToValue(mode.toLatin1().constData());
     d->filewidget->setOperationMode(m);
 }
 
@@ -365,7 +365,7 @@ bool FormDialog::setButtons(const QString& buttons)
     int i = buttonBox()->metaObject()->indexOfEnumerator("StandardButton");
     Q_ASSERT( i >= 0 );
     QMetaEnum e = buttonBox()->metaObject()->enumerator(i);
-    int v = e.keysToValue( buttons.toUtf8() );
+    int v = e.keysToValue(buttons.toUtf8().constData());
     if( v < 0 )
         return false;
     buttonBox()->setStandardButtons((QDialogButtonBox::StandardButton) v);
@@ -377,7 +377,7 @@ bool FormDialog::setButtonText(const QString& button, const QString& text)
     int i = buttonBox()->metaObject()->indexOfEnumerator("StandardButton");
     Q_ASSERT( i >= 0 );
     QMetaEnum e = buttonBox()->metaObject()->enumerator(i);
-    int v = e.keysToValue( button.toUtf8() );
+    int v = e.keysToValue(button.toUtf8().constData());
     if( v < 0 )
         return false;
     QPushButton *pushButton = buttonBox()->button((QDialogButtonBox::StandardButton) v);
@@ -392,7 +392,7 @@ bool FormDialog::setFaceType(const QString& facetype)
     int i = KPageView::staticMetaObject.indexOfEnumerator("FaceType");
     Q_ASSERT( i >= 0 );
     QMetaEnum e = KPageView::staticMetaObject.enumerator(i);
-    int v = e.keysToValue( facetype.toUtf8() );
+    int v = e.keysToValue(facetype.toUtf8().constData());
     if( v < 0 )
         return false;
     KPageDialog::setFaceType( (KPageDialog::FaceType) v );

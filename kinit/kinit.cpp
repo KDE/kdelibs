@@ -19,8 +19,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#define QT_NO_CAST_FROM_ASCII
-
 #include <config-kdeinit.h>
 
 #include <sys/types.h>
@@ -56,7 +54,6 @@
 #include <kcrash.h>
 #include <klibrary.h>
 #include <kconfig.h>
-#include <kapplication.h>
 #include <klocalizedstring.h>
 #include <QDebug>
 #include <qsavefile.h>
@@ -368,10 +365,10 @@ const char* get_env_var( const char* var, int envc, const char* envs )
 }
 
 #if HAVE_X11
-static void init_startup_info( KStartupInfoId& id, const char* bin,
+static void init_startup_info( KStartupInfoId& id, const QByteArray &bin,
     int envc, const char* envs )
 {
-    const char* dpy = get_env_var( displayEnvVarName() + "=", envc, envs );
+    const char* dpy = get_env_var((displayEnvVarName() + "=").constData(), envc, envs);
     // this may be called in a child, so it can't use display open using X11display
     // also needed for multihead
     X11_startup_notify_display = XOpenDisplay( dpy );
@@ -411,7 +408,7 @@ QByteArray execpath_avoid_loops( const QByteArray& exec, int envc, const char* e
      const QRegExp pathSepRegExp(QString::fromLatin1("[:\b]"));
      if( envc > 0 ) /* use the passed environment */
      {
-         const char* path = get_env_var( "PATH=", envc, envs );
+         const char* path = get_env_var("PATH=", envc, envs);
          if( path != NULL )
              paths = QFile::decodeName(path).split(pathSepRegExp);
      } else {
@@ -541,7 +538,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
   KStartupInfoId startup_id;
   startup_id.initId( startup_id_str );
   if( !startup_id.none())
-      init_startup_info( startup_id, name, envc, envs );
+      init_startup_info(startup_id, name, envc, envs);
 #endif
   // find out this path before forking, doing it afterwards
   // crashes on some platforms, notably OSX
@@ -587,7 +584,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
          {
              int pos = tmp.indexOf( '=' );
              if( pos >= 0 )
-                 unsetenv( tmp.left( pos ));
+                 unsetenv(tmp.left(pos).constData());
          }
      }
 
@@ -691,7 +688,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
 #endif
 
         if (!executable.isEmpty())
-           execvp(executable, d.argv);
+           execvp(executable.constData(), d.argv);
 
         d.result = 1; // Error
         write(d.fd[1], &d.result, 1);
@@ -890,7 +887,7 @@ static void init_kdeinit_socket()
      fprintf(stderr, "kdeinit5: Aborting. $HOME not set!");
      exit(255);
   }
-  if (chdir(home_dir) != 0) {
+  if (chdir(home_dir.constData()) != 0) {
      fprintf(stderr, "kdeinit5: Aborting. Couldn't enter '%s'!", home_dir.constData());
      exit(255);
   }
@@ -1214,14 +1211,14 @@ static bool handle_launcher_request(int sock, const char *who)
      }
 
       // support for the old a bit broken way of setting DISPLAY for multihead
-      QByteArray olddisplay = qgetenv(displayEnvVarName());
+      QByteArray olddisplay = qgetenv(displayEnvVarName().constData());
       QByteArray kdedisplay = qgetenv("KDE_DISPLAY");
       bool reset_display = (! olddisplay.isEmpty() &&
                             ! kdedisplay.isEmpty() &&
                             olddisplay != kdedisplay);
 
       if (reset_display)
-          qputenv(displayEnvVarName(), kdedisplay);
+          qputenv(displayEnvVarName().constData(), kdedisplay);
 
       pid = launch( argc, name, args, cwd, envc, envs,
           request_header.cmd == LAUNCHER_SHELL || request_header.cmd == LAUNCHER_KWRAPPER,
@@ -1229,7 +1226,7 @@ static bool handle_launcher_request(int sock, const char *who)
 
       if (reset_display) {
           unsetenv("KDE_DISPLAY");
-          qputenv(displayEnvVarName(), olddisplay);
+          qputenv(displayEnvVarName().constData(), olddisplay);
       }
 
       if (pid && (d.result == 0))
@@ -1488,7 +1485,7 @@ static void kdeinit_library_path()
 //   if (!extra_path.isEmpty())
 //      lt_dlsetsearchpath(extra_path.data());
 
-   QByteArray display = qgetenv(displayEnvVarName());
+   QByteArray display = qgetenv(displayEnvVarName().constData());
    if (display.isEmpty())
    {
 #if HAVE_X11 // qt5: see displayEnvVarName()
@@ -1607,7 +1604,7 @@ static void setupX()
     tmp cleanup).
 */
     if( !qgetenv( "XAUTHORITY" ).isEmpty()) {
-        QByteArray display = qgetenv(displayEnvVarName());
+        QByteArray display = qgetenv(displayEnvVarName().constData());
         int i;
         if((i = display.lastIndexOf('.')) > display.lastIndexOf(':') && i >= 0)
             display.truncate(i);
