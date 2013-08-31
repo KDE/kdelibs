@@ -90,6 +90,8 @@ class KdePlatformTheme_UnitTest : public QObject
         {
             m_qpa = new KdePlatformTheme();
             m_toolBtn.gotEvent = false;
+            QDBusConnection::sessionBus().connect(QString(), "/KGlobalSettings", "org.kde.KGlobalSettings",
+                                                   "notifyChange",  &m_loop, SLOT(quit()));
         }
 
         void testPlatformHints()
@@ -177,9 +179,6 @@ class KdePlatformTheme_UnitTest : public QObject
 
         void testPlatformHintChanges()
         {
-            QDBusConnection::sessionBus().connect(QString(), "/KGlobalSettings", "org.kde.KGlobalSettings",
-                                                   "notifyChange",  &m_loop, SLOT(quit()));
-
             sendNotifyChange(KHintsSettings::SettingsChanged, KHintsSettings::SETTINGS_QT);
             m_loop.exec();
 
@@ -222,8 +221,6 @@ class KdePlatformTheme_UnitTest : public QObject
 
         void testPlatformPaletteChanges()
         {
-            QDBusConnection::sessionBus().connect(QString(), "/KGlobalSettings", "org.kde.KGlobalSettings",
-                                                   "notifyChange",  &m_loop, SLOT(quit()));
             sendNotifyChange(KHintsSettings::PaletteChanged, 0);
             m_loop.exec();
 
