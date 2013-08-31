@@ -221,7 +221,6 @@ public:
     QString folder;
     int handle;
     int transactionId;
-    QPointer<QEventLoop> loop;
 };
 
 #ifdef HAVE_KSECRETSSERVICE
@@ -477,18 +476,18 @@ Wallet *Wallet::openWallet(const QString& name, WId w, OpenType ot) {
         connect(&walletLauncher->getInterface(), SIGNAL(walletAsyncOpened(int,int)),
                 wallet, SLOT(walletAsyncOpened(int,int)));
 
-        // Use an eventloop for synchronous calls
-        QEventLoop loop;
-        if (ot == Synchronous || ot == Path) {
-            connect(wallet, SIGNAL(walletOpened(bool)), &loop, SLOT(quit()));
-        }
-
         // Make sure the password prompt window will be visible and activated
         KWindowSystem::allowExternalProcessWindowActivation();
 
         // do the call
         QDBusReply<int> r;
-        if (ot == Synchronous || ot == Asynchronous) {
+        if (ot == Synchronous) {
+            r = walletLauncher->getInterface().open(name, (qlonglong)w, appid());
+            // after this call, r would contain a transaction id >0 if OK or -1 if NOK
+            // if OK, the slot walletAsyncOpened should have been received, but the transaction id
+            // will not match. We'll get that handle from the reply - see below
+        }
+        else if (ot == Asynchronous) {
             r = walletLauncher->getInterface().openAsync(name, (qlonglong)w, appid(), true);
         } else if (ot == Path) {
             r = walletLauncher->getInterface().openPathAsync(name, (qlonglong)w, appid(), true);
@@ -510,14 +509,7 @@ Wallet *Wallet::openWallet(const QString& name, WId w, OpenType ot) {
                 delete wallet;
                 wallet = 0;
             } else {
-                // wait for the daemon's reply
-                // store a pointer to the event loop so it can be quit in error case
-                wallet->d->loop = &loop;
-                loop.exec();
-                if (wallet->d->handle < 0) {
-                    delete wallet;
-                    return 0;
-                }
+                wallet->d->handle = r.value();
             }
         } else if (ot == Asynchronous) {
             if (wallet->d->transactionId < 0) {
@@ -1517,10 +1509,6 @@ Wallet::EntryType Wallet::entryType(const QString& key) {
 
 void Wallet::WalletPrivate::walletServiceUnregistered()
 {
-    if (loop) {
-        loop->quit();
-    }
-
     if (handle >= 0) {
         q->slotWalletClosed(handle);
     }
