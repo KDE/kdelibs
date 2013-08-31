@@ -172,7 +172,7 @@ void KHintsSettings::slotNotifyChange(int type, int arg)
                                          << "fusion"
                                          << "windows");
         app->setStyle(theme);
-        //TODO Refresh the palette
+        loadPalettes();
         break;
     }
     default:
