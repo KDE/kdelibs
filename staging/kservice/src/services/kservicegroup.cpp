@@ -127,13 +127,13 @@ int KServiceGroupPrivate::childCount() const
         KSycocaEntry::Ptr p = *it;
         if (p->isType(KST_KService))
         {
-            KService::Ptr service = KService::Ptr::staticCast( p );
+            KService::Ptr service = KService::Ptr( p );
            if (!service->noDisplay())
               m_childCount++;
         }
         else if (p->isType(KST_KServiceGroup))
         {
-           KServiceGroup::Ptr serviceGroup = KServiceGroup::Ptr::staticCast( p );
+           KServiceGroup::Ptr serviceGroup = KServiceGroup::Ptr( p );
            m_childCount += serviceGroup->childCount();
         }
      }
@@ -242,14 +242,14 @@ void KServiceGroupPrivate::load( QDataStream& s )
            KServiceGroup::Ptr serviceGroup;
            serviceGroup = KServiceGroupFactory::self()->findGroupByDesktopPath(path, false);
            if (serviceGroup)
-               m_serviceList.append( KServiceGroup::SPtr::staticCast(serviceGroup) );
+               m_serviceList.append( KServiceGroup::SPtr(serviceGroup) );
         }
         else
         {
            KService::Ptr service;
            service = KServiceFactory::self()->findServiceByDesktopPath(path);
            if (service)
-              m_serviceList.append( KServiceGroup::SPtr::staticCast(service) );
+              m_serviceList.append( KServiceGroup::SPtr(service) );
         }
      }
   }
@@ -270,12 +270,12 @@ void KServiceGroupPrivate::save( QDataStream& s )
   {
      if (p->isType(KST_KService))
      {
-        KService::Ptr service = KService::Ptr::staticCast( p );
+        KService::Ptr service = KService::Ptr( p );
         groupList.append( service->entryPath() );
      }
      else if (p->isType(KST_KServiceGroup))
      {
-        KServiceGroup::Ptr serviceGroup = KServiceGroup::Ptr::staticCast( p );
+        KServiceGroup::Ptr serviceGroup = KServiceGroup::Ptr( p );
         groupList.append( serviceGroup->relPath() );
      }
      else
@@ -305,7 +305,7 @@ QList<KServiceGroup::Ptr> KServiceGroup::groupEntries(EntriesOptions options)
     List tmp = d->entries(this, sort, options & ExcludeNoDisplay, options & AllowSeparators, options & SortByGenericName);
     foreach(const SPtr &ptr, tmp) {
         if (ptr->isType(KST_KServiceGroup))
-            list.append(Ptr::staticCast(ptr));
+            list.append(Ptr(ptr));
         else if (ptr->isType(KST_KServiceSeparator))
             list.append(KServiceGroup::Ptr(static_cast<KServiceGroup *>(new KSycocaEntry())));
         else if (sort && ptr->isType(KST_KService))
@@ -323,7 +323,7 @@ KService::List KServiceGroup::serviceEntries(EntriesOptions options)
     bool foundService = false;
     foreach(const SPtr &ptr, tmp) {
         if (ptr->isType(KST_KService)) {
-            list.append(KService::Ptr::staticCast(ptr));
+            list.append(KService::Ptr(ptr));
             foundService = true;
         }
         else if (ptr->isType(KST_KServiceSeparator) && foundService) {
@@ -450,7 +450,7 @@ KServiceGroupPrivate::entries(KServiceGroup *group, bool sort, bool excludeNoDis
            // Remove entry from sorted list of services.
           for (SortedContainer::iterator it2 = glist.begin(); it2 != glist.end(); ++it2)
           {
-             const KServiceGroup::Ptr group = KServiceGroup::Ptr::staticCast(it2.value());
+             const KServiceGroup::Ptr group = KServiceGroup::Ptr(it2.value());
              if (group->relPath() == groupPath)
              {
                 glist.erase(it2);
@@ -465,7 +465,7 @@ KServiceGroupPrivate::entries(KServiceGroup *group, bool sort, bool excludeNoDis
            // TODO: This prevents duplicates
           for (SortedContainer::iterator it2 = slist.begin(); it2 != slist.end(); ++it2)
           {
-             const KService::Ptr service = KService::Ptr::staticCast(it2.value());
+             const KService::Ptr service = KService::Ptr(it2.value());
              if (service->menuId() == item)
              {
                 slist.erase(it2);
@@ -512,7 +512,7 @@ KServiceGroupPrivate::entries(KServiceGroup *group, bool sort, bool excludeNoDis
               }
               for (SortedContainer::Iterator it2 = glist.begin(); it2 != glist.end(); ++it2)
               {
-                  KServiceGroup::Ptr group = KServiceGroup::Ptr::staticCast(it2.value());
+                  KServiceGroup::Ptr group = KServiceGroup::Ptr(it2.value());
                   group->setShowEmptyMenu(  showEmptyMenu  );
                   group->setAllowInline( showInline );
                   group->setShowInlineHeader( showInlineHeader );
@@ -584,7 +584,7 @@ KServiceGroupPrivate::entries(KServiceGroup *group, bool sort, bool excludeNoDis
             {
                 if (!(*it2)->isType(KST_KServiceGroup))
                     continue;
-                KServiceGroup::Ptr group = KServiceGroup::Ptr::staticCast( *it2 );
+                KServiceGroup::Ptr group = KServiceGroup::Ptr( *it2 );
                 if (group->relPath() == groupPath)
                 {
                     if (!excludeNoDisplay || !group->noDisplay())
@@ -618,7 +618,7 @@ KServiceGroupPrivate::entries(KServiceGroup *group, bool sort, bool excludeNoDis
                         else
                             it--;
 
-                        addItem(sorted, KServiceGroup::SPtr::staticCast(group), needSeparator);
+                        addItem(sorted, KServiceGroup::SPtr(group), needSeparator);
                     }
                     break;
                 }
@@ -631,7 +631,7 @@ KServiceGroupPrivate::entries(KServiceGroup *group, bool sort, bool excludeNoDis
             {
                 if (!(*it2)->isType(KST_KService))
                     continue;
-                const KService::Ptr service = KService::Ptr::staticCast( *it2 );
+                const KService::Ptr service = KService::Ptr( *it2 );
                 if (service->menuId() == item)
                 {
                     if (!excludeNoDisplay || !service->noDisplay())

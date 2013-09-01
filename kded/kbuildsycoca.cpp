@@ -171,7 +171,7 @@ KSycocaEntry::Ptr KBuildSycoca::createEntry(const QString &file, bool addToFacto
 KService::Ptr KBuildSycoca::createService(const QString &path)
 {
    KSycocaEntry::Ptr entry = createEntry(path, false);
-   return KService::Ptr::staticCast(entry);
+   return KService::Ptr(entry);
 }
 
 // returns false if the database is up to date, true if it needs to be saved
@@ -362,7 +362,7 @@ void KBuildSycoca::createMenu(const QString &caption_, const QString &name_, VFo
             KSycocaEntry::Ptr group = g_serviceGroupEntryDict->value(subName);
             if ( group )
             {
-                entry = KServiceGroup::Ptr::staticCast( group );
+                entry = KServiceGroup::Ptr( group );
                 if (entry->directoryEntryPath() != directoryFile)
                     entry = 0; // Can't reuse this one!
             }

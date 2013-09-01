@@ -22,7 +22,7 @@
 #define KMOUNTPOINT_H
 
 #include <kio/kiocore_export.h>
-#include <ksharedptr.h>
+#include <QExplicitlySharedDataPointer>
 
 #include <QtCore/QStringList>
 
@@ -32,10 +32,10 @@
  *
  * @author Waldo Bastian <bastian@kde.org>
  */
-class KIOCORE_EXPORT KMountPoint : public KShared
+class KIOCORE_EXPORT KMountPoint : public QSharedData
 {
 public:
-    typedef KSharedPtr<KMountPoint> Ptr;
+    typedef QExplicitlySharedDataPointer<KMountPoint> Ptr;
     /**
      * List of mount points.
      */

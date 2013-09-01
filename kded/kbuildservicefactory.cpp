@@ -216,12 +216,12 @@ void KBuildServiceFactory::postProcessServices()
     for( ; itserv != endserv ; ++itserv ) {
 
         KSycocaEntry::Ptr entry = *itserv;
-        KService::Ptr service = KService::Ptr::staticCast(entry);
+        KService::Ptr service = KService::Ptr(entry);
 
         if (!service->isDeleted()) {
             const QString parent = service->parentApp();
             if (!parent.isEmpty())
-                m_serviceGroupFactory->addNewChild(parent, KSycocaEntry::Ptr::staticCast(service));
+                m_serviceGroupFactory->addNewChild(parent, KSycocaEntry::Ptr(service));
         }
 
         const QString name = service->desktopEntryName();
@@ -250,7 +250,7 @@ void KBuildServiceFactory::populateServiceTypes()
     const KSycocaEntryDict::Iterator endserv = m_entryDict->end();
     for( ; itserv != endserv ; ++itserv ) {
 
-        KService::Ptr service = KService::Ptr::staticCast(*itserv);
+        KService::Ptr service = KService::Ptr(*itserv);
         QVector<KService::ServiceTypeAndPreference> serviceTypeList = service->_k_accessServiceTypes();
         //bool hasAllAll = false;
         //bool hasAllFiles = false;
@@ -309,7 +309,7 @@ void KBuildServiceFactory::populateServiceTypes()
     KSycocaEntryDict::const_iterator itstf = m_serviceTypeFactory->entryDict()->constBegin();
     const KSycocaEntryDict::const_iterator endstf = m_serviceTypeFactory->entryDict()->constEnd();
     for( ; itstf != endstf; ++itstf ) {
-        KServiceType::Ptr entry = KServiceType::Ptr::staticCast( *itstf );
+        KServiceType::Ptr entry = KServiceType::Ptr( *itstf );
         const int numOffers = m_offerHash.offersFor(entry->name()).count();
         if ( numOffers ) {
             entry->setServiceOffersOffset( offersOffset );
@@ -320,7 +320,7 @@ void KBuildServiceFactory::populateServiceTypes()
     const KSycocaEntryDict::const_iterator endmtf = m_mimeTypeFactory->entryDict()->constEnd();
     for( ; itmtf != endmtf; ++itmtf )
     {
-        KMimeTypeFactory::MimeTypeEntry::Ptr entry = KMimeTypeFactory::MimeTypeEntry::Ptr::staticCast( *itmtf );
+        KMimeTypeFactory::MimeTypeEntry::Ptr entry = KMimeTypeFactory::MimeTypeEntry::Ptr( *itmtf );
         const int numOffers = m_offerHash.offersFor(entry->name()).count();
         if ( numOffers ) {
             //qDebug() << entry->name() << "offset=" << offersOffset;
@@ -339,7 +339,7 @@ void KBuildServiceFactory::saveOfferList(QDataStream &str)
     const KSycocaEntryDict::const_iterator endstf = m_serviceTypeFactory->entryDict()->constEnd();
     for( ; itstf != endstf; ++itstf ) {
         // export associated services
-        const KServiceType::Ptr entry = KServiceType::Ptr::staticCast( *itstf );
+        const KServiceType::Ptr entry = KServiceType::Ptr( *itstf );
         Q_ASSERT( entry );
 
         QList<KServiceOffer> offers = m_offerHash.offersFor(entry->name());
@@ -362,7 +362,7 @@ void KBuildServiceFactory::saveOfferList(QDataStream &str)
     const KSycocaEntryDict::const_iterator endmtf = m_mimeTypeFactory->entryDict()->constEnd();
     for( ; itmtf != endmtf; ++itmtf ) {
         // export associated services
-        const KMimeTypeFactory::MimeTypeEntry::Ptr entry = KMimeTypeFactory::MimeTypeEntry::Ptr::staticCast( *itmtf );
+        const KMimeTypeFactory::MimeTypeEntry::Ptr entry = KMimeTypeFactory::MimeTypeEntry::Ptr( *itmtf );
         Q_ASSERT( entry );
         QList<KServiceOffer> offers = m_offerHash.offersFor(entry->name());
         qStableSort( offers ); // by initial preference
@@ -388,7 +388,7 @@ void KBuildServiceFactory::addEntry(const KSycocaEntry::Ptr& newEntry)
     if (m_dupeDict.contains(newEntry))
         return;
 
-    const KService::Ptr service = KService::Ptr::staticCast( newEntry );
+    const KService::Ptr service = KService::Ptr( newEntry );
     m_dupeDict.insert(newEntry);
     KSycocaFactory::addEntry(newEntry);
 }

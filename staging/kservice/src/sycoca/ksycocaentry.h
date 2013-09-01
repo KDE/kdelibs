@@ -20,12 +20,12 @@
 #define KSYCOCAENTRY_H
 
 #include <ksycocatype.h>
-#include <ksharedptr.h>
 #include <kservice_export.h>
 
 #include <QtCore/QDataStream>
 #include <QtCore/QStringList>
 #include <QtCore/QVariant>
+#include <QExplicitlySharedDataPointer>
 
 class KSycocaEntryPrivate;
 
@@ -38,7 +38,7 @@ class KSycocaEntryPrivate;
  * @internal
  * @see http://techbase.kde.org/Development/Architecture/KDE3/System_Configuration_Cache
  */
-class KSERVICE_EXPORT KSycocaEntry : public KShared
+class KSERVICE_EXPORT KSycocaEntry : public QSharedData
 {
 
 public:
@@ -58,7 +58,7 @@ public:
     */
    KSycocaType sycocaType() const;
 
-   typedef KSharedPtr<KSycocaEntry> Ptr;
+   typedef QExplicitlySharedDataPointer<KSycocaEntry> Ptr;
    typedef QList<Ptr> List;
 
    /**

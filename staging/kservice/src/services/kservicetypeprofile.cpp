@@ -211,7 +211,7 @@ void KServiceTypeProfile::writeServiceTypeProfile( const QString& serviceType,
     KService::List::ConstIterator servit = services.begin();
     int i = 0;
     for( ; servit != services.end(); ++servit, ++i ) {
-        if (!servit->isNull()) {
+        if (*servit) {
             const QString num = QString::fromLatin1("Entry") + QString::number(i);
             config.writeEntry( num + QLatin1String("_Service"), (*servit)->storageId() );
             config.writeEntry( num + QLatin1String("_Preference"), count - i );
@@ -219,7 +219,7 @@ void KServiceTypeProfile::writeServiceTypeProfile( const QString& serviceType,
     }
     servit = disabledServices.begin();
     for( ; servit != disabledServices.end(); ++servit, ++i ) {
-        if (!servit->isNull()) {
+        if (*servit) {
             const QString num = QString::fromLatin1("Entry") + QString::number(i);
             config.writeEntry( num + QLatin1String("_Service"), (*servit)->storageId() );
             config.writeEntry( num + QLatin1String("_Preference"), 0 );

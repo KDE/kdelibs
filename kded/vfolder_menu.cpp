@@ -345,7 +345,7 @@ VFolderMenu::addApplication(const QString &id, KService::Ptr service)
 {
    service->setMenuId(id);
    m_appsInfo->applications.insert(id, service); // replaces, if already there
-   m_serviceFactory->addEntry(KSycocaEntry::Ptr::staticCast(service));
+   m_serviceFactory->addEntry(KSycocaEntry::Ptr(service));
 }
 
 void

@@ -86,7 +86,7 @@ public:
 class KServiceSeparator : public KSycocaEntry //krazy:exclude=dpointer (dummy class)
 {
 public:
-  typedef KSharedPtr<KServiceSeparator> Ptr;
+  typedef QExplicitlySharedDataPointer<KServiceSeparator> Ptr;
 public:
   /**
    * Construct a service separator

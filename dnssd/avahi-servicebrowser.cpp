@@ -124,12 +124,13 @@ void ServiceBrowserPrivate::gotRemoveService(int,int,const QString& name, const 
 	m_timer.start(TIMEOUT_LAST_SERVICE);
 	RemoteService::Ptr tmpl(new RemoteService(name, type,domain));
 	RemoteService::Ptr found=find(tmpl, m_duringResolve);
-	if (!found.isNull()) {
+	if (found) {
 	    m_duringResolve.removeAll(found);
 	    return;
 	}
 	found=find(tmpl, m_services);
-	if (found.isNull()) return;
+	if (!found)
+	    return;
 	
 	emit m_parent->serviceRemoved(found);
 	m_services.removeAll(found);

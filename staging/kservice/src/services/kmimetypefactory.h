@@ -82,7 +82,7 @@ public: // public for KBuildServiceFactory
     {
         Q_DECLARE_PRIVATE( MimeTypeEntry )
     public:
-        typedef KSharedPtr<MimeTypeEntry> Ptr;
+        typedef QExplicitlySharedDataPointer<MimeTypeEntry> Ptr;
 
         MimeTypeEntry(const QString& file, const QString& name);
         MimeTypeEntry(QDataStream& s, int offset);

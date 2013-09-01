@@ -106,7 +106,7 @@ static bool hasSchemeHandler(const QUrl& url)
         return true;
     }
     const KService::Ptr service = KMimeTypeTrader::self()->preferredService(QString::fromLatin1("x-scheme-handler/") + url.scheme());
-    return !service.isNull();
+    return service;
 }
 
 static QString schemeHandler(const QString& protocol)

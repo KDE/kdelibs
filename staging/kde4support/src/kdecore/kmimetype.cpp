@@ -40,7 +40,7 @@
 
 extern int servicesDebugArea();
 
-template class KSharedPtr<KMimeType>;
+template class QExplicitlySharedDataPointer<KMimeType>;
 
 KMimeType::Ptr KMimeType::defaultMimeTypePtr()
 {

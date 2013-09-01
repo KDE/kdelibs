@@ -41,7 +41,7 @@ private:
         KServiceType::Ptr ptr = KServiceType::serviceType(name);
         if (!ptr)
             qWarning() << "serviceType not found" << name;
-        dict.add(key, KSycocaEntry::Ptr::staticCast(ptr));
+        dict.add(key, KSycocaEntry::Ptr(ptr));
     }
 };
 

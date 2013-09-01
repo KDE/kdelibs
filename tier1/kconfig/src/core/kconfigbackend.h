@@ -25,10 +25,10 @@
 
 #include <QtCore/QObject>
 #include <QtCore/QString>
+#include <QExplicitlySharedDataPointer>
 
 #include <kconfigcore_export.h>
 #include <kconfigbase.h>
-#include <ksharedptr.h>
 
 class KEntryMap;
 class QFile;
@@ -44,7 +44,7 @@ class QDateTime;
  * to create plugins that allow access to other file formats and
  * configuration systems.
  */
-class KCONFIGCORE_EXPORT KConfigBackend : public QObject, public KShared
+class KCONFIGCORE_EXPORT KConfigBackend : public QObject, public QSharedData
 {
     Q_OBJECT
     Q_FLAGS(ParseOption)
@@ -61,7 +61,7 @@ public:
      * @param system        the configuration system to use
      * @return a KConfigBackend object to be used with KConfig
      */
-    static KSharedPtr<KConfigBackend> create(const QString& fileName = QString(),
+    static QExplicitlySharedDataPointer<KConfigBackend> create(const QString& fileName = QString(),
                                              const QString& system = QString());
 
     /**

@@ -172,7 +172,7 @@ void KTraderParse_destroy(void *node)
 {
     ParsingData *data = s_parsingData()->localData();
     ParseTreeBase *p = reinterpret_cast<ParseTreeBase *>(node);
-    if (p != data->ptr) {
+    if (p != data->ptr.data()) {
         delete p;
     }
 }

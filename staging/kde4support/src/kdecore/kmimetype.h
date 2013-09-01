@@ -51,7 +51,7 @@ class KDE4SUPPORT_DEPRECATED_EXPORT KMimeType : public QSharedData
 {
     Q_DECLARE_PRIVATE( KMimeType )
 public:
-    typedef KSharedPtr<KMimeType> Ptr;
+    typedef QExplicitlySharedDataPointer<KMimeType> Ptr;
     typedef QList<Ptr> List;
 
     /**

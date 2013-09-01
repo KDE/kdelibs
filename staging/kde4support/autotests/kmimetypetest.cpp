@@ -546,7 +546,7 @@ void KMimeTypeTest::testAlias()
     QVERIFY(canonical->is("text/xml"));
 
     // Test for bug 197346: does nspluginscan see that audio/mp3 already exists?
-    bool mustWriteMimeType = KMimeType::mimeType("audio/mp3").isNull();
+    bool mustWriteMimeType = !KMimeType::mimeType("audio/mp3");
     QVERIFY(!mustWriteMimeType);
 }
 
@@ -760,7 +760,7 @@ void KMimeTypeTest::testHasServiceType1() // with services constructed with a fu
 void KMimeTypeTest::testHasServiceType2() // with services coming from ksycoca
 {
     KService::Ptr faketextpart = KService::serviceByDesktopPath( "faketextpart.desktop" );
-    QVERIFY( !faketextpart.isNull() );
+    QVERIFY( faketextpart );
     QVERIFY( faketextpart->hasMimeType( "text/plain" ) );
     QVERIFY( faketextpart->hasMimeType( "text/x-patch" ) ); // due to inheritance
     QVERIFY( !faketextpart->hasMimeType( "image/png" ) );
@@ -769,7 +769,7 @@ void KMimeTypeTest::testHasServiceType2() // with services coming from ksycoca
     QVERIFY( !faketextpart->hasServiceType( "KPluginInfo" ) );
 
     KService::Ptr textPlugin= KService::serviceByDesktopPath( "faketextplugin.desktop" );
-    QVERIFY( !textPlugin.isNull() );
+    QVERIFY( textPlugin );
     QVERIFY( textPlugin->hasServiceType( "KPluginInfo" ) );
     QVERIFY( !textPlugin->hasServiceType( "KParts/ReadOnlyPart" ) );
 }

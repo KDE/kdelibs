@@ -23,7 +23,7 @@
 
 #include <QtCore/QMap>
 #include <QtCore/QString>
-#include <ksharedptr.h>
+#include <QExplicitlySharedDataPointer>
 #include <dnssd/dnssd_export.h>
 
 namespace DNSSD
@@ -51,7 +51,7 @@ class ServiceBasePrivate;
 class KDNSSD_EXPORT ServiceBase : public QSharedData //krazy:exclude=dpointer (protected)
 {
 public:
-	typedef KSharedPtr<ServiceBase> Ptr;
+	typedef QExplicitlySharedDataPointer<ServiceBase> Ptr;
 
 	/**
 	 * Creates a ServiceBase object

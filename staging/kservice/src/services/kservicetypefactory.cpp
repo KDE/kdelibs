@@ -101,7 +101,7 @@ KServiceType::List KServiceTypeFactory::allServiceTypes()
         ++it)
    {
       if ( (*it)->isType( KST_KServiceType ) ) {
-          KServiceType::Ptr newServiceType = KServiceType::Ptr::staticCast( *it );
+          KServiceType::Ptr newServiceType = KServiceType::Ptr( *it );
           result.append( newServiceType );
       }
    }

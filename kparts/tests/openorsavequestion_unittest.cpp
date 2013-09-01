@@ -126,7 +126,7 @@ private Q_SLOTS:
         QMetaObject::invokeMethod(this, "clickButton", Qt::QueuedConnection, Q_ARG(QDialog*, theDialog),
                                   Q_ARG(QString, buttonName));
         QCOMPARE((int)questionEmbedZip.askOpenOrSave(), expectedResult);
-        QCOMPARE(!questionEmbedZip.selectedService().isNull(), expectedService);
+        QCOMPARE((bool)questionEmbedZip.selectedService(), expectedService);
     }
 
 protected Q_SLOTS: // our own slots, not tests

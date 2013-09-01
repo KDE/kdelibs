@@ -21,7 +21,7 @@
 #define KUNITCONVERSION_UNIT_H
 
 #include <QtCore/QString>
-#include <ksharedptr.h>
+#include <QExplicitlySharedDataPointer>
 #include "kunitconversion_export.h"
 
 class KLocalizedString;
@@ -122,7 +122,7 @@ private:
     Private* const d;
 };
 
-typedef KSharedPtr<Unit> UnitPtr;
+typedef QExplicitlySharedDataPointer<Unit> UnitPtr;
 
 #define UP(id, m, s, d, sy, r, i) \
     (KUnitConversion::UnitPtr(new KUnitConversion::Unit(this, id, m, s, d, sy, r, i)))

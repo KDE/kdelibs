@@ -159,7 +159,7 @@ QSet<KCModuleInfo> DialogPrivate::instanceServices()
 			if( p->isType( KST_KService ) )
 			{
 				//qDebug() << "found service";
-                ret << KCModuleInfo(KService::Ptr::staticCast(p));
+                ret << KCModuleInfo(KService::Ptr(p));
 			}
 			else
 				qWarning() << "KServiceGroup::childGroup returned"

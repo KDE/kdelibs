@@ -59,14 +59,14 @@ void KBuildServiceGroupFactory::addNewEntryTo( const QString &menuName, const KS
   KSycocaEntry::Ptr ptr = m_entryDict->value(menuName);
   KServiceGroup::Ptr entry;
   if (ptr && ptr->isType(KST_KServiceGroup))
-    entry = KServiceGroup::Ptr::staticCast( ptr );
+    entry = KServiceGroup::Ptr( ptr );
 
   if (!entry)
   {
     qWarning() << "( " << menuName << ", " << newEntry->name() << " ): menu does not exists!";
     return;
   }
-  entry->addEntry( KSycocaEntry::Ptr::staticCast( newEntry ) );
+  entry->addEntry( KSycocaEntry::Ptr( newEntry ) );
 }
 
 KServiceGroup::Ptr
@@ -76,7 +76,7 @@ KBuildServiceGroupFactory::addNew( const QString &menuName, const QString& file,
   if (ptr)
   {
     qWarning() << "( " << menuName << ", " << file << " ): menu already exists!";
-    return KServiceGroup::Ptr::staticCast( ptr );
+    return KServiceGroup::Ptr( ptr );
   }
 
   // Create new group entry
@@ -85,7 +85,7 @@ KBuildServiceGroupFactory::addNew( const QString &menuName, const QString& file,
 
   entry->d_func()->m_childCount = -1; // Recalculate
 
-  addEntry( KSycocaEntry::Ptr::staticCast(entry) );
+  addEntry( KSycocaEntry::Ptr(entry) );
 
   if (menuName != "/")
   {
@@ -102,7 +102,7 @@ KBuildServiceGroupFactory::addNew( const QString &menuName, const QString& file,
      KServiceGroup::Ptr parentEntry;
      ptr = m_entryDict->value(parent);
      if (ptr && ptr->isType(KST_KServiceGroup))
-         parentEntry = KServiceGroup::Ptr::staticCast( ptr );
+         parentEntry = KServiceGroup::Ptr( ptr );
      if (!parentEntry)
      {
         qWarning() << "( " << menuName << ", " << file << " ): parent menu does not exist!";
@@ -110,7 +110,7 @@ KBuildServiceGroupFactory::addNew( const QString &menuName, const QString& file,
      else
      {
         if (!isDeleted && !entry->isDeleted())
-           parentEntry->addEntry( KSycocaEntry::Ptr::staticCast( entry ) );
+           parentEntry->addEntry( KSycocaEntry::Ptr( entry ) );
      }
   }
   return entry;
@@ -124,12 +124,12 @@ KBuildServiceGroupFactory::addNewChild( const QString &parent, const KSycocaEntr
   KServiceGroup::Ptr entry;
   KSycocaEntry::Ptr ptr = m_entryDict->value(name);
   if (ptr && ptr->isType(KST_KServiceGroup))
-     entry = KServiceGroup::Ptr::staticCast( ptr );
+     entry = KServiceGroup::Ptr( ptr );
 
   if (!entry)
   {
      entry = new KServiceGroup(name);
-     addEntry( KSycocaEntry::Ptr::staticCast( entry ) );
+     addEntry( KSycocaEntry::Ptr( entry ) );
   }
   if (newEntry)
      entry->addEntry( newEntry );
@@ -140,7 +140,7 @@ KBuildServiceGroupFactory::addEntry( const KSycocaEntry::Ptr& newEntry)
 {
    KSycocaFactory::addEntry(newEntry);
 
-   KServiceGroup::Ptr serviceGroup = KServiceGroup::Ptr::staticCast( newEntry );
+   KServiceGroup::Ptr serviceGroup = KServiceGroup::Ptr( newEntry );
    serviceGroup->d_func()->m_serviceList.clear();
 
    if ( !serviceGroup->baseGroupName().isEmpty() )
@@ -180,5 +180,5 @@ KServiceGroup::Ptr KBuildServiceGroupFactory::findGroupByDesktopPath( const QStr
     Q_UNUSED(deep); // ?
     // We're building a database - the service type must be in memory
     KSycocaEntry::Ptr group = m_entryDict->value( _name );
-    return KServiceGroup::Ptr::staticCast( group );
+    return KServiceGroup::Ptr( group );
 }

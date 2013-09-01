@@ -25,11 +25,11 @@
 #include <QtCore/QMap>
 #include <QtCore/QVariant>
 #include <QtCore/QSharedData>
+#include <QExplicitlySharedDataPointer>
 
 #include "krossconfig.h"
 #include "errorinterface.h"
 
-#include <ksharedptr.h>
 
 namespace Kross {
 
@@ -73,7 +73,7 @@ namespace Kross {
             /**
              * Shared pointer to implement reference-counting.
              */
-            typedef KSharedPtr<Object> Ptr;
+            typedef QExplicitlySharedDataPointer<Object> Ptr;
 
             /**
              * Default constructor.

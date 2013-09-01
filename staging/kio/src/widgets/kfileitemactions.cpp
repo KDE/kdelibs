@@ -618,7 +618,7 @@ void KFileItemActionsPrivate::slotRunPreferredApplications()
         }
 
         const KService::Ptr servicePtr = KService::serviceByStorageId(serviceId);
-        if (servicePtr.isNull()) {
+        if (!servicePtr) {
             KRun::displayOpenWithDialog(serviceItems.urlList(), m_parentWidget);
             continue;
         }

@@ -34,7 +34,7 @@
 #include "kconfigdata.h"
 #include "kconfigbackend.moc"
 
-typedef KSharedPtr<KConfigBackend> BackendPtr;
+typedef QExplicitlySharedDataPointer<KConfigBackend> BackendPtr;
 
 class KConfigBackend::Private
 {

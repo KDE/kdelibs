@@ -73,12 +73,12 @@ KConfigPrivate::KConfigPrivate(KConfig::OpenFlags flags,
 //    if (!mappingsRegistered) {
 //        KEntryMap tmp;
 //        if (!etc_kderc.isEmpty()) {
-//            KSharedPtr<KConfigBackend> backend = KConfigBackend::create(etc_kderc, QLatin1String("INI"));
+//            QExplicitlySharedDataPointer<KConfigBackend> backend = KConfigBackend::create(etc_kderc, QLatin1String("INI"));
 //            backend->parseConfig( "en_US", tmp, KConfigBackend::ParseDefaults);
 //        }
 //        const QString kde4rc(QDir::home().filePath(".kde4rc"));
 //        if (KStandardDirs::checkAccess(kde4rc, R_OK)) {
-//            KSharedPtr<KConfigBackend> backend = KConfigBackend::create(kde4rc, QLatin1String("INI"));
+//            QExplicitlySharedDataPointer<KConfigBackend> backend = KConfigBackend::create(kde4rc, QLatin1String("INI"));
 //            backend->parseConfig( "en_US", tmp, KConfigBackend::ParseOptions());
 //        }
 //        KConfigBackend::registerMappings(tmp);
@@ -265,7 +265,7 @@ KConfig::KConfig(KConfigPrivate &d)
 KConfig::~KConfig()
 {
     Q_D(KConfig);
-    if (d->bDirty && d->mBackend.isUnique())
+    if (d->bDirty && (d->mBackend && d->mBackend->ref.load() == 1))
         sync();
     delete d;
 }
@@ -433,7 +433,7 @@ bool KConfig::sync()
         d->bDirty = false; // will revert to true if a config write fails
 
         if (d->wantGlobals() && writeGlobals) {
-            KSharedPtr<KConfigBackend> tmp = KConfigBackend::create(d->sGlobalFileName);
+            QExplicitlySharedDataPointer<KConfigBackend> tmp = KConfigBackend::create(d->sGlobalFileName);
             if (d->configState == ReadWrite && !tmp->lock()) {
                 qWarning() << "couldn't lock global file";
                 d->bDirty = true;
@@ -625,7 +625,7 @@ void KConfigPrivate::parseGlobalFiles()
         if (file != sGlobalFileName)
             parseOpts |= KConfigBackend::ParseDefaults;
 
-        KSharedPtr<KConfigBackend> backend = KConfigBackend::create(file);
+        QExplicitlySharedDataPointer<KConfigBackend> backend = KConfigBackend::create(file);
         if ( backend->parseConfig( utf8Locale, entryMap, parseOpts) == KConfigBackend::ParseImmutable)
             break;
     }
@@ -672,7 +672,7 @@ void KConfigPrivate::parseConfigFiles()
                     break;
                 }
             } else {
-                KSharedPtr<KConfigBackend> backend = KConfigBackend::create(file);
+                QExplicitlySharedDataPointer<KConfigBackend> backend = KConfigBackend::create(file);
                 bFileImmutable = (backend->parseConfig(utf8Locale, entryMap,
                                         KConfigBackend::ParseDefaults|KConfigBackend::ParseExpansions)
                                   == KConfigBackend::ParseImmutable);
@@ -816,11 +816,11 @@ void KConfig::deleteGroupImpl(const QByteArray &aGroup, WriteConfigFlags flags)
 bool KConfig::isConfigWritable(bool warnUser)
 {
     Q_D(KConfig);
-    bool allWritable = (d->mBackend.isNull()? false: d->mBackend->isWritable());
+    bool allWritable = (d->mBackend ? d->mBackend->isWritable() : false);
 
     if (warnUser && !allWritable) {
         QString errorMsg;
-        if (!d->mBackend.isNull()) // TODO how can be it be null? Set errorMsg appropriately
+        if (d->mBackend) // TODO how can be it be null? Set errorMsg appropriately
             errorMsg = d->mBackend->nonWritableErrorMessage();
 
         // Note: We don't ask the user if we should not ask this question again because we can't save the answer.

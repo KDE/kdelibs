@@ -117,7 +117,7 @@ public:
   QString moduleName() const;
 
   /**
-   * @return a KSharedPtr to KService created from the modules .desktop file
+   * @return a QExplicitlySharedDataPointer to KService created from the modules .desktop file
    */
   KService::Ptr service() const;
 

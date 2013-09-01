@@ -452,13 +452,13 @@ void KServiceTest::testHasServiceType1() // with services constructed with a ful
 void KServiceTest::testHasServiceType2() // with services coming from ksycoca
 {
     KService::Ptr fakepart = KService::serviceByDesktopPath( "fakepart.desktop" );
-    QVERIFY( !fakepart.isNull() );
+    QVERIFY( fakepart );
     QVERIFY( fakepart->hasServiceType( "KParts/ReadOnlyPart" ) );
     QVERIFY( fakepart->hasServiceType( "KParts/ReadWritePart" ) );
     QCOMPARE(fakepart->mimeTypes(), QStringList() << "text/plain");
 
     KService::Ptr faketextPlugin = KService::serviceByDesktopPath( "faketextplugin.desktop" );
-    QVERIFY( !faketextPlugin.isNull() );
+    QVERIFY( faketextPlugin );
     QVERIFY( faketextPlugin->hasServiceType( "FakePluginType" ) );
     QVERIFY( !faketextPlugin->hasServiceType( "KParts/ReadOnlyPart" ) );
 }
@@ -471,8 +471,8 @@ void KServiceTest::testWriteServiceTypeProfile()
     services.append(KService::serviceByDesktopPath("fakepart.desktop"));
     disabledServices.append(KService::serviceByDesktopPath("fakepart2.desktop"));
 
-    Q_FOREACH(KService::Ptr serv, services) { QVERIFY(!serv.isNull()); }
-    Q_FOREACH(KService::Ptr serv, disabledServices) { QVERIFY(!serv.isNull()); }
+    Q_FOREACH(KService::Ptr serv, services) { QVERIFY(serv); }
+    Q_FOREACH(KService::Ptr serv, disabledServices) { QVERIFY(serv); }
 
     KServiceTypeProfile::writeServiceTypeProfile( serviceType, services, disabledServices );
 

@@ -52,7 +52,7 @@ class KDNSSD_EXPORT RemoteService : public QObject, public ServiceBase
 	Q_OBJECT
 
 public:
-	typedef KSharedPtr<RemoteService> Ptr;
+	typedef QExplicitlySharedDataPointer<RemoteService> Ptr;
 
 	/**
 	 * Creates an unresolved RemoteService representing the service with

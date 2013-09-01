@@ -435,7 +435,7 @@ void KPluginSelector::Private::PluginModel::addPlugins(const QList<KPluginInfo> 
         if (!pluginEntryList.contains(pluginEntry) && !listToAdd.contains(pluginEntry) &&
              (!pluginInfo.property("X-KDE-PluginInfo-Category").isValid() ||
               !pluginInfo.property("X-KDE-PluginInfo-Category").toString().compare(categoryKey, Qt::CaseInsensitive)) &&
-            (pluginInfo.service().isNull() || !pluginInfo.service()->noDisplay())) {
+            (!pluginInfo.service() || !pluginInfo.service()->noDisplay())) {
             listToAdd << pluginEntry;
 
             if (!pluginSelector_d->showIcons && !pluginInfo.icon().isEmpty()) {

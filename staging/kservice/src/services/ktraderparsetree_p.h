@@ -95,10 +95,10 @@ public:
 /**
  * @internal
  */
-class ParseTreeBase : public KShared
+class ParseTreeBase : public QSharedData
 {
 public:
-  typedef KSharedPtr<ParseTreeBase> Ptr;
+  typedef QExplicitlySharedDataPointer<ParseTreeBase> Ptr;
   ParseTreeBase() { }
   virtual ~ParseTreeBase() { }
 

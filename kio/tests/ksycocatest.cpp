@@ -126,13 +126,13 @@ int main(int argc, char *argv[])
       KSycocaEntry::Ptr p = (*it);
       if (p->isType(KST_KService))
       {
-          KService::Ptr service = KService::Ptr::staticCast( p );
+          KService::Ptr service = KService::Ptr( p );
          qDebug("%s", qPrintable(service->name()));
          qDebug("%s", qPrintable(service->entryPath()));
       }
       else if (p->isType(KST_KServiceGroup))
       {
-         KServiceGroup::Ptr serviceGroup = KServiceGroup::Ptr::staticCast(p);
+         KServiceGroup::Ptr serviceGroup = KServiceGroup::Ptr(p);
          qDebug("             %s -->", qPrintable(serviceGroup->caption()));
          if (!first) first = serviceGroup;
       }
@@ -152,12 +152,12 @@ int main(int argc, char *argv[])
       KSycocaEntry::Ptr p = (*it);
       if (p->isType(KST_KService))
       {
-         KService::Ptr service = KService::Ptr::staticCast( p );
+         KService::Ptr service = KService::Ptr( p );
          qDebug("             %s", qPrintable(service->name()));
       }
       else if (p->isType(KST_KServiceGroup))
       {
-         KServiceGroup::Ptr serviceGroup = KServiceGroup::Ptr::staticCast(p);
+         KServiceGroup::Ptr serviceGroup = KServiceGroup::Ptr(p);
          qDebug("             %s -->", qPrintable(serviceGroup->caption()));
       }
       else

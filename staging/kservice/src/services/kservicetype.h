@@ -43,7 +43,7 @@ class KServiceTypePrivate;
 class KSERVICE_EXPORT KServiceType : public KSycocaEntry // TODO KDE5: inherit kshared, but move KSycocaEntry to Private
 {
 public:
-    typedef KSharedPtr<KServiceType> Ptr;
+    typedef QExplicitlySharedDataPointer<KServiceType> Ptr;
     typedef QList<Ptr> List;
 
     /**

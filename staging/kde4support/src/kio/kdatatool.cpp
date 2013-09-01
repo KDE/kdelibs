@@ -199,7 +199,7 @@ QList<KDataToolInfo> KDataToolInfo::query(const QString& datatype, const QString
 
 bool KDataToolInfo::isValid() const
 {
-    return( !d->service.isNull() );
+    return( d->service );
 }
 
 /*************************************************
