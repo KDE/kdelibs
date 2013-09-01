@@ -119,6 +119,7 @@ MathFuncImp::MathFuncImp(ExecState* exec, int i, int l, const Identifier& name)
 
 JSValue *MathFuncImp::callAsFunction(ExecState *exec, JSObject* /*thisObj*/, const List &args)
 {
+  using namespace std;
   double arg = args[0]->toNumber(exec);
   double arg2 = args[1]->toNumber(exec);
   double result;

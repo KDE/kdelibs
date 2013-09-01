@@ -96,6 +96,7 @@ OpValue BooleanNode::generateEvalCode(CompileState*)
 
 OpValue NumberNode::generateEvalCode(CompileState*)
 {
+    using namespace std;
 #if 0
     if (typeHint == OpType_Value) {
         // Try to fit into a JSValue if at all possible..
