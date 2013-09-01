@@ -1444,9 +1444,10 @@ void KCategorizedView::currentChanged(const QModelIndex &current,
 }
 
 void KCategorizedView::dataChanged(const QModelIndex &topLeft,
-                                   const QModelIndex &bottomRight)
+                                   const QModelIndex &bottomRight,
+                                   const QVector<int> &roles)
 {
-    QListView::dataChanged(topLeft, bottomRight);
+    QListView::dataChanged(topLeft, bottomRight, roles);
     if (!d->isCategorized()) {
         return;
     }

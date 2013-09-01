@@ -336,7 +336,7 @@ void KPageTabbedView::layoutChanged()
   mTabWidget->setCurrentIndex( pos );
 }
 
-void KPageTabbedView::dataChanged( const QModelIndex &index, const QModelIndex& )
+void KPageTabbedView::dataChanged( const QModelIndex &index, const QModelIndex&, const QVector<int> &roles )
 {
   if ( !index.isValid() )
     return;
@@ -344,11 +344,13 @@ void KPageTabbedView::dataChanged( const QModelIndex &index, const QModelIndex& 
   if ( index.row() < 0 || index.row() >= mTabWidget->count() )
     return;
 
-  const QString title = model()->data( index ).toString();
-  const QIcon icon = model()->data( index, Qt::DecorationRole ).value<QIcon>();
+  if (roles.isEmpty() || roles.contains(Qt::DisplayRole) || roles.contains(Qt::DecorationRole)) {
+    const QString title = model()->data( index ).toString();
+    const QIcon icon = model()->data( index, Qt::DecorationRole ).value<QIcon>();
 
-  mTabWidget->setTabText( index.row(), title );
-  mTabWidget->setTabIcon( index.row(), icon );
+    mTabWidget->setTabText( index.row(), title );
+    mTabWidget->setTabIcon( index.row(), icon );
+  }
 }
 
 /**

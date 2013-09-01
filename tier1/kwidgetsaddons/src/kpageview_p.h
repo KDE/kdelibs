@@ -173,7 +173,7 @@ class KPageTabbedView : public QAbstractItemView
   private Q_SLOTS:
     void currentPageChanged( int );
     void layoutChanged();
-    virtual void dataChanged( const QModelIndex&, const QModelIndex& );
+    virtual void dataChanged( const QModelIndex&, const QModelIndex&, const QVector<int> &roles ) Q_DECL_OVERRIDE;
 
   private:
     QTabWidget *mTabWidget;
