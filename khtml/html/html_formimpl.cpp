@@ -305,11 +305,6 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
     if ( codec->mibEnum() == 11 )
 	codec = QTextCodec::codecForMib( 85 );
 
-    m_encCharset = codec->name();
-    const unsigned int m_encCharsetLength = m_encCharset.length();
-    for(unsigned int i=0; i < m_encCharsetLength; ++i)
-        m_encCharset[i] = m_encCharset[i].toLatin1() == ' ' ? QChar('-') : m_encCharset[i].toLower();
-
     QStringList fileUploads, fileNotUploads;
     
     /**
@@ -458,23 +453,20 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
     return form_data;
 }
 
-void HTMLFormElementImpl::setEnctype( const DOMString& type )
+void HTMLFormElementImpl::setEnctype( const QString& type )
 {
-    if(type.string().indexOf("multipart", 0, Qt::CaseInsensitive) != -1 || type.string().indexOf("form-data", 0, Qt::CaseInsensitive) != -1)
-    {
+    if (type.isEmpty())
+        return;  // Leave default values
+
+    QString _type = type.toLower();
+
+    if (_type.contains("multipart") || _type.contains("form-data")) {
         m_enctype = "multipart/form-data";
         m_multipart = true;
-    } else if (type.string().indexOf("text", 0, Qt::CaseInsensitive) != -1 || type.string().indexOf("plain", 0, Qt::CaseInsensitive) != -1)
-    {
+    }
+    else if (_type.contains("text") || _type.contains("plain")) {
         m_enctype = "text/plain";
-        m_multipart = false;
     }
-    else
-    {
-        m_enctype = "application/x-www-form-urlencoded";
-        m_multipart = false;
-    }
-    m_encCharset.clear();
 }
 
 static QString calculateAutoFillKey(const HTMLFormElementImpl& e)
@@ -694,7 +686,7 @@ void HTMLFormElementImpl::submit(  )
         if(m_post) {
             view->part()->submitForm( "post", url.string(), form_data,
                                       m_target.string(),
-                                      enctype().string(),
+                                      enctype(),
                                       m_boundary );
         }
         else {
@@ -745,7 +737,7 @@ void HTMLFormElementImpl::parseAttribute(AttributeImpl *attr)
         m_post = ( strcasecmp( attr->value(), "post" ) == 0 );
         break;
     case ATTR_ENCTYPE:
-        setEnctype( attr->value() );
+        setEnctype( attr->value().string() );
         break;
     case ATTR_ACCEPT_CHARSET:
         // space separated list of charsets the server
