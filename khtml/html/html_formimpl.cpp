@@ -265,48 +265,49 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
 #endif
 
     QByteArray form_data;
-    form_data.resize(0);
-
-    QByteArray enc_string = ""; // used for non-multipart data
+    QByteArray enc_string; // used for non-multipart data
 
     bool useMultipart = m_multipart && m_post; // as multipart is ignored for GET
 
     // find out the QTextcodec to use
     QString str = m_acceptcharset.string();
-    const QChar space(' ');
-    const unsigned int strLength = str.length();
-    for(unsigned int i=0; i < strLength; ++i) if(str[i].toLatin1() == ',') str[i] = space;
-    const QStringList charsets = str.split(' ');
     QTextCodec* codec = 0;
-    KHTMLView *view = document()->view();
-    {
-        QStringList::ConstIterator it = charsets.begin();
-        const QStringList::ConstIterator itEnd = charsets.end();
+    bool codecOk = false;
 
-        for ( ; it != itEnd; ++it )
-        {
-            QString enc = (*it);
-            if(enc.contains("UNKNOWN"))
-            {
-                // use standard document encoding
-                enc = "ISO 8859-1";
-                if(view && view->part())
-                    enc = view->part()->encoding();
-            }
-            if((codec = KGlobal::charsets()->codecForName(enc.toLatin1().constData())))
-                break;
+    if (str == "UNKNOWN") {
+        // no accept-charset attribute, try document encoding
+        KHTMLView *view = document()->view();
+        if (view && view->part()) {
+            codec = KGlobal::charsets()->codecForName(view->part()->encoding(), codecOk);
         }
     }
-    if(!codec)
+
+    if (!codecOk) {
+        str.replace(QLatin1Char(','), QLatin1Char(' '));
+        const QStringList charsets = str.split(QLatin1Char(' '), QString::SkipEmptyParts);
+        for (QStringList::ConstIterator it = charsets.constBegin(); it != charsets.constEnd(); ++it) {
+            codec = KGlobal::charsets()->codecForName((*it), codecOk);
+            if (codecOk) {
+                break;
+            }
+        }
+    }
+
+    if (!codecOk) {
+        // none of requested could be used fallback to UTF-8
+        codec = KGlobal::charsets()->codecForName("UTF-8", codecOk);
+    }
+
+    if (!codecOk)
         codec = QTextCodec::codecForLocale();
 
     // we need to map visual hebrew to logical hebrew, as the web
     // server alsways expects responses in logical ordering
     if ( codec->mibEnum() == 11 )
-	codec = QTextCodec::codecForMib( 85 );
+        codec = QTextCodec::codecForMib( 85 );
 
     QStringList fileUploads, fileNotUploads;
-    
+
     /**
      Frameworks such as mootools Sortables expect form element values to be submitted in 
      tree order (and HTML5 specifies this behavior); however formElements need not be 
@@ -445,10 +446,7 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
     if (useMultipart)
         enc_string = QString("--" + m_boundary + "--\r\n").toLatin1().constData();
 
-    const int old_size = form_data.size();
-    form_data.resize( form_data.size() + enc_string.length() );
-    memcpy(form_data.data() + old_size, enc_string.data(), enc_string.length() );
-
+    form_data.append(enc_string.constData());
     ok = true;
     return form_data;
 }
