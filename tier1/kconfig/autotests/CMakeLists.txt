@@ -29,7 +29,6 @@ kconfigcore_unit_tests(
    kconfigtest
    kdesktopfiletest
    ksharedconfigtest
-   ksharedptrtest
    test_kconf_update
 )
 

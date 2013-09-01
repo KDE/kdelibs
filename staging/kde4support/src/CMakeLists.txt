@@ -283,6 +283,7 @@ install(FILES
     kdecore/kcmdlineargs.h
     kdecore/klockfile.h
     kdecore/kurl.h
+    kdecore/ksharedptr.h
 
     kio/kdiskfreespace.h
     kio/kdatatool.h

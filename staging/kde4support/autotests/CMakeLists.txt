@@ -62,6 +62,7 @@ kde4support_unit_tests(
   kurltest
   kfilemetainfotest
   kglobalsettingstest
+  ksharedptrtest
 )
 
 kde4support_executable_tests(

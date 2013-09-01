@@ -44,6 +44,5 @@ install( FILES
    ksharedconfig.h
    kcoreconfigskeleton.h
    kcoreauthorized.h
-   ksharedptr.h
    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )

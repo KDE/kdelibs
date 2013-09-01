@@ -27,13 +27,15 @@
 #ifndef KSHAREDPTR_H
 #define KSHAREDPTR_H
 
+#include <kde4support_export.h>
+
 #include <QtCore/QSharedData>
 
 /**
  * @deprecated
  * Use QSharedData instead.
  */
-typedef QSharedData KShared;
+typedef KDE4SUPPORT_DEPRECATED QSharedData KShared;
 
 /**
  * \class KSharedPtr ksharedptr.h <KSharedPtr>
@@ -56,9 +58,12 @@ typedef QSharedData KShared;
  * whereas KSharedPtr provides refcounting to code that uses pointers.
  *
  * @author Waldo Bastian <bastian@kde.org>
+ *
+ * @deprecated use QExplicitlySharedDataPointer instead
+ *
  */
 template< class T >
-class KSharedPtr
+class KDE4SUPPORT_DEPRECATED KSharedPtr
 {
 public:
     /**
