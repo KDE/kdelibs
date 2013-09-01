@@ -79,7 +79,8 @@ protected:
 
 protected Q_SLOTS:
     void rowsInserted(const QModelIndex &parent, int start, int end);
-    void dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight);
+    void dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight,
+            const QVector<int>& roles) Q_DECL_OVERRIDE;
 
 Q_SIGNALS:
     void urlChanged(const QUrl &url);

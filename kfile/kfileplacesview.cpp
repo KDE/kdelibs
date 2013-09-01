@@ -1188,9 +1188,10 @@ void KFilePlacesView::Private::_k_triggerDevicePolling()
     }
 }
 
-void KFilePlacesView::dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight)
+void KFilePlacesView::dataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight,
+        const QVector<int> &roles)
 {
-    QListView::dataChanged(topLeft, bottomRight);
+    QListView::dataChanged(topLeft, bottomRight, roles);
     d->adaptItemSize();
 }
 
