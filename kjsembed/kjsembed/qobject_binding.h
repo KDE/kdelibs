@@ -131,7 +131,9 @@ class KJSEMBED_EXPORT QObjectBinding : public ObjectBinding
         /**
         * Set the value \p value of the property \p propertyName .
         */
-        void put(KJS::ExecState *exec, const KJS::Identifier &propertyName, KJS::JSValue *value, int attr=KJS::None);
+        void put(KJS::ExecState *exec, const KJS::Identifier &propertyName, KJS::JSValue *value,
+                int attr=KJS::None) Q_DECL_OVERRIDE;
+        using JSObject::put;
 
         /**
         * \return true if the property \p propertyName can be changed else false is returned.
@@ -142,7 +144,9 @@ class KJSEMBED_EXPORT QObjectBinding : public ObjectBinding
         * Called to ask if we have a callback for the named property.
         * We return the callback in the property slot.
         */
-        bool getOwnPropertySlot( KJS::ExecState *exec, const KJS::Identifier &propertyName, KJS::PropertySlot &slot );
+        bool getOwnPropertySlot( KJS::ExecState *exec, const KJS::Identifier &propertyName,
+                KJS::PropertySlot &slot ) Q_DECL_OVERRIDE;
+        using JSObject::getOwnPropertySlot;
 
         /**
         * Callback used to get properties.

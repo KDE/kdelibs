@@ -161,11 +161,13 @@ class Scriptface : public JSObject
     QString loadProps_bin_01 (const QString &fpath);
 
     // Virtual implementations.
-    bool getOwnPropertySlot (ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
+    using JSObject::getOwnPropertySlot;
+    bool getOwnPropertySlot (ExecState *exec, const Identifier& propertyName, PropertySlot& slot) Q_DECL_OVERRIDE;
     JSValue *getValueProperty (ExecState *exec, int token) const;
-    void put (ExecState *exec, const Identifier &propertyName, JSValue *value, int attr);
+    using JSObject::put;
+    void put (ExecState *exec, const Identifier &propertyName, JSValue *value, int attr) Q_DECL_OVERRIDE;
     void putValueProperty (ExecState *exec, int token, JSValue *value, int attr);
-    const ClassInfo* classInfo() const { return &info; }
+    const ClassInfo* classInfo() const Q_DECL_OVERRIDE { return &info; }
 
     static const ClassInfo info;
 

@@ -87,7 +87,8 @@ public:
     * Calls the callback that will in turn create a new instance of this object with
     * the arguments passed in with args.
     */
-    KJS::JSObject *construct( KJS::ExecState *exec, const KJS::List &args );
+    KJS::JSObject *construct( KJS::ExecState *exec, const KJS::List &args ) Q_DECL_OVERRIDE;
+    using KJS::JSObject::construct;
 
     KJS::JSValue *callAsFunction( KJS::ExecState *exec, KJS::JSObject * /*self*/, const KJS::List &args ) {
         return construct(exec, args);
@@ -115,7 +116,7 @@ public:
     static KJS::JSObject *construct( KJS::ExecState *exec, KJS::JSObject *parent,
             const KJS::UString &className, const KJS::List &args = KJS::List() );
 
-		static KJS::JSObject* bind(KJS::ExecState* exec, const QString &className, PointerBase& objPtr);
+    static KJS::JSObject* bind(KJS::ExecState* exec, const QString &className, PointerBase& objPtr);
     static const Method *methods( const KJS::UString &className );
     static const Constructor *constructor( const KJS::UString &className );
 
