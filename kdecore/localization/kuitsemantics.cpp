@@ -1123,7 +1123,7 @@ QString KuitSemanticsPrivate::semanticToVisualText (const QString &text_,
     while (p >= 0) {
         text.append(original.mid(0, p + 1));
         original.remove(0, p + 1);
-        static QRegExp restRx(QString::fromLatin1("^("ENTITY_SUBRX");"));
+        static QRegExp restRx(QString::fromLatin1("^(" ENTITY_SUBRX ");"));
         if (original.indexOf(restRx) != 0) { // not an entity
             text.append(QLatin1String("amp;"));
         }
@@ -1457,7 +1457,7 @@ QString KuitSemanticsPrivate::finalizeVisualText (const QString &final,
     // and no HTML tag encountered.
     if (fmt != Kuit::Fmt::Rich && !hadAnyHtmlTag)
     {
-        static QRegExp staticEntRx(QLatin1String("&("ENTITY_SUBRX");"));
+        static QRegExp staticEntRx(QLatin1String("&(" ENTITY_SUBRX ");"));
         // We have to have a local copy here, otherwise this function
         // will not be thread safe because QRegExp is not thread safe.
         QRegExp entRx = staticEntRx;

@@ -229,6 +229,7 @@ int relation(ExecState *exec, JSValue *v1, JSValue *v2, bool leftFirst)
 //EMCA 9.12
 bool sameValue(ExecState *exec, JSValue *v1, JSValue *v2)
 {
+    using namespace std;
     JSType t1 = v1->type();
     JSType t2 = v2->type();
 

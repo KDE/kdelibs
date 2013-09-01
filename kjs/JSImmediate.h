@@ -245,6 +245,7 @@ ALWAYS_INLINE JSValue* JSImmediate::from(unsigned long long i)
 
 ALWAYS_INLINE JSValue* JSImmediate::from(double d)
 {
+    using namespace std;
     const int intVal = static_cast<int>(d);
 
     if ((intVal < minImmediateInt) || (intVal > maxImmediateInt))
