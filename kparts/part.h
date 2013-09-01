@@ -429,7 +429,7 @@ public:
     void setXOffset(int x);
 
     /**
-     * yOffset is the horizontal scrolling of the part's widget
+     * yOffset is the vertical scrolling of the part's widget
      * (in case it's a scrollview). This is saved into the history
      * and restored when going back in the history.
      */

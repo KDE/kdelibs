@@ -71,7 +71,7 @@ public:
     virtual void removedFromDocument();
     virtual void addId(const DOMString& id);
     virtual void removeId(const DOMString& id);
-    
+
     // See "past names map" in HTML5, 4.10.3, "The form element"
     HTMLGenericFormElementImpl* lookupByPastName(const DOMString& id);
     void bindPastName(HTMLGenericFormElementImpl* element);
@@ -80,8 +80,8 @@ public:
 
     QByteArray formData(bool& ok);
 
-    DOMString enctype() const { return m_enctype; }
-    void setEnctype( const DOMString & );
+    QString enctype() const { return m_enctype; }
+    void setEnctype( const QString & );
 
     DOMString target() const;
     DOMString action() const;
@@ -120,10 +120,9 @@ private:
     QList<HTMLGenericFormElementImpl*> formElements;
     QList<HTMLImageElementImpl*> imgElements;
     DOMString m_target;
-    DOMString m_enctype;
+    QString m_enctype;
     QString m_boundary;
     DOMString m_acceptcharset;
-    QString m_encCharset;
     bool m_post : 1;
     bool m_multipart : 1;
     bool m_autocomplete : 1;
@@ -135,7 +134,7 @@ private:
     bool m_havePassword : 1; // for wallet storage
     DOMString m_name;        // our name
     QMap<QString, QString> m_walletMap; // for wallet storage
-    
+
     QHash<DOMString, HTMLGenericFormElementImpl*> m_pastNamesMap;
 };
 

@@ -29,73 +29,34 @@
 
 QTEST_KDEMAIN(KLinkItemSelectionModelTest, GUI)
 
-void KLinkItemSelectionModelTest::init()
-{
-    // Init m_mainModel
-    m_mainModel = new QStandardItemModel;
-    for (int x=0; x < 10; ++x) {
-        m_mainModel->appendRow(new QStandardItem(QString::number(x)));
-    }
-    m_mainSelectionModel = new QItemSelectionModel(m_mainModel);
-
-    // Init subModel
-    m_subModel = new QSortFilterProxyModel;
-    m_subModel->setFilterRegExp(QRegExp("^[5-9]"));
-    m_subModel->setSourceModel(m_mainModel);
-    m_subSelectionModel = new KLinkItemSelectionModel(m_subModel, m_mainSelectionModel);
-}
-
-void KLinkItemSelectionModelTest::cleanup()
-{
-    delete m_mainSelectionModel;
-    m_mainSelectionModel = 0;
-    delete m_mainModel;
-    m_mainModel = 0;
-    delete m_subSelectionModel;
-    m_subSelectionModel = 0;
-    delete m_subModel;
-    m_subModel = 0;
-}
-
 void KLinkItemSelectionModelTest::testToggle()
 {
+    // Init mainModel
+    QStandardItemModel mainModel;
+    for (int x=0; x < 10; ++x) {
+        mainModel.appendRow(new QStandardItem(QString::number(x)));
+    }
+    QItemSelectionModel mainSelectionModel(&mainModel);
+
+    // Init subModel
+    QSortFilterProxyModel subModel;
+    subModel.setFilterRegExp(QRegExp("^[5-9]"));
+    subModel.setSourceModel(&mainModel);
+    KLinkItemSelectionModel subSelectionModel(&subModel, &mainSelectionModel);
+
     // Select last index in subModel
-    QModelIndex subIndex = m_subModel->index(m_subModel->rowCount() - 1, 0);
-    m_subSelectionModel->select(subIndex, QItemSelectionModel::Toggle);
+    QModelIndex subIndex = subModel.index(subModel.rowCount() - 1, 0);
+    subSelectionModel.select(subIndex, QItemSelectionModel::Toggle);
 
     // Check selections
-    QModelIndexList subList = m_subSelectionModel->selectedIndexes();
+    QModelIndexList subList = subSelectionModel.selectedIndexes();
     QCOMPARE(subList.count(), 1);
     QCOMPARE(subList.first(), subIndex);
 
-    QModelIndexList mainList = m_mainSelectionModel->selectedIndexes();
-    QModelIndex mainIndex = m_mainModel->index(m_mainModel->rowCount() - 1, 0);
+    QModelIndexList mainList = mainSelectionModel.selectedIndexes();
+    QModelIndex mainIndex = mainModel.index(mainModel.rowCount() - 1, 0);
     QCOMPARE(mainList.count(), 1);
     QCOMPARE(mainList.first(), mainIndex);
-}
-
-void KLinkItemSelectionModelTest::testMainSetCurrent()
-{
-    // Set last index of mainModel as current
-    QModelIndex mainIndex = m_mainModel->index(m_mainModel->rowCount() - 1, 0);
-    m_mainSelectionModel->setCurrentIndex(mainIndex, QItemSelectionModel::Current);
-
-    // Last index of subModel should be current as well
-    QModelIndex subIndex = m_subSelectionModel->currentIndex();
-    QVERIFY(subIndex.isValid());
-    QCOMPARE(subIndex, m_subModel->index(m_subModel->rowCount() - 1, 0));
-}
-
-void KLinkItemSelectionModelTest::testSubSetCurrent()
-{
-    // Set last index of subModel as current
-    QModelIndex subIndex = m_subModel->index(m_subModel->rowCount() - 1, 0);
-    m_subSelectionModel->setCurrentIndex(subIndex, QItemSelectionModel::Current);
-
-    // Last index of mainModel should be current as well
-    QModelIndex mainIndex = m_mainSelectionModel->currentIndex();
-    QVERIFY(mainIndex.isValid());
-    QCOMPARE(mainIndex, m_mainModel->index(m_mainModel->rowCount() - 1, 0));
 }
 
 #include <klinkitemselectionmodeltest.moc>
