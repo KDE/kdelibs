@@ -53,7 +53,7 @@ KColorCollectionPrivate::KColorCollectionPrivate(const QString &_name)
 {
     if (name.isEmpty()) return;
 
-    QString filename = QStandardPaths::locate(QStandardPaths::ConfigLocation, "colors/"+name);
+    QString filename = QStandardPaths::locate(QStandardPaths::ConfigLocation, QLatin1String("colors/") + name);
   if (filename.isEmpty()) return;
 
   QFile paletteFile(filename);
@@ -63,19 +63,19 @@ KColorCollectionPrivate::KColorCollectionPrivate(const QString &_name)
   // Read first line
   // Expected "GIMP Palette"
   QString line = QString::fromLocal8Bit(paletteFile.readLine());
-  if (line.indexOf(" Palette") == -1) return;
+  if (line.contains(QLatin1String(" Palette"))) return;
 
   while( !paletteFile.atEnd() )
   {
      line = QString::fromLocal8Bit(paletteFile.readLine());
-     if (line[0] == '#')
+     if (line[0] == QLatin1Char('#'))
      {
         // This is a comment line
         line = line.mid(1); // Strip '#'
         line = line.trimmed(); // Strip remaining white space..
         if (!line.isEmpty())
         {
-                desc += line+'\n'; // Add comment to description
+                desc += line + QLatin1Char('\n'); // Add comment to description
         }
      }
      else
@@ -85,7 +85,7 @@ KColorCollectionPrivate::KColorCollectionPrivate(const QString &_name)
         if (line.isEmpty()) continue;
         int r, g, b;
         int pos = 0;
-        if (sscanf(line.toLatin1(), "%d %d %d%n", &r, &g, &b, &pos) >= 3)
+        if (sscanf(line.toLatin1().constData(), "%d %d %d%n", &r, &g, &b, &pos) >= 3)
         {
            r = qBound(0, r, 255);
            g = qBound(0, g, 255);
@@ -105,7 +105,9 @@ KColorCollectionPrivate::KColorCollectionPrivate(const KColorCollectionPrivate& 
 
 QStringList KColorCollection::installedCollections()
 {
-  QStringList paletteDirs = QStandardPaths::locateAll(QStandardPaths::ConfigLocation, "colors", QStandardPaths::LocateDirectory);
+  QStringList paletteDirs = QStandardPaths::locateAll(QStandardPaths::ConfigLocation,
+                                                      QLatin1String("colors"),
+                                                      QStandardPaths::LocateDirectory);
 
   QStringList paletteList;
   Q_FOREACH(const QString& dir, paletteDirs) {
@@ -135,17 +137,18 @@ KColorCollection::~KColorCollection()
 bool
 KColorCollection::save()
 {
-   QString filename = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QLatin1Char('/') + "colors/" + d->name;
+   QString filename = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QLatin1String("/colors/")
+                                                                                       + d->name;
    QSaveFile sf(filename);
    if (!sf.open(QIODevice::WriteOnly)) return false;
 
    QTextStream str ( &sf );
 
    QString description = d->desc.trimmed();
-   description = '#'+description.split( '\n', QString::KeepEmptyParts).join("\n#");
+   description = QLatin1Char('#') + description.split(QLatin1Char('\n'), QString::KeepEmptyParts).join(QLatin1String("\n#"));
 
-   str << "KDE RGB Palette\n";
-   str << description << "\n";
+   str << QLatin1String("KDE RGB Palette\n");
+   str << description << QLatin1Char('\n');
    foreach (const KColorCollectionPrivate::ColorNode &node, d->colorList)
    {
        int r,g,b;

@@ -20,11 +20,6 @@ ecm_setup_version(5 0 0 VARIABLE_PREFIX KGUIADDONS
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kguiaddons_version.h"
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KGuiAddonsConfigVersion.cmake")
 
-# TODO: Remove these
-remove_definitions(-DQT_NO_CAST_TO_ASCII)
-remove_definitions(-DQT_NO_CAST_FROM_ASCII)
-remove_definitions(-DQT_NO_CAST_FROM_BYTEARRAY)
-
 add_subdirectory(src)
 add_subdirectory(autotests)
 add_subdirectory(tests)

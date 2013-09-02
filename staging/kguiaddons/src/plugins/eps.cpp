@@ -183,25 +183,25 @@ bool EPSHandler::read(QImage *image)
 
     // create GS command line
 
-    cmdBuf = "gs -sOutputFile=";
+    cmdBuf = QLatin1String("gs -sOutputFile=");
     cmdBuf += tmpFile.fileName();
-    cmdBuf += " -q -g";
+    cmdBuf += QLatin1String(" -q -g");
     tmp.setNum( wantedWidth );
     cmdBuf += tmp;
     tmp.setNum( wantedHeight );
-    cmdBuf += 'x';
+    cmdBuf += QLatin1Char('x');
     cmdBuf += tmp;
-    cmdBuf += " -dSAFER -dPARANOIDSAFER -dNOPAUSE -sDEVICE=ppm -c "
-              "0 0 moveto "
-              "1000 0 lineto "
-              "1000 1000 lineto "
-              "0 1000 lineto "
-              "1 1 254 255 div setrgbcolor fill "
-              "0 0 0 setrgbcolor - -c showpage quit";
+    cmdBuf += QLatin1String(" -dSAFER -dPARANOIDSAFER -dNOPAUSE -sDEVICE=ppm -c "
+                            "0 0 moveto "
+                            "1000 0 lineto "
+                            "1000 1000 lineto "
+                            "0 1000 lineto "
+                            "1 1 254 255 div setrgbcolor fill "
+                            "0 0 0 setrgbcolor - -c showpage quit");
 
     // run ghostview
 
-    ghostfd = popen (QFile::encodeName(cmdBuf), "w");
+    ghostfd = popen (QFile::encodeName(cmdBuf).constData(), "w");
 
     if ( ghostfd == 0 ) {
 //         qDebug() << "kimgio EPS: no GhostScript?" << endl;
@@ -245,12 +245,12 @@ bool EPSHandler::write(const QImage &image)
     QPainter p;
 
     // making some definitions (papersize, output to file, filename):
-    psOut.setCreator( "KDE"  );
-    if ( psOut.outputFileName().isEmpty() )
-      psOut.setOutputFileName( "untitled_printer_document" );
+    psOut.setCreator(QLatin1String("KDE"));
+    if (psOut.outputFileName().isEmpty())
+        psOut.setOutputFileName(QLatin1String("untitled_printer_document"));
 
     // Extension must be .eps so that Qt generates EPS file
-    QTemporaryFile tmpFile("XXXXXXXX.eps");
+    QTemporaryFile tmpFile(QLatin1String("XXXXXXXX.eps"));
     if ( !tmpFile.open() )
         return false;
 

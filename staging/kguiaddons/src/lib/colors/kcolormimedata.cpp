@@ -40,7 +40,7 @@ KColorMimeData::canDecode(const QMimeData *mimeData)
     if (mimeData->hasText())
     {
         const QString colorName=mimeData->text();
-        if ((colorName.length() >= 4) && (colorName[0] == '#'))
+        if ((colorName.length() >= 4) && (colorName[0] == QLatin1Char('#')))
             return true;
     }
     return false;
