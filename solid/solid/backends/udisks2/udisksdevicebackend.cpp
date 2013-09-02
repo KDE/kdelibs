@@ -189,7 +189,7 @@ void DeviceBackend::checkCache(const QString& key) const
         /* Store the item in the cache anyway so next time we don't have to
          * do the DBus call to find out it does not exist but just check whether
          * prop(key).isValid() */
-        qDebug() << m_udi << ": property" << key << "does not exist";
+//         qDebug() << m_udi << ": property" << key << "does not exist";
     }
 }
 
