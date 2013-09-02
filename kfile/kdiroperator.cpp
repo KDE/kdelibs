@@ -49,7 +49,6 @@
 #include <kio/deletejob.h>
 #include <kio/copyjob.h>
 #include <kio/jobuidelegate.h>
-#include <kio/netaccess.h>
 #include <kio/previewjob.h>
 #include <kfilepreviewgenerator.h>
 #include <krun.h>
