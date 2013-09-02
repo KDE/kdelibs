@@ -19,45 +19,20 @@ ENDMACRO(KIO_EXECUTABLE_TESTS)
 # jobtest seems to trigger a ctest problem; jobtest finishes and ctest waits for ever
 
 KIO_UNIT_TESTS(
-  kprotocolinfotest
-  jobtest
-  jobguitest
-  jobremotetest
-  kurlcompletiontest
-  kfileitemtest
   kacltest
-  kdirmodeltest
-  kdirlistertest
-  fileundomanagertest
-  dataprotocoltest
-  clipboardupdatertest
 )
 
 KIO_EXECUTABLE_TESTS(
   ksycocatest
-  getalltest
-  kioslavetest
   speed
-  kdirlistertest_gui
-  previewtest
   kionetrctest
   kpropsdlgtest
   ksycocaupdatetest
-  kdirmodeltest_gui
   kmimetypechoosertest_gui
   kdbusservicestartertest
-  kurlrequestertest
-  kurlrequestertest_gui
-  kopenwithtest
   kfiledialogtest
 )
 
-if(UNIX)
- KIO_UNIT_TESTS(
-    klocalsockettest
-    klocalsocketservertest
- )
-endif(UNIX)
 
 ########### kfstest ###############
 

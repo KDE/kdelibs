@@ -5,11 +5,18 @@ include(ECMMarkAsTest)
 macro(KIOWIDGETS_EXECUTABLE_TESTS)
   foreach(_testname ${ARGN})
     add_executable(${_testname} ${_testname}.cpp)
-    target_link_libraries(${_testname} KIOCore KIOWidgets Qt5::Test)
+    target_link_libraries(${_testname} KIOCore KIOWidgets Qt5::Test KWidgetsAddons KIconThemes XmlGui)
     ecm_mark_as_test(${_testname})
   endforeach()
 endmacro(KIOWIDGETS_EXECUTABLE_TESTS)
 
 KIOWIDGETS_EXECUTABLE_TESTS(
+  getalltest
   kruntest
+  kioslavetest
+  kopenwithtest
+  kdirmodeltest_gui
+  kdirlistertest_gui
+  previewtest
+  kurlrequestertest_gui
 )

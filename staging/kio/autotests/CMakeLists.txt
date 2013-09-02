@@ -12,7 +12,9 @@ macro(KIOCORE_UNIT_TESTS)
     add_test(kiocore-${_testname} ${_testname})
     target_link_libraries(${_testname}
        KIOCore
+       KI18n
        Qt5::Test
+       Qt5::Network
     )
     ecm_mark_as_test(${_testname})
   endforeach()
@@ -22,7 +24,19 @@ kiocore_unit_tests(
  listdirtest
  kmountpointtest
  upurltest
+ dataprotocoltest
+ jobtest
+ jobremotetest
+ kfileitemtest
+ kprotocolinfotest
 )
+
+if(UNIX)
+  kiocore_unit_tests(
+    klocalsockettest
+    klocalsocketservertest
+  )
+endif(UNIX)
 
 macro(KIOWIDGETS_UNIT_TESTS)
   foreach(_testname ${ARGN})
@@ -38,7 +52,14 @@ macro(KIOWIDGETS_UNIT_TESTS)
 endmacro(KIOWIDGETS_UNIT_TESTS)
 
 kiowidgets_unit_tests(
+ clipboardupdatertest
  krununittest
+ kdirlistertest
+ kdirmodeltest
+ fileundomanagertest
+ kurlcompletiontest
+ kurlrequestertest
+ jobguitest
 )
 
 set_target_properties(krununittest PROPERTIES COMPILE_FLAGS "-DCMAKE_INSTALL_PREFIX=\\\"${CMAKE_INSTALL_PREFIX}\\\" -DLIBEXEC_INSTALL_DIR=\\\"${LIBEXEC_INSTALL_DIR}\\\"")
