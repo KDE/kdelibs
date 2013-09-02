@@ -38,7 +38,6 @@ KIO_EXECUTABLE_TESTS(
   getalltest
   kioslavetest
   speed
-  kscantest
   kdirlistertest_gui
   previewtest
   kionetrctest

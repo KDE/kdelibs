@@ -20,7 +20,7 @@
 #ifndef KSCAN_H
 #define KSCAN_H
 
-#include <kio/kio_export.h>
+#include <kde4support_export.h>
 #include <kpagedialog.h>
 #include <QDialogButtonBox>
 
@@ -57,8 +57,9 @@ class QImage;
  *
  * @short A baseclass and accessor for Scanning Dialogs
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
+ * @deprecated since 5.0, use libksane instead
  */
-class KIO_EXPORT KScanDialog : public KPageDialog
+class KDE4SUPPORT_EXPORT KScanDialog : public KPageDialog
 {
     Q_OBJECT
 
@@ -166,7 +167,7 @@ private:
 /**
  * Base class for OCR Dialogs.
  */
-class KIO_EXPORT KOCRDialog : public KPageDialog
+class KDE4SUPPORT_EXPORT KOCRDialog : public KPageDialog
 {
     Q_OBJECT
 

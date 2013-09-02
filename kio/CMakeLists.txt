@@ -56,7 +56,6 @@ set(kiocore_STAT_SRCS
   kio/kdbusservicestarter.cpp
   kio/kimageio.cpp
   kio/kmimetypechooser.cpp
-  kio/kscan.cpp
   kio/netaccess.cpp
 )
 
@@ -215,7 +214,6 @@ install( FILES
   kio/kdbusservicestarter.h
   kio/kimageio.h
   kio/kmimetypechooser.h
-  kio/kscan.h
   kfile/kabstractfilemodule.h
   kfile/kabstractfilewidget.h
   kfile/kencodingfiledialog.h

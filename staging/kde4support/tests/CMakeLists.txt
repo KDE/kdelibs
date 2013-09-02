@@ -31,6 +31,7 @@ kde4support_examples(
   kinputdialogtest
   kiopassdlgtest
   kmfitest
+  kscantest
 )
 
 if (X11_FOUND)

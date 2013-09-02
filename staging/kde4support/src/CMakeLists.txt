@@ -133,6 +133,7 @@ set(libkde4support_SRCS
     kio/predicateproperties.cpp
     kio/kfilewriteplugin.cpp
 #     kio/kpreviewprops.cpp
+    kio/kscan.cpp
 
     kparts/factory.cpp
 )
@@ -297,6 +298,7 @@ install(FILES
     kio/kfilewriteplugin.h
     kio/kfileshare.h
     kio/kfileitemactionplugin.h
+    kio/kscan.h
 
     kdeui/k4style.h
     kdeui/kaccelgen.h
@@ -385,3 +387,7 @@ install( FILES
     KDEUIMacros.cmake
     kde4uic.cmake
     DESTINATION ${CMAKECONFIG_INSTALL_DIR} COMPONENT Devel )
+
+install( FILES
+    kio/kscan.desktop
+    DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
