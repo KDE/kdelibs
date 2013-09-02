@@ -428,7 +428,6 @@ void KArchiveTest::testReadTar() // testCreateTarGz must have been run first.
     QString group = localFileData.group().isEmpty() ? getCurrentGroupName() : localFileData.group();
     QString emptyTime = QDateTime().toString("dd.MM.yyyy hh:mm:ss");
     QDateTime dt = QFileInfo(fileName).created();
-    QString time = dt.toString("dd.MM.yyyy hh:mm:ss");
 
     QCOMPARE( listing[ 0], QString("mode=40755 user=user group=group path=aaaemptydir type=dir time=%1").arg(emptyTime) );
     QCOMPARE( listing[ 1], QString("mode=40777 user=%1 group=%2 path=dir type=dir time=%3").arg(owner).arg(group).arg(emptyTime) );
@@ -450,11 +449,24 @@ void KArchiveTest::testReadTar() // testCreateTarGz must have been run first.
     // This one was added with addLocalFile, so ignore mode/user/group.
     QString str = listing[13];
     str.replace(QRegExp("mode.*path"), "path" );
-    QCOMPARE( str, QString("path=z/test3 type=file size=13 time=%1").arg(time)  );
+
+    // Take the time from the listing and chop it off
+    QDateTime dt2 = QDateTime::fromString(str.right(19), "dd.MM.yyyy hh:mm:ss");
+    str.chop(25);
+    QCOMPARE( str, QString("path=z/test3 type=file size=13") );
+
+    // Compare the times separately with allowed 1 sec diversion
+    QVERIFY( dt2.secsTo(dt) <= 1 );
+
 #ifndef Q_OS_WIN
     str = listing[14];
     str.replace(QRegExp("mode.*path"), "path" );
-    QCOMPARE( str, QString("path=z/test3_symlink type=file size=0 symlink=test3 time=%1").arg(time) );
+
+    dt2 = QDateTime::fromString(str.right(19), "dd.MM.yyyy hh:mm:ss");
+    str.chop(25);
+
+    QCOMPARE( str, QString("path=z/test3_symlink type=file size=0 symlink=test3") );
+    QVERIFY( dt2.secsTo(dt) <= 1 );
 #endif
 
     QVERIFY( tar.close() );
