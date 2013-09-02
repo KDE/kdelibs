@@ -17,7 +17,6 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#include "config-kunitconversion.h"
 #include "fuel_efficiency.h"
 #include "converter.h"
 #include <klocalizedstring.h>

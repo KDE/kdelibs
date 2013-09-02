@@ -19,8 +19,6 @@
 
 #include "currency.h"
 
-#include "config-kunitconversion.h"
-
 #include "converter.h"
 #include <QLocale>
 #include <QtCore/QFileInfo>
@@ -31,16 +29,10 @@
 #include <QDebug>
 #include <klocalizedstring.h>
 
-
-#if !KUNITCONVERSION_NO_SOLID
-#include <solid/networking.h>
-#endif
-
-#if KUNITCONVERSION_NO_KIO
+#include <QtNetwork/QNetworkInterface>
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QNetworkReply>
 #include <QtNetwork/QNetworkRequest>
-#endif
 
 #include <kcurrencycode.h>
 #include <qstandardpaths.h>
@@ -523,8 +515,20 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
 
     setMostCommonUnits(QList<int>() << Eur << Usd << Jpy << Gbp << Cad);
 
-    m_cache = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QLatin1Char('/') + "libkunitconversion/currency.xml";
+    m_cache = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QStringLiteral("/libkunitconversion/currency.xml");
     m_update = true;
+}
+
+static bool isConnected()
+{
+    bool ret = false;
+    foreach (const QNetworkInterface& net, QNetworkInterface::allInterfaces()) {
+        if (net.flags().testFlag(QNetworkInterface::IsUp) && !net.flags().testFlag(QNetworkInterface::IsLoopBack)) {
+            ret = true;
+            break;
+        }
+    }
+    return ret;
 }
 
 Value Currency::convert(const Value& value, UnitPtr to)
@@ -534,12 +538,7 @@ Value Currency::convert(const Value& value, UnitPtr to)
     mutex.lock();
     QFileInfo info(m_cache);
     if (!info.exists() || info.lastModified().secsTo(QDateTime::currentDateTime()) > 86400) {
-#if !KUNITCONVERSION_NO_SOLID
-        Solid::Networking::Status status = Solid::Networking::status();
-        if (status == Solid::Networking::Connected || status == Solid::Networking::Unknown ) {
-#else
-        {
-#endif
+        if (isConnected()) {
             //qDebug() << "Getting currency info from net:" << URL;
             // TODO: This crashes in runner. Threading issues??
             /*
@@ -551,14 +550,7 @@ Value Currency::convert(const Value& value, UnitPtr to)
             }
             */
             //qDebug() << "Removed previous cache:" << QFile::remove(m_cache);
-#if !KUNITCONVERSION_NO_KIO
-            QProcess copyProcess;
-            copyProcess.start("kioclient", QStringList() << "copy" << "--noninteractive" << URL << m_cache);
-            copyProcess.waitForFinished(-1);
-            if (copyProcess.exitStatus() == QProcess::NormalExit && copyProcess.exitCode() == 0) {
-                m_update = true;
-            }
-#else
+
             QNetworkAccessManager manager;
             QNetworkReply *reply = manager.get(QNetworkRequest(QUrl(URL)));
             QFile cacheFile(m_cache);
@@ -570,7 +562,6 @@ Value Currency::convert(const Value& value, UnitPtr to)
                 }
             }
             cacheFile.close();
-#endif
         }
     }
     mutex.unlock();
