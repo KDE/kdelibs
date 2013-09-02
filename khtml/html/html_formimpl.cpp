@@ -453,8 +453,8 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
 
 void HTMLFormElementImpl::setEnctype( const QString& type )
 {
-    if (type.isEmpty())
-        return;  // Leave default values
+    m_enctype = "application/x-www-form-urlencoded";
+    m_multipart = false;
 
     QString _type = type.toLower();
 
