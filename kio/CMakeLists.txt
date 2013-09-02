@@ -77,20 +77,6 @@ if(UNIX)
    )
 endif(UNIX)
 
-set(kbookmarks_STAT_SRCS
-  bookmarks/kbookmark.cc
-  bookmarks/kbookmarkimporter.cc
-  bookmarks/kbookmarkmanager.cc
-  bookmarks/kbookmarkmanageradaptor.cc
-  bookmarks/kbookmarkmenu.cc
-  bookmarks/konqbookmarkmenu.cc
-  bookmarks/kbookmarkimporter_opera.cc
-  bookmarks/kbookmarkimporter_ie.cc
-  bookmarks/kbookmarkimporter_ns.cc
-  bookmarks/kbookmarkdombuilder.cc
-  bookmarks/kbookmarkdialog.cc
-)
-
 set(kfile_STAT_SRCS
   kfile/kabstractfilemodule.cpp
   kfile/kacleditwidget.cpp
@@ -130,7 +116,6 @@ set(kssl_STAT_SRCS
 
 set(kio_LIB_SRCS
    ${kiocore_STAT_SRCS}
-   ${kbookmarks_STAT_SRCS}
    ${kfile_STAT_SRCS}
    ${kssl_STAT_SRCS}
 )
@@ -146,7 +131,6 @@ add_library(kio ${LIBRARY_TYPE} ${kio_LIB_SRCS})
 generate_export_header(kio)
 
 set(kio_INCLUDES
-   ${CMAKE_CURRENT_SOURCE_DIR}/bookmarks
    ${CMAKE_CURRENT_SOURCE_DIR}/kio
    ${CMAKE_CURRENT_SOURCE_DIR}/kfile
    ${CMAKE_CURRENT_SOURCE_DIR}/kssl
@@ -223,17 +207,7 @@ install( FILES
   kfile/kpropsdialog.h
   kfile/krecentdirs.h
   kfile/kurlrequesterdialog.h
-  bookmarks/kbookmark.h
-  bookmarks/kbookmarkexporter.h
-  bookmarks/kbookmarkimporter.h
-  bookmarks/kbookmarkmanager.h
-  bookmarks/kbookmarkmenu.h
-  bookmarks/kbookmarkimporter_opera.h
-  bookmarks/kbookmarkimporter_ie.h
-  bookmarks/kbookmarkimporter_ns.h
-  bookmarks/kbookmarkdombuilder.h
-  bookmarks/konqbookmarkmenu.h
-  bookmarks/kbookmarkdialog.h
+
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
 
 if(NOT KIO_NO_SOLID)
