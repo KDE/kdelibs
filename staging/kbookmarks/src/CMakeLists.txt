@@ -18,13 +18,14 @@ set(kbookmarks_SRCS
 add_library(KBookmarks ${kbookmarks_SRCS})
 generate_export_header(KBookmarks)
 
-target_link_libraries(KBookmarks LINK_PUBLIC Qt5::Core Qt5::Widgets)
+target_link_libraries(KBookmarks LINK_PUBLIC Qt5::Core Qt5::Widgets Qt5::Xml KDE4Support)
 target_link_libraries(KBookmarks LINK_PRIVATE ${KCoreAddons_LIBRARIES} ${KWidgetsAddons_LIBRARIES} KIOCore KIOWidgets KConfigWidgets XmlGui KIconThemes)
 # KIOCore for KIO::iconNameForUrl
 # KIOWidgets for KRun
 # KConfigWidgets for KStandardAction
 # XMLGui for KActionCollection
 # KIconThemes for SmallIcon
+# KDE4Support for KDialog < - FIXME
 
 set_target_properties(KBookmarks PROPERTIES VERSION   ${KBOOKMARKS_VERSION_STRING}
                                            SOVERSION ${KBOOKMARKS_SOVERSION}
