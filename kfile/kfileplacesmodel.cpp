@@ -44,7 +44,7 @@
 #include <kbookmarkmanager.h>
 #include <kbookmark.h>
 
-#include <kio/netaccess.h>
+#include <kio/job.h>
 #include <kprotocolinfo.h>
 
 #include <solid/devicenotifier.h>
@@ -607,7 +607,16 @@ bool KFilePlacesModel::dropMimeData(const QMimeData *data, Qt::DropAction action
 
         foreach (const QUrl &url, urls) {
             // TODO: use KIO::stat in order to get the UDS_DISPLAY_NAME too
-            QMimeType mimetype = db.mimeTypeForName(KIO::NetAccess::mimetype(url, 0));
+            KIO::MimetypeJob *job = KIO::mimetype(url);
+
+            QString mimeString;
+            if (!job->exec()) {
+                mimeString = QLatin1String("unknown");
+            } else {
+                mimeString = job->mimetype();
+            }
+
+            QMimeType mimetype = db.mimeTypeForName(mimeString);
 
             if (!mimetype.isValid()) {
                 qWarning() << "URL not added to Places as mimetype could not be determined!";

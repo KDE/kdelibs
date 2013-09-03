@@ -46,7 +46,6 @@
 #include <kio/deletejob.h>
 #include <kio/copyjob.h>
 #include <kio/mkdirjob.h>
-#include <kio/netaccess.h>
 #include <kjobwidgets.h>
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
@@ -180,7 +179,11 @@ void KDirSelectDialog::Private::slotMkdir()
     for ( ; it != dirs.end(); ++it )
     {
         folderurl.setPath(folderurl.path() + '/' + *it);
-        exists = KIO::NetAccess::exists( folderurl, KIO::NetAccess::DestinationSide, m_parent );
+        KIO::StatJob *job = KIO::stat(folderurl);
+        KJobWidgets::setWindow(job, m_parent);
+        job->setDetails(0); //We only want to know if it exists, 0 == that.
+        job->setSide(KIO::StatJob::DestinationSide);
+        exists = job->exec();
         if (!exists) {
             KIO::MkdirJob* job = KIO::mkdir(folderurl);
             KJobWidgets::setWindow(job, m_parent);
@@ -535,9 +538,26 @@ QUrl KDirSelectDialog::selectDirectory( const QUrl& startDir,
     if ( !caption.isNull() )
         myDialog.setWindowTitle( caption );
 
-    if ( myDialog.exec() == QDialog::Accepted )
-        return KIO::NetAccess::mostLocalUrl(myDialog.url(),parent);
-    else
+    if ( myDialog.exec() == QDialog::Accepted ) {
+        QUrl url = myDialog.url();
+
+        //Returning the most local url
+        if (url.isLocalFile()) {
+            return url;
+        }
+
+        KIO::StatJob *job = KIO::stat(url);
+        KJobWidgets::setWindow(job, parent);
+
+        if (!job->exec()) {
+            return url;
+        }
+
+        KIO::UDSEntry entry = job->statResult();
+        const QString path = entry.stringValue(KIO::UDSEntry::UDS_LOCAL_PATH);
+
+        return path.isEmpty() ? url : QUrl::fromLocalFile(path);
+    } else
         return QUrl();
 }
 

@@ -49,7 +49,6 @@
 #include <kio/deletejob.h>
 #include <kio/copyjob.h>
 #include <kio/jobuidelegate.h>
-#include <kio/netaccess.h>
 #include <kio/previewjob.h>
 #include <kfilepreviewgenerator.h>
 #include <krun.h>
@@ -734,9 +733,18 @@ bool KDirOperator::mkdir(const QString& directory, bool enterDirectory)
 
     for (; it != dirs.end(); ++it) {
         folderurl.setPath(folderurl.path() + '/' + *it);
-        exists = KIO::NetAccess::exists(folderurl, KIO::NetAccess::DestinationSide, this);
+        if (folderurl.isLocalFile()) {
+            exists = QFile::exists(folderurl.toLocalFile());
+        } else {
+            KIO::StatJob *job = KIO::stat(folderurl);
+            KJobWidgets::setWindow(job, this);
+            job->setDetails(0); //We only want to know if it exists, 0 == that.
+            job->setSide(KIO::StatJob::DestinationSide);
+            exists = job->exec();
+        }
+
         if (!exists) {
-            KIO::MkdirJob *job = KIO::mkdir(folderurl);
+            KIO::Job * job = KIO::mkdir(folderurl);
             KJobWidgets::setWindow(job, this);
             writeOk = job->exec();
         }
@@ -1024,8 +1032,11 @@ void KDirOperator::setUrl(const QUrl& _newurl, bool clearforward)
         newurl = newurl.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash);
         if (newurl.matches(d->currUrl, QUrl::StripTrailingSlash))
             return; // parent is current dir, nothing to do (fixes #173454, too)
-        KIO::UDSEntry entry;
-        bool res = KIO::NetAccess::stat(newurl, entry, this);
+        KIO::StatJob *job = KIO::stat(newurl);
+        KJobWidgets::setWindow(job, this);
+        bool res = job->exec();
+
+        KIO::UDSEntry entry = job->statResult();
         KFileItem i(entry, newurl);
         if ((!res || !Private::isReadable(newurl)) && i.isDir()) {
             resetCursor();

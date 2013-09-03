@@ -47,7 +47,6 @@
 #include <kio/job.h>
 #include <kio/copyjob.h>
 #include <kio/jobuidelegate.h>
-#include <kio/netaccess.h>
 #include <kio/fileundomanager.h>
 #include <kio/kurifilter.h>
 
@@ -271,6 +270,11 @@ public:
      * Fills the menu from the templates list.
      */
     void fillMenu();
+
+    /**
+     * Tries to map a local URL for the given URL.
+     */
+    QUrl mostLocalUrl(const QUrl& url);
 
     /**
       * Just clears the string buffer d->m_text, but I need a slot for this to occur
@@ -712,6 +716,25 @@ void KNewFileMenuPrivate::fillMenu()
     }
 }
 
+QUrl KNewFileMenuPrivate::mostLocalUrl(const QUrl& url)
+{
+    if (url.isLocalFile()) {
+        return url;
+    }
+
+    KIO::StatJob *job = KIO::stat(url);
+    KJobWidgets::setWindow(job, m_parentWidget);
+
+    if (!job->exec()) {
+        return url;
+    }
+
+    KIO::UDSEntry entry = job->statResult();
+    const QString path = entry.stringValue(KIO::UDSEntry::UDS_LOCAL_PATH);
+
+    return path.isEmpty() ? url : QUrl::fromLocalFile(path);
+}
+
 void KNewFileMenuPrivate::_k_slotAbortDialog()
 {
     m_text = QString();
@@ -1127,7 +1150,7 @@ void KNewFileMenu::slotResult(KJob * job)
         KIO::CopyJob* copyJob = ::qobject_cast<KIO::CopyJob*>(job);
         if (copyJob) {
             const QUrl destUrl = copyJob->destUrl();
-            const QUrl localUrl = KIO::NetAccess::mostLocalUrl(destUrl, d->m_parentWidget);
+            const QUrl localUrl = d->mostLocalUrl(destUrl);
             if (localUrl.isLocalFile()) {
                 // Normal (local) file. Need to "touch" it, kio_file copied the mtime.
                 (void) ::utime(QFile::encodeName(localUrl.toLocalFile()).constData(), 0);
