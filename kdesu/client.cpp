@@ -48,7 +48,7 @@ public:
 };
 
 #ifndef SUN_LEN
-#define SUN_LEN(ptr) ((socklen_t) (((struct sockaddr_un *) 0)->sun_path) \
+#define SUN_LEN(ptr) ((QT_SOCKLEN_T) (((struct sockaddr_un *) 0)->sun_path) \
                      + strlen ((ptr)->sun_path))
 #endif
 
@@ -101,7 +101,7 @@ int KDEsuClient::connect()
     addr.sun_family = AF_UNIX;
     strcpy(addr.sun_path, d->sock.constData());
 
-    if (::connect(d->sockfd, (struct sockaddr *) &addr, SUN_LEN(&addr)) < 0)
+    if (QT_SOCKET_CONNECT(d->sockfd, (struct sockaddr *) &addr, SUN_LEN(&addr)) < 0)
     {
         qWarning() << "[" << __FILE__ << ":" << __LINE__ << "] " << "connect():" << strerror(errno);
         close(d->sockfd); d->sockfd = -1;
@@ -152,7 +152,7 @@ int KDEsuClient::connect()
 # endif
 #else
     struct ucred cred;
-    socklen_t siz = sizeof(cred);
+    QT_SOCKLEN_T siz = sizeof(cred);
 
     // Security: if socket exists, we must own it
     if (getsockopt(d->sockfd, SOL_SOCKET, SO_PEERCRED, &cred, &siz) == 0)

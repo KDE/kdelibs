@@ -34,6 +34,7 @@
 #include <qfile.h>
 #include <qfileinfo.h>
 #include <qdebug.h>
+#include <qplatformdefs.h>
 
 #include <unistd.h> // getuid, close
 #include <sys/types.h> // uid_t
@@ -464,13 +465,13 @@ bool KConfigIniBackend::writeConfig(const QByteArray& locale, KEntryMap& entryMa
     } else {
         // Open existing file. *DON'T* create it if it suddenly does not exist!
 #ifdef Q_OS_UNIX
-        int fd = ::open(QFile::encodeName(filePath()).constData(), O_WRONLY | O_TRUNC);
+        int fd = QT_OPEN(QFile::encodeName(filePath()).constData(), O_WRONLY | O_TRUNC);
         if (fd < 0) {
             return false;
         }
         FILE *fp = ::fdopen(fd, "w");
         if (!fp) {
-            ::close(fd);
+            QT_CLOSE(fd);
             return false;
         }
         QFile f;
@@ -499,10 +500,6 @@ bool KConfigIniBackend::isWritable() const
 {
     const QString filePath = this->filePath();
     if (!filePath.isEmpty()) {
-        // Qt 5 TODO: QFileInfo::canBeCreated or something.
-        if (::access(QFile::encodeName(filePath).constData(), W_OK) == 0) {
-            return true;
-        }
         QFileInfo file(filePath);
         if (!file.exists()) {
             // If the file does not exist, check if the deepest
@@ -517,6 +514,8 @@ bool KConfigIniBackend::isWritable() const
                 dir.setFile(parent);
             }
             return dir.isDir() && dir.isWritable();
+        } else {
+            return file.isWritable();
         }
     }
 

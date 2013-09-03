@@ -36,6 +36,7 @@
 #include <ksharedconfig.h>
 #include <klocalizedstring.h>
 #include <qstandardpaths.h>
+#include <qplatformdefs.h>
 #include <kuser.h>
 
 #ifndef __PATH_SU
@@ -146,7 +147,7 @@ int SuProcess::exec(const char *password, int check)
         command = __PATH_SU;
     }
 
-    if (::access(command.constData(), X_OK) != 0)
+    if (QT_ACCESS(command.constData(), X_OK) != 0)
     {
         command = QFile::encodeName(QStandardPaths::findExecutable(d->m_superUserCommand.toLatin1()));
         if (command.isEmpty())

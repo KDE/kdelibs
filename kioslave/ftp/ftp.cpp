@@ -2183,7 +2183,7 @@ Ftp::StatusCode Ftp::ftpPut(int& iError, int iCopyFile, const QUrl& dest_url,
       if(processed_size-offset > 1024 * 64)
         iBlockSize = maximumIpcSize;
       buffer.resize(iBlockSize);
-      result = ::read(iCopyFile, buffer.data(), buffer.size());
+      result = QT_READ(iCopyFile, buffer.data(), buffer.size());
       if(result < 0)
         iError = ERR_COULD_NOT_WRITE;
       else
@@ -2375,7 +2375,7 @@ void Ftp::copy( const QUrl &src, const QUrl &dest, int permissions, KIO::JobFlag
 
   // perform clean-ups and report error (if any)
   if(iCopyFile != -1)
-    ::close(iCopyFile);
+      QT_CLOSE(iCopyFile);
   ftpCloseCommand();                        // must close command!
   if(iError)
     error(iError, sCopyFile);
@@ -2498,7 +2498,7 @@ Ftp::StatusCode Ftp::ftpCopyGet(int& iError, int& iCopyFile, const QString &sCop
 
   // delegate the real work (iError gets status) ...
   StatusCode iRes = ftpGet(iError, iCopyFile, url, hCopyOffset);
-  if( ::close(iCopyFile) && iRes == statusSuccess )
+  if (QT_CLOSE(iCopyFile) && iRes == statusSuccess)
   {
     iError = ERR_COULD_NOT_WRITE;
     iRes = statusClientError;

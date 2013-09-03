@@ -22,6 +22,7 @@
 #include "kprocess_p.h"
 
 #include <qstandardpaths.h>
+#include <qplatformdefs.h>
 #include <kshell.h>
 #ifdef Q_OS_WIN
 # include <kshell_p.h>
@@ -60,7 +61,7 @@ void KProcessPrivate::writeAll(const QByteArray &buf, int fd)
 #else
     int off = 0;
     do {
-        int ret = ::write(fd, buf.data() + off, buf.size() - off);
+        int ret = QT_WRITE(fd, buf.data() + off, buf.size() - off);
         if (ret < 0) {
             if (errno != EINTR)
                 return;

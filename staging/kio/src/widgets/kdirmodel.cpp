@@ -34,6 +34,7 @@
 #include <QDir>
 #include <QIcon>
 #include <QLocale>
+#include <qplatformdefs.h>
 #include <sys/types.h>
 #include <dirent.h>
 
@@ -738,11 +739,11 @@ QVariant KDirModel::data( const QModelIndex & index, int role ) const
                             FindClose( hFile );
                         }
 #else
-                        DIR* dir = ::opendir(QFile::encodeName(path));
+                        DIR* dir = QT_OPENDIR(QFile::encodeName(path));
                         if (dir) {
                             count = 0;
-                            struct dirent *dirEntry = 0;
-                            while ((dirEntry = ::readdir(dir))) {
+                            QT_DIRENT *dirEntry = 0;
+                            while ((dirEntry = QT_READDIR(dir))) {
                                 if (dirEntry->d_name[0] == '.') {
                                     if (dirEntry->d_name[1] == '\0') // skip "."
                                         continue;
@@ -751,7 +752,7 @@ QVariant KDirModel::data( const QModelIndex & index, int role ) const
                                 }
                                 ++count;
                             }
-                            ::closedir(dir);
+                            QT_CLOSEDIR(dir);
                         }
 #endif
                         //qDebug() << "child count for " << path << ":" << count;

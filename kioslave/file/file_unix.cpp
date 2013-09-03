@@ -542,7 +542,7 @@ void FileProtocol::del(const QUrl& url, bool isfile)
           if (!deleteRecursive(path))
               return;
       }
-      if ( ::rmdir( _path.data() ) == -1 ) {
+      if (QT_RMDIR(_path.data()) == -1 ) {
 	if ((errno == EACCES) || (errno == EPERM))
 	  error(KIO::ERR_ACCESS_DENIED, path);
 	else {

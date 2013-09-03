@@ -264,7 +264,7 @@ KDirWatchPrivate::~KDirWatchPrivate()
 #endif
 #if HAVE_SYS_INOTIFY_H
   if ( supports_inotify )
-    ::close( m_inotify_fd );
+      QT_CLOSE(m_inotify_fd);
 #endif
 #if HAVE_QFILESYSTEMWATCHER
   delete fsWatcher;
