@@ -1044,13 +1044,16 @@ bool KFileItem::isReadable() const
       */
 
     if (d->m_permissions != KFileItem::Unknown) {
+        const mode_t readMask = S_IRUSR|S_IRGRP|S_IROTH;
         // No read permission at all
-        if (!(S_IRUSR & d->m_permissions) && !(S_IRGRP & d->m_permissions) && !(S_IROTH & d->m_permissions))
+        if ((d->m_permissions & readMask) == 0) {
             return false;
+        }
 
         // Read permissions for all: save a stat call
-        if ((S_IRUSR|S_IRGRP|S_IROTH) & d->m_permissions)
+        if ((d->m_permissions & readMask) == readMask) {
             return true;
+        }
     }
 
     // Or if we can't read it - not network transparent

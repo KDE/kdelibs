@@ -428,3 +428,28 @@ void KFileItemTest::testIconNameForUrl()
 
     QCOMPARE(KIO::iconNameForUrl(QUrl(url)), expectedIcon);
 }
+
+void KFileItemTest::testIsReadable_data()
+{
+    QTest::addColumn<int>("mode");
+    QTest::addColumn<bool>("readable");
+
+    QTest::newRow("fully-readable") << 0444 << true;
+    QTest::newRow("user-readable") << 0400 << true;
+    QTest::newRow("not-readable-by-us") << 0004 << false;
+    QTest::newRow("not-readable-at-all") << 0000 << false;
+}
+
+void KFileItemTest::testIsReadable()
+{
+    QFETCH(int, mode);
+    QFETCH(bool, readable);
+
+    QTemporaryFile file;
+    QVERIFY(file.open());
+    int ret = fchmod(file.handle(), (mode_t)mode);
+    QCOMPARE(ret, 0);
+
+    KFileItem fileItem(QUrl::fromLocalFile(file.fileName()));
+    QCOMPARE(fileItem.isReadable(), readable);
+}
