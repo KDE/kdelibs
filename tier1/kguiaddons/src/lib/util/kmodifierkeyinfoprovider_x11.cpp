@@ -1,5 +1,6 @@
 /*
     Copyright 2009  Michael Leupold <lemma@confuego.org>
+    Copyright 2013  Martin Gräßlin <mgraesslin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -18,14 +19,17 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <QX11Info>
-
 #include "kmodifierkeyinfo.h"
 #include "kmodifierkeyinfoprovider_p.h"
 
+#include <QGuiApplication>
+#include <qpa/qplatformnativeinterface.h>
+
 #define XK_MISCELLANY
 #define XK_XKB_KEYS
+#include <X11/XKBlib.h>
 #include <X11/keysymdef.h>
+#include <xcb/xcb.h>
 
 struct ModifierDefinition
 {
@@ -64,55 +68,39 @@ unsigned int xkbVirtualModifier(XkbDescPtr xkb, const char *name)
     return mask;
 }
 
-/*
- * Event filter to receive events from QAbstractEventDispatcher. All X11 events
- * are forwarded to all providers.
- */
-bool kmodifierKeyInfoEventFilter(void *message)
+// same as QX11Info::display, reimplemented to not have to link QtX11Extras
+Display *display()
 {
-    if (KModifierKeyInfoProvider::s_eventFilterEnabled) {
-        XEvent *evt = reinterpret_cast<XEvent*>(message);
-        if (evt) {
-            QSet<KModifierKeyInfoProvider*>::const_iterator it =
-                KModifierKeyInfoProvider::s_providerList.constBegin();
-            QSet<KModifierKeyInfoProvider*>::const_iterator end =
-                KModifierKeyInfoProvider::s_providerList.constEnd();
-            for ( ; it != end; ++it) {
-                if ((*it)->x11Event(evt)) {
-                    // providers usually return don't consume events and return false.
-                    // If under any circumstance an event is consumed, don't forward it to
-                    // other event filters.
-                    return true;
-                }
-            }
-        }
-    }
-    
-    if (KModifierKeyInfoProvider::s_nextFilter) {
-        return KModifierKeyInfoProvider::s_nextFilter(message);
-    }
-    
-    return false;
-}
+    if (!qApp)
+        return NULL;
+    QPlatformNativeInterface *native = qApp->platformNativeInterface();
+    if (!native)
+        return NULL;
 
-QSet<KModifierKeyInfoProvider*> KModifierKeyInfoProvider::s_providerList;
-bool KModifierKeyInfoProvider::s_eventFilterInstalled = false;
-bool KModifierKeyInfoProvider::s_eventFilterEnabled = false;
-QAbstractEventDispatcher::EventFilter KModifierKeyInfoProvider::s_nextFilter = 0;
+    void *display = native->nativeResourceForScreen(QByteArray("display"), QGuiApplication::primaryScreen());
+    return reinterpret_cast<Display *>(display);
+}
 
 KModifierKeyInfoProvider::KModifierKeyInfoProvider()
     : QObject(0)
+    , QAbstractNativeEventFilter()
+    , m_xkbEv(0)
+    , m_xkbAvailable(false)
 {
-    int code, xkberr, maj, min;
-    m_xkbAvailable = XkbQueryExtension(QX11Info::display(), &code, &m_xkbEv, &xkberr, &maj, &min);
+    if (qApp) {
+        if (qApp->platformName() == QStringLiteral("xcb")) {
+            int code, xkberr, maj, min;
+            m_xkbAvailable = XkbQueryExtension(display(), &code, &m_xkbEv, &xkberr, &maj, &min);
+        }
+    }
     if (m_xkbAvailable) {
-        XkbSelectEvents(QX11Info::display(), XkbUseCoreKbd,
+        XkbSelectEvents(display(), XkbUseCoreKbd,
                         XkbStateNotifyMask | XkbMapNotifyMask,
                         XkbStateNotifyMask | XkbMapNotifyMask);
         unsigned long int stateMask = XkbModifierStateMask | XkbModifierBaseMask |
                                       XkbModifierLatchMask | XkbModifierLockMask |
                                       XkbPointerButtonMask;
-        XkbSelectEventDetails(QX11Info::display(), XkbUseCoreKbd, XkbStateNotifyMask,
+        XkbSelectEventDetails(display(), XkbUseCoreKbd, XkbStateNotifyMask,
                               stateMask, stateMask);
     }
 
@@ -128,26 +116,18 @@ KModifierKeyInfoProvider::KModifierKeyInfoProvider()
     // get the initial state
     if (m_xkbAvailable) {
         XkbStateRec state;
-        XkbGetState(QX11Info::display(), XkbUseCoreKbd, &state);
+        XkbGetState(display(), XkbUseCoreKbd, &state);
         xkbModifierStateChanged(state.mods, state.latched_mods, state.locked_mods);
         xkbButtonStateChanged(state.ptr_buttons);
+
+        QCoreApplication::instance()->installNativeEventFilter(this);
     }
-    
-    if (!s_eventFilterInstalled) {
-        // This is the first provider constructed. Install the event filter.
-        s_nextFilter = QAbstractEventDispatcher::instance()->setEventFilter(kmodifierKeyInfoEventFilter);
-        s_eventFilterInstalled = true;
-    }
-    s_eventFilterEnabled = true;
-    s_providerList.insert(this);
 }
 
 KModifierKeyInfoProvider::~KModifierKeyInfoProvider()
 {
-    s_providerList.remove(this);
-    if (s_providerList.isEmpty()) {
-        // disable filtering events
-        s_eventFilterEnabled = false;
+    if (m_xkbAvailable) {
+        QCoreApplication::instance()->removeNativeEventFilter(this);
     }
 }
 
@@ -155,7 +135,7 @@ bool KModifierKeyInfoProvider::setKeyLatched(Qt::Key key, bool latched)
 {
     if (!m_xkbModifiers.contains(key)) return false;
 
-    return XkbLatchModifiers(QX11Info::display(), XkbUseCoreKbd,
+    return XkbLatchModifiers(display(), XkbUseCoreKbd,
                              m_xkbModifiers[key], latched ? m_xkbModifiers[key] : 0);
 }
 
@@ -163,34 +143,101 @@ bool KModifierKeyInfoProvider::setKeyLocked(Qt::Key key, bool locked)
 {
     if (!m_xkbModifiers.contains(key)) return false;
 
-    return XkbLockModifiers(QX11Info::display(), XkbUseCoreKbd,
+    return XkbLockModifiers(display(), XkbUseCoreKbd,
                             m_xkbModifiers[key], locked ? m_xkbModifiers[key] : 0);
 }
 
-bool KModifierKeyInfoProvider::x11Event(XEvent *event)
+// HACK: xcb-xkb is not yet a public part of xcb. Because of that we have to include the event structure.
+namespace {
+    typedef struct _xcb_xkb_map_notify_event_t {
+        uint8_t         response_type;
+        uint8_t         xkbType;
+        uint16_t        sequence;
+        xcb_timestamp_t time;
+        uint8_t         deviceID;
+        uint8_t         ptrBtnActions;
+        uint16_t        changed;
+        xcb_keycode_t   minKeyCode;
+        xcb_keycode_t   maxKeyCode;
+        uint8_t         firstType;
+        uint8_t         nTypes;
+        xcb_keycode_t   firstKeySym;
+        uint8_t         nKeySyms;
+        xcb_keycode_t   firstKeyAct;
+        uint8_t         nKeyActs;
+        xcb_keycode_t   firstKeyBehavior;
+        uint8_t         nKeyBehavior;
+        xcb_keycode_t   firstKeyExplicit;
+        uint8_t         nKeyExplicit;
+        xcb_keycode_t   firstModMapKey;
+        uint8_t         nModMapKeys;
+        xcb_keycode_t   firstVModMapKey;
+        uint8_t         nVModMapKeys;
+        uint16_t        virtualMods;
+        uint8_t         pad0[2];
+    } _xcb_xkb_map_notify_event_t;
+    typedef struct _xcb_xkb_state_notify_event_t {
+        uint8_t         response_type;
+        uint8_t         xkbType;
+        uint16_t        sequence;
+        xcb_timestamp_t time;
+        uint8_t         deviceID;
+        uint8_t         mods;
+        uint8_t         baseMods;
+        uint8_t         latchedMods;
+        uint8_t         lockedMods;
+        uint8_t         group;
+        int16_t         baseGroup;
+        int16_t         latchedGroup;
+        uint8_t         lockedGroup;
+        uint8_t         compatState;
+        uint8_t         grabMods;
+        uint8_t         compatGrabMods;
+        uint8_t         lookupMods;
+        uint8_t         compatLoockupMods;
+        uint16_t        ptrBtnState;
+        uint16_t        changed;
+        xcb_keycode_t   keycode;
+        uint8_t         eventType;
+        uint8_t         requestMajor;
+        uint8_t         requestMinor;
+    } _xcb_xkb_state_notify_event_t;
+    typedef union {
+        /* All XKB events share these fields. */
+        struct {
+            uint8_t response_type;
+            uint8_t xkbType;
+            uint16_t sequence;
+            xcb_timestamp_t time;
+            uint8_t deviceID;
+        } any;
+        _xcb_xkb_map_notify_event_t map_notify;
+        _xcb_xkb_state_notify_event_t state_notify;
+    } _xkb_event;
+}
+
+bool KModifierKeyInfoProvider::nativeEventFilter(const QByteArray &eventType, void *message, long int *result)
 {
-    if (m_xkbAvailable) {
-        XkbEvent *kbevt;
+    Q_UNUSED(result)
+    if (!m_xkbAvailable || eventType != "xcb_generic_event_t") {
+        return false;
+    }
+    xcb_generic_event_t *event = static_cast<xcb_generic_event_t*>(message);
+    if ((event->response_type & ~0x80) == m_xkbEv + XkbEventCode) {
+        _xkb_event *kbevt = reinterpret_cast<_xkb_event *>(event);
         unsigned int stateMask = XkbModifierStateMask | XkbModifierBaseMask |
                                  XkbModifierLatchMask | XkbModifierLockMask;
-        if (event->type == m_xkbEv + XkbEventCode &&
-            (kbevt = (XkbEvent*)event) != 0)
-        {
-            if (kbevt->any.xkb_type == XkbMapNotify) {
-                xkbUpdateModifierMapping();
-            } else if (kbevt->any.xkb_type == XkbStateNotify) {
-                XkbStateNotifyEvent *snevent = (XkbStateNotifyEvent*)event;
-                if (snevent->changed & stateMask) {
-                    xkbModifierStateChanged(snevent->mods, snevent->latched_mods,
-                                            snevent->locked_mods);
-                } else if (snevent->changed & XkbPointerButtonMask) {
-                    xkbButtonStateChanged(snevent->ptr_buttons);
-                }
+        if (kbevt->any.xkbType == XkbMapNotify) {
+            xkbUpdateModifierMapping();
+        } else if (kbevt->any.xkbType == XkbStateNotify) {
+            if (kbevt->state_notify.changed & stateMask) {
+                xkbModifierStateChanged(kbevt->state_notify.mods, kbevt->state_notify.latchedMods,
+                                        kbevt->state_notify.lockedMods);
+            } else if (kbevt->state_notify.changed & XkbPointerButtonMask) {
+                xkbButtonStateChanged(kbevt->state_notify.ptrBtnState);
             }
-            return false;
         }
     }
-
     return false;
 }
 
@@ -254,6 +301,9 @@ void KModifierKeyInfoProvider::xkbButtonStateChanged(unsigned short ptr_buttons)
 
 void KModifierKeyInfoProvider::xkbUpdateModifierMapping()
 {
+    if (!m_xkbAvailable) {
+        return;
+    }
     m_xkbModifiers.clear();
 
     QList<ModifierDefinition> srcModifiers;
@@ -269,7 +319,7 @@ void KModifierKeyInfoProvider::xkbUpdateModifierMapping()
                  << ModifierDefinition(Qt::Key_CapsLock, LockMask, 0, 0)
                  << ModifierDefinition( Qt::Key_ScrollLock, 0, "ScrollLock", XK_Scroll_Lock);
 
-    XkbDescPtr xkb = XkbGetKeyboard(QX11Info::display(), XkbAllComponentsMask, XkbUseCoreKbd);
+    XkbDescPtr xkb = XkbGetKeyboard(display(), XkbAllComponentsMask, XkbUseCoreKbd);
 
     QList<ModifierDefinition>::const_iterator it;
     QList<ModifierDefinition>::const_iterator end = srcModifiers.constEnd();
@@ -281,13 +331,13 @@ void KModifierKeyInfoProvider::xkbUpdateModifierMapping()
                 mask = xkbVirtualModifier(xkb, it->name);
             }
             if (mask == 0 && it->keysym != 0) {
-                mask = XkbKeysymToModifiers(QX11Info::display(), it->keysym);
+                mask = XkbKeysymToModifiers(display(), it->keysym);
             } else if (mask == 0) {
                 // special case for AltGr
-                mask = XkbKeysymToModifiers(QX11Info::display(), XK_Mode_switch) |
-                       XkbKeysymToModifiers(QX11Info::display(), XK_ISO_Level3_Shift) |
-                       XkbKeysymToModifiers(QX11Info::display(), XK_ISO_Level3_Latch) |
-                       XkbKeysymToModifiers(QX11Info::display(), XK_ISO_Level3_Lock);
+                mask = XkbKeysymToModifiers(display(), XK_Mode_switch) |
+                       XkbKeysymToModifiers(display(), XK_ISO_Level3_Shift) |
+                       XkbKeysymToModifiers(display(), XK_ISO_Level3_Latch) |
+                       XkbKeysymToModifiers(display(), XK_ISO_Level3_Lock);
             }
         }
 

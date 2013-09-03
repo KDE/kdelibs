@@ -43,3 +43,12 @@ bool KModifierKeyInfoProvider::setKeyLocked(Qt::Key key, bool locked)
     Q_UNUSED(locked);
     return false;
 }
+
+
+bool KModifierKeyInfoProvider::nativeEventFilter(const QByteArray &eventType, void *message, long int *result)
+{
+    Q_UNUSED(eventType)
+    Q_UNUSED(message)
+    Q_UNUSED(result)
+    return false;
+}

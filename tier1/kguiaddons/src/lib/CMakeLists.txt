@@ -14,16 +14,17 @@ set(kguiaddons_LIB_SRCS
  util/urlhandler.cpp
 )
 
-message("Port to Qt5 native filter")
-#if (X11_FOUND AND X11_Xkb_FOUND)
-#    include_directories (
-#        ${X11_Xkb_INCLUDE_PATH}
-#        ${X11_Xlib_INCLUDE_PATH}
-#    )
-#    set(kguiaddons_LIB_SRCS ${kguiaddons_LIB_SRCS} util/kmodifierkeyinfoprovider_x11.cpp)
-#else (X11_FOUND AND X11_Xkb_FOUND)
+if (X11_FOUND AND X11_Xkb_FOUND AND XCB_XCB_FOUND)
+    include_directories (
+        ${X11_Xkb_INCLUDE_PATH}
+        ${X11_Xlib_INCLUDE_PATH}
+        ${XCB_XCB_INCLUDE_DIR}
+        ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
+    )
+    set(kguiaddons_LIB_SRCS ${kguiaddons_LIB_SRCS} util/kmodifierkeyinfoprovider_x11.cpp)
+else ()
     set (kguiaddons_LIB_SRCS ${kguiaddons_LIB_SRCS} util/kmodifierkeyinfoprovider_dummy.cpp)
-#endif (X11_FOUND AND X11_Xkb_FOUND)
+endif ()
 
 add_library(KGuiAddons ${kguiaddons_LIB_SRCS})
 
@@ -38,6 +39,10 @@ set(kguiaddons_INCLUDES
   )
 target_include_directories(KGuiAddons PUBLIC "$<BUILD_INTERFACE:${kguiaddons_INCLUDES}>")
 target_link_libraries(KGuiAddons PUBLIC Qt5::Gui)
+
+if(X11_FOUND AND X11_Xkb_FOUND)
+    target_link_libraries(KGuiAddons LINK_PRIVATE ${X11_LIBRARIES} ${XCB_XCB_LIBRARY})
+endif()
 
 set_target_properties(KGuiAddons PROPERTIES VERSION   ${KGUIADDONS_VERSION_STRING}
                                             SOVERSION ${KGUIADDONS_SOVERSION} )

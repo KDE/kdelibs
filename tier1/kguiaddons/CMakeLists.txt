@@ -12,6 +12,9 @@ include(KDECMakeSettings)
 set(REQUIRED_QT_VERSION 5.2.0)
 find_package(Qt5Gui ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE)
 
+find_package(X11 MODULE)
+find_package(XCB MODULE COMPONENTS XCB)
+
 include(FeatureSummary)
 include(ECMSetupVersion)
 ecm_setup_version(5.0.0 VARIABLE_PREFIX KGUIADDONS

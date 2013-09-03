@@ -21,25 +21,16 @@
 #ifndef KMODIFIERKEYINFOPROVIDER_P_H
 #define KMODIFIERKEYINFOPROVIDER_P_H
 
+#include <QAbstractNativeEventFilter>
 #include <QHash>
-#include <QSet>
 #include <QObject>
-
-#pragma message ("Port to Qt5 native filter")
-#if 0
-    #include <X11/Xlib.h>
-    #include <X11/XKBlib.h>
-    #include <fixx11h.h>
-    #include <QtCore/QAbstractEventDispatcher>
-    bool kmodifierKeyInfoEventFilter(void *message);
-#endif
 
 /**
  * Background class that implements the behaviour of KModifierKeyInfo for
  * the different supported platforms.
  * @internal
  */
-class KModifierKeyInfoProvider : public QObject
+class KModifierKeyInfoProvider : public QObject, public QAbstractNativeEventFilter
 {
     Q_OBJECT
 
@@ -112,6 +103,8 @@ public:
      */
     const QList<Qt::Key> knownKeys() const;
 
+    virtual bool nativeEventFilter(const QByteArray &eventType, void *message, long int *result);
+
 Q_SIGNALS:
     void keyLatched(Qt::Key key, bool state);
     void keyLocked(Qt::Key key, bool state);
@@ -121,20 +114,10 @@ Q_SIGNALS:
     void keyRemoved(Qt::Key key);
     
 protected:
-#pragma message ("Port to Qt5 native filter")
-#if 0
-    // Interfacing with QAbstractEventDispatcher
-    friend bool kmodifierKeyInfoEventFilter(void *message);
-    static QAbstractEventDispatcher::EventFilter s_nextFilter;
-    static QSet<KModifierKeyInfoProvider*> s_providerList;
-    
-    // event handler for incoming X11 events
-    virtual bool x11Event(XEvent *event);
     void xkbUpdateModifierMapping();
     void xkbModifierStateChanged(unsigned char mods, unsigned char latched_mods,
                                  unsigned char locked_mods);
     void xkbButtonStateChanged(unsigned short ptr_buttons);
-#endif
 
 private:
     // the state of each known modifier
@@ -142,8 +125,6 @@ private:
     // the state of each known mouse button
     QHash<Qt::MouseButton, bool> m_buttonStates;
 
-#pragma message ("Port to Qt5 native filter")
-#if 0
     int m_xkbEv;
     bool m_xkbAvailable;
 
@@ -151,12 +132,6 @@ private:
     QHash<Qt::Key, unsigned int> m_xkbModifiers;
     // maps a Qt::MouseButton to a button mask
     QHash<Qt::MouseButton, unsigned short> m_xkbButtons;
-
-    // has the eventfilter been installed yet?
-    static bool s_eventFilterInstalled;
-    // is the eventfilter currently enabled?
-    static bool s_eventFilterEnabled;
-#endif
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KModifierKeyInfoProvider::ModifierStates)
