@@ -47,7 +47,6 @@
 #include <kio/job.h>
 #include <kio/copyjob.h>
 #include <kio/jobuidelegate.h>
-#include <kio/netaccess.h>
 #include <kio/fileundomanager.h>
 #include <kio/kurifilter.h>
 

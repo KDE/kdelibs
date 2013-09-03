@@ -48,7 +48,6 @@
 #include <kio/pixmaploader.h>
 #include <kio/job.h>
 #include <kio/jobuidelegate.h>
-#include <kio/netaccess.h>
 #include <kio/scheduler.h>
 #include <krecentdirs.h>
 #include <QDebug>
