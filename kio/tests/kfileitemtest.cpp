@@ -38,18 +38,15 @@ void KFileItemTest::testPermissionsString()
     QTemporaryDir tempDir;
     KFileItem dirItem(QUrl::fromLocalFile(tempDir.path() + '/' ));
     QCOMPARE((uint)dirItem.permissions(), (uint)0700);
-    QCOMPARE(int(dirItem.filePermissions()), int(QFile::ReadOwner|QFile::WriteOwner|QFile::ExeOwner));
     QCOMPARE(dirItem.permissionsString(), QString("drwx------"));
     QVERIFY(dirItem.isReadable());
 
     // File
     QFile file(tempDir.path() + "/afile");
     QVERIFY(file.open(QIODevice::WriteOnly));
-    QFile::Permissions sixOhFour = QFile::ReadOwner | QFile::WriteOwner | QFile::ReadOther; // 0604
-    file.setPermissions(sixOhFour);
+    file.setPermissions(QFile::ReadOwner | QFile::WriteOwner | QFile::ReadOther); // 0604
     KFileItem fileItem(QUrl::fromLocalFile(file.fileName()), QString(), KFileItem::Unknown);
     QCOMPARE((uint)fileItem.permissions(), (uint)0604);
-    QCOMPARE(int(fileItem.filePermissions()), int(sixOhFour));
     QCOMPARE(fileItem.permissionsString(), QString("-rw----r--"));
     QVERIFY(fileItem.isReadable());
 
@@ -59,7 +56,6 @@ void KFileItemTest::testPermissionsString()
     QUrl symlinkUrl = QUrl::fromLocalFile(symlink);
     KFileItem symlinkItem(symlinkUrl, QString(), KFileItem::Unknown);
     QCOMPARE((uint)symlinkItem.permissions(), (uint)0604);
-    QCOMPARE(int(symlinkItem.filePermissions()), int(sixOhFour));
     // This is a bit different from "ls -l": we get the 'l' but we see the permissions of the target.
     // This is actually useful though; the user sees it's a link, and can check if he can read the [target] file.
     QCOMPARE(symlinkItem.permissionsString(), QString("lrw----r--"));

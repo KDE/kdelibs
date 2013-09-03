@@ -50,8 +50,7 @@ class KFileItemPrivate : public QSharedData
 {
 public:
     KFileItemPrivate(const KIO::UDSEntry& entry,
-                     mode_t mode, uint permissions,
-                     bool permissionsKnown,
+                     mode_t mode, mode_t permissions,
                      const QUrl& itemOrDirUrl,
                      bool urlIsDirectory,
                      bool delayedMimeTypes)
@@ -64,7 +63,6 @@ public:
           m_mimeType(),
           m_fileMode( mode ),
           m_permissions(permissions),
-          m_bPermissionsKnown(permissionsKnown),
           m_bMarked( false ),
           m_bLink( false ),
           m_bIsLocalUrl(itemOrDirUrl.isLocalFile()),
@@ -99,6 +97,7 @@ public:
     QString localPath() const;
     KIO::filesize_t size() const;
     QDateTime time( KFileItem::FileTimes which ) const;
+    void setTime(KFileItem::FileTimes which, uint time_t_val) const;
     void setTime(KFileItem::FileTimes which, const QDateTime &val) const;
     bool cmp( const KFileItemPrivate & item ) const;
     QString user() const;
@@ -158,10 +157,7 @@ public:
     /**
      * The permissions
      */
-    uint m_permissions; // we use uint (mode_t) rather than QFile::Permissions in order to have support for SUID and SGID (for filemanagers, the properties dialog etc)
-
-    /// True of m_permissions has been determined
-    bool m_bPermissionsKnown:1;
+    mode_t m_permissions;
 
     /**
      * Marked : see mark()
@@ -199,56 +195,6 @@ public:
     mutable QDateTime m_time[3];
 };
 
-
-// KDE5 TODO add a UDS_PERMISSIONS that replaces UDS_ACCESS, and takes a QFile::Permissions enum directly
-static QFile::Permissions filePermissionsFromMode(long mode)
-{
-    QFile::Permissions perms;
-    if (mode & S_IRUSR)
-        perms |= QFile::ReadOwner;
-    if (mode & S_IWUSR)
-        perms |= QFile::WriteOwner;
-    if (mode & S_IXUSR)
-        perms |= QFile::ExeOwner;
-    if (mode & S_IRGRP)
-        perms |= QFile::ReadGroup;
-    if (mode & S_IWGRP)
-        perms |= QFile::WriteGroup;
-    if (mode & S_IXGRP)
-        perms |= QFile::ExeGroup;
-    if (mode & S_IROTH)
-        perms |= QFile::ReadOther;
-    if (mode & S_IWOTH)
-        perms |= QFile::WriteOther;
-    if (mode & S_IXOTH)
-        perms |= QFile::ExeOther;
-    return perms;
-}
-
-static uint modeFromFilePermissions(QFile::Permissions perms)
-{
-    uint mode = 0;
-    if (perms & QFile::ReadOwner)
-        mode |= S_IRUSR;
-    if (perms |= QFile::WriteOwner)
-        mode |= S_IWUSR;
-    if (perms & QFile::ExeOwner)
-        mode |= S_IXUSR;
-    if (perms & QFile::ReadGroup)
-        mode |= S_IRGRP;
-    if (perms & QFile::WriteGroup)
-        mode |= S_IWGRP;
-    if (perms & QFile::ExeGroup)
-        mode |= S_IXGRP;
-    if (perms & QFile::ReadOther)
-        mode |= S_IROTH;
-    if (perms & QFile::WriteOther)
-        mode |= S_IWOTH;
-    if (perms & QFile::ExeOther)
-        mode |= S_IXOTH;
-    return mode;
-}
-
 void KFileItemPrivate::init()
 {
     m_access.clear();
@@ -256,7 +202,8 @@ void KFileItemPrivate::init()
 
     // determine mode and/or permissions if unknown
     // TODO: delay this until requested
-    if (m_fileMode == KFileItem::Unknown || !m_bPermissionsKnown) {
+    if (m_fileMode == KFileItem::Unknown || m_permissions == KFileItem::Unknown) {
+        mode_t mode = 0;
         if ( m_url.isLocalFile() )
         {
             /* directories may not have a slash at the end if
@@ -266,23 +213,28 @@ void KFileItemPrivate::init()
              * stat("/is/unaccessible/") -> EPERM            H.Z.
              * This is the reason for the StripTrailingSlash
              */
+            QT_STATBUF buf;
             const QString path = m_url.adjusted(QUrl::StripTrailingSlash).toLocalFile();
-            QFileInfo info(path);
-            m_bLink = info.isSymLink();
-            // While we're at it, store the times
-            setTime(KFileItem::ModificationTime, info.lastModified());
-            setTime(KFileItem::AccessTime, info.lastRead());
-            if (m_fileMode == KFileItem::Unknown) {
-                m_fileMode = 0;
-                if (info.isDir()) {
-                    m_fileMode = S_IFDIR;
-                } else if (info.isFile()) {
-                    m_fileMode = S_IFREG;
-                } // not handled: sockets, block devices etc.
-            }
-            if (!m_bPermissionsKnown) {
-                m_permissions = modeFromFilePermissions(info.permissions());
-                m_bPermissionsKnown = true;
+            const QByteArray pathBA = QFile::encodeName(path);
+            if (QT_LSTAT(pathBA.constData(), &buf) == 0) {
+                mode = buf.st_mode;
+                if ((buf.st_mode & QT_STAT_MASK) == QT_STAT_LNK) {
+                    m_bLink = true;
+                    if (QT_STAT(pathBA, &buf) == 0) {
+                        mode = buf.st_mode;
+                    } else {// link pointing to nowhere (see FileProtocol::createUDSEntry() in kioslave/file/file.cpp)
+                        mode = (QT_STAT_MASK - 1) | S_IRWXU | S_IRWXG | S_IRWXO;
+                    }
+                }
+                // While we're at it, store the times
+                setTime(KFileItem::ModificationTime, buf.st_mtime);
+                setTime(KFileItem::AccessTime, buf.st_atime);
+                if (m_fileMode == KFileItem::Unknown) {
+                    m_fileMode = mode & QT_STAT_MASK; // extract file type
+                }
+                if (m_permissions == KFileItem::Unknown) {
+                    m_permissions = mode & 07777; // extract permissions
+                }
             }
         }
     }
@@ -292,11 +244,7 @@ void KFileItemPrivate::readUDSEntry( bool _urlIsDirectory )
     // extract fields from the KIO::UDS Entry
 
     m_fileMode = m_entry.numberValue( KIO::UDSEntry::UDS_FILE_TYPE );
-    int perms = m_entry.numberValue(KIO::UDSEntry::UDS_ACCESS, -1);
-    if (perms != -1) {
-        m_permissions = uint(perms);
-        m_bPermissionsKnown = true;
-    }
+    m_permissions = m_entry.numberValue(KIO::UDSEntry::UDS_ACCESS);
     m_strName = m_entry.stringValue( KIO::UDSEntry::UDS_NAME );
 
     const QString displayName = m_entry.stringValue( KIO::UDSEntry::UDS_DISPLAY_NAME );
@@ -348,6 +296,11 @@ KIO::filesize_t KFileItemPrivate::size() const
         return QFileInfo(m_url.toLocalFile()).size();
     }
     return 0;
+}
+
+void KFileItemPrivate::setTime(KFileItem::FileTimes mappedWhich, uint time_t_val) const
+{
+    setTime(mappedWhich, QDateTime::fromTime_t(time_t_val));
 }
 
 void KFileItemPrivate::setTime(KFileItem::FileTimes mappedWhich, const QDateTime &val) const
@@ -516,19 +469,18 @@ KFileItem::KFileItem()
 
 KFileItem::KFileItem( const KIO::UDSEntry& entry, const QUrl& itemOrDirUrl,
                       bool delayedMimeTypes, bool urlIsDirectory )
-    : d(new KFileItemPrivate(entry, KFileItem::Unknown, -1, false, itemOrDirUrl, urlIsDirectory, delayedMimeTypes))
+    : d(new KFileItemPrivate(entry, KFileItem::Unknown, KFileItem::Unknown, itemOrDirUrl, urlIsDirectory, delayedMimeTypes))
 {
 }
 
-// TODO QFile::Permissions permissions; or remove?
-/*KFileItem::KFileItem( mode_t mode, mode_t permissions, const QUrl& url, bool delayedMimeTypes )
-    : d(new KFileItemPrivate(KIO::UDSEntry(), mode, QFile::Permissions(permissions WRONG), true,
+KFileItem::KFileItem( mode_t mode, mode_t permissions, const QUrl& url, bool delayedMimeTypes )
+    : d(new KFileItemPrivate(KIO::UDSEntry(), mode, permissions,
                              url, false, delayedMimeTypes))
 {
-}*/
+}
 
 KFileItem::KFileItem( const QUrl &url, const QString &mimeType, mode_t mode )
-    : d(new KFileItemPrivate(KIO::UDSEntry(), mode, -1, false,
+    : d(new KFileItemPrivate(KIO::UDSEntry(), mode, KFileItem::Unknown,
                              url, false, false))
 {
     d->m_bMimeTypeKnown = !mimeType.isEmpty();
@@ -556,8 +508,7 @@ void KFileItem::refresh()
     }
 
     d->m_fileMode = KFileItem::Unknown;
-    d->m_permissions = -1;
-    d->m_bPermissionsKnown = false;
+    d->m_permissions = KFileItem::Unknown;
     d->m_hidden = KFileItemPrivate::Auto;
     refreshMimeType();
 
@@ -1092,15 +1043,13 @@ bool KFileItem::isReadable() const
       // for the groups... then we need to handle the deletion properly...
       */
 
-    if (d->m_bPermissionsKnown) {
-        const QFile::Permissions perms = filePermissions();
-        const int allReadPerms = (QFile::ReadOwner|QFile::ReadUser|QFile::ReadGroup|QFile::ReadOther);
+    if (d->m_permissions != KFileItem::Unknown) {
         // No read permission at all
-        if ((perms & allReadPerms) == 0)
+        if (!(S_IRUSR & d->m_permissions) && !(S_IRGRP & d->m_permissions) && !(S_IROTH & d->m_permissions))
             return false;
 
         // Read permissions for all: save a stat call
-        if ((perms & allReadPerms) == allReadPerms)
+        if ((S_IRUSR|S_IRGRP|S_IROTH) & d->m_permissions)
             return true;
     }
 
@@ -1124,11 +1073,9 @@ bool KFileItem::isWritable() const
       // for the groups... then we need to handle the deletion properly...
       */
 
-    if (d->m_bPermissionsKnown) {
-        const QFile::Permissions perms = filePermissions();
-        const int allWritePerms = (QFile::WriteOwner|QFile::WriteUser|QFile::WriteGroup|QFile::WriteOther);
+    if (d->m_permissions != KFileItem::Unknown) {
         // No write permission at all
-        if ((perms & allWritePerms) == 0)
+        if (!(S_IWUSR & d->m_permissions) && !(S_IWGRP & d->m_permissions) && !(S_IWOTH & d->m_permissions))
             return false;
     }
 
@@ -1300,7 +1247,7 @@ QString KFileItem::permissionsString() const
     if (!d)
         return QString();
 
-    if (d->m_access.isNull() && d->m_bPermissionsKnown)
+    if (d->m_access.isNull() && d->m_permissions != KFileItem::Unknown)
         d->m_access = d->parsePermissions(d->m_permissions);
 
     return d->m_access;
@@ -1415,18 +1362,11 @@ QUrl KFileItem::url() const
     return d->m_url;
 }
 
-QFile::Permissions KFileItem::filePermissions() const
+mode_t KFileItem::permissions() const
 {
     if (!d)
         return 0;
 
-    return filePermissionsFromMode(d->m_permissions);
-}
-
-uint KFileItem::permissions() const
-{
-    if (!d)
-        return 0;
     return d->m_permissions;
 }
 

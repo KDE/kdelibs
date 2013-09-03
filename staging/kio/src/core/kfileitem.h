@@ -104,8 +104,10 @@ public:
      * @deprecated since 5.0. Most callers gave Unknown for mode and permissions,
      * so just port to KFileItem(url) and setDelayedMimeTypes(true) if necessary.
      */
-   // KFileItem( mode_t mode, mode_t permissions, const QUrl& url,
-    //           bool delayedMimeTypes = false );
+#ifndef KDE_NO_DEPRECATED
+    KIOCORE_DEPRECATED KFileItem( mode_t mode, mode_t permissions, const QUrl& url,
+               bool delayedMimeTypes = false );
+#endif
 
     /**
      * Creates an item representing a file, for which the mimetype is already known.
@@ -171,17 +173,10 @@ public:
     void setName( const QString &name );
 
     /**
-     * Returns the permissions of the file (using the portable QFile::Permissions enum).
+     * Returns the permissions of the file (stat.st_mode containing only permissions).
      * @return the permissions of the file
      */
-    QFile::Permissions filePermissions() const;
-
-    /**
-     * Returns the Unix permissions of the file (stat.st_mode containing only permissions).
-     * @return the permissions of the file
-     * Prefer to use filePermissions() for portability.
-     */
-    uint /*mode_t*/ permissions() const;
+    mode_t permissions() const;
 
     /**
      * Returns the access permissions for the file as a string.
