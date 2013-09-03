@@ -31,6 +31,7 @@
 
 #include <klocalizedstring.h>
 
+#include <QtCore/QSet>
 #include <QtCore/QString>
 
 
@@ -294,6 +295,14 @@ void KLocalizedStringTest::miscMethods()
 {
     KLocalizedString k;
     QVERIFY(k.isEmpty());
+
+    if (m_hasFrench) {
+        QSet<QString> availableLanguages;
+        availableLanguages.insert("fr");
+        availableLanguages.insert("en_US");
+        QCOMPARE(KLocalizedString::availableApplicationTranslations(),
+                 availableLanguages);
+    }
 }
 
 // Same as translateToFrench, but using libintl directly (bindtextdomain+dgettext).

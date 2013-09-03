@@ -23,11 +23,14 @@
 #include <gettext.h>
 
 #include <qstandardpaths.h>
+#include <QByteArray>
+#include <QDebug>
+#include <QDir>
 #include <QFile>
 #include <QFileInfo>
 #include <QMutexLocker>
-#include <QDebug>
-#include <QByteArray>
+#include <QSet>
+#include <QStringList>
 
 #include <kcatalog_p.h>
 
@@ -119,6 +122,27 @@ QString KCatalog::catalogLocaleDir(const QByteArray &domain,
         localeDir = QFileInfo(file.left(file.size() - relpath.size())).absolutePath();
     }
     return localeDir;
+}
+
+QSet<QString> KCatalog::availableCatalogLanguages(const QByteArray &domain_)
+{
+    QString domain = QFile::decodeName(domain_);
+    QStringList localeDirPaths = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation,
+                                                           QString::fromLatin1("locale"),
+                                                           QStandardPaths::LocateDirectory);
+    QSet<QString> availableLanguages;
+    foreach (const QString &localDirPath, localeDirPaths) {
+        QDir localeDir(localDirPath);
+        QStringList languages = localeDir.entryList(QDir::AllDirs);
+        foreach (const QString &language, languages) {
+            QString relPath = QString::fromLatin1("%1/LC_MESSAGES/%2.mo")
+                                                 .arg(language, domain);
+            if (localeDir.exists(relPath)) {
+                availableLanguages.insert(language);
+            }
+        }
+    }
+    return availableLanguages;
 }
 
 #ifdef Q_OS_WIN

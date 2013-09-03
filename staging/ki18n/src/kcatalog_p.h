@@ -21,6 +21,7 @@
 #ifndef KCATALOG_H
 #define KCATALOG_H
 
+#include <QtCore/QSet>
 #include <QtCore/QString>
 #include <QtCore/QByteArray>
 
@@ -102,15 +103,25 @@ public:
                       const QByteArray &msgid_plural, qulonglong n) const;
 
     /**
-     * Find the locale directory for the given catalog in the given language.
+     * Find the locale directory for the given domain in the given language.
      *
-     * @param name name of the catalog
+     * @param domain translation domain
      * @param language language of the catalog
      *
      * @return the locale directory if found, <tt>QByteArray()</tt> otherwise.
      */
     static QString catalogLocaleDir(const QByteArray &domain,
                                     const QString &language);
+
+    /**
+     * Find the all languages for which the translation catalog
+     * of given domain exists.
+     *
+     * @param domain translation domain
+     *
+     * @return set of language codes
+     */
+    static QSet<QString> availableCatalogLanguages(const QByteArray &domain);
 
 private:
     Q_DISABLE_COPY(KCatalog);

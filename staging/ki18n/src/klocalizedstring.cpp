@@ -1284,6 +1284,17 @@ bool KLocalizedString::isApplicationTranslatedInto(const QString &language)
            || !KCatalog::catalogLocaleDir(s->applicationDomain, language).isEmpty();
 }
 
+QSet<QString> KLocalizedString::availableApplicationTranslations()
+{
+    KLocalizedStringPrivateStatics *s = staticsKLSP();
+    QSet<QString> availableLanguages;
+    if (!s->applicationDomain.isEmpty()) {
+        availableLanguages = KCatalog::availableCatalogLanguages(s->applicationDomain);
+        availableLanguages.insert(s->codeLanguage);
+    }
+    return availableLanguages;
+}
+
 const KCatalog &KLocalizedStringPrivate::getCatalog(const QByteArray &domain,
                                                     const QString &language)
 {

@@ -23,6 +23,7 @@
 
 #include <QtCore/QChar>
 #include <QtCore/QLatin1Char>
+#include <QtCore/QSet>
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 
@@ -498,6 +499,22 @@ public:
      * \see setApplicationDomain
      */
     static bool isApplicationTranslatedInto(const QString &language);
+
+    /**
+     * @since 5.0
+     *
+     * Get the languages for which there exists the translation catalog file
+     * for the set application translation domain.
+     *
+     * The application domain is set by \c setApplicationDomain.
+     * If the application domain was not set, empty set is returned.
+     * If the application domain was set, the language set will always
+     * contain at least the source code language (<tt>en_US</tt>).
+     *
+     * \return set of language codes for existing translation catalogs
+     * \see setApplicationDomain
+     */
+    static QSet<QString> availableApplicationTranslations();
 
     /**
      * Find a path to the localized file for the given original path.
