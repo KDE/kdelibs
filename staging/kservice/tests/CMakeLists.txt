@@ -16,3 +16,5 @@ endmacro()
 kservice_executable_tests(
   startserviceby
 )
+
+add_subdirectory(pluginlocator)
