@@ -37,6 +37,7 @@ class PluginTest : public QCoreApplication
     public Q_SLOTS:
         void runMain();
         bool loadFromKService(const QString &name = "time");
+        bool loadFromMetaData(const QString &pluginName = "plasma_engine_time");
 
     private:
         PluginTestPrivate* d;

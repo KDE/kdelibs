@@ -1,6 +1,8 @@
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 remove_definitions(-DQT_NO_CAST_TO_ASCII)
 
+add_subdirectory(pluginlocator)
+
 include(ECMMarkAsTest)
 
 find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS Test)
@@ -17,4 +19,3 @@ kservice_executable_tests(
   startserviceby
 )
 
-add_subdirectory(pluginlocator)

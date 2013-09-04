@@ -22,6 +22,7 @@
 #include <QDebug>
 #include <kservice.h>
 #include <kservicetypetrader.h>
+#include <kpluginlocator.h>
 #include <kshell.h>
 
 #include <qcommandlineparser.h>
@@ -65,6 +66,7 @@ void PluginTest::runMain()
     bool ok = true;
 
     if (!loadFromKService("time")) ok = false;
+    if (!loadFromMetaData()) ok = false;
 
     cout << "Result: " << ok << endl;
 
@@ -98,5 +100,20 @@ bool PluginTest::loadFromKService(const QString &name)
 }
 
 
-//#include "moc_plugintest.cpp"
+bool PluginTest::loadFromMetaData(const QString& pluginName)
+{
+    bool ok = false;
+
+    cout << "Looking for PluginName: " << pluginName << endl;
+    const QStringList res = KPluginLocator::locatePlugin(pluginName);
+
+    foreach (const QString &r, res) {
+        cout << "  Found plugin: " << r << endl;
+    }
+    cout << "Found " << res.count() << " plugins." << endl;
+
+    return ok;
+}
+
+#include "moc_plugintest.cpp"
 
