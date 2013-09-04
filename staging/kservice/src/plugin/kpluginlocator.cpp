@@ -29,43 +29,33 @@
 #include <kplugininfo.h>
 
 
-static QTextStream cout(stdout);
-
-
 QStringList KPluginLocator::locatePlugin(const QString& name)
 {
     QPluginLoader loader;
-
     //When loading the plugin, QPluginLoader searches in the current directory and in all plugin locations specified by
     const QStringList libraryPaths = QCoreApplication::libraryPaths();
 
     QStringList files;
     Q_FOREACH (const QString& dir, libraryPaths) {
-        qDebug() << " ......" <<  files;
-        cout << " + Looking into dir: " << dir << endl;
-        //QDirIterator it(dir+"/kf5", QStringList() << "*.so", QDir::Files, QDirIterator::Subdirectories);
-        QDirIterator it(dir+"/kf5", QStringList() << name+".so", QDir::Files);
+
         //QDirIterator it(dir, QDirIterator::Subdirectories);
+        //QDirIterator it(dir, QStringList() << "*.so", QDir::Files, QDirIterator::Subdirectories);
+        //QDirIterator it(dir+"/kf5", QStringList() << name+".so", QDir::Files);
+        QDirIterator it(dir+"/kf5", QStringList() << "*.so", QDir::Files);
+
         while (it.hasNext()) {
             it.next();
             const QString _f = it.fileInfo().absoluteFilePath();
-            if (QFile::exists(_f)) {
-                cout << "    - " << _f << endl;
-                files.append(_f);
-
-                loader.setFileName(_f);
-                qDebug() << loader.metaData();
-                QVariantList argsWithMetaData;
-                argsWithMetaData << loader.metaData().toVariantMap();
-                KPluginInfo info(argsWithMetaData);
-                cout << " Plugininfo reports: " << info.name() << ", " << info.icon() << endl;
-
-            } else {
-                cout << "skip" << _f << endl;
-            }
+            files.append(_f);
+            loader.setFileName(_f);
+            //qDebug() << loader.metaData();
+            QVariantList argsWithMetaData;
+            argsWithMetaData << loader.metaData().toVariantMap();
+            KPluginInfo info(argsWithMetaData);
+            //qDebug() << " Plugininfo reports: " << info.name() << ", " << info.icon() << endl;
         }
     }
-
+    //qDebug() << "Found " << files.count();
     return files;
 }
 
