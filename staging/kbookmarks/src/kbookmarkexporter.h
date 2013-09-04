@@ -26,7 +26,7 @@
 #include <QtCore/QTextStream>
 #include <kbookmark.h>
 
-class KIO_EXPORT KBookmarkExporterBase
+class KBOOKMARKS_EXPORT KBookmarkExporterBase
 {
 public:
     KBookmarkExporterBase(KBookmarkManager* mgr, const QString & fileName)

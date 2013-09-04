@@ -20,7 +20,7 @@
 #ifndef __kbookmark_h
 #define __kbookmark_h
 
-#include <kio/kio_export.h>
+#include <kbookmarks_export.h>
 
 #include <QtCore/QString>
 #include <QtCore/QUrl>
@@ -32,7 +32,7 @@ class QMimeData;
 class KBookmarkManager;
 class KBookmarkGroup;
 
-class KIO_EXPORT KBookmark
+class KBOOKMARKS_EXPORT KBookmark
 {
     friend class KBookmarkGroup;
 public:
@@ -46,7 +46,7 @@ public:
      * @see KBookmark
      * @see QList
      */
-    class KIO_EXPORT List : public QList<KBookmark>
+    class KBOOKMARKS_EXPORT List : public QList<KBookmark>
     {
     public:
         List();
@@ -333,7 +333,7 @@ protected:
 /**
  * A group of bookmarks
  */
-class KIO_EXPORT KBookmarkGroup : public KBookmark
+class KBOOKMARKS_EXPORT KBookmarkGroup : public KBookmark
 {
 public:
     /**
@@ -441,7 +441,7 @@ private:
     // has to be implemented as an attribute of the QDomElement.
 };
 
-class KIO_EXPORT KBookmarkGroupTraverser {
+class KBOOKMARKS_EXPORT KBookmarkGroupTraverser {
 protected:
     virtual ~KBookmarkGroupTraverser();
     void traverse(const KBookmarkGroup &);

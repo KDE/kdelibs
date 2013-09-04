@@ -55,7 +55,7 @@ class KBookmarkDialog;
  * </xbel>
  * \endcode
  */
-class KIO_EXPORT KBookmarkManager : public QObject
+class KBOOKMARKS_EXPORT KBookmarkManager : public QObject
 {
     Q_OBJECT
 private:
@@ -372,7 +372,7 @@ private:
  * If you wish to use your own editor or allow the user to add
  * bookmarks, you must overload this class.
  */
-class KIO_EXPORT KBookmarkOwner
+class KBOOKMARKS_EXPORT KBookmarkOwner
 {
 public:
     virtual ~KBookmarkOwner() {}

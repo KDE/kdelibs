@@ -24,7 +24,7 @@
 #include <QtCore/QObject>
 #include <kbookmark.h>
 
-class KIO_EXPORT KBookmarkDomBuilder : public QObject {
+class KBOOKMARKS_EXPORT KBookmarkDomBuilder : public QObject {
    Q_OBJECT
 public:
    KBookmarkDomBuilder(const KBookmarkGroup &group, KBookmarkManager *);

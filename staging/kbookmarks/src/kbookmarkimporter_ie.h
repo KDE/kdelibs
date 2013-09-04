@@ -27,7 +27,7 @@
 /**
  * A class for importing IE bookmarks
  */
-class KIO_EXPORT KIEBookmarkImporterImpl : public KBookmarkImporterBase
+class KBOOKMARKS_EXPORT KIEBookmarkImporterImpl : public KBookmarkImporterBase
 {
 public:
     KIEBookmarkImporterImpl() { }
@@ -37,7 +37,7 @@ private:
     class KIEBookmarkImporterImplPrivate *d;
 };
 
-class KIO_EXPORT KIEBookmarkExporterImpl : public KBookmarkExporterBase
+class KBOOKMARKS_EXPORT KIEBookmarkExporterImpl : public KBookmarkExporterBase
 {
 public:
     KIEBookmarkExporterImpl(KBookmarkManager* mgr, const QString & path)

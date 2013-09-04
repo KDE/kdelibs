@@ -28,7 +28,7 @@
  * A class for importing NS bookmarks
  * utf8 defaults to off
  */
-class KIO_EXPORT KNSBookmarkImporterImpl : public KBookmarkImporterBase
+class KBOOKMARKS_EXPORT KNSBookmarkImporterImpl : public KBookmarkImporterBase
 {
 public:
     KNSBookmarkImporterImpl() : m_utf8(false) { }
@@ -44,7 +44,7 @@ private:
  * A class for importing Mozilla bookmarks
  * utf8 defaults to on
  */
-class KIO_EXPORT KMozillaBookmarkImporterImpl : public KNSBookmarkImporterImpl
+class KBOOKMARKS_EXPORT KMozillaBookmarkImporterImpl : public KNSBookmarkImporterImpl
 {
 public:
     KMozillaBookmarkImporterImpl() { setUtf8(true); }
@@ -52,7 +52,7 @@ private:
     class KMozillaBookmarkImporterImplPrivate *d;
 };
 
-class KIO_EXPORT KNSBookmarkExporterImpl : public KBookmarkExporterBase
+class KBOOKMARKS_EXPORT KNSBookmarkExporterImpl : public KBookmarkExporterBase
 {
 public:
     KNSBookmarkExporterImpl(KBookmarkManager* mgr, const QString & fileName)

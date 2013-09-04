@@ -35,7 +35,7 @@ class KBookmarkDialogPrivate;
  * return a KBookmarkDialog subclass and reimplement initLayout(), aboutToShow() and save().
 **/
 
-class KIO_EXPORT KBookmarkDialog : public QDialog
+class KBOOKMARKS_EXPORT KBookmarkDialog : public QDialog
 {
   Q_OBJECT
 
