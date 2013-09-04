@@ -37,7 +37,6 @@
 #include <kstandardaction.h>
 #include <kstandardshortcut.h>
 #include <kurlmimedata.h>
-#include <kiconloader.h>
 #include <lineediturldropeventfilter.h>
 
 #include <QtCore/QTimer>
