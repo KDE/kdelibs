@@ -199,7 +199,6 @@ install( FILES
  kcmoduleinit.desktop
  kdatatool.desktop
  kfileplugin.desktop
- kscan.desktop
  kurifilterplugin.desktop
  kfile/kpropertiesdialogplugin.desktop
  kfile/kiofilemodule.desktop
