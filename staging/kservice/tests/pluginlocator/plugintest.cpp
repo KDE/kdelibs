@@ -28,6 +28,7 @@
 #include <qcommandlineparser.h>
 
 #include <QDir>
+#include <QElapsedTimer>
 #include <QFileInfo>
 #include <QMap>
 #include <QStandardPaths>
@@ -62,16 +63,59 @@ PluginTest::~PluginTest()
 
 void PluginTest::runMain()
 {
+    // measure performance
+    QElapsedTimer timer;
+    qint64 nanoSec;
+    int runs = 1;
+    QList<int> timings;
+
     cout << "-- PluginLocator Test --" << endl;
     bool ok = true;
 
-    if (!loadFromKService("time")) ok = false;
-    if (!loadFromMetaData()) ok = false;
+    timer.start();
+    for (int _i = 0; _i < runs; _i++) {
+        timer.restart();
+        if (!loadFromKService("time")) ok = false;
+        timings << timer.nsecsElapsed();
+    }
+    report(timings, "KServiceTrader Querying");
 
-    cout << "Result: " << ok << endl;
+    timings.clear();
 
-    exit(!ok);
+    for (int _i = 0; _i < runs; _i++) {
+        timer.restart();
+        if (!loadFromMetaData()) ok = false;
+        timings << timer.nsecsElapsed();
+    }
+
+    report(timings, "Metadata Querying");
+
+    if (ok) {
+        cout << "All tests finished successfully";
+        exit(0);
+    }
+    exit(1);
 }
+
+void PluginTest::report(QList< int > timings, const QString& msg)
+{
+    int i = 0;
+    qulonglong totalTime = 0;
+
+    int unitDiv = 1000;
+    QString unit = "microsec";
+
+    foreach (int t, timings) {
+        //int msec = t/1000;
+        //cout << "  Run " << i << ": " << msec << " microsec\n";
+        totalTime += t;
+
+        //i++;
+    }
+    QString av = QString::number((totalTime/timings.count()/unitDiv), 'f', 1);
+    cout << " Average: " << av << " " << unit << " (" << msg << ")" << endl;
+}
+
 
 
 bool PluginTest::loadFromKService(const QString &name)
@@ -83,16 +127,16 @@ bool PluginTest::loadFromKService(const QString &name)
     QString error;
 
     if (offers.isEmpty()) {
-        qDebug() << "offers are empty for " << name << " with constraint " << constraint;
+        //qDebug() << "offers are empty for " << name << " with constraint " << constraint;
     } else {
         QVariantList allArgs;
         allArgs << offers.first()->storageId();
         const QString _n = offers.first()->property("Name").toString();
         if (!_n.isEmpty()) {
-            cout << "Found Dataengine: " << _n << endl;
+            //cout << "Found Dataengine: " << _n << endl;
             ok = true;
         } else {
-            cout << "Nothing found. " << endl;
+            //cout << "Nothing found. " << endl;
         }
     }
 
@@ -104,13 +148,15 @@ bool PluginTest::loadFromMetaData(const QString& pluginName)
 {
     bool ok = false;
 
-    cout << "Looking for PluginName: " << pluginName << endl;
+    //cout << "Looking for PluginName: " << pluginName << endl;
     const QStringList res = KPluginLocator::locatePlugin(pluginName);
 
-    foreach (const QString &r, res) {
-        cout << "  Found plugin: " << r << endl;
-    }
-    cout << "Found " << res.count() << " plugins." << endl;
+//     foreach (const QString &r, res) {
+//         //ok = true;
+//         //cout << "  Found plugin: " << r << endl;
+//     }
+    //cout << "Found " << res.count() << " plugins." << endl;
+    ok = res.count() > 0;
 
     return ok;
 }
