@@ -225,7 +225,7 @@ A script is available in kdesdk/kde-dev-scripts/kf5/convert-kstandarddirs.pl to 
    mime-&gt;name() == KMimeType::defaultMimeType() -&gt; mime.isDefault()
    mime.allParentMimeTypes() -&gt; mime.allAncestors()
    KMimeType::extractKnownExtension(fileName) -&gt; db.suffixForFileName(fileName)
-   KMimeType::iconNameForUrl(url) has additional logic on top of db.mimeTypeForUrl(url).iconName(), to
+   KMimeType::iconNameForUrl(url) became KIO::iconNameForUrl(url) and has additional logic on top of db.mimeTypeForUrl(url).iconName(), to
       fallback to the protocol-specific icon (e.g. trash icon for trash:/, etc.). This logic has now
      moved to KIO::iconNameForUrl.
    KMimeType::patterns() -&gt; QMimeType::globPatterns()
