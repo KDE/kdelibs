@@ -65,9 +65,8 @@ void PluginTest::runMain()
 {
     // measure performance
     QElapsedTimer timer;
-    qint64 nanoSec;
     int runs = 20;
-    QList<int> timings;
+    QList<qint64> timings;
 
     cout << "-- PluginLocator Test --" << endl;
     bool ok = true;
@@ -97,9 +96,8 @@ void PluginTest::runMain()
     exit(1);
 }
 
-void PluginTest::report(QList< int > timings, const QString& msg)
+void PluginTest::report(QList<qint64> timings, const QString& msg)
 {
-    int i = 0;
     qulonglong totalTime = 0;
 
     int unitDiv = 1000;

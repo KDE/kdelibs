@@ -38,7 +38,7 @@ class PluginTest : public QCoreApplication
         void runMain();
         bool loadFromKService(const QString &name = "time");
         bool loadFromMetaData(const QString &pluginName = "plasma_engine_time");
-        void report(QList<int> timings, const QString &msg = "Test took ");
+        void report(QList<qint64> timings, const QString &msg = "Test took ");
 
     private:
         PluginTestPrivate* d;
