@@ -66,7 +66,7 @@ void PluginTest::runMain()
     // measure performance
     QElapsedTimer timer;
     qint64 nanoSec;
-    int runs = 1;
+    int runs = 20;
     QList<int> timings;
 
     cout << "-- PluginLocator Test --" << endl;
@@ -78,7 +78,7 @@ void PluginTest::runMain()
         if (!loadFromKService("time")) ok = false;
         timings << timer.nsecsElapsed();
     }
-    report(timings, "KServiceTrader Querying");
+    report(timings, "KServiceTypeTrader");
 
     timings.clear();
 
@@ -88,7 +88,7 @@ void PluginTest::runMain()
         timings << timer.nsecsElapsed();
     }
 
-    report(timings, "Metadata Querying");
+    report(timings, "Metadata");
 
     if (ok) {
         cout << "All tests finished successfully";
