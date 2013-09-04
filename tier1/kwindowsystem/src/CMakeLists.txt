@@ -1,6 +1,6 @@
 
 find_package(X11)
-find_package(XCB)
+find_package(XCB COMPONENTS XCB KEYSYMS)
 
 if (X11_FOUND)
    set (HAVE_X11 1)
@@ -38,7 +38,7 @@ endif()
 set(platformLinkLibraries)
 
 if (HAVE_X11)
-   set(platformLinkLibraries Qt5::X11Extras ${X11_LIBRARIES} ${X11_Xfixes_LIB} ${X11_Xrender_LIB} ${XCB_XCB_LIBRARIES} ${XCB_KEYSYMS_LIBRARIES})
+   set(platformLinkLibraries Qt5::X11Extras ${X11_LIBRARIES} ${X11_Xfixes_LIB} ${X11_Xrender_LIB} ${XCB_XCB_LIBRARY} ${XCB_KEYSYMS_LIBRARY})
    set(kwindowsystem_SRCS ${kwindowsystem_SRCS} kkeyserver_x11.cpp
                                                 kwindowsystem_x11.cpp
                                                 kwindowinfo_x11.cpp
