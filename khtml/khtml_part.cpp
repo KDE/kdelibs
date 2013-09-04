@@ -662,12 +662,12 @@ void KHTMLPartPrivate::executeAnchorJump( const KUrl& url, bool lockHistory )
 bool KHTMLPart::openUrl( const KUrl &url )
 {
   kDebug( 6050 ) << this << "opening" << url;
-
+#ifndef KHTML_NO_WALLET
   // Wallet forms are per page, so clear it when loading a different page if we
   // are not an iframe (because we store walletforms only on the topmost part).
   if(!parentPart())
     d->m_walletForms.clear();
-
+#endif
   d->m_redirectionTimer.stop();
 
   // check to see if this is an "error://" URL. This is caused when an error
