@@ -24,7 +24,7 @@ configure_file(
 add_library(KCrash ${kcrash_SRCS})
 generate_export_header(KCrash)
 
-target_link_libraries(KCrash LINK_PUBLIC Qt5::Core)
+target_link_libraries(KCrash LINK_PUBLIC Qt5::Core Qt5::Gui)
 target_link_libraries(KCrash LINK_PRIVATE ${KCoreAddons_LIBRARIES} ${KWindowSystem_LIBRARIES} )
 
 
