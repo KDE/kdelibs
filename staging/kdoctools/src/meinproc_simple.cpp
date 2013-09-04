@@ -48,7 +48,7 @@ int main(int argc, char **argv) {
     const QString srcDir = arguments[1];
     const QString xmllintPath = arguments[2];
     const QString checkFilename = arguments[3];
-    const QString customizationCatalog = srcDir + "/customization/catalog.xml";
+    const QString customizationCatalog = srcDir + QStringLiteral("/customization/catalog.xml");
     
     if ( checkFile( checkFilename ) != CheckFileSuccess )
     {
@@ -83,7 +83,7 @@ int main(int argc, char **argv) {
     QVector<const char *> params;
     params.append( NULL );
 
-    const QString tss = srcDir + "/customization/kde-chunk.xsl";
+    const QString tss = srcDir + QStringLiteral("/customization/kde-chunk.xsl");
     QString output = transform(checkFilename , tss, params);
     if (output.isEmpty()) {
         fprintf(stderr, "unable to parse %s\n", checkFilename.toLocal8Bit().constData());

@@ -38,7 +38,7 @@ int writeToQString(void * context, const char * buffer, int len)
 
 int closeQString(void * context) {
     QString *t = (QString*)context;
-    *t += '\n';
+    *t += QLatin1Char('\n');
     return 0;
 }
 
@@ -180,7 +180,7 @@ QString transform( const QString &pat, const QString& tss,
     xsltFreeStylesheet(style_sheet);
 
     if (parsed.isEmpty())
-	parsed = ' '; // avoid error message
+        parsed = QLatin1Char(' '); // avoid error message
     return parsed;
 }
 
@@ -222,15 +222,15 @@ xmlParserInputPtr meinExternalEntityLoader(const char *URL, const char *ID,
 QString splitOut(const QString &parsed, int index)
 {
     int start_index = index + 1;
-    while (parsed.at(start_index - 1) != '>') start_index++;
+    while (parsed.at(start_index - 1) != QLatin1Char('>')) start_index++;
 
     int inside = 0;
 
     QString filedata;
 
     while (true) {
-        int endindex = parsed.indexOf("</FILENAME>", index);
-        int startindex = parsed.indexOf("<FILENAME ", index) + 1;
+        int endindex = parsed.indexOf(QStringLiteral("</FILENAME>"), index);
+        int startindex = parsed.indexOf(QStringLiteral("<FILENAME "), index) + 1;
 
 //        //qDebug() << "FILENAME " << startindex << " " << endindex << " " << inside << " " << parsed.mid(startindex + 18, 15)<< " " << parsed.length();
 
@@ -255,11 +255,11 @@ QString splitOut(const QString &parsed, int index)
 
     }
 
-    index = filedata.indexOf("<FILENAME ");
+    index = filedata.indexOf(QStringLiteral("<FILENAME "));
 
     if (index > 0) {
-        int endindex = filedata.lastIndexOf("</FILENAME>");
-        while (filedata.at(endindex) != '>') endindex++;
+        int endindex = filedata.lastIndexOf(QStringLiteral("</FILENAME>"));
+        while (filedata.at(endindex) != QLatin1Char('>')) endindex++;
         endindex++;
         filedata = filedata.left(index) + filedata.mid(endindex);
     }
@@ -328,10 +328,10 @@ void replaceCharsetHeader( QString &output )
         output.replace( QString( "<?xml version=\"1.0\"?>" ),
                         QString( "<?xml version=\"1.0\" encoding=\"%1\"?>").arg( name ) );
 #else
-    name = QTextCodec::codecForLocale()->name();
-    name.replace( QString( "ISO " ), "iso-" );
-    output.replace( QString( "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">" ),
-                    QString( "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=%1\">" ).arg( name ) );
+    name = QLatin1String(QTextCodec::codecForLocale()->name());
+    name.replace( QStringLiteral( "ISO " ), QStringLiteral("iso-") );
+    output.replace( QStringLiteral( "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">" ),
+                    QStringLiteral( "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=%1\">" ).arg( name ) );
 #endif
 }
 
@@ -348,9 +348,9 @@ void setupStandardDirs(const QString &srcdir)
     QByteArray catalogs;
 
     if ( srcdir.isEmpty() ) {
-        catalogs += QUrl::fromLocalFile(QStandardPaths::locate(QStandardPaths::GenericDataLocation, "ksgmltools2customization/catalog.xml")).toEncoded();
+        catalogs += QUrl::fromLocalFile(QStandardPaths::locate(QStandardPaths::GenericDataLocation, QStringLiteral("ksgmltools2customization/catalog.xml"))).toEncoded();
     } else {
-        catalogs += QUrl::fromLocalFile( srcdir +"/customization/catalog.xml" ).toEncoded();
+        catalogs += QUrl::fromLocalFile( srcdir + QStringLiteral("/customization/catalog.xml") ).toEncoded();
         s_dtdDirs()->srcdir = srcdir;
     }
 
@@ -366,10 +366,10 @@ QString locateFileInDtdResource(const QString& file)
 
     const QString srcdir = s_dtdDirs()->srcdir;
     if (!srcdir.isEmpty()) {
-        const QString test = srcdir + '/' + file;
+        const QString test = srcdir + QLatin1Char('/') + file;
         if (QFile::exists(test))
             return test;
         return QString();
     }
-    return QStandardPaths::locate(QStandardPaths::GenericDataLocation, "ksgmltools2/" + file);
+    return QStandardPaths::locate(QStandardPaths::GenericDataLocation, QStringLiteral("ksgmltools2/") + file);
 }

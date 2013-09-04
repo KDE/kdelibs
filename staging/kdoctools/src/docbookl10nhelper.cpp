@@ -48,20 +48,20 @@ int writeLangFile( const QString &fname, const QString &dtdPath,
 
    QFile outFile( fname );
    if ( ! outFile.open( QIODevice::WriteOnly ) ) {
-      qCritical() << QString( "Could not write %1" )
+      qCritical() << QStringLiteral( "Could not write %1" )
                      .arg( outFile.fileName() );
       return( 1 );
    }
 
    QTextStream outStream( &outFile );
    outStream << "<?xml version='1.0'?>" << endl;
-   outStream << QString( "<!DOCTYPE l:i18n SYSTEM \"%1\" [" )
+   outStream << QStringLiteral( "<!DOCTYPE l:i18n SYSTEM \"%1\" [" )
                .arg( dtdPath ) << endl;
 
    LangListType::const_iterator i = langMap.constBegin();
    while ( i != langMap.constEnd() ) {
       //qDebug() << (*i).first << ": " << (*i).second;
-      outStream << QString( "<!ENTITY %1 SYSTEM \"%2\">" )
+      outStream << QStringLiteral( "<!ENTITY %1 SYSTEM \"%2\">" )
                    .arg( (*i).first ).arg( (*i).second ) << endl;
       ++i;
    }
@@ -73,7 +73,7 @@ int writeLangFile( const QString &fname, const QString &dtdPath,
          << endl;
       i = langMap.constBegin();
       while ( i != langMap.constEnd() ) {
-         outStream << QString( "&%1;" )
+         outStream << QStringLiteral( "&%1;" )
                       .arg( (*i).first ) << endl;
          ++i;
       }
@@ -90,14 +90,14 @@ int writeLangFileNew( const QString &fname, const QString &dtdPath,
 
    QFile outFile( fname );
    if ( ! outFile.open( QIODevice::WriteOnly ) ) {
-      qCritical() << QString( "Could not write %1" )
+      qCritical() << QStringLiteral( "Could not write %1" )
                      .arg( outFile.fileName() );
       return( 1 );
    }
 
    QTextStream outStream( &outFile );
    outStream << "<?xml version='1.0'?>" << endl;
-   outStream << QString( "<!DOCTYPE l:i18n SYSTEM \"%1\">" )
+   outStream << QStringLiteral( "<!DOCTYPE l:i18n SYSTEM \"%1\">" )
                .arg( dtdPath ) << endl;
 
    if ( langMap.size() > 0 ) {
@@ -106,7 +106,7 @@ int writeLangFileNew( const QString &fname, const QString &dtdPath,
          << endl;
       LangListType::const_iterator i = langMap.constBegin();
       while ( i != langMap.constEnd() ) {
-         outStream << QString( "<l:l10n language=\"%1\" href=\"%2\"/>" )
+         outStream << QStringLiteral( "<l:l10n language=\"%1\" href=\"%2\"/>" )
                       .arg( (*i).first ).arg( (*i).second ) << endl;
          ++i;
       }
@@ -119,7 +119,7 @@ int writeLangFileNew( const QString &fname, const QString &dtdPath,
 }
 
 inline const QString addTrailingSlash( const QString &p ) {
-   return p.endsWith( "/" ) ? p : p + "/";
+    return p.endsWith( QStringLiteral("/") ) ? p : p + QStringLiteral("/");
 }
 
 int main( int argc, char **argv ) {
@@ -135,25 +135,25 @@ int main( int argc, char **argv ) {
    const QString l10nCustomDir = addTrailingSlash( arguments[2] );
    const QString destDir = addTrailingSlash( arguments[3] );
 
-   QFile i18nFile( l10nDir + "common/l10n.xml" );
+   QFile i18nFile( l10nDir + QStringLiteral("common/l10n.xml") );
 
    if ( ! i18nFile.open( QIODevice::ReadOnly ) ) {
       qCritical() << i18nFile.fileName() << " not found";
       return( 1 );
    }
 
-   const QString all10nFName = destDir + "all-l10n.xml";
-   const QString customl10nFName = destDir + "kde-custom-l10n.xml";
+   const QString all10nFName = destDir + QStringLiteral("all-l10n.xml");
+   const QString customl10nFName = destDir + QStringLiteral("kde-custom-l10n.xml");
 
    /*
     * for each language defined in the original l10n.xml, copy
     * it into all-l10n.xml and store it in a list;
     **/
    QRegExp rxEntity, rxEntity2, rxDocType, rxDocType2;
-   rxDocType.setPattern("^\\s*<!DOCTYPE\\s+l:i18n\\s+SYSTEM\\s+\"l10n\\.dtd\"\\s+\\[\\s*$");
-   rxDocType2.setPattern("^\\s*<!DOCTYPE\\s+l:i18n\\s+SYSTEM\\s+\"l10n\\.dtd\"\\s*>$");
-   rxEntity.setPattern("^\\s*<!ENTITY\\s+([^\\s]+)\\s+SYSTEM\\s+\"([^\\s]+)\">\\s*$");
-   rxEntity2.setPattern("^\\s*<l:l10n language=\"([^\\s]+)\"\\s+href=\"([^\\s]+)\"/>\\s*$");
+   rxDocType.setPattern(QStringLiteral("^\\s*<!DOCTYPE\\s+l:i18n\\s+SYSTEM\\s+\"l10n\\.dtd\"\\s+\\[\\s*$"));
+   rxDocType2.setPattern(QStringLiteral("^\\s*<!DOCTYPE\\s+l:i18n\\s+SYSTEM\\s+\"l10n\\.dtd\"\\s*>$"));
+   rxEntity.setPattern(QStringLiteral("^\\s*<!ENTITY\\s+([^\\s]+)\\s+SYSTEM\\s+\"([^\\s]+)\">\\s*$"));
+   rxEntity2.setPattern(QStringLiteral("^\\s*<l:l10n language=\"([^\\s]+)\"\\s+href=\"([^\\s]+)\"/>\\s*$"));
    QTextStream inStream( &i18nFile );
    int parsingState = 0;
 
@@ -179,13 +179,13 @@ int main( int argc, char **argv ) {
          if ( rxEntity.indexIn( line ) != -1 && !foundRxEntity2 ) {
             foundRxEntity = true;
             langCode = rxEntity.cap( 1 );
-            langFile = l10nDir + "common/" + rxEntity.cap( 2 );
+            langFile = l10nDir + QStringLiteral("common/") + rxEntity.cap( 2 );
             allLangs += qMakePair( langCode, langFile );
             //qDebug() << langCode << " - " << langFile;
          } else if ( rxEntity2.indexIn( line ) != -1  && !foundRxEntity ) {
             foundRxEntity2 = true;
             langCode = rxEntity2.cap( 1 );
-            langFile = l10nDir + "common/" + rxEntity2.cap( 2 );
+            langFile = l10nDir + QStringLiteral("common/") + rxEntity2.cap( 2 );
             allLangs += qMakePair( langCode, langFile );
             //qDebug() << langCode << " - " << langFile;
          }
@@ -199,15 +199,15 @@ int main( int argc, char **argv ) {
    QDir outDir( l10nCustomDir );
 
    QStringList dirFileFilters;
-   dirFileFilters << "*.xml";
+   dirFileFilters << QStringLiteral("*.xml");
    QStringList customLangFiles = outDir.entryList( dirFileFilters,
                            QDir::Files|QDir::NoSymLinks, QDir::Name );
    /* the following two calls to removeOne should not be needed, as
     * the customization directory from the sources should not contain
     * those files
     */
-   customLangFiles.removeOne( "all-l10n.xml" );
-   customLangFiles.removeOne( "kde-custom-l10n.xml" );
+   customLangFiles.removeOne( QStringLiteral("all-l10n.xml") );
+   customLangFiles.removeOne( QStringLiteral("kde-custom-l10n.xml") );
    //qDebug() << "customLangFiles:" << customLangFiles;
 
    /*
@@ -236,10 +236,10 @@ int main( int argc, char **argv ) {
 
    if ( foundRxEntity ) {
       /* old style (docbook-xsl<=1.75) */
-      res = writeLangFile( all10nFName, l10nDir + "common/l10n.dtd",
+      res = writeLangFile( all10nFName, l10nDir + QStringLiteral("common/l10n.dtd"),
                            allLangs );
    } else {
-      res = writeLangFileNew( all10nFName, l10nDir + "common/l10n.dtd",
+       res = writeLangFileNew( all10nFName, l10nDir + QStringLiteral("common/l10n.dtd"),
                               allLangs );
    }
 
