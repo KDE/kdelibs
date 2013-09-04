@@ -91,10 +91,6 @@ public:
     ~KStyle();
 
     /**
-     * Returns the default widget style.
-     */
-    static QString defaultStyle();
-    /**
      * Runtime element extension
      * This is just convenience and does /not/ require the using widgets style to inherit KStyle
      * (i.e. calling this while using cleanlooks won't segfault or so but just return 0)
@@ -157,7 +153,7 @@ protected:
     StyleHint newStyleHint(const QString &element);
     ControlElement newControlElement(const QString &element);
     SubElement newSubElement(const QString &element);
-    
+
     /** @name Helper Methods
     * These are methods helping with QRect handling, for example.
     */
@@ -429,7 +425,7 @@ protected:
         WT_Limit = 0xFFFF ///< For enum extensibility
     };
 
-                
+
     /**
      These constants describe how to access various fields of a margin property.
      For example, to set an additional top margin of 2 pixels, use
@@ -1499,86 +1495,11 @@ protected:
     virtual int widgetLayoutProp(WidgetType widgetType, int metric,
                                  const QStyleOption* opt = 0, const QWidget* w = 0) const;
 
-    /**
-     * @brief Draws primitives which are used inside KStyle.
-     *
-     * KStyle implements various elements of QStyle::ComplexControl
-     * and QStyle::ControlElement for convenience. Usually complex drawing is
-     * split into smaller pieces, which can be text, icons, or other KStyle primitives.
-     * These are painted by this method.
-     *
-     * Common Qt option parameters are unpacked for convenience, and information
-     * from KStyle are passed as a KStyleOption.
-     *
-     * @note This method is not meant to be accessible from outside KStyle.
-     * @note You should make sure to use the @p r parameter for the rectangle,
-     * since the QStyleOption is generally unaltered from the original request,
-     * even if layout indicates a different painting rectangle.
-     *
-     * @param widgetType the widget context in which this call is happening in
-     * @param primitive the primitive which should be called. Primitives from the Generic
-     * struct are not directly coupled to the @p widgetType , other primitives are usually
-     * defined in the struct corresponding to the widget type.
-     * @param opt Qt option parameters
-     * @param r parameter for the rectangle
-     * @param pal the palette extracted from @p opt for convenience
-     * @param flags state flags extracted from @p opt for convenience
-     * @param p used to draw the primitive
-     * @param widget the widget which is painted on
-     * @param kOpt information passed from KStyle
-     */
-    virtual void drawKStylePrimitive(WidgetType widgetType, int primitive, 
-                                     const QStyleOption* opt,
-                                     const QRect &r, const QPalette &pal,
-                                     State flags, QPainter* p,
-                                     const QWidget* widget = 0,
-                                     Option* kOpt    = 0) const;
 private:
-    ///Should we use a side text here?
-    bool useSideText(const QStyleOptionProgressBar* opt)     const;
-    int  sideTextWidth(const QStyleOptionProgressBar* pbOpt) const;
-
-    ///Returns true if the tab is vertical
-    bool isVerticalTab (const QStyleOptionTab* tbOpt) const;
-
-    ///Returns true if the tab has reflected layout
-    bool isReflectedTab(const QStyleOptionTab* tbOpt) const;
-
-    enum Side
-    {
-        North,
-        East,
-        West,
-        South
-    };
-
-    Side tabSide(const QStyleOptionTab* tbOpt) const;
-
-    ///Returns the tab rectangle adjusted for the tab direction
-    QRect marginAdjustedTab(const QStyleOptionTab* tbOpt, int property) const;
-
-    ///Wrapper around visualRect for easier use
-    QRect  handleRTL(const QStyleOption* opt, const QRect& subRect) const;
-    QPoint handleRTL(const QStyleOption* opt, const QPoint& pos)    const;
 
     ///Storage for metrics/flags
     QVector<QVector<int> > metrics;
     
-    ///Expands out the dimension to make sure it incorporates the margins
-    QSize expandDim(const QSize& orig, WidgetType widget, int baseMarginMetric, const QStyleOption* opt, const QWidget* w, bool rotated = false) const;
-    
-    ///Calculates the contents rectangle by subtracting out the appropriate margins
-    ///from the outside
-    QRect insideMargin(const QRect &orig, WidgetType widget, int baseMarginMetric, const QStyleOption* opt, const QWidget* w) const;
-
-    ///Internal subrect calculations, for e.g. scrollbar arrows,
-    ///where we fake our output to get Qt to do what we want
-    QRect internalSubControlRect (ComplexControl control, const QStyleOptionComplex* opt,
-                                                    SubControl subControl, const QWidget* w) const;
-
-    // fitt's law label support: QLabel focusing its buddy widget
-    const QObject *clickedLabel;
-
     template<typename T>
     static T extractOptionHelper(T*);
 
@@ -1591,40 +1512,16 @@ public:
  * the implementation from QCommonStyle.
  */
 //@{
-    void drawControl      (ControlElement   elem, const QStyleOption* opt, QPainter* p, const QWidget* w) const;
-    void drawPrimitive    (PrimitiveElement elem, const QStyleOption* opt, QPainter* p, const QWidget* w) const;
     int  pixelMetric      (PixelMetric    metric, const QStyleOption* opt = 0, const QWidget* w = 0) const;
-    QRect subElementRect  (SubElement    subRect, const QStyleOption* opt, const QWidget* w) const;
-    QSize sizeFromContents(ContentsType     type, const QStyleOption* opt,
-                                                const QSize& contentsSize, const QWidget* w) const;
     int   styleHint       (StyleHint        hint, const QStyleOption* opt, const QWidget* w,
                                                                QStyleHintReturn* returnData) const;
-    QRect subControlRect (ComplexControl control, const QStyleOptionComplex* opt,
-                                                    SubControl subControl, const QWidget* w) const;
-    SubControl hitTestComplexControl(ComplexControl cc, const QStyleOptionComplex* opt,
-                                             const QPoint& pt, const QWidget* w) const;
-    void       drawComplexControl   (ComplexControl cc, const QStyleOptionComplex* opt,
-                                             QPainter *p,      const QWidget* w) const;
 
     void polish(QWidget *);
     void unpolish(QWidget *);
     void polish(QApplication *);
     void unpolish(QApplication *);
     void polish(QPalette &);
-    QRect itemTextRect(const QFontMetrics &fm, const QRect &r,
-                           int flags, bool enabled,
-                           const QString &text) const;
-    QRect itemPixmapRect(const QRect &r, int flags, const QPixmap &pixmap) const;
-    void drawItemText(QPainter *painter, const QRect &rect,
-                              int flags, const QPalette &pal, bool enabled,
-                              const QString &text, QPalette::ColorRole textRole = QPalette::NoRole) const;
-    void drawItemPixmap(QPainter *painter, const QRect &rect,
-                                int alignment, const QPixmap &pixmap) const;
     QPalette standardPalette() const;
-    QPixmap standardPixmap(StandardPixmap standardPixmap, const QStyleOption *opt,
-                                   const QWidget *widget = 0) const; //### kde5 remove
-    QPixmap generatedIconPixmap(QIcon::Mode iconMode, const QPixmap &pixmap,
-                                   const QStyleOption *opt) const;
     bool eventFilter(QObject *, QEvent *);
 
     int layoutSpacing(QSizePolicy::ControlType control1,
