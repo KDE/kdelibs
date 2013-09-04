@@ -48,8 +48,6 @@
 #include <QStyleOption>
 #include <QToolTip>
 
-#include <config-kcompletion.h>
-
 class KLineEditStyle;
 
 class KLineEditPrivate
@@ -323,12 +321,10 @@ void KLineEdit::updateClearButtonIcon(const QString& text)
 
     // set proper icon if necessary
     if (d->clearButton->pixmap().isNull()) {
-        const int clearButtonState = KIconLoader::DefaultState;
-        if (layoutDirection() == Qt::LeftToRight) {
-            d->clearButton->setPixmap(SmallIcon("edit-clear-locationbar-rtl", 0, clearButtonState));
-        } else {
-            d->clearButton->setPixmap(SmallIcon("edit-clear-locationbar-ltr", 0, clearButtonState));
-        }
+        QString iconName = layoutDirection() == Qt::LeftToRight ? "edit-clear-locationbar-rtl": "edit-clear-locationbar-ltr";
+
+        int size = d->clearButton->style()->pixelMetric(QStyle::PM_SmallIconSize, 0, this);
+        d->clearButton->setPixmap(QIcon::fromTheme(iconName).pixmap(size, size));
     }
 
     // trigger animation
@@ -1493,10 +1489,8 @@ bool KLineEditPrivate::overrideShortcut(const QKeyEvent* e)
     else if (e->matches(QKeySequence::SelectAll)) {
         return true;
     }
-#if HAVE_X11
-    else if (key == Qt::CTRL + Qt::Key_E || key == Qt::CTRL + Qt::Key_U)
+    else if (qApp->platformName() == "xcb" && (key == Qt::CTRL + Qt::Key_E || key == Qt::CTRL + Qt::Key_U))
         return true;
-#endif
 
     if (completionBox && completionBox->isVisible ())
     {
