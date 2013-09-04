@@ -5,7 +5,7 @@ project(KCrash)
 find_package(ECM 0.0.8 REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
-find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS Gui Widgets)
+find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS Widgets)
 find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs KCoreAddons KWindowSystem)
 
 include(FeatureSummary)
