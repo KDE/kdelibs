@@ -78,7 +78,7 @@ set_source_files_properties(xslt.cpp PROPERTIES COMPILE_FLAGS -DSIMPLE_XSLT )
 
    add_executable(meinproc5 ${meinproc_SRCS})
 
-   target_link_libraries(meinproc5 kdeqt5staging ${KArchive_LIBRARIES} ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} ${LIBXSLT_EXSLT_LIBRARIES} )
+   target_link_libraries(meinproc5 ${KArchive_LIBRARIES} ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} ${LIBXSLT_EXSLT_LIBRARIES} )
 
    add_dependencies(meinproc5 docbookl10nhelper)
 
@@ -100,7 +100,7 @@ if (NOT CMAKE_CROSSCOMPILING)
 
    add_executable(meinproc5_simple ${meinproc_qt_SRCS})
 
-   target_link_libraries(meinproc5_simple kdeqt5staging Qt5::Core ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} ${LIBXSLT_EXSLT_LIBRARIES})
+   target_link_libraries(meinproc5_simple Qt5::Core ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} ${LIBXSLT_EXSLT_LIBRARIES})
 
    add_dependencies(meinproc5_simple docbookl10nhelper)
 

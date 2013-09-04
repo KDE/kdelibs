@@ -53,9 +53,9 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules" ${ECM_MODULE_PATH})
 # RPATH handling and test settings.
 find_package(KF5 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 
-add_subdirectory( libkdeqt5staging )
-
-set(kdeqt5staging_LIBRARIES kdeqt5staging)
+# TODO KF5 remove this two lines
+#add_subdirectory( libkdeqt5staging )
+#set(kdeqt5staging_LIBRARIES kdeqt5staging)
 
 
 add_subdirectory( tier1 )

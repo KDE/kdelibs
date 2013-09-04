@@ -78,7 +78,6 @@ target_link_libraries(kdeinit_kbuildsycoca5
    KI18n
    Qt5::Xml
    Qt5::DBus
-   kdeqt5staging # QCommandLineParser
 )
 if(NOT KBUILDSYCOCA_NO_KCRASH)
    target_link_libraries(kdeinit_kbuildsycoca5 KCrash)
