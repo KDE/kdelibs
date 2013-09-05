@@ -18,7 +18,7 @@ set(kbookmarks_SRCS
 add_library(KBookmarks ${kbookmarks_SRCS})
 generate_export_header(KBookmarks)
 
-target_link_libraries(KBookmarks LINK_PUBLIC Qt5::Core Qt5::Widgets Qt5::Xml KDE4Support)
+target_link_libraries(KBookmarks LINK_PUBLIC Qt5::Core Qt5::Widgets Qt5::Xml)
 target_link_libraries(KBookmarks LINK_PRIVATE
                                         ${KCoreAddons_LIBRARIES}
                                         ${KWidgetsAddons_LIBRARIES}
