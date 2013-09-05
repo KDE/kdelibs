@@ -51,7 +51,7 @@ KPluginInfo::List KPluginLocator::query(const QString& servicetype, const QStrin
                 info.setLibraryPath(_f);
                 services.append(info);
             }
-            //qDebug() << " Plugininfo reports: " << info.name() << ", " << info.icon() << endl;
+//             qDebug() << " Plugininfo reports: " << info.name() << ", " << info.icon() << info.serviceTypes() << endl;
         }
     }
     //qDebug() << "Found " << files.count();
