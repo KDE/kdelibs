@@ -19,6 +19,7 @@
 #ifndef KPLUGINLOCATOR_H
 #define KPLUGINLOCATOR_H
 
+#include <kservice.h>
 #include <kservice_export.h>
 
 #include <QtCore/QLibrary>
@@ -36,6 +37,9 @@ class KSERVICE_EXPORT KPluginLocator
 {
 public:
     static QStringList locatePlugin(const QString &name);
+
+    static KService::List query( const QString& servicetype,
+                          const QString& constraint = QString() );
 };
 
 #endif
