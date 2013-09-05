@@ -253,8 +253,9 @@ KPropertiesDialog::KPropertiesDialog (const QUrl& _url,
 
     d->m_singleUrl = _url;
 
-    KIO::UDSEntry entry;
-    KIO::NetAccess::stat(_url, entry, parent);
+    KIO::StatJob *job = new KIO::stat(_url);
+    job->exec();
+    KIO::UDSEntry entry = job->statResult();
 
     d->m_items.append(KFileItem(entry, _url));
     d->init();
@@ -1430,8 +1431,10 @@ void KFilePropsPlugin::slotCopyFinished( KJob * job )
         // Note: The desktop ioslave does this as well, but not when
         //       the file is copied from a template.
         if ( d->m_bFromTemplate ) {
-            KIO::UDSEntry entry;
-            KIO::NetAccess::stat(properties->url(), entry, 0);
+            KIO::StatJob *job = KIO::stat(properties->url());
+            job->exec();
+            KIO::UDSEntry entry = job->statResult();
+
             KFileItem item( entry, properties->url() );
             KDesktopFile config( item.localPath() );
             KConfigGroup cg = config.desktopGroup();
