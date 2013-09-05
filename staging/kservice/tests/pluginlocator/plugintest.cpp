@@ -22,6 +22,7 @@
 #include <QDebug>
 #include <kservice.h>
 #include <kservicetypetrader.h>
+#include <kplugininfo.h>
 #include <kpluginlocator.h>
 #include <kshell.h>
 
@@ -175,7 +176,7 @@ bool PluginTest::loadFromMetaData2(const QString& serviceType)
 {
     bool ok = false;
 
-    KService::List res = KPluginLocator::query(serviceType, QString());
+    KPluginInfo::List res = KPluginLocator::query(serviceType, QString());
     cout << "Found " << res.count() << " Plugins\n";
     ok = res.count() > 0;
 
