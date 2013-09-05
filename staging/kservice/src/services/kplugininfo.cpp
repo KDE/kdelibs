@@ -56,6 +56,7 @@ class KPluginInfoPrivate : public QSharedData
         QString author;
         QString email;
         QString pluginName; // the name attribute in the .rc file
+        QString libraryPath;
         QString version;
         QString website; // URL to the website of the plugin/author
         QString category;
@@ -341,6 +342,18 @@ QString KPluginInfo::pluginName() const
 {
     KPLUGININFO_ISVALID_ASSERTION;
     return d->pluginName;
+}
+
+QString KPluginInfo::libraryPath() const
+{
+    KPLUGININFO_ISVALID_ASSERTION;
+    return d->libraryPath;
+}
+
+void KPluginInfo::setLibraryPath(const QString& filename)
+{
+    KPLUGININFO_ISVALID_ASSERTION;
+    d->libraryPath = filename;
 }
 
 QString KPluginInfo::version() const

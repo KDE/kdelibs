@@ -312,9 +312,22 @@ class KSERVICE_EXPORT KPluginInfo
         QStringList dependencies() const;
 
         /**
-         * @return A list of ServiceTypes this plugin offers.
+         * @return A list of ServiceTypes this plugin offers
+         * @since 5.0
          */
         QStringList serviceTypes() const;
+
+        /**
+         * @return The absolute path of the plugin on disk
+         * @since 5.0
+         */
+        QString libraryPath() const;
+
+        /**
+         * @arg filename The absolute path of the plugin on disk.
+         * @since 5.0
+         */
+        void setLibraryPath(const QString &filename);
 
         /**
          * @return The KService object for this plugin. You might need it if you
