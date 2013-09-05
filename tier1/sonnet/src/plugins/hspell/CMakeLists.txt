@@ -9,7 +9,7 @@ set(kspell_hspell_PART_SRCS kspell_hspellclient.cpp kspell_hspelldict.cpp )
 
 add_library(kspell_hspell MODULE ${kspell_hspell_PART_SRCS})
 
-target_link_libraries(kspell_hspell LINK_PRIVATE SonnetCore ${HSPELL_LIBRARIES})
+target_link_libraries(kspell_hspell LINK_PRIVATE SonnetCore ${HSPELL_LIBRARIES} ${ZLIB_LIBRARY})
 
 install(TARGETS kspell_hspell  DESTINATION ${PLUGIN_INSTALL_DIR}/plugins/sonnet_clients/ )
 
