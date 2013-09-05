@@ -2103,7 +2103,7 @@ void FileCopyJobPrivate::startCopyJob(const KUrl &slave_url)
     //kDebug(7007);
     KIO_ARGS << m_src << m_dest << m_permissions << (qint8) (m_flags & Overwrite);
     m_copyJob = new DirectCopyJob(slave_url, packedArgs);
-    if (m_move && m_modificationTime.isValid()) {
+    if (m_modificationTime.isValid()) {
       m_copyJob->addMetaData( "modified", m_modificationTime.toString( Qt::ISODate ) ); // #55804
     }
     q->addSubjob( m_copyJob );
@@ -2118,7 +2118,7 @@ void FileCopyJobPrivate::startRenameJob(const KUrl &slave_url)
     m_mustChmod = true;  // CMD_RENAME by itself doesn't change permissions
     KIO_ARGS << m_src << m_dest << (qint8) (m_flags & Overwrite);
     m_moveJob = SimpleJobPrivate::newJobNoUi(slave_url, CMD_RENAME, packedArgs);
-    if (m_move && m_modificationTime.isValid()) {
+    if (m_modificationTime.isValid()) {
       m_moveJob->addMetaData( "modified", m_modificationTime.toString( Qt::ISODate ) ); // #55804
     }
     q->addSubjob( m_moveJob );
