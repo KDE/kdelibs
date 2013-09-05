@@ -65,12 +65,13 @@ void PluginTest::runMain()
 {
     // measure performance
     QElapsedTimer timer;
-    int runs = 20;
+    int runs = 1;
     QList<qint64> timings;
 
     cout << "-- PluginLocator Test --" << endl;
     bool ok = true;
 
+    // KSycoca querying
     timer.start();
     for (int _i = 0; _i < runs; _i++) {
         timer.restart();
@@ -78,16 +79,27 @@ void PluginTest::runMain()
         timings << timer.nsecsElapsed();
     }
     report(timings, "KServiceTypeTrader");
-
     timings.clear();
 
+    // -- Metadata querying
     for (int _i = 0; _i < runs; _i++) {
         timer.restart();
         if (!loadFromMetaData()) ok = false;
         timings << timer.nsecsElapsed();
     }
-
     report(timings, "Metadata");
+    timings.clear();
+
+    // -- Metadata querying
+    for (int _i = 0; _i < runs; _i++) {
+        timer.restart();
+        if (!loadFromMetaData2()) ok = false;
+        timings << timer.nsecsElapsed();
+    }
+    report(timings, "Metadata");
+    timings.clear();
+
+
 
     if (ok) {
         cout << "All tests finished successfully";
@@ -158,6 +170,19 @@ bool PluginTest::loadFromMetaData(const QString& pluginName)
 
     return ok;
 }
+
+bool PluginTest::loadFromMetaData2(const QString& serviceType)
+{
+    bool ok = false;
+
+    KService::List res = KPluginLocator::query(serviceType, QString());
+    cout << "Found " << res.count() << " Plugins\n";
+    ok = res.count() > 0;
+
+    return ok;
+
+}
+
 
 #include "moc_plugintest.cpp"
 
