@@ -49,17 +49,12 @@ KJob::KJob(QObject *parent)
     : QObject(parent), d_ptr(new KJobPrivate)
 {
     d_ptr->q_ptr = this;
-    // Don't exit while this job is running
-#pragma message ("KDE5 TODO: Revert ref-counting when it is in Qt5")
-    //KGlobal::ref();
 }
 
 KJob::KJob(KJobPrivate &dd, QObject *parent)
     : QObject(parent), d_ptr(&dd)
 {
     d_ptr->q_ptr = this;
-    // Don't exit while this job is running
-    //KGlobal::ref();
 }
 
 KJob::~KJob()
@@ -71,8 +66,6 @@ KJob::~KJob()
     delete d_ptr->speedTimer;
     delete d_ptr->uiDelegate;
     delete d_ptr;
-
-    //KGlobal::deref();
 }
 
 void KJob::setUiDelegate( KJobUiDelegate *delegate )

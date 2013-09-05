@@ -24,6 +24,7 @@
 
 #include "kjob.h"
 #include <QMap>
+#include <QEventLoopLocker>
 
 class KJobUiDelegate;
 class QTimer;
@@ -52,6 +53,9 @@ public:
     QTimer *speedTimer;
     bool isAutoDelete;
     QEventLoop *eventLoop;
+    // evenLoopLocker prevents QCoreApplication from exiting when last window is
+    // closed until the job has finished running
+    QEventLoopLocker eventLoopLocker;
 
     void _k_speedTimeout();
 
