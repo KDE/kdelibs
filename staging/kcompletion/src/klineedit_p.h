@@ -181,6 +181,7 @@ public:
   KLineEditStyle(QStyle *style)
     : QProxyStyle(),
       m_overlap(0),
+      m_subStyle(style),
       m_sentinel(false)
   {
   }

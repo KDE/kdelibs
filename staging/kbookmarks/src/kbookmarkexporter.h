@@ -1,7 +1,9 @@
 //  -*- c-basic-offset:4; indent-tabs-mode:nil -*-
 // vim: set ts=4 sts=4 sw=4 et:
 /* This file is part of the KDE libraries
-   Copyright (C) 2002 Alexander Kellett <lypanov@kde.org>
+   Copyright (C) 1996-1998 Martin R. Jones <mjones@kde.org>
+   Copyright (C) 2000 David Faure <faure@kde.org>
+   Copyright (C) 2003 Alexander Kellett <lypanov@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -18,35 +20,25 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef __kbookmarkimporter_ie_h
-#define __kbookmarkimporter_ie_h
+#ifndef __kbookmarkexporter_h
+#define __kbookmarkexporter_h
 
-#include <kbookmarkimporter.h>
-#include <kbookmarkexporter.h>
+#include <QtCore/QTextStream>
+#include <kbookmark.h>
 
-/**
- * A class for importing IE bookmarks
- */
-class KIO_EXPORT KIEBookmarkImporterImpl : public KBookmarkImporterBase
+class KBOOKMARKS_EXPORT KBookmarkExporterBase
 {
 public:
-    KIEBookmarkImporterImpl() { }
-    virtual void parse();
-    virtual QString findDefaultLocation(bool forSaving = false) const;
+    KBookmarkExporterBase(KBookmarkManager* mgr, const QString & fileName)
+        : m_fileName(fileName), m_pManager(mgr)
+    {}
+    virtual ~KBookmarkExporterBase() {}
+    virtual void write(const KBookmarkGroup&) = 0;
+protected:
+    QString m_fileName;
+    KBookmarkManager* m_pManager;
 private:
-    class KIEBookmarkImporterImplPrivate *d;
-};
-
-class KIO_EXPORT KIEBookmarkExporterImpl : public KBookmarkExporterBase
-{
-public:
-    KIEBookmarkExporterImpl(KBookmarkManager* mgr, const QString & path)
-      : KBookmarkExporterBase(mgr, path)
-    { ; }
-    virtual ~KIEBookmarkExporterImpl() {}
-    virtual void write(const KBookmarkGroup&);
-private:
-    class KIEBookmarkExporterImplPrivate *d;
+    class KBookmarkExporterBasePrivate *d;
 };
 
 #endif

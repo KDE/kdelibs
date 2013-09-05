@@ -6,9 +6,9 @@ find_package(ECM 0.0.8 REQUIRED NO_MODULE)
 
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
-find_package(KF5 5.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs KCoreAddons KConfig)
+find_package(KF5 5.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 set(REQUIRED_QT_VERSION 5.2.0)
-find_package(Qt5Widgets ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE)
+find_package(Qt5Gui ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE)
 
 
 include(ECMSetupVersion)

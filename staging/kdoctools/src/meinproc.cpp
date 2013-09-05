@@ -59,7 +59,7 @@ void parseEntry(PairList &list, xmlNodePtr cur, int base)
 
         if ( cur->type == XML_TEXT_NODE ) {
             QString words = QString::fromUtf8( ( char* )cur->content );
-            const QStringList wlist = words.simplified().split( ' ',QString::SkipEmptyParts );
+            const QStringList wlist = words.simplified().split( QLatin1Char(' '), QString::SkipEmptyParts );
             for ( QStringList::ConstIterator it = wlist.begin();
                   it != wlist.end(); ++it )
             {
@@ -93,22 +93,22 @@ int main(int argc, char **argv) {
     options.add("+xml", ki18n("The file to transform"));*/
 
     QCoreApplication app( argc, argv );
-    app.setApplicationName("meinproc");
-    app.setApplicationVersion("5.0");
+    app.setApplicationName(QStringLiteral("meinproc"));
+    app.setApplicationVersion(QStringLiteral("5.0"));
 
     QCommandLineParser parser;
     parser.setApplicationDescription(QCoreApplication::translate("main", "KDE Translator for XML"));
     parser.addHelpOption();
     parser.addVersionOption();
-    parser.addOption(QCommandLineOption(QStringList() << "stylesheet", QCoreApplication::translate("main", "Stylesheet to use"), "xsl"));
-    parser.addOption(QCommandLineOption(QStringList() << "stdout", QCoreApplication::translate("main", "Output whole document to stdout")));
-    parser.addOption(QCommandLineOption(QStringList() << "o" << "output", QCoreApplication::translate("main", "Output whole document to file"), "file"));
-    parser.addOption(QCommandLineOption(QStringList() << "htdig", QCoreApplication::translate("main", "Create a ht://dig compatible index")));
-    parser.addOption(QCommandLineOption(QStringList() << "check", QCoreApplication::translate("main", "Check the document for validity")));
-    parser.addOption(QCommandLineOption(QStringList() << "cache", QCoreApplication::translate("main", "Create a cache file for the document"), "file"));
-    parser.addOption(QCommandLineOption(QStringList() << "srcdir", QCoreApplication::translate("main", "Set the srcdir, for kdelibs"), "dir"));
-    parser.addOption(QCommandLineOption(QStringList() << "param", QCoreApplication::translate("main", "Parameters to pass to the stylesheet"), "key=value"));
-    parser.addPositionalArgument("xml", QCoreApplication::translate("main", "The file to transform"));
+    parser.addOption(QCommandLineOption(QStringList() << QStringLiteral("stylesheet"), QCoreApplication::translate("main", "Stylesheet to use"), QStringLiteral("xsl")));
+    parser.addOption(QCommandLineOption(QStringList() << QStringLiteral("stdout"), QCoreApplication::translate("main", "Output whole document to stdout")));
+    parser.addOption(QCommandLineOption(QStringList() << QStringLiteral("o") << QStringLiteral("output"), QCoreApplication::translate("main", "Output whole document to file"), QStringLiteral("file")));
+    parser.addOption(QCommandLineOption(QStringList() << QStringLiteral("htdig"), QCoreApplication::translate("main", "Create a ht://dig compatible index")));
+    parser.addOption(QCommandLineOption(QStringList() << QStringLiteral("check"), QCoreApplication::translate("main", "Check the document for validity")));
+    parser.addOption(QCommandLineOption(QStringList() << QStringLiteral("cache"), QCoreApplication::translate("main", "Create a cache file for the document"), QStringLiteral("file")));
+    parser.addOption(QCommandLineOption(QStringList() << QStringLiteral("srcdir"), QCoreApplication::translate("main", "Set the srcdir, for kdelibs"), QStringLiteral("dir")));
+    parser.addOption(QCommandLineOption(QStringList() << QStringLiteral("param"), QCoreApplication::translate("main", "Parameters to pass to the stylesheet"), QStringLiteral("key=value")));
+    parser.addPositionalArgument(QStringLiteral("xml"), QCoreApplication::translate("main", "The file to transform"));
     parser.process(app);
 
     if (parser.positionalArguments().count() != 1) {
@@ -120,8 +120,8 @@ int main(int argc, char **argv) {
 
     // Need to set SRCDIR before calling setupStandardDirs
     QString srcdir;
-    if (parser.isSet("srcdir"))
-        srcdir = QDir(parser.value("srcdir")).absolutePath();
+    if (parser.isSet(QStringLiteral("srcdir")))
+        srcdir = QDir(parser.value(QStringLiteral("srcdir"))).absolutePath();
     setupStandardDirs(srcdir);
 
     LIBXML_TEST_VERSION
@@ -136,17 +136,17 @@ int main(int argc, char **argv) {
         return ( 2 );
     }
 
-    if (parser.isSet("check")) {
+    if (parser.isSet(QStringLiteral("check"))) {
 
         QByteArray catalogs;
-        catalogs += QUrl::fromLocalFile(locateFileInDtdResource("customization/catalog.xml")).toEncoded();
+        catalogs += QUrl::fromLocalFile(locateFileInDtdResource(QStringLiteral("customization/catalog.xml"))).toEncoded();
 
         QString exe;
 #if defined( XMLLINT )
-        exe = XMLLINT;
+        exe = QStringLiteral(XMLLINT);
 #endif
         if ( !QFileInfo( exe ).isExecutable() ) {
-            exe = QStandardPaths::findExecutable("xmllint");
+            exe = QStandardPaths::findExecutable(QStringLiteral("xmllint"));
         }
 
         CheckResult cr = check( checkFilename, exe, catalogs );
@@ -166,18 +166,18 @@ int main(int argc, char **argv) {
     // see libxslt/xsltEvalUserParams
     // this parameter is used only by share/apps/ksgmltools2/docbook/xsl/html/math.xsl
     // and is not supported on windows yet
-    if (parser.isSet("output")) {
+    if (parser.isSet(QStringLiteral("output"))) {
         params.append(qstrdup("outputFile"));
-        params.append(qstrdup(parser.value("output").toLocal8Bit().constData()));
+        params.append(qstrdup(parser.value(QStringLiteral("output")).toLocal8Bit().constData()));
     }
 #endif
     {
-        const QStringList paramList = parser.values("param");
+        const QStringList paramList = parser.values(QStringLiteral("param"));
         QStringList::ConstIterator it = paramList.constBegin();
         QStringList::ConstIterator end = paramList.constEnd();
         for ( ; it != end; ++it ) {
             const QString tuple = *it;
-            const int ch = tuple.indexOf( '=' );
+            const int ch = tuple.indexOf( QLatin1Char('=') );
             if ( ch == -1 ) {
                 qWarning() << "Key-Value tuple '" << tuple << "' lacks a '='!";
                 return( 2 );
@@ -188,18 +188,18 @@ int main(int argc, char **argv) {
     }
     params.append( NULL );
 
-    bool index = parser.isSet("htdig");
-    QString tss = parser.value("stylesheet");
+    bool index = parser.isSet(QStringLiteral("htdig"));
+    QString tss = parser.value(QStringLiteral("stylesheet"));
     if ( tss.isEmpty() )
-        tss =  "customization/kde-chunk.xsl";
+        tss = QStringLiteral("customization/kde-chunk.xsl");
     if ( index )
-        tss = "customization/htdig_index.xsl" ;
+        tss = QStringLiteral("customization/htdig_index.xsl");
 
     tss = locateFileInDtdResource(tss);
-    const QString cache = parser.value("cache");
-    const bool usingStdOut = parser.isSet("stdout");
-    const bool usingOutput = parser.isSet("output");
-    const QString outputOption = parser.value("output");
+    const QString cache = parser.value(QStringLiteral("cache"));
+    const bool usingStdOut = parser.isSet(QStringLiteral("stdout"));
+    const bool usingOutput = parser.isSet(QStringLiteral("output"));
+    const QString outputOption = parser.value(QStringLiteral("output"));
 
     if ( index ) {
         xsltStylesheetPtr style_sheet =

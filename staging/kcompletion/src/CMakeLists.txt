@@ -1,16 +1,5 @@
-find_package(X11)
-
-if (X11_FOUND)
-   set (HAVE_X11 1)
-else ()
-   set (HAVE_X11 0)
-endif ()
-
 remove_definitions(-DQT_NO_CAST_TO_ASCII)
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
-
-
-configure_file(config-kcompletion.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kcompletion.h )
 
 set(kcompletion_SRCS
   kcombobox.cpp
@@ -26,8 +15,12 @@ set(kcompletion_SRCS
 add_library(KCompletion ${kcompletion_SRCS})
 generate_export_header(KCompletion)
 
-target_link_libraries(KCompletion LINK_PUBLIC Qt5::Widgets)
-target_link_libraries(KCompletion LINK_PRIVATE KNotifications KCoreAddons KConfigCore KIconThemes KConfigWidgets KI18n)
+target_link_libraries(KCompletion LINK_PUBLIC Qt5::Widgets
+                                  LINK_PRIVATE KNotifications   # KHistoryComboBox and KCompletion::doBeep
+                                               KConfigCore      # KConfigGroup, used in many places
+                                               KConfigWidgets   # KStandardAction, KStandardShortcut, KCursor
+                                               KI18n            # i18n() in klineedit.cpp only
+)
 
 set_target_properties(KCompletion PROPERTIES VERSION   ${KCOMPLETION_VERSION_STRING}
                                              SOVERSION ${KCOMPLETION_SOVERSION}

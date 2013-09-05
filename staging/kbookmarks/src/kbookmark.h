@@ -20,7 +20,7 @@
 #ifndef __kbookmark_h
 #define __kbookmark_h
 
-#include <kio/kio_export.h>
+#include <kbookmarks_export.h>
 
 #include <QtCore/QString>
 #include <QtCore/QUrl>
@@ -32,7 +32,7 @@ class QMimeData;
 class KBookmarkManager;
 class KBookmarkGroup;
 
-class KIO_EXPORT KBookmark
+class KBOOKMARKS_EXPORT KBookmark
 {
     friend class KBookmarkGroup;
 public:
@@ -46,7 +46,7 @@ public:
      * @see KBookmark
      * @see QList
      */
-    class KIO_EXPORT List : public QList<KBookmark>
+    class KBOOKMARKS_EXPORT List : public QList<KBookmark>
     {
     public:
         List();
@@ -67,19 +67,6 @@ public:
          * Return the list of mimeTypes that can be decoded by fromMimeData
          */
         static QStringList mimeDataTypes();
-
-        /**
-         * Extract a list of bookmarks from the contents of @p mimeData.
-         * Decoding will fail if @p mimeData does not contain any bookmarks.
-         * @param mimeData the mime data to extract from; cannot be 0
-         * @return the list of bookmarks
-         * @note those bookmarks are valid QDomElements, but their parent QDomDocument
-         * is already deleted, do not use ownerDocument()
-         * @deprecated use fromMimeData(mimeData, doc), to avoid crashes
-         */
-#ifndef KDE_NO_DEPRECATED
-        static KIO_DEPRECATED KBookmark::List fromMimeData( const QMimeData *mimeData );
-#endif
 
         /**
          * Extract a list of bookmarks from the contents of @p mimeData.
@@ -346,7 +333,7 @@ protected:
 /**
  * A group of bookmarks
  */
-class KIO_EXPORT KBookmarkGroup : public KBookmark
+class KBOOKMARKS_EXPORT KBookmarkGroup : public KBookmark
 {
 public:
     /**
@@ -423,10 +410,6 @@ public:
      */
     bool moveBookmark( const KBookmark & bookmark, const KBookmark & after);
 
-#ifndef KDE_NO_DEPRECATED
-    KIO_DEPRECATED bool moveItem( const KBookmark & item, const KBookmark & after );
-#endif
-
     /**
      * Delete a bookmark - it has to be one of our children !
      * Don't forget to use KBookmarkManager::self()->emitChanged( parentBookmark );
@@ -458,7 +441,7 @@ private:
     // has to be implemented as an attribute of the QDomElement.
 };
 
-class KIO_EXPORT KBookmarkGroupTraverser {
+class KBOOKMARKS_EXPORT KBookmarkGroupTraverser {
 protected:
     virtual ~KBookmarkGroupTraverser();
     void traverse(const KBookmarkGroup &);

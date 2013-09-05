@@ -31,7 +31,7 @@
  * KEditBookmarks uses it to insert bookmarks into its DOM tree,
  * and KActionMenu uses it to create actions directly.
  */
-class KIO_EXPORT KBookmarkImporterBase : public QObject
+class KBOOKMARKS_EXPORT KBookmarkImporterBase : public QObject
 {
     Q_OBJECT
 public:
@@ -81,7 +81,7 @@ private:
 /**
  * A class for importing XBEL files
  */
-class KIO_EXPORT KXBELBookmarkImporterImpl : public KBookmarkImporterBase, protected KBookmarkGroupTraverser
+class KBOOKMARKS_EXPORT KXBELBookmarkImporterImpl : public KBookmarkImporterBase, protected KBookmarkGroupTraverser
 {
     Q_OBJECT
 public:

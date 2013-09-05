@@ -22,7 +22,7 @@
 #define __konqbookmarkmenu_h__
 #include "kbookmarkmenu.h"
 
-class KIO_EXPORT KonqBookmarkOwner : public KBookmarkOwner // KDE5 TODO: merge with KBookmarkOwner
+class KBOOKMARKS_EXPORT KonqBookmarkOwner : public KBookmarkOwner // KDE5 TODO: merge with KBookmarkOwner
 {
 public:
   virtual ~KonqBookmarkOwner();
@@ -30,7 +30,7 @@ public:
   virtual void openInNewWindow(const KBookmark &bm) = 0;
 };
 
-class KIO_EXPORT KonqBookmarkMenu : public KBookmarkMenu
+class KBOOKMARKS_EXPORT KonqBookmarkMenu : public KBookmarkMenu
 {
     //friend class KBookmarkBar;
   Q_OBJECT
@@ -104,7 +104,7 @@ private:
     { return static_cast<KonqBookmarkOwner *>(KBookmarkMenu::owner());}
 };
 
-class KIO_EXPORT KonqBookmarkContextMenu : public KBookmarkContextMenu
+class KBOOKMARKS_EXPORT KonqBookmarkContextMenu : public KBookmarkContextMenu
 {
   Q_OBJECT
 public:

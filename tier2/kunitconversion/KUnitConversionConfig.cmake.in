@@ -1,6 +1,6 @@
 @PACKAGE_INIT@
 
-# Any changes in this file will be overwritten by CMake.
+find_dependency(Qt5Core @REQUIRED_QT_VERSION@)
 
 set(KUnitConversion_INSTALL_PREFIX "@PACKAGE_CMAKE_INSTALL_PREFIX@")
 set_and_check(KUnitConversion_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")

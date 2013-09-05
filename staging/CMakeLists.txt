@@ -12,15 +12,15 @@ add_subdirectory(xmlgui)
 add_subdirectory(kwallet)
 add_subdirectory(ki18n) # must be before kwidgets, etc.
 add_subdirectory(kservice)
-add_subdirectory(kcrash)
 add_subdirectory(kio)
 add_subdirectory(frameworkintegration)
 
-add_subdirectory(kunitconversion)
 add_subdirectory(kinterprocesswindowing)
 add_subdirectory(kde4attic)
 add_subdirectory(kde4support)
 add_subdirectory(kemoticons)
+
+add_subdirectory(kbookmarks)
 if(NOT WINCE)
 add_subdirectory(kdoctools)
 endif(NOT WINCE)

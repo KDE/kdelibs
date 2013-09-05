@@ -1,3 +1,14 @@
+cmake_minimum_required(VERSION 2.8.11)
+
+project(KDocTools)
+
+find_package(ECM 0.0.8 REQUIRED NO_MODULE)
+
+set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
+
+find_package(KF5 5.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
+find_package(Qt5Core 5.2.0 REQUIRED NO_MODULE)
+
 find_package(LibXslt)
 set_package_properties(LibXslt PROPERTIES
                        URL "http://xmlsoft.org/XSLT"
@@ -12,17 +23,9 @@ set_package_properties(LibXml2 PROPERTIES
                        PURPOSE "Required by the KDE help system to process DocBook XML"
                       )
 
-if(NOT LIBXML2_XMLLINT_EXECUTABLE)
-  message(FATAL_ERROR "xmllint is required by the KDE help system to process DocBook XML")
-endif()
-
-include_directories( ${LIBXML2_INCLUDE_DIR} ${LIBXSLT_INCLUDE_DIR} )
 
 find_package(DocBookXML)
-set (DOCBOOKXML_VERSIONS "${DOCBOOKXML_CURRENTDTD_VERSION}")
-if (DOCBOOKXML_OLDDTD_VERSION)
-   set (DOCBOOKXML_VERSIONS "${DOCBOOKXML_VERSIONS} and ${DOCBOOKXML_OLDDTD_VERSION}")
-endif (DOCBOOKXML_OLDDTD_VERSION)
+
 set_package_properties(DocBookXML PROPERTIES DESCRIPTION "DocBook XML"
                        URL "http://www.oasis-open.org/docbook/xml/${DOCBOOKXML_CURRENTDTD_VERSION}"
                        TYPE REQUIRED
@@ -36,7 +39,9 @@ set_package_properties(DocBookXSL PROPERTIES DESCRIPTION "DocBook XSL"
                        PURPOSE "Required by the KDE help system to process DocBook XML"
                       )
 
-find_package(Qt5Core 5.2.0 REQUIRED NO_MODULE)
+
+include_directories( ${LIBXML2_INCLUDE_DIR} ${LIBXSLT_INCLUDE_DIR} )
+
 
 set (_custom_dtd_kdex "customization/dtd/kdex.dtd")
 configure_file(${_custom_dtd_kdex}.cmake ${CMAKE_CURRENT_BINARY_DIR}/${_custom_dtd_kdex} )
@@ -47,24 +52,16 @@ if(NOT WIN32)
             DESTINATION ${DATA_INSTALL_DIR}/ksgmltools2/customization/dtd )
 else(NOT WIN32)
     install(CODE
- "FILE(RELATIVE_PATH DOCBOOKXML_CURRENTDTD_DIR \${CMAKE_INSTALL_PREFIX}/${DATA_INSTALL_DIR}/ksgmltools2/customization/dtd ${DOCBOOKXML_CURRENTDTD_DIR})
-  CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/${_custom_dtd_kdex}.cmake ${CMAKE_CURRENT_BINARY_DIR}/${_custom_dtd_kdex}.install)")
+        "FILE(RELATIVE_PATH DOCBOOKXML_CURRENTDTD_DIR \${CMAKE_INSTALL_PREFIX}/${DATA_INSTALL_DIR}/ksgmltools2/customization/dtd ${DOCBOOKXML_CURRENTDTD_DIR})
+        CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/${_custom_dtd_kdex}.cmake ${CMAKE_CURRENT_BINARY_DIR}/${_custom_dtd_kdex}.install)"
+    )
     get_filename_component(_custom_dtd_kdex_name ${_custom_dtd_kdex} NAME)
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${_custom_dtd_kdex}.install DESTINATION ${DATA_INSTALL_DIR}/ksgmltools2/customization/dtd RENAME ${_custom_dtd_kdex_name})
 endif(NOT WIN32)
 
-########## next target ###############
+ADD_LIBRARY( xslt_kde STATIC xslt.cpp xslt_kde.cpp)
 
-set(xslt_PART_SRCS
-    xslt.cpp
-    xslt_kde.cpp
-)
-
-ADD_LIBRARY( xslt_kde STATIC
-    ${xslt_PART_SRCS}
-)
-
-target_link_libraries(xslt_kde Qt5::Core ${KArchive_LIBRARIES})
+target_link_libraries(xslt_kde Qt5::Core KArchive)
 
 ########### next target ###############
 
@@ -79,7 +76,7 @@ set_source_files_properties(xslt.cpp PROPERTIES COMPILE_FLAGS -DSIMPLE_XSLT )
 
    set(meinproc_SRCS meinproc.cpp meinproc_common.cpp xslt.cpp xslt_kde.cpp )
 
-   kde4_add_executable(meinproc5 NOGUI ${meinproc_SRCS})
+   add_executable(meinproc5 ${meinproc_SRCS})
 
    target_link_libraries(meinproc5 kdeqt5staging ${KArchive_LIBRARIES} ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} ${LIBXSLT_EXSLT_LIBRARIES} )
 
@@ -101,7 +98,7 @@ set_source_files_properties(xslt.cpp PROPERTIES COMPILE_FLAGS -DSIMPLE_XSLT )
 if (NOT CMAKE_CROSSCOMPILING)
    set(meinproc_qt_SRCS meinproc_simple.cpp meinproc_common.cpp xslt.cpp )
 
-   kde4_add_executable(meinproc5_simple NOGUI ${meinproc_qt_SRCS})
+   add_executable(meinproc5_simple ${meinproc_qt_SRCS})
 
    target_link_libraries(meinproc5_simple kdeqt5staging Qt5::Core ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} ${LIBXSLT_EXSLT_LIBRARIES})
 
@@ -128,9 +125,9 @@ foreach( _kdeincludexslt ${_kdeincludexslt_ALL} )
         install(FILES ${_kdeincludexslt_binarypath}
                 DESTINATION ${DATA_INSTALL_DIR}/ksgmltools2/customization )
     else(NOT WIN32)
-        install(CODE 
- "FILE(RELATIVE_PATH DOCBOOKXSL_DIR \${CMAKE_INSTALL_PREFIX}/${DATA_INSTALL_DIR}/ksgmltools2/customization ${DOCBOOKXSL_DIR})
-  CONFIGURE_FILE( ${_kdeincludexslt} ${_kdeincludexslt_binarypath}.install )")
+        install(CODE
+            "FILE(RELATIVE_PATH DOCBOOKXSL_DIR \${CMAKE_INSTALL_PREFIX}/${DATA_INSTALL_DIR}/ksgmltools2/customization ${DOCBOOKXSL_DIR})
+            CONFIGURE_FILE( ${_kdeincludexslt} ${_kdeincludexslt_binarypath}.install )")
         install(FILES ${_kdeincludexslt_binarypath}.install DESTINATION ${DATA_INSTALL_DIR}/ksgmltools2/customization RENAME ${_kdeincludexslt_out})
     endif(NOT WIN32)
 endforeach( _kdeincludexslt ${_kdeincludexslt_ALL} )
@@ -174,29 +171,28 @@ install_customize_l_dir( ${expr} customization/)
 set(customizedir af bg ca cs da de dtd el en-GB en entities eo es et fi fo fr gl he hu id it ja ko lt nds nl nn no pl pt-BR pt ro ru sk sl sr sr@latin sr@ijekavian sr@ijekavianlatin sv th tr uk wa xh xsl xx zh-CN zh-TW)
 
 foreach (_currentcustomizedir ${customizedir})
-	set(expr "customization/${_currentcustomizedir}/README")
-	install_customize_l_dir( ${expr} customization/${_currentcustomizedir})
-	set(expr "customization/${_currentcustomizedir}/*.entities")
-	install_customize_l_dir( ${expr} customization/${_currentcustomizedir})
-	set(expr "customization/${_currentcustomizedir}/*.xsl")
-	install_customize_l_dir( ${expr} customization/${_currentcustomizedir})
+    set(expr "customization/${_currentcustomizedir}/README")
+    install_customize_l_dir( ${expr} customization/${_currentcustomizedir})
+    set(expr "customization/${_currentcustomizedir}/*.entities")
+    install_customize_l_dir( ${expr} customization/${_currentcustomizedir})
+    set(expr "customization/${_currentcustomizedir}/*.xsl")
+    install_customize_l_dir( ${expr} customization/${_currentcustomizedir})
     set(expr "customization/${_currentcustomizedir}/entities/*.docbook")
-	install_customize_l_dir( ${expr} customization/${_currentcustomizedir}/entities/ )
-	set(expr "customization/${_currentcustomizedir}/entities/*.entities")
-	install_customize_l_dir( ${expr} customization/${_currentcustomizedir}/entities/ )
+    install_customize_l_dir( ${expr} customization/${_currentcustomizedir}/entities/ )
+    set(expr "customization/${_currentcustomizedir}/entities/*.entities")
+    install_customize_l_dir( ${expr} customization/${_currentcustomizedir}/entities/ )
     set(expr "customization/${_currentcustomizedir}/*.xml")
     install_customize_l_dir(${expr} customization/${_currentcustomizedir} )
-	set(expr "customization/${_currentcustomizedir}/*.dtd")
-	install_customize_l_dir(${expr} customization/${_currentcustomizedir}/)
-	set(expr "customization/${_currentcustomizedir}/*.elements")
-	install_customize_l_dir(${expr} customization/${_currentcustomizedir}/)
-
+    set(expr "customization/${_currentcustomizedir}/*.dtd")
+    install_customize_l_dir(${expr} customization/${_currentcustomizedir}/)
+    set(expr "customization/${_currentcustomizedir}/*.elements")
+    install_customize_l_dir(${expr} customization/${_currentcustomizedir}/)
 endforeach(_currentcustomizedir ${customizedir})
 
 ########### l10n xml helper ###############
 
 set( docbookl10nhelper_SRCS docbookl10nhelper.cpp )
-kde4_add_executable( docbookl10nhelper NOGUI ${docbookl10nhelper_SRCS} )
+add_executable( docbookl10nhelper ${docbookl10nhelper_SRCS} )
 target_link_libraries( docbookl10nhelper Qt5::Core )
 
 add_custom_command( TARGET docbookl10nhelper POST_BUILD

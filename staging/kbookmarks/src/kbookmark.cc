@@ -176,13 +176,6 @@ KBookmark KBookmarkGroup::createNewSeparator()
     return KBookmark(sepElem);
 }
 
-#ifndef KDE_NO_DEPRECATED
-bool KBookmarkGroup::moveItem( const KBookmark & bookmark, const KBookmark & after )
-{
-    return moveBookmark(bookmark, after);
-}
-#endif
-
 bool KBookmarkGroup::moveBookmark( const KBookmark & item, const KBookmark & after )
 {
     QDomNode n;
@@ -702,15 +695,6 @@ QStringList KBookmark::List::mimeDataTypes()
 {
     return QStringList() << ("application/x-xbel") << KUrlMimeData::mimeDataTypes();
 }
-
-#ifndef KDE_NO_DEPRECATED
-KBookmark::List KBookmark::List::fromMimeData( const QMimeData *mimeData )
-{
-    QDomDocument doc;
-    qWarning() << "Deprecated method called, with wrong lifetime of QDomDocument, will probably crash";
-    return fromMimeData(mimeData, doc);
-}
-#endif
 
 KBookmark::List KBookmark::List::fromMimeData( const QMimeData *mimeData, QDomDocument& doc )
 {

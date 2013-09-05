@@ -24,7 +24,6 @@ KIO_UNIT_TESTS(
   jobremotetest
   kurlcompletiontest
   kfileitemtest
-  kbookmarktest
   kacltest
   kdirmodeltest
   kdirlistertest
@@ -51,7 +50,6 @@ KIO_EXECUTABLE_TESTS(
   kurlrequestertest_gui
   kopenwithtest
   kfiledialogtest
-  kbookmarkdialogtest
 )
 
 if(UNIX)

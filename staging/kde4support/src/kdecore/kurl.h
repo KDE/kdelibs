@@ -467,8 +467,12 @@ public:
    */
   QString toLocalFile( AdjustPathOption trailing = LeaveTrailingSlash ) const;
 
-  /// \reimp so that KUrl u; u.setPath(path); implies "file" protocol.
-  void setPath( const QString& path );
+  /**
+   * KUrl's setPath on an empty url implies the "file" protocol.
+   * @deprecated since 5.0, use QUrl::fromLocalFile instead, for the case of local paths.
+   * Do not port to QUrl u; u.setPath(...); since that would lead to a URL without a scheme!
+   */
+  KDE4SUPPORT_DEPRECATED void setPath( const QString& path );
 
   /**
    * Test to see if this URL has a path is included in it.

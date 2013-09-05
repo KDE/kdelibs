@@ -27,7 +27,7 @@
 /**
  * A class for importing Opera bookmarks
  */
-class KIO_EXPORT KOperaBookmarkImporterImpl : public KBookmarkImporterBase
+class KBOOKMARKS_EXPORT KOperaBookmarkImporterImpl : public KBookmarkImporterBase
 {
 public:
     KOperaBookmarkImporterImpl() { }
@@ -37,7 +37,7 @@ private:
     class KOperaBookmarkImporterImplPrivate *d;
 };
 
-class KIO_EXPORT KOperaBookmarkExporterImpl : public KBookmarkExporterBase
+class KBOOKMARKS_EXPORT KOperaBookmarkExporterImpl : public KBookmarkExporterBase
 {
 public:
     KOperaBookmarkExporterImpl(KBookmarkManager* mgr, const QString & filename)

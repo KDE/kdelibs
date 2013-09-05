@@ -65,7 +65,7 @@ namespace KIO { class Job; }
  * 3) Insert your (now full) popup menu wherever you wish
  *
  */
-class KIO_EXPORT KBookmarkMenu : public QObject
+class KBOOKMARKS_EXPORT KBookmarkMenu : public QObject
 {
   Q_OBJECT
 public:
@@ -177,7 +177,7 @@ private:
   QString m_parentAddress;
 };
 
-class KIO_EXPORT KBookmarkContextMenu : public QMenu
+class KBOOKMARKS_EXPORT KBookmarkContextMenu : public QMenu
 {
     Q_OBJECT
     
@@ -214,7 +214,7 @@ private:
     KBookmarkOwner * m_pOwner;
 };
 
-class KIO_EXPORT KBookmarkActionInterface
+class KBOOKMARKS_EXPORT KBookmarkActionInterface
 {
 public:
   KBookmarkActionInterface(const KBookmark &bk);
@@ -229,7 +229,7 @@ private:
  *
  */
 
-class KIO_EXPORT KBookmarkActionMenu : public KActionMenu, public KBookmarkActionInterface
+class KBOOKMARKS_EXPORT KBookmarkActionMenu : public KActionMenu, public KBookmarkActionInterface
 {
 public:
   KBookmarkActionMenu(const KBookmark &bm, QObject *parent);
@@ -244,7 +244,7 @@ public:
  *
  */
 
-class KIO_EXPORT KBookmarkAction : public QAction, public KBookmarkActionInterface
+class KBOOKMARKS_EXPORT KBookmarkAction : public QAction, public KBookmarkActionInterface
 {
   Q_OBJECT
 public:

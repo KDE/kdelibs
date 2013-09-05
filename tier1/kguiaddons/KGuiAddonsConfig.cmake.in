@@ -2,11 +2,7 @@
 
 # Any changes in this file will be overwritten by CMake.
 
-if(NOT TARGET KF5::KConfigCore)
-   set(KConfig_NOT_FOUND_MESSAGE "KGuiAddons depends on the package KConfig, which is missing. Use find_package() to find it before KGuiAddons.")
-   set(KConfig_FOUND FALSE)
-   return()
-endif()
+find_dependency(Qt5Gui @REQUIRED_QT_VERSION@)
 
 set(KGuiAddons_INSTALL_PREFIX "@PACKAGE_CMAKE_INSTALL_PREFIX@")
 set_and_check(KGuiAddons_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")

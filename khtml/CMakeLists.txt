@@ -614,11 +614,12 @@ target_link_libraries(khtml
   KIconThemes
   KNotifications
   KDE4Support # KComponentData (TODO port to KAboutData
+  KBookmarks
 )
 if (KJS_DEBUGGER)
   target_link_libraries(khtml ktexteditor)
 endif()
-target_link_libraries(khtml LINK_INTERFACE_LIBRARIES kparts KJS kio Qt5::Widgets KI18n)
+target_link_libraries(khtml LINK_INTERFACE_LIBRARIES kparts KJS kio Qt5::Widgets KI18n KBookmarks)
 
 set_target_properties(khtml PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION}
                                        SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION}

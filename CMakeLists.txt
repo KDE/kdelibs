@@ -130,13 +130,6 @@ endif (APPLE)
 find_package(Perl)
 set_package_properties(Perl PROPERTIES URL "http://www.perl.org" TYPE REQUIRED PURPOSE "Needed for building kdelibs")
 
-find_package(ZLIB)
-set_package_properties(ZLIB PROPERTIES DESCRIPTION "Support for gzip compressed files and data streams"
-                       URL "http://www.zlib.net"
-                       TYPE REQUIRED
-                       PURPOSE "Required by the core KDE libraries and some critical kioslaves"
-                      )
-
 #optional features
 find_package(X11)
 if(X11_FOUND)

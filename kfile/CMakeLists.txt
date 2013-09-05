@@ -52,13 +52,14 @@ target_link_libraries(kfile
    XmlGui
    KNotifications
    ItemViews
+   KBookmarks
 )
 
 if(X11_Xrender_FOUND)
   target_link_libraries(kfile ${X11_Xrender_LIB} )
 endif(X11_Xrender_FOUND)
 
-target_link_libraries(kfile LINK_INTERFACE_LIBRARIES kio Qt5::Widgets ${KCoreAddons_LIBRARIES} KCompletion)
+target_link_libraries(kfile LINK_INTERFACE_LIBRARIES kio Qt5::Widgets ${KCoreAddons_LIBRARIES} KCompletion KBookmarks)
 
 set_target_properties(kfile PROPERTIES VERSION ${GENERIC_LIB_VERSION}
                                        SOVERSION ${GENERIC_LIB_SOVERSION}

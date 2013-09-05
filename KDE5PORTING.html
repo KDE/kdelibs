@@ -80,8 +80,11 @@ KDE 4.x when you want to port them to KDE Frameworks 5.<br>
 <li>KUrl has been deprecated in favour of QUrl. Warning, look at the KUrl documentation for proper porting.
 Do not just do a global search and replace, KUrl(QString) means "absolute local file or absolute url" while
 QUrl(QString) means "relative url or absolute url" (so for local files you have to use QUrl::fromLocalFile(QString),
-or if it could be local-or-remote, use QUrl::fromUserInput(QString)).
-And in particular KUrl::isParentOf means "parent or equal" while QUrl::isParentOf is strictly "parent" (see porting instructions in KUrl::isParentOf)
+or if it could be local-or-remote, use QUrl::fromUserInput(QString)). Another porting trap is that
+KUrl u; u.setPath("/tmp"); would make it file:///tmp, while QUrl u; u.setPath("/tmp"); is an incomplete URL, without
+a scheme. The correct way with QUrl is QUrl::fromLocalFile("/tmp").
+And finally KUrl::isParentOf means "parent or equal" while QUrl::isParentOf is strictly "parent" (see porting instructions in KUrl::isParentOf)
+So I repeat: do NOT just globally replace KUrl with QUrl!</li>
 <li>KUrl::upUrl is now the static method KIO::upUrl</li>
 <li>For the reason above, many signals with a KUrl have been replaced with a QUrl:
 <pre>
