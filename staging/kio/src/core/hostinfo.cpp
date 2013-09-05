@@ -157,6 +157,11 @@ namespace KIO
         QHostInfo m_hostInfo;
         int m_lookupId;
     };
+}
+
+Q_DECLARE_METATYPE(QSharedPointer<KIO::NameLookupThreadRequest>)
+
+namespace KIO {
 
     class NameLookUpThreadWorker : public QObject
     {
@@ -196,7 +201,7 @@ namespace KIO
     public:
         NameLookUpThread () : m_worker(0)
         {
-            qRegisterMetaType< QSharedPointer<NameLookupThreadRequest> > ("QSharedPointer<NameLookupThreadRequest>");
+            qRegisterMetaType< QSharedPointer<NameLookupThreadRequest> > ();
             start();
         }
 
