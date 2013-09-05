@@ -95,6 +95,7 @@ void PluginTest::runMain()
     for (int _i = 0; _i < runs; _i++) {
         timer.restart();
         if (!loadFromMetaData2()) ok = false;
+        if (!loadFromMetaData2("Plasma/ContainmentActions")) ok = false;
         timings << timer.nsecsElapsed();
     }
     report(timings, "Metadata");
@@ -157,19 +158,8 @@ bool PluginTest::loadFromKService(const QString &name)
 
 bool PluginTest::loadFromMetaData(const QString& pluginName)
 {
-    bool ok = false;
-
-    //cout << "Looking for PluginName: " << pluginName << endl;
     const QStringList res = KPluginLocator::locatePlugin(pluginName);
-
-//     foreach (const QString &r, res) {
-//         //ok = true;
-//         //cout << "  Found plugin: " << r << endl;
-//     }
-    //cout << "Found " << res.count() << " plugins." << endl;
-    ok = res.count() > 0;
-
-    return ok;
+    return res.count() > 0;
 }
 
 bool PluginTest::loadFromMetaData2(const QString& serviceType)
@@ -179,6 +169,10 @@ bool PluginTest::loadFromMetaData2(const QString& serviceType)
     KPluginInfo::List res = KPluginLocator::query(serviceType, QString());
     cout << "Found " << res.count() << " Plugins\n";
     ok = res.count() > 0;
+    foreach (const KPluginInfo &info, res) {
+        //qDebug() << "   file: " << info.libraryPath();
+
+    }
 
     return ok;
 
