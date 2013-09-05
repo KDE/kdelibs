@@ -312,6 +312,11 @@ class KSERVICE_EXPORT KPluginInfo
         QStringList dependencies() const;
 
         /**
+         * @return A list of ServiceTypes this plugin offers.
+         */
+        QStringList serviceTypes() const;
+
+        /**
          * @return The KService object for this plugin. You might need it if you
          *         want to read custom values. To do this you need to define
          *         your own servicetype and add it to the ServiceTypes keys.

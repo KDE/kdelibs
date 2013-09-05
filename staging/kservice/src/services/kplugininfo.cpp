@@ -61,6 +61,7 @@ class KPluginInfoPrivate : public QSharedData
         QString category;
         QString license;
         QStringList dependencies;
+        QStringList serviceTypes;
 
         bool hidden : 1;
         bool enabledbydefault : 1;
@@ -95,6 +96,7 @@ KPluginInfo::KPluginInfo(const QString & filename /*, QStandardPaths::StandardLo
     d->category = cg.readEntryUntranslated( "X-KDE-PluginInfo-Category" );
     d->license = cg.readEntryUntranslated( "X-KDE-PluginInfo-License" );
     d->dependencies = cg.readEntry( "X-KDE-PluginInfo-Depends", QStringList() );
+    d->serviceTypes = cg.readEntry( "X-KDE-ServiceTypes", QStringList() );
     d->enabledbydefault = cg.readEntry(
             "X-KDE-PluginInfo-EnabledByDefault", false);
 }
@@ -132,6 +134,8 @@ KPluginInfo::KPluginInfo(const QVariantList &args)
     d->category = meta.value(QStringLiteral("X-KDE-PluginInfo-Category")).toString();
     d->license = meta.value(QStringLiteral("X-KDE-PluginInfo-License")).toString();
     d->dependencies = meta.value(QStringLiteral("X-KDE-PluginInfo-Depends")).toStringList();
+    d->serviceTypes = meta.value(QStringLiteral("X-KDE-ServiceTypes")).toStringList();
+
     d->enabledbydefault = meta.value(QStringLiteral("X-KDE-PluginInfo-EnabledByDefault")).toBool();
 }
 
@@ -369,6 +373,12 @@ QStringList KPluginInfo::dependencies() const
 {
     KPLUGININFO_ISVALID_ASSERTION;
     return d->dependencies;
+}
+
+QStringList KPluginInfo::serviceTypes() const
+{
+    KPLUGININFO_ISVALID_ASSERTION;
+    return d->serviceTypes;
 }
 
 KService::Ptr KPluginInfo::service() const
