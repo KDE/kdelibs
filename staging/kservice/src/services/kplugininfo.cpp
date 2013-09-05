@@ -136,6 +136,9 @@ KPluginInfo::KPluginInfo(const QVariantList &args)
     d->license = meta.value(QStringLiteral("X-KDE-PluginInfo-License")).toString();
     d->dependencies = meta.value(QStringLiteral("X-KDE-PluginInfo-Depends")).toStringList();
     d->serviceTypes = meta.value(QStringLiteral("X-KDE-ServiceTypes")).toStringList();
+    if (d->serviceTypes.isEmpty()) {
+        d->serviceTypes = meta.value(QStringLiteral("ServiceTypes")).toStringList();
+    }
 
     d->enabledbydefault = meta.value(QStringLiteral("X-KDE-PluginInfo-EnabledByDefault")).toBool();
 }
