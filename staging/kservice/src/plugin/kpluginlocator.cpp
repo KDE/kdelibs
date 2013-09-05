@@ -28,12 +28,12 @@
 
 #include <kplugininfo.h>
 
-KService::List KPluginLocator::query(const QString& servicetype, const QString& constraint)
+KPluginInfo::List KPluginLocator::query(const QString& servicetype, const QString& constraint)
 {
     QPluginLoader loader;
     const QStringList libraryPaths = QCoreApplication::libraryPaths();
 
-    KService::List services;
+    KPluginInfo::List services;
     //QStringList files;
     Q_FOREACH (const QString& dir, libraryPaths) {
         //QDirIterator it(dir+"/kf5", QStringList() << "plasma_engine_time.so", QDir::Files);
@@ -41,15 +41,15 @@ KService::List KPluginLocator::query(const QString& servicetype, const QString& 
 
         while (it.hasNext()) {
             it.next();
-            //const QString _f = it.fileInfo().absoluteFilePath();
-            loader.setFileName(it.fileInfo().absoluteFilePath());
-            QVariantList argsWithMetaData;
-            argsWithMetaData << loader.metaData().toVariantMap();
-            const KPluginInfo info(argsWithMetaData);
+            const QString _f = it.fileInfo().absoluteFilePath();
+            loader.setFileName(_f);
+            const QVariantList argsWithMetaData = QVariantList() << loader.metaData().toVariantMap();
+            KPluginInfo info(argsWithMetaData);
 
             if (info.serviceTypes().contains(servicetype)) {
                 qDebug() << "Found plugin with " << servicetype << " : " << info.name();
-                services.append(info.service());
+                info.setLibraryPath(_f);
+                services.append(info);
             }
             //qDebug() << " Plugininfo reports: " << info.name() << ", " << info.icon() << endl;
         }
