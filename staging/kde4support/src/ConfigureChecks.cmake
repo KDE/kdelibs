@@ -19,18 +19,8 @@ set( KDELIBSUFF ${LIB_SUFFIX} )
 # checks below.
 set(CMAKE_REQUIRED_DEFINITIONS ${_KDE4_PLATFORM_DEFINITIONS})
 
-cmake_push_check_state()
-  set(CMAKE_REQUIRED_INCLUDES "${CMAKE_REQUIRED_INCLUDES};${QT_INCLUDES}")
-  if (QT_USE_FRAMEWORKS)
-    set(CMAKE_REQUIRED_FLAGS "-F${QT_LIBRARY_DIR} ")
-  endif (QT_USE_FRAMEWORKS)
-  set (CMAKE_CXX_FLAGS_SAVED "${CMAKE_CXX_FLAGS}")
-
-  # If Qt is built with reduce-relocations (The default) we need to add -fPIE here.
-  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Core_EXECUTABLE_COMPILE_FLAGS}")
-
-  set(CMAKE_REQUIRED_LIBRARIES Qt5::Network)
-  check_cxx_source_compiles(
+set(CMAKE_REQUIRED_LIBRARIES Qt5::Network)
+check_cxx_source_compiles(
 "#include <QtNetwork/QSslSocket>
 int main()
 {
@@ -38,12 +28,9 @@ int main()
     return 0;
 }" HAVE_QSSLSOCKET)
 
-  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_SAVED}")
-
-  if (NOT HAVE_QSSLSOCKET)
-     message(FATAL_ERROR "KDE Requires Qt to be built with SSL support")
-  endif (NOT HAVE_QSSLSOCKET)
-cmake_pop_check_state()
+if (NOT HAVE_QSSLSOCKET)
+   message(FATAL_ERROR "KDE Requires Qt to be built with SSL support")
+endif (NOT HAVE_QSSLSOCKET)
 
 check_include_files("sys/types.h;sys/socket.h;net/if.h" HAVE_NET_IF_H)
 check_include_files("sys/filio.h" HAVE_SYS_FILIO_H)
