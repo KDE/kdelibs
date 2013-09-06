@@ -33,6 +33,7 @@ set(kservice_SRCS
    plugin/kpluginfactory.cpp
    plugin/kpluginloader.cpp
    plugin/kpluginlocator.cpp
+   plugintrader/kplugintrader.cpp
 )
 if (WIN32)
    LIST(APPEND kservice_SRCS
@@ -55,6 +56,7 @@ set(kservice_includes
    ${CMAKE_CURRENT_SOURCE_DIR}/services
    ${CMAKE_CURRENT_SOURCE_DIR}/sycoca
    ${CMAKE_CURRENT_SOURCE_DIR}/plugin
+   ${CMAKE_CURRENT_SOURCE_DIR}/plugintrader
    ${CMAKE_CURRENT_SOURCE_DIR}/kdeinit
 )
 target_include_directories(KService PUBLIC "$<BUILD_INTERFACE:${kservice_includes}>")
