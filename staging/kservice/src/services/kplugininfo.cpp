@@ -43,32 +43,53 @@ class KPluginInfoPrivate : public QSharedData
 {
     public:
         KPluginInfoPrivate()
-            : hidden( false )
-            , enabledbydefault( false )
-            , pluginenabled( false )
-            , kcmservicesCached( false )
+            : _hidden(QStringLiteral("Hidden"))
+            , _name(QStringLiteral("Name"))
+            , _comment(QStringLiteral("Comment"))
+            , _icon(QStringLiteral("Icon"))
+            , _author(QStringLiteral("X-KDE-PluginInfo-Author"))
+            , _email(QStringLiteral("X-KDE-PluginInfo-Email"))
+            , _pluginName(QStringLiteral("X-KDE-PluginInfo-Name"))
+            , _version(QStringLiteral("X-KDE-PluginInfo-Version"))
+            , _website(QStringLiteral("X-KDE-PluginInfo-Website"))
+            , _category(QStringLiteral("X-KDE-PluginInfo-Category"))
+            , _license(QStringLiteral("X-KDE-PluginInfo-License"))
+            , _dependencies(QStringLiteral("X-KDE-PluginInfo-Depends"))
+            , _serviceTypes(QStringLiteral("ServiceTypes"))
+            , _xKdeServiceTypes(QStringLiteral("X-KDE-ServiceTypes"))
+            , _enabledbydefault(QStringLiteral("X-KDE-PluginInfo-EnabledByDefault"))
+            , hidden(false)
+            , enabledbydefault(false)
+            , pluginenabled(false)
+            , kcmservicesCached(false)
             {}
 
+        QString _hidden;
+        QString _name;
+        QString _comment;
+        QString _icon;
+        QString _author;
+        QString _email;
+        QString _pluginName; // the name attribute in the .rc file
+        QString _version;
+        QString _website; // URL to the website of the plugin/author
+        QString _category;
+        QString _license;
+        QString _dependencies;
+        QString _serviceTypes;
+        QString _xKdeServiceTypes;
+        QString _enabledbydefault;
+
+
         QString entryPath; // the filename of the file containing all the info
-        QString name;
-        QString comment;
-        QString icon;
-        QString author;
-        QString email;
-        QString pluginName; // the name attribute in the .rc file
         QString libraryPath;
-        QString version;
-        QString website; // URL to the website of the plugin/author
-        QString category;
-        QString license;
-        QStringList dependencies;
-        QStringList serviceTypes;
 
         bool hidden : 1;
         bool enabledbydefault : 1;
         bool pluginenabled : 1;
         mutable bool kcmservicesCached : 1;
 
+        QVariantMap metaData;
         KConfigGroup config;
         KService::Ptr service;
         mutable QList<KService::Ptr> kcmservices;
@@ -82,30 +103,28 @@ KPluginInfo::KPluginInfo(const QString & filename /*, QStandardPaths::StandardLo
     d->entryPath = filename;
 
     KConfigGroup cg = file.desktopGroup();
-    d->hidden = cg.readEntry("Hidden", false);
+    d->hidden = cg.readEntry(d->_hidden, false);
     if( d->hidden )
         return;
 
-    d->name = file.readName();
-    d->comment = file.readComment();
-    d->icon = cg.readEntryUntranslated( "Icon" );
-    d->author = cg.readEntryUntranslated( "X-KDE-PluginInfo-Author" );
-    d->email = cg.readEntryUntranslated( "X-KDE-PluginInfo-Email" );
-    d->pluginName = cg.readEntryUntranslated( "X-KDE-PluginInfo-Name" );
-    d->version = cg.readEntryUntranslated( "X-KDE-PluginInfo-Version" );
-    d->website = cg.readEntryUntranslated( "X-KDE-PluginInfo-Website" );
-    d->category = cg.readEntryUntranslated( "X-KDE-PluginInfo-Category" );
-    d->license = cg.readEntryUntranslated( "X-KDE-PluginInfo-License" );
-    d->dependencies = cg.readEntry( "X-KDE-PluginInfo-Depends", QStringList() );
-    d->serviceTypes = cg.readEntry( "X-KDE-ServiceTypes", QStringList() );
-    d->enabledbydefault = cg.readEntry(
-            "X-KDE-PluginInfo-EnabledByDefault", false);
+    d->metaData.insert(d->_name, file.readName());
+    d->metaData.insert(d->_comment, file.readComment());
+    d->metaData.insert(d->_icon, cg.readEntryUntranslated("Icon"));
+    d->metaData.insert(d->_author, cg.readEntryUntranslated(d->_author));
+    d->metaData.insert(d->_email, cg.readEntryUntranslated( d->_email ));
+    d->metaData.insert(d->_pluginName, cg.readEntryUntranslated(d->_pluginName));
+    d->metaData.insert(d->_version, cg.readEntryUntranslated(d->_version));
+    d->metaData.insert(d->_website, cg.readEntryUntranslated(d->_website));
+    d->metaData.insert(d->_category, cg.readEntryUntranslated(d->_category));
+    d->metaData.insert(d->_license, cg.readEntryUntranslated(d->_license));
+    d->metaData.insert(d->_dependencies, cg.readEntryUntranslated(d->_dependencies));
+    d->metaData.insert(d->_enabledbydefault, cg.readEntryUntranslated(d->_enabledbydefault));
+    d->enabledbydefault = cg.readEntry(d->_enabledbydefault, false);
 }
 
 KPluginInfo::KPluginInfo(const QVariantList &args)
 : d( new KPluginInfoPrivate )
 {
-    QVariantMap meta;
     static const QString metaData = QStringLiteral("MetaData");
 
     foreach (const QVariant &v, args) {
@@ -113,34 +132,17 @@ KPluginInfo::KPluginInfo(const QVariantList &args)
             const QVariantMap &m = v.toMap();
             const QVariant &_metadata = m.value(metaData);
             if (_metadata.canConvert<QVariantMap>()) {
-                meta = _metadata.value<QVariantMap>();
+                d->metaData = _metadata.value<QVariantMap>();
                 break;
             }
         }
     }
 
-    d->hidden = meta.value(QStringLiteral("Hidden")).toBool();
+    d->hidden = d->metaData.value(QStringLiteral("Hidden")).toBool();
     if (d->hidden) {
         return;
     }
-
-    d->name = meta.value(QStringLiteral("Name")).toString();
-    d->comment = meta.value(QStringLiteral("Comment")).toString();
-    d->icon = meta.value(QStringLiteral("Icon")).toString();
-    d->author = meta.value(QStringLiteral("X-KDE-PluginInfo-Author")).toString();
-    d->email = meta.value(QStringLiteral("X-KDE-PluginInfo-Email")).toString();
-    d->pluginName = meta.value(QStringLiteral("X-KDE-PluginInfo-Name")).toString();
-    d->version = meta.value(QStringLiteral("X-KDE-PluginInfo-Version")).toString();
-    d->website = meta.value(QStringLiteral("X-KDE-PluginInfo-Website")).toString();
-    d->category = meta.value(QStringLiteral("X-KDE-PluginInfo-Category")).toString();
-    d->license = meta.value(QStringLiteral("X-KDE-PluginInfo-License")).toString();
-    d->dependencies = meta.value(QStringLiteral("X-KDE-PluginInfo-Depends")).toStringList();
-    d->serviceTypes = meta.value(QStringLiteral("X-KDE-ServiceTypes")).toStringList();
-    if (d->serviceTypes.isEmpty()) {
-        d->serviceTypes = meta.value(QStringLiteral("ServiceTypes")).toStringList();
-    }
-
-    d->enabledbydefault = meta.value(QStringLiteral("X-KDE-PluginInfo-EnabledByDefault")).toBool();
+    d->enabledbydefault = d->metaData.value(d->_enabledbydefault).toBool();
 }
 
 #ifndef KDE_NO_DEPRECATED
@@ -160,20 +162,19 @@ KPluginInfo::KPluginInfo( const KService::Ptr service )
         return;
     }
 
-    d->name = service->name();
-    d->comment = service->comment();
-    d->icon = service->icon();
-    d->author = service->property( QLatin1String("X-KDE-PluginInfo-Author") ).toString();
-    d->email = service->property( QLatin1String("X-KDE-PluginInfo-Email") ).toString();
-    d->pluginName = service->property( QLatin1String("X-KDE-PluginInfo-Name") ).toString();
-    d->version = service->property( QLatin1String("X-KDE-PluginInfo-Version") ).toString();
-    d->website = service->property( QLatin1String("X-KDE-PluginInfo-Website") ).toString();
-    d->category = service->property( QLatin1String("X-KDE-PluginInfo-Category") ).toString();
-    d->license = service->property( QLatin1String("X-KDE-PluginInfo-License") ).toString();
-    d->dependencies =
-        service->property( QLatin1String("X-KDE-PluginInfo-Depends") ).toStringList();
-    QVariant tmp = service->property( QLatin1String("X-KDE-PluginInfo-EnabledByDefault") );
-    d->enabledbydefault = tmp.isValid() ? tmp.toBool() : false;
+    d->metaData.insert(d->_name, service->name());
+    d->metaData.insert(d->_comment, service->comment());
+    d->metaData.insert(d->_icon, service->icon());
+    d->metaData.insert(d->_author, service->property(d->_author));
+    d->metaData.insert(d->_email, service->property(d->_email));
+    d->metaData.insert(d->_pluginName, service->property(d->_pluginName));
+    d->metaData.insert(d->_version, service->property(d->_version));
+    d->metaData.insert(d->_website, service->property(d->_website));
+    d->metaData.insert(d->_category, service->property(d->_category));
+    d->metaData.insert(d->_license, service->property(d->_license));
+    d->metaData.insert(d->_dependencies, service->property(d->_dependencies));
+    QVariant tmp = service->property(d->_enabledbydefault);
+    d->metaData.insert(d->_enabledbydefault, (tmp.isValid() ? tmp.toBool() : false));
 }
 #endif
 
@@ -302,19 +303,19 @@ bool KPluginInfo::isPluginEnabledByDefault() const
 QString KPluginInfo::name() const
 {
     KPLUGININFO_ISVALID_ASSERTION;
-    return d->name;
+    return d->metaData.value(d->_name).toString();
 }
 
 QString KPluginInfo::comment() const
 {
     KPLUGININFO_ISVALID_ASSERTION;
-    return d->comment;
+    return d->metaData.value(d->_comment).toString();
 }
 
 QString KPluginInfo::icon() const
 {
     KPLUGININFO_ISVALID_ASSERTION;
-    return d->icon;
+    return d->metaData.value(d->_icon).toString();
 }
 
 QString KPluginInfo::entryPath() const
@@ -326,25 +327,25 @@ QString KPluginInfo::entryPath() const
 QString KPluginInfo::author() const
 {
     KPLUGININFO_ISVALID_ASSERTION;
-    return d->author;
+    return d->metaData.value(d->_author).toString();
 }
 
 QString KPluginInfo::email() const
 {
     KPLUGININFO_ISVALID_ASSERTION;
-    return d->email;
+    return d->metaData.value(d->_email).toString();
 }
 
 QString KPluginInfo::category() const
 {
     KPLUGININFO_ISVALID_ASSERTION;
-    return d->category;
+    return d->metaData.value(d->_category).toString();
 }
 
 QString KPluginInfo::pluginName() const
 {
     KPLUGININFO_ISVALID_ASSERTION;
-    return d->pluginName;
+    return d->metaData.value(d->_pluginName).toString();
 }
 
 QString KPluginInfo::libraryPath() const
@@ -362,19 +363,19 @@ void KPluginInfo::setLibraryPath(const QString& filename)
 QString KPluginInfo::version() const
 {
     KPLUGININFO_ISVALID_ASSERTION;
-    return d->version;
+    return d->metaData.value(d->_version).toString();
 }
 
 QString KPluginInfo::website() const
 {
     KPLUGININFO_ISVALID_ASSERTION;
-    return d->website;
+    return d->metaData.value(d->_website).toString();
 }
 
 QString KPluginInfo::license() const
 {
     KPLUGININFO_ISVALID_ASSERTION;
-    return d->license;
+    return d->metaData.value(d->_license).toString();
 }
 
 #if 0
@@ -388,13 +389,17 @@ KAboutLicense KPluginInfo::fullLicense() const
 QStringList KPluginInfo::dependencies() const
 {
     KPLUGININFO_ISVALID_ASSERTION;
-    return d->dependencies;
+    return d->metaData.value(d->_dependencies).toStringList();
 }
 
 QStringList KPluginInfo::serviceTypes() const
 {
     KPLUGININFO_ISVALID_ASSERTION;
-    return d->serviceTypes;
+    QStringList serviceTypes = d->metaData.value(d->_xKdeServiceTypes).toStringList();
+    if (serviceTypes.isEmpty()) {
+        serviceTypes = d->metaData.value(d->_serviceTypes).toStringList();
+    }
+    return serviceTypes;
 }
 
 KService::Ptr KPluginInfo::service() const
@@ -408,7 +413,7 @@ QList<KService::Ptr> KPluginInfo::kcmServices() const
     KPLUGININFO_ISVALID_ASSERTION;
     if ( !d->kcmservicesCached )
     {
-        d->kcmservices = KServiceTypeTrader::self()->query( QLatin1String("KCModule"), QLatin1Char('\'') + d->pluginName +
+        d->kcmservices = KServiceTypeTrader::self()->query( QLatin1String("KCModule"), QLatin1Char('\'') + pluginName() +
             QString::fromLatin1("' in [X-KDE-ParentComponents]") );
         //qDebug() << "found" << d->kcmservices.count() << "offers for" << d->pluginName;
 
@@ -436,7 +441,7 @@ QVariant KPluginInfo::property( const QString & key ) const
     if( d->service )
         return d->service->property( key );
     else
-        return QVariant();
+        return d->metaData.value(key);
 }
 
 void KPluginInfo::save(KConfigGroup config)
@@ -444,13 +449,13 @@ void KPluginInfo::save(KConfigGroup config)
     KPLUGININFO_ISVALID_ASSERTION;
     //qDebug() << Q_FUNC_INFO;
     if (config.isValid()) {
-        config.writeEntry(d->pluginName + QString::fromLatin1("Enabled"), isPluginEnabled());
+        config.writeEntry(pluginName() + QString::fromLatin1("Enabled"), isPluginEnabled());
     } else {
         if (!d->config.isValid()) {
             qWarning() << "no KConfigGroup, cannot save";
             return;
         }
-        d->config.writeEntry(d->pluginName + QString::fromLatin1("Enabled"), isPluginEnabled());
+        d->config.writeEntry(pluginName() + QString::fromLatin1("Enabled"), isPluginEnabled());
     }
 }
 
@@ -459,13 +464,13 @@ void KPluginInfo::load(const KConfigGroup &config)
     KPLUGININFO_ISVALID_ASSERTION;
     //qDebug() << Q_FUNC_INFO;
     if (config.isValid()) {
-        setPluginEnabled(config.readEntry(d->pluginName + QString::fromLatin1("Enabled"), isPluginEnabledByDefault()));
+        setPluginEnabled(config.readEntry(pluginName() + QString::fromLatin1("Enabled"), isPluginEnabledByDefault()));
     } else {
         if (!d->config.isValid()) {
             qWarning() << "no KConfigGroup, cannot load";
             return;
         }
-        setPluginEnabled(d->config.readEntry(d->pluginName + QString::fromLatin1("Enabled"), isPluginEnabledByDefault()));
+        setPluginEnabled(d->config.readEntry(pluginName() + QString::fromLatin1("Enabled"), isPluginEnabledByDefault()));
     }
 }
 
