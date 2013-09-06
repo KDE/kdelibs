@@ -97,6 +97,7 @@ install(FILES
    plugin/kpluginfactory.h
    plugin/kpluginloader.h
    plugin/kexportplugin.h
+   plugintrader/kplugintrader.h
    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
 
