@@ -64,21 +64,21 @@ class KPluginInfoPrivate : public QSharedData
             , kcmservicesCached(false)
             {}
 
-        QString _hidden;
-        QString _name;
-        QString _comment;
-        QString _icon;
-        QString _author;
-        QString _email;
-        QString _pluginName; // the name attribute in the .rc file
-        QString _version;
-        QString _website; // URL to the website of the plugin/author
-        QString _category;
-        QString _license;
-        QString _dependencies;
-        QString _serviceTypes;
-        QString _xKdeServiceTypes;
-        QString _enabledbydefault;
+        const QString _hidden;
+        const QString _name;
+        const QString _comment;
+        const QString _icon;
+        const QString _author;
+        const QString _email;
+        const QString _pluginName; // the name attribute in the .rc file
+        const QString _version;
+        const QString _website; // URL to the website of the plugin/author
+        const QString _category;
+        const QString _license;
+        const QString _dependencies;
+        const QString _serviceTypes;
+        const QString _xKdeServiceTypes;
+        const QString _enabledbydefault;
 
 
         QString entryPath; // the filename of the file containing all the info
