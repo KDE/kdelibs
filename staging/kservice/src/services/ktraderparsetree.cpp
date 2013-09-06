@@ -19,6 +19,8 @@
 
 #include "ktraderparsetree_p.h"
 
+#include <QDebug>
+
 namespace KTraderParse {
 
 bool ParseTreeOR::eval( ParseContext *_context ) const
@@ -702,10 +704,15 @@ bool ParseContext::initMaxima( const QString& _prop )
     extrema.type = PreferencesMaxima::PM_INVALID_DOUBLE;
 
   // Iterate over all offers
-  KService::List::ConstIterator oit = offers.begin();
-  for( ; oit != offers.end(); ++oit )
+  qWarning() << "FIXME: needs work";
+  //KService::List::ConstIterator oit = offers.begin(); // FIXME: consider this as well!
+  // Iterate over all offers
+  KPluginInfo::PtrList::ConstIterator oit = pluginOffers.begin();
+  for( ; oit != pluginOffers.end(); ++oit )
+  //for( ; oit != offers.end(); ++oit )
   {
     QVariant p = (*oit)->property( _prop );
+    qDebug() << " P : " << p;
     if ( p.isValid() )
     {
       // Determine new maximum/minimum
