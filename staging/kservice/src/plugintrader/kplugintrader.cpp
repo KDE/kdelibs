@@ -19,11 +19,19 @@
 
 #include "kplugintrader.h"
 
+#include <QtCore/QCoreApplication>
+#include <QtCore/QDir>
+#include <QtCore/QDirIterator>
+#include <QtCore/QJsonObject>
+#include <QtCore/QPluginLoader>
+
+
 #include "ktraderparsetree_p.h"
 #include <kservicetypeprofile.h>
 #include "kservicetype.h"
 #include "kservicetypefactory.h"
 #include "kservicefactory.h"
+
 
 #include <QDebug>
 
@@ -163,6 +171,37 @@ KService::List KPluginTrader::query( const QString& serviceType,
     //qDebug() << "query for serviceType " << serviceType << constraint
     //             << " : returning " << lst.count() << " offers" << endl;
     return lst;
+}
+
+KPluginInfo::List KPluginTrader::query(const QString& servicetype, const QString& constraint)
+{
+    QPluginLoader loader;
+    const QStringList libraryPaths = QCoreApplication::libraryPaths();
+
+    KPluginInfo::List services;
+    //QStringList files;
+    Q_FOREACH (const QString& dir, libraryPaths) {
+        //QDirIterator it(dir+"/kf5", QStringList() << "plasma_engine_time.so", QDir::Files);
+        QDirIterator it(dir+"/kf5", QStringList() << "*.so", QDir::Files);
+
+        while (it.hasNext()) {
+            it.next();
+            const QString _f = it.fileInfo().absoluteFilePath();
+            loader.setFileName(_f);
+            const QVariantList argsWithMetaData = QVariantList() << loader.metaData().toVariantMap();
+            KPluginInfo info(argsWithMetaData);
+
+            if (info.serviceTypes().contains(servicetype)) {
+                qDebug() << "Found plugin with " << servicetype << " : " << info.name();
+                info.setLibraryPath(_f);
+                services.append(info);
+            }
+//             qDebug() << " Plugininfo reports: " << info.name() << ", " << info.icon() << info.serviceTypes() << endl;
+        }
+    }
+    //qDebug() << "Found " << files.count();
+    return services;
+
 }
 
 KService::Ptr KPluginTrader::preferredService( const QString & serviceType ) const

@@ -20,6 +20,7 @@
 #define __kplugintrader_h__
 
 #include "kservice.h"
+#include "kplugininfo.h"
 
 /**
  * KDE's trader interface (similar to the CORBA Trader), which provides a way
@@ -103,6 +104,10 @@ public:
      */
     KService::List query( const QString& servicetype,
                           const QString& constraint = QString() ) const;
+
+    KPluginInfo::List query( const QString& servicetype,
+                          const QString& constraint = QString() );
+
 
     /**
      * Returns all offers associated with a given servicetype, IGNORING the
