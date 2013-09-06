@@ -405,7 +405,12 @@ bool ParseTreeEXIST::eval( ParseContext *_context ) const
 {
   _context->type = ParseContext::T_BOOL;
 
-  QVariant prop = _context->service->property( m_id );
+  QVariant prop;
+  if ( _context->service ) {
+    prop = _context->service->property( m_id );
+  } else if ( _context->info ) {
+    prop = _context->info->property( m_id );
+  }
   _context->b = prop.isValid();
 
   return true;
@@ -494,7 +499,13 @@ bool ParseTreeIN::eval( ParseContext *_context ) const
 
 bool ParseTreeID::eval( ParseContext *_context ) const
 {
-  QVariant prop = _context->service->property( m_str );
+  QVariant prop;
+  if ( _context->service ) {
+    prop = _context->service->property( m_str );
+  } else if ( _context->info ) {
+    prop = _context->info->property( m_str );
+  }
+
   if ( !prop.isValid() )
     return false;
 
@@ -548,7 +559,13 @@ bool ParseTreeMIN2::eval( ParseContext *_context ) const
 {
   _context->type = ParseContext::T_DOUBLE;
 
-  QVariant prop = _context->service->property( m_strId );
+  QVariant prop;
+  if ( _context->service ) {
+    prop = _context->service->property( m_strId );
+  } else if ( _context->info ) {
+    prop = _context->info->property( m_strId );
+  }
+
   if ( !prop.isValid() )
     return false;
 
@@ -579,7 +596,12 @@ bool ParseTreeMAX2::eval( ParseContext *_context ) const
 {
   _context->type = ParseContext::T_DOUBLE;
 
-  QVariant prop = _context->service->property( m_strId );
+  QVariant prop;
+  if ( _context->service ) {
+    prop = _context->service->property( m_strId );
+  } else if ( _context->info ) {
+    prop = _context->info->property( m_strId );
+  }
   if ( !prop.isValid() )
     return false;
 
@@ -609,7 +631,7 @@ bool ParseTreeMAX2::eval( ParseContext *_context ) const
 }
 
 int matchConstraint( const ParseTreeBase *_tree, const KService::Ptr &_service,
-		     const KService::List& _list )
+             const KService::List& _list )
 {
   // Empty tree matches always
   if ( !_tree )
@@ -629,10 +651,36 @@ int matchConstraint( const ParseTreeBase *_tree, const KService::Ptr &_service,
   return ( c.b ? 1 : 0 );
 }
 
+int matchConstraintPlugin( const ParseTreeBase *_tree, KPluginInfo *_info,
+             const KPluginInfo::PtrList& _list )
+{
+  // Empty tree matches always
+  if ( !_tree )
+    return 1;
+
+  QMap<QString,PreferencesMaxima> maxima;
+  ParseContext c( _info, _list, maxima );
+
+  // Error during evaluation ?
+  if ( !_tree->eval( &c ) )
+    return -1;
+
+  // Did we get a bool ?
+  if ( c.type != ParseContext::T_BOOL )
+    return -1;
+
+  return ( c.b ? 1 : 0 );
+}
+
 bool ParseContext::initMaxima( const QString& _prop )
 {
   // Is the property known ?
-  QVariant prop = service->property( _prop );
+  QVariant prop;
+  if (service) {
+      prop =  service->property( _prop );
+  } else if (info) {
+      prop =  info->property( _prop );
+  }
   if ( !prop.isValid() )
     return false;
 

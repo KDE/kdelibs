@@ -25,6 +25,7 @@
 #include <QtCore/QMap>
 
 #include <kservice.h>
+#include <kplugininfo.h>
 
 namespace KTraderParse {
 
@@ -38,6 +39,8 @@ class ParseTreeBase;
  */
 int matchConstraint( const ParseTreeBase *_tree, const KService::Ptr &,
                      const KService::List& );
+int matchConstraintPlugin( const ParseTreeBase *_tree, KPluginInfo *_info,
+             const KPluginInfo::PtrList& _list );
 
 /**
  * @internal
@@ -68,10 +71,13 @@ public:
    * This is NOT a copy constructor.
    */
   explicit ParseContext( const ParseContext* _ctx ) : service( _ctx->service ), maxima( _ctx->maxima ),
-    offers( _ctx->offers ) {}
+    offers( _ctx->offers ), pluginOffers( _ctx->pluginOffers ) {}
   ParseContext( const KService::Ptr & _service, const KService::List& _offers,
-		QMap<QString,PreferencesMaxima>& _m )
-    : service( _service ), maxima( _m ), offers( _offers ) {}
+        QMap<QString,PreferencesMaxima>& _m )
+    : service( _service ), info( 0 ), maxima( _m ), offers( _offers ), pluginOffers( KPluginInfo::PtrList() ) {}
+  ParseContext( KPluginInfo* _info, const KPluginInfo::PtrList& _offers,
+        QMap<QString,PreferencesMaxima>& _m )
+    : service( 0 ), info( _info ), maxima( _m ), offers( KService::List() ), pluginOffers( _offers ) {}
 
   bool initMaxima( const QString& _prop);
 
@@ -87,9 +93,11 @@ public:
   Type type;
 
   KService::Ptr service;
+  KPluginInfo *info;
 
   QMap<QString,PreferencesMaxima>& maxima;
   const KService::List& offers;
+  const KPluginInfo::PtrList& pluginOffers;
 };
 
 /**
