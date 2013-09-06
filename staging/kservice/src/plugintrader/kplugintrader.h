@@ -16,8 +16,8 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
-#ifndef __kservicetypetrader_h__
-#define __kservicetypetrader_h__
+#ifndef __kplugintrader_h__
+#define __kplugintrader_h__
 
 #include "kservice.h"
 
