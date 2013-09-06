@@ -37,11 +37,8 @@
 #include <QTimer>
 #include <QJsonObject>
 
-// #include <iostream>
-// #include <iomanip>
 
 static QTextStream cout(stdout);
-
 
 class PluginTestPrivate {
 public:
