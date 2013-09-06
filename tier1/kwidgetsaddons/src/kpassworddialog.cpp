@@ -92,8 +92,6 @@ void KPasswordDialog::KPasswordDialogPrivate::updateFields()
 
 void KPasswordDialog::KPasswordDialogPrivate::init()
 {
-#pragma message("KF5 TODO: enable clear button in QLineEdits in UI file once available")
-
     ui.setupUi(q);
     ui.buttonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
     ui.errorMessage->setHidden(true);
