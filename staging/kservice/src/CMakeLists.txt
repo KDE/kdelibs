@@ -32,7 +32,7 @@ set(kservice_SRCS
    plugin/klibrary.cpp
    plugin/kpluginfactory.cpp
    plugin/kpluginloader.cpp
-   plugin/kpluginlocator.cpp
+   plugintrader/kpluginlocator.cpp
    plugintrader/kplugintrader.cpp
 )
 if (WIN32)
