@@ -610,6 +610,14 @@ namespace KIO {
         QString mimetype() const;
 
         /**
+         * After the job has finished, it will return the final url in case a redirection
+         * has happened.
+         * @return the final url that can be empty in case no redirection has happened.
+         * @since 5.0
+         */
+        QUrl redirectUrl() const;
+
+        /**
          * Set the total size of data that we are going to send
          * in a put job. Helps getting proper progress information.
          * @since 4.2.1
