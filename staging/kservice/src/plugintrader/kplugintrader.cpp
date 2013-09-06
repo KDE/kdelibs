@@ -91,6 +91,32 @@ void KPluginTrader::applyConstraints( KService::List& lst,
     }
 }
 
+void KPluginTrader::applyConstraints( KPluginInfo::PtrList& lst,
+                                const QString& constraint )
+{
+    if ( lst.isEmpty() || constraint.isEmpty() )
+        return;
+
+    const ParseTreeBase::Ptr constr = parseConstraints( constraint ); // for ownership
+    const ParseTreeBase* pConstraintTree = constr.data(); // for speed
+
+    if (!constr) { // parse error
+        lst.clear();
+    } else {
+        // Find all services matching the constraint
+        // and remove the other ones
+        KPluginInfo::PtrList::iterator it = lst.begin();
+        while( it != lst.end() )
+        {
+            if ( matchConstraintPlugin( pConstraintTree, (*it), lst ) != 1 )
+                it = lst.erase( it );
+            else
+                ++it;
+        }
+    }
+}
+
+
 #if 0
 static void dumpOfferList( const KServiceOfferList& offers )
 {
@@ -180,7 +206,7 @@ KPluginInfo::PtrList KPluginTrader::query(const QString& servicetype, const QStr
     QPluginLoader loader;
     const QStringList libraryPaths = QCoreApplication::libraryPaths();
 
-    KPluginInfo::PtrList services; // FIXME: How are we going to prevent leaking?
+    KPluginInfo::PtrList lst; // FIXME: How are we going to prevent leaking?
     //QStringList files;
     Q_FOREACH (const QString& dir, libraryPaths) {
         //QDirIterator it(dir+"/kf5", QStringList() << "plasma_engine_time.so", QDir::Files);
@@ -196,13 +222,18 @@ KPluginInfo::PtrList KPluginTrader::query(const QString& servicetype, const QStr
             if (info->serviceTypes().contains(servicetype)) {
                 qDebug() << "Found plugin with " << servicetype << " : " << info->name();
                 info->setLibraryPath(_f);
-                services << info;
+                lst << info;
             }
 //             qDebug() << " Plugininfo reports: " << info.name() << ", " << info.icon() << info.serviceTypes() << endl;
         }
     }
+    qDebug() << "BEFORE query for serviceType " << servicetype << constraint
+                << " : returning " << lst.count() << " offers" << endl;
+    applyConstraints( lst, constraint );
     //qDebug() << "Found " << files.count();
-    return services;
+    qDebug() << "AFTER query for serviceType " << servicetype << constraint
+                << " : returning " << lst.count() << " offers" << endl;
+    return lst;
 
 }
 

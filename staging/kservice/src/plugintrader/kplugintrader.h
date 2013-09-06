@@ -206,6 +206,8 @@ public:
      */
     static void applyConstraints( KService::List& lst,
                                   const QString& constraint );
+    static void applyConstraints( KPluginInfo::PtrList& lst,
+                                  const QString& constraint );
 
 private:
     /**
