@@ -17,7 +17,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "kservicetypetrader.h"
+#include "kplugintrader.h"
 
 #include "ktraderparsetree_p.h"
 #include <kservicetypeprofile.h>
@@ -35,30 +35,30 @@ namespace KServiceTypeProfile {
     KServiceOfferList sortServiceTypeOffers( const KServiceOfferList& list, const QString& servicetype );
 }
 
-class KServiceTypeTraderSingleton
+class KPluginTraderSingleton
 {
 public:
-    KServiceTypeTrader instance;
+    KPluginTrader instance;
 };
 
-Q_GLOBAL_STATIC(KServiceTypeTraderSingleton, s_globalServiceTypeTrader)
+Q_GLOBAL_STATIC(KPluginTraderSingleton, s_globalServiceTypeTrader)
 
-KServiceTypeTrader* KServiceTypeTrader::self()
+KPluginTrader* KPluginTrader::self()
 {
     return &s_globalServiceTypeTrader()->instance;
 }
 
-KServiceTypeTrader::KServiceTypeTrader()
+KPluginTrader::KPluginTrader()
     : d(0)
 {
 }
 
-KServiceTypeTrader::~KServiceTypeTrader()
+KPluginTrader::~KPluginTrader()
 {
 }
 
 // shared with KMimeTypeTrader
-void KServiceTypeTrader::applyConstraints( KService::List& lst,
+void KPluginTrader::applyConstraints( KService::List& lst,
                                 const QString& constraint )
 {
     if ( lst.isEmpty() || constraint.isEmpty() )
@@ -95,11 +95,11 @@ static void dumpOfferList( const KServiceOfferList& offers )
 
 static KServiceOfferList weightedOffers( const QString& serviceType )
 {
-    //qDebug() << "KServiceTypeTrader::weightedOffers( " << serviceType << " )";
+    //qDebug() << "KPluginTrader::weightedOffers( " << serviceType << " )";
 
     KServiceType::Ptr servTypePtr = KServiceTypeFactory::self()->findServiceTypeByName( serviceType );
     if ( !servTypePtr ) {
-        qWarning() << "KServiceTypeTrader: serviceType" << serviceType << "not found";
+        qWarning() << "KPluginTrader: serviceType" << serviceType << "not found";
         return KServiceOfferList();
     }
     if ( servTypePtr->serviceOffersOffset() == -1 )  // no offers in ksycoca
@@ -118,12 +118,12 @@ static KServiceOfferList weightedOffers( const QString& serviceType )
     return offers;
 }
 
-KService::List KServiceTypeTrader::defaultOffers( const QString& serviceType,
+KService::List KPluginTrader::defaultOffers( const QString& serviceType,
                                                   const QString& constraint ) const
 {
     KServiceType::Ptr servTypePtr = KServiceTypeFactory::self()->findServiceTypeByName( serviceType );
     if ( !servTypePtr ) {
-        qWarning() << "KServiceTypeTrader: serviceType" << serviceType << "not found";
+        qWarning() << "KPluginTrader: serviceType" << serviceType << "not found";
         return KService::List();
     }
     if ( servTypePtr->serviceOffersOffset() == -1 )
@@ -139,7 +139,7 @@ KService::List KServiceTypeTrader::defaultOffers( const QString& serviceType,
     return lst;
 }
 
-KService::List KServiceTypeTrader::query( const QString& serviceType,
+KService::List KPluginTrader::query( const QString& serviceType,
                                           const QString& constraint ) const
 {
     if ( !KServiceTypeProfile::hasProfile( serviceType ) )
@@ -165,7 +165,7 @@ KService::List KServiceTypeTrader::query( const QString& serviceType,
     return lst;
 }
 
-KService::Ptr KServiceTypeTrader::preferredService( const QString & serviceType ) const
+KService::Ptr KPluginTrader::preferredService( const QString & serviceType ) const
 {
     const KServiceOfferList offers = weightedOffers( serviceType );
 

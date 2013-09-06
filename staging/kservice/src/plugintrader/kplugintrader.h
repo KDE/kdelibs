@@ -25,12 +25,12 @@
  * KDE's trader interface (similar to the CORBA Trader), which provides a way
  * to query the KDE infrastructure for specific applications or components.
  *
- * Basically, KServiceTypeTrader provides a way for an application to query
+ * Basically, KPluginTrader provides a way for an application to query
  * all KDE services (that is, applications, components, plugins) that match
  * a specific set of requirements. This allows to find specific services
  * at run-time without having to hard-code their names and/or paths.
  *
- * For anything relating to mimetypes (type of files), ignore KServiceTypeTrader
+ * For anything relating to mimetypes (type of files), ignore KPluginTrader
  * and use KMimeTypeTrader instead.
  *
  * \par Example
@@ -40,12 +40,12 @@
  * the trader for it:
  * \code
  * KService::List offers =
- *     KServiceTypeTrader::self()->query("KMyApp/Plugin");
+ *     KPluginTrader::self()->query("KMyApp/Plugin");
  * \endcode
  *
  * You can add a constraint in the "trader query language". For instance:
  * \code
- * KServiceTypeTrader::self()->query("KMyApp/Plugin",
+ * KPluginTrader::self()->query("KMyApp/Plugin",
  *                                   "[X-KMyApp-InterfaceVersion] > 15");
  * \endcode
  *
@@ -67,16 +67,16 @@
  *
  * @see KMimeTypeTrader, KService
  */
-class KSERVICE_EXPORT KServiceTypeTrader
+class KSERVICE_EXPORT KPluginTrader
 {
 public:
     /**
      * Standard destructor
      */
-    ~KServiceTypeTrader();
+    ~KPluginTrader();
 
     /**
-     * The main function in the KServiceTypeTrader class.
+     * The main function in the KPluginTrader class.
      *
      * It will return a list of services that match your
      * specifications.  The only required parameter is the service
@@ -121,21 +121,21 @@ public:
     KService::Ptr preferredService( const QString & serviceType ) const;
 
     /**
-     * This is a static pointer to the KServiceTypeTrader singleton.
+     * This is a static pointer to the KPluginTrader singleton.
      *
-     * You will need to use this to access the KServiceTypeTrader functionality since the
+     * You will need to use this to access the KPluginTrader functionality since the
      * constructors are protected.
      *
-     * @return Static KServiceTypeTrader instance
+     * @return Static KPluginTrader instance
      */
-    static KServiceTypeTrader* self();
+    static KPluginTrader* self();
 
     /**
      * Get a plugin from a trader query
      *
      * Example:
      * \code
-     * KMyAppPlugin* plugin = KServiceTypeTrader::createInstanceFromQuery<KMyAppPlugin>( serviceType, QString(), parentObject );
+     * KMyAppPlugin* plugin = KPluginTrader::createInstanceFromQuery<KMyAppPlugin>( serviceType, QString(), parentObject );
      * if ( plugin ) {
      *     ....
      * }
@@ -203,16 +203,16 @@ private:
     /**
      * @internal
      */
-    KServiceTypeTrader();
+    KPluginTrader();
 
     // dissalow copy ctor and assignment operator
-    KServiceTypeTrader( const KServiceTypeTrader& other );
-    KServiceTypeTrader& operator=( const KServiceTypeTrader& rhs );
+    KPluginTrader( const KPluginTrader& other );
+    KPluginTrader& operator=( const KPluginTrader& rhs );
 
     class Private;
     Private * const d;
 
-    friend class KServiceTypeTraderSingleton;
+    friend class KPluginTraderSingleton;
 };
 
 #endif
