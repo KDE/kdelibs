@@ -72,6 +72,7 @@ void PluginTest::runMain()
 
     // KSycoca querying
     timer.start();
+
     for (int _i = 0; _i < runs; _i++) {
         timer.restart();
         if (!loadFromKService("time")) ok = false;
@@ -81,13 +82,13 @@ void PluginTest::runMain()
     timings.clear();
 
     // -- Metadata querying
-    for (int _i = 0; _i < runs; _i++) {
-        timer.restart();
-        if (!loadFromMetaData()) ok = false;
-        timings << timer.nsecsElapsed();
-    }
-    report(timings, "Metadata");
-    timings.clear();
+    //for (int _i = 0; _i < runs; _i++) {
+        //timer.restart();
+        //if (!loadFromMetaData()) ok = false;
+        //timings << timer.nsecsElapsed();
+    //}
+//     report(timings, "Metadata");
+//     timings.clear();
 
     // -- Metadata querying
     for (int _i = 0; _i < runs; _i++) {
@@ -163,11 +164,12 @@ bool PluginTest::loadFromMetaData(const QString& pluginName)
 bool PluginTest::loadFromMetaData2(const QString& serviceType)
 {
     bool ok = false;
-
-    KPluginInfo::List res = KPluginTrader::self()->query(serviceType, QString());
+    QString category("powermanagement");
+    QString constraint = QString("[X-KDE-PluginInfo-Name] == '%1'").arg(category);
+    KPluginInfo::PtrList res = KPluginTrader::self()->query(serviceType, constraint);
     cout << "Found " << res.count() << " Plugins\n";
     ok = res.count() > 0;
-    foreach (const KPluginInfo &info, res) {
+    foreach (const KPluginInfo *info, res) {
         //qDebug() << "   file: " << info.libraryPath();
 
     }
