@@ -451,19 +451,23 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
     return form_data;
 }
 
-void HTMLFormElementImpl::setEnctype( const QString& type )
+void HTMLFormElementImpl::setEnctype(const DOMString& type)
 {
-    m_enctype = "application/x-www-form-urlencoded";
-    m_multipart = false;
-
-    QString _type = type.toLower();
-
-    if (_type.contains("multipart") || _type.contains("form-data")) {
+    if (type.isEmpty()) { // optimization: majority of real world cases
+        m_enctype = "application/x-www-form-urlencoded";
+        m_multipart = false;
+    }
+    else if (strcasecmp(type, "multipart/form-data") == 0) {
         m_enctype = "multipart/form-data";
         m_multipart = true;
     }
-    else if (_type.contains("text") || _type.contains("plain")) {
+    else if (strcasecmp(type, "text/plain") == 0) {
         m_enctype = "text/plain";
+        m_multipart = false;
+    }
+    else {
+        m_enctype = "application/x-www-form-urlencoded";
+        m_multipart = false;
     }
 }
 
@@ -684,7 +688,7 @@ void HTMLFormElementImpl::submit(  )
         if(m_post) {
             view->part()->submitForm( "post", url.string(), form_data,
                                       m_target.string(),
-                                      enctype(),
+                                      enctype().string(),
                                       m_boundary );
         }
         else {
@@ -735,7 +739,7 @@ void HTMLFormElementImpl::parseAttribute(AttributeImpl *attr)
         m_post = ( strcasecmp( attr->value(), "post" ) == 0 );
         break;
     case ATTR_ENCTYPE:
-        setEnctype( attr->value().string() );
+        setEnctype( attr->value() );
         break;
     case ATTR_ACCEPT_CHARSET:
         // space separated list of charsets the server

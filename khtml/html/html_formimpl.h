@@ -80,8 +80,8 @@ public:
 
     QByteArray formData(bool& ok);
 
-    QString enctype() const { return m_enctype; }
-    void setEnctype( const QString & );
+    DOMString enctype() const { return m_enctype; }
+    void setEnctype(const DOMString &);
 
     DOMString target() const;
     DOMString action() const;
@@ -120,7 +120,7 @@ private:
     QList<HTMLGenericFormElementImpl*> formElements;
     QList<HTMLImageElementImpl*> imgElements;
     DOMString m_target;
-    QString m_enctype;
+    DOMString m_enctype;
     QString m_boundary;
     DOMString m_acceptcharset;
     bool m_post : 1;
