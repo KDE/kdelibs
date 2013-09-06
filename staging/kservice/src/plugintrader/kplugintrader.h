@@ -1,6 +1,7 @@
 /* This file is part of the KDE libraries
    Copyright (C) 2000 Torben Weis <weis@kde.org>
    Copyright (C) 2006 David Faure <faure@kde.org>
+   Copyright 2013 Sebastian Kügler <sebas@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -40,7 +41,7 @@
  * you would define a KMyApp/Plugin servicetype, and then you can query
  * the trader for it:
  * \code
- * KService::List offers =
+ * KPluginInfo::List offers =
  *     KPluginTrader::self()->query("KMyApp/Plugin");
  * \endcode
  *
@@ -66,7 +67,8 @@
  * Instead of the other meaning, make sure that the numeric value of "X-KMyApp-InterfaceVersion" is
  * greater than 4.
  *
- * @see KMimeTypeTrader, KService
+ * @see KMimeTypeTrader, KPluginInfo
+ * @since 5.0
  */
 class KSERVICE_EXPORT KPluginTrader
 {
@@ -105,7 +107,8 @@ public:
     KService::List query( const QString& servicetype,
                           const QString& constraint = QString() ) const;
 
-    KPluginInfo::List query( const QString& servicetype,
+    // FIXME: docs
+    KPluginInfo::PtrList query( const QString& servicetype,
                           const QString& constraint = QString() );
 
 
@@ -210,7 +213,7 @@ private:
      */
     KPluginTrader();
 
-    // dissalow copy ctor and assignment operator
+    // disallow copy ctor and assignment operator
     KPluginTrader( const KPluginTrader& other );
     KPluginTrader& operator=( const KPluginTrader& rhs );
 

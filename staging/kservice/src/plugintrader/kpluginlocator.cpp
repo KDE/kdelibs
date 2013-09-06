@@ -30,6 +30,7 @@
 
 KPluginInfo::List KPluginLocator::query(const QString& servicetype, const QString& constraint)
 {
+    qWarning() << " Constraint currently not taken into account" << constraint;
     QPluginLoader loader;
     const QStringList libraryPaths = QCoreApplication::libraryPaths();
 
@@ -61,6 +62,7 @@ KPluginInfo::List KPluginLocator::query(const QString& servicetype, const QStrin
 
 QStringList KPluginLocator::locatePlugin(const QString& name)
 {
+    qDebug() << "name not considered" << name;
     QPluginLoader loader;
     //When loading the plugin, QPluginLoader searches in the current directory and in all plugin locations specified by
     const QStringList libraryPaths = QCoreApplication::libraryPaths();

@@ -173,12 +173,14 @@ KService::List KPluginTrader::query( const QString& serviceType,
     return lst;
 }
 
-KPluginInfo::List KPluginTrader::query(const QString& servicetype, const QString& constraint)
+KPluginInfo::PtrList KPluginTrader::query(const QString& servicetype, const QString& constraint)
 {
+    qWarning() << " Constraint currently not taken into account" << constraint;
+
     QPluginLoader loader;
     const QStringList libraryPaths = QCoreApplication::libraryPaths();
 
-    KPluginInfo::List services;
+    KPluginInfo::PtrList services; // FIXME: How are we going to prevent leaking?
     //QStringList files;
     Q_FOREACH (const QString& dir, libraryPaths) {
         //QDirIterator it(dir+"/kf5", QStringList() << "plasma_engine_time.so", QDir::Files);
@@ -189,12 +191,12 @@ KPluginInfo::List KPluginTrader::query(const QString& servicetype, const QString
             const QString _f = it.fileInfo().absoluteFilePath();
             loader.setFileName(_f);
             const QVariantList argsWithMetaData = QVariantList() << loader.metaData().toVariantMap();
-            KPluginInfo info(argsWithMetaData);
+            KPluginInfo *info = new KPluginInfo(argsWithMetaData);
 
-            if (info.serviceTypes().contains(servicetype)) {
-                qDebug() << "Found plugin with " << servicetype << " : " << info.name();
-                info.setLibraryPath(_f);
-                services.append(info);
+            if (info->serviceTypes().contains(servicetype)) {
+                qDebug() << "Found plugin with " << servicetype << " : " << info->name();
+                info->setLibraryPath(_f);
+                services << info;
             }
 //             qDebug() << " Plugininfo reports: " << info.name() << ", " << info.icon() << info.serviceTypes() << endl;
         }
