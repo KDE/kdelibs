@@ -1,3 +1,3 @@
 add_subdirectory(data)
-add_subdirectory(knewstuff3)
+add_subdirectory(src)
 add_subdirectory(tests)

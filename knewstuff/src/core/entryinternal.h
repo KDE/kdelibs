@@ -27,8 +27,8 @@
 #include <QtCore/QString>
 #include <QUrl>
 
-#include <knewstuff3/core/author.h>
-#include <knewstuff3/entry.h>
+#include "core/author.h"
+#include "entry.h"
 
 namespace KNS3
 {

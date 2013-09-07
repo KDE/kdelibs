@@ -18,7 +18,7 @@
 #include "entry.h"
 
 #include <QtCore/QStringList>
-#include <knewstuff3/entry_p.h>
+#include "entry_p.h"
 
 using namespace KNS3;
 
