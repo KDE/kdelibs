@@ -43,7 +43,6 @@ class KSERVICE_EXPORT KPluginInfo
 {
     public:
         typedef QList<KPluginInfo> List;
-        typedef QList<KPluginInfo*> PtrList;
 
         /**
          * Read plugin info from @p filename.

@@ -166,10 +166,10 @@ bool PluginTest::loadFromMetaData2(const QString& serviceType)
     bool ok = false;
     QString category("powermanagement");
     QString constraint = QString("[X-KDE-PluginInfo-Name] == '%1'").arg(category);
-    KPluginInfo::PtrList res = KPluginTrader::self()->query(serviceType, constraint);
+    KPluginInfo::List res = KPluginTrader::self()->query(serviceType, constraint);
     cout << "Found " << res.count() << " Plugins\n";
     ok = res.count() > 0;
-    foreach (const KPluginInfo *info, res) {
+    foreach (const KPluginInfo &info, res) {
         //qDebug() << "   file: " << info.libraryPath();
 
     }

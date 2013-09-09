@@ -39,8 +39,8 @@ class ParseTreeBase;
  */
 int matchConstraint( const ParseTreeBase *_tree, const KService::Ptr &,
                      const KService::List& );
-int matchConstraintPlugin( const ParseTreeBase *_tree, KPluginInfo *_info,
-             const KPluginInfo::PtrList& _list );
+int matchConstraintPlugin( const ParseTreeBase *_tree, KPluginInfo _info,
+             const KPluginInfo::List& _list );
 
 /**
  * @internal
@@ -74,8 +74,8 @@ public:
     offers( _ctx->offers ), pluginOffers( _ctx->pluginOffers ) {}
   ParseContext( const KService::Ptr & _service, const KService::List& _offers,
         QMap<QString,PreferencesMaxima>& _m )
-    : service( _service ), info( 0 ), maxima( _m ), offers( _offers ), pluginOffers( KPluginInfo::PtrList() ) {}
-  ParseContext( KPluginInfo* _info, const KPluginInfo::PtrList& _offers,
+    : service( _service ), info( KPluginInfo() ), maxima( _m ), offers( _offers ), pluginOffers( KPluginInfo::List() ) {}
+  ParseContext( KPluginInfo _info, const KPluginInfo::List& _offers,
         QMap<QString,PreferencesMaxima>& _m )
     : service( 0 ), info( _info ), maxima( _m ), offers( KService::List() ), pluginOffers( _offers ) {}
 
@@ -93,11 +93,11 @@ public:
   Type type;
 
   KService::Ptr service;
-  KPluginInfo *info;
+  KPluginInfo info;
 
   QMap<QString,PreferencesMaxima>& maxima;
   const KService::List& offers;
-  const KPluginInfo::PtrList& pluginOffers;
+  const KPluginInfo::List& pluginOffers;
 };
 
 /**

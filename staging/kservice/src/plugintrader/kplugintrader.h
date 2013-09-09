@@ -108,7 +108,7 @@ public:
                           const QString& constraint = QString() ) const;
 
     // FIXME: docs
-    KPluginInfo::PtrList query( const QString& servicetype,
+    KPluginInfo::List query( const QString& servicetype,
                           const QString& constraint = QString() );
 
 
@@ -206,7 +206,7 @@ public:
      */
     static void applyConstraints( KService::List& lst,
                                   const QString& constraint );
-    static void applyConstraints( KPluginInfo::PtrList& lst,
+    static void applyConstraints( KPluginInfo::List& lst,
                                   const QString& constraint );
 
 private:

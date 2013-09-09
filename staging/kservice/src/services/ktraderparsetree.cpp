@@ -410,8 +410,8 @@ bool ParseTreeEXIST::eval( ParseContext *_context ) const
   QVariant prop;
   if ( _context->service ) {
     prop = _context->service->property( m_id );
-  } else if ( _context->info ) {
-    prop = _context->info->property( m_id );
+  } else if ( _context->info.isValid() ) {
+    prop = _context->info.property( m_id );
   }
   _context->b = prop.isValid();
 
@@ -504,8 +504,8 @@ bool ParseTreeID::eval( ParseContext *_context ) const
   QVariant prop;
   if ( _context->service ) {
     prop = _context->service->property( m_str );
-  } else if ( _context->info ) {
-    prop = _context->info->property( m_str );
+  } else if ( _context->info.isValid() ) {
+    prop = _context->info.property( m_str );
   }
 
   if ( !prop.isValid() )
@@ -564,8 +564,8 @@ bool ParseTreeMIN2::eval( ParseContext *_context ) const
   QVariant prop;
   if ( _context->service ) {
     prop = _context->service->property( m_strId );
-  } else if ( _context->info ) {
-    prop = _context->info->property( m_strId );
+  } else if ( _context->info.isValid() ) {
+    prop = _context->info.property( m_strId );
   }
 
   if ( !prop.isValid() )
@@ -601,8 +601,8 @@ bool ParseTreeMAX2::eval( ParseContext *_context ) const
   QVariant prop;
   if ( _context->service ) {
     prop = _context->service->property( m_strId );
-  } else if ( _context->info ) {
-    prop = _context->info->property( m_strId );
+  } else if ( _context->info.isValid() ) {
+    prop = _context->info.property( m_strId );
   }
   if ( !prop.isValid() )
     return false;
@@ -653,8 +653,8 @@ int matchConstraint( const ParseTreeBase *_tree, const KService::Ptr &_service,
   return ( c.b ? 1 : 0 );
 }
 
-int matchConstraintPlugin( const ParseTreeBase *_tree, KPluginInfo *_info,
-             const KPluginInfo::PtrList& _list )
+int matchConstraintPlugin( const ParseTreeBase *_tree, KPluginInfo _info,
+             const KPluginInfo::List& _list )
 {
   // Empty tree matches always
   if ( !_tree )
@@ -678,10 +678,10 @@ bool ParseContext::initMaxima( const QString& _prop )
 {
   // Is the property known ?
   QVariant prop;
-  if (service) {
+  if ( service ) {
       prop =  service->property( _prop );
-  } else if (info) {
-      prop =  info->property( _prop );
+  } else if ( info.isValid() ) {
+      prop =  info.property( _prop );
   }
   if ( !prop.isValid() )
     return false;
@@ -707,11 +707,11 @@ bool ParseContext::initMaxima( const QString& _prop )
   qWarning() << "FIXME: needs work";
   //KService::List::ConstIterator oit = offers.begin(); // FIXME: consider this as well!
   // Iterate over all offers
-  KPluginInfo::PtrList::ConstIterator oit = pluginOffers.begin();
+  KPluginInfo::List::ConstIterator oit = pluginOffers.begin();
   for( ; oit != pluginOffers.end(); ++oit )
   //for( ; oit != offers.end(); ++oit )
   {
-    QVariant p = (*oit)->property( _prop );
+    QVariant p = (*oit).property( _prop );
     qDebug() << " P : " << p;
     if ( p.isValid() )
     {

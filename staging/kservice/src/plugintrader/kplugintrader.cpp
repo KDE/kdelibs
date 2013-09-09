@@ -91,7 +91,7 @@ void KPluginTrader::applyConstraints( KService::List& lst,
     }
 }
 
-void KPluginTrader::applyConstraints( KPluginInfo::PtrList& lst,
+void KPluginTrader::applyConstraints( KPluginInfo::List& lst,
                                 const QString& constraint )
 {
     if ( lst.isEmpty() || constraint.isEmpty() )
@@ -105,10 +105,10 @@ void KPluginTrader::applyConstraints( KPluginInfo::PtrList& lst,
     } else {
         // Find all services matching the constraint
         // and remove the other ones
-        KPluginInfo::PtrList::iterator it = lst.begin();
+        KPluginInfo::List::iterator it = lst.begin();
         while( it != lst.end() )
         {
-            if ( matchConstraintPlugin( pConstraintTree, (*it), lst ) != 1 )
+            if ( matchConstraintPlugin( pConstraintTree, *it, lst ) != 1 )
                 it = lst.erase( it );
             else
                 ++it;
@@ -199,14 +199,14 @@ KService::List KPluginTrader::query( const QString& serviceType,
     return lst;
 }
 
-KPluginInfo::PtrList KPluginTrader::query(const QString& servicetype, const QString& constraint)
+KPluginInfo::List KPluginTrader::query(const QString& servicetype, const QString& constraint)
 {
     qWarning() << " Constraint currently not taken into account" << constraint;
 
     QPluginLoader loader;
     const QStringList libraryPaths = QCoreApplication::libraryPaths();
 
-    KPluginInfo::PtrList lst; // FIXME: How are we going to prevent leaking?
+    KPluginInfo::List lst; // FIXME: How are we going to prevent leaking?
     //QStringList files;
     Q_FOREACH (const QString& dir, libraryPaths) {
         //QDirIterator it(dir+"/kf5", QStringList() << "plasma_engine_time.so", QDir::Files);
@@ -217,11 +217,11 @@ KPluginInfo::PtrList KPluginTrader::query(const QString& servicetype, const QStr
             const QString _f = it.fileInfo().absoluteFilePath();
             loader.setFileName(_f);
             const QVariantList argsWithMetaData = QVariantList() << loader.metaData().toVariantMap();
-            KPluginInfo *info = new KPluginInfo(argsWithMetaData);
+            KPluginInfo info(argsWithMetaData);
 
-            if (info->serviceTypes().contains(servicetype)) {
-                qDebug() << "Found plugin with " << servicetype << " : " << info->name();
-                info->setLibraryPath(_f);
+            if (info.serviceTypes().contains(servicetype)) {
+                qDebug() << "Found plugin with " << servicetype << " : " << info.name();
+                info.setLibraryPath(_f);
                 lst << info;
             }
 //             qDebug() << " Plugininfo reports: " << info.name() << ", " << info.icon() << info.serviceTypes() << endl;
