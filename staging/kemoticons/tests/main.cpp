@@ -18,64 +18,75 @@
  ***************************************************************************/
 
 #include <kemoticons.h>
+
 #include <QApplication>
 #include <QDebug>
-#include <qstring.h>
-#include <qlineedit.h>
-#include <qlabel.h>
-#include <kcombobox.h>
+#include <QLineEdit>
+#include <QLabel>
+#include <QComboBox>
 #include <QVBoxLayout>
-#include <QTextDocument>
+#include <QString>
 
 class KEmoTest : public QWidget
 {
     Q_OBJECT
     public:
         KEmoTest();
-        
+
     public Q_SLOTS:
-        void changed();
-        void changeTheme(const QString&theme);
-    
+        void updateEmoticons();
+        void changeTheme(const QString &emoticonTheme);
+
     private:
-        QLineEdit kl;
-        QLabel lb;
-        KEmoticons e;
-        KEmoticonsTheme t;
-        KComboBox cb;
+        QLineEdit *lineEdit;
+        QLabel *label;
+        KEmoticons emoticons;
+        KEmoticonsTheme emoticonTheme;
+        QComboBox *comboBox;
 };
 
 KEmoTest::KEmoTest()
 {
-    QStringList tl = KEmoticons::themeList();
-    // qDebug() << "ThemeList:" << tl;
-    
-    t = e.theme();
-    
-    cb.addItems(e.themeList());
-    cb.setCurrentIndex(e.themeList().indexOf(t.themeName()));
-    
-    QVBoxLayout *vb = new QVBoxLayout;
-    vb->addWidget(&kl);
-    vb->addWidget(&cb);
-    vb->addWidget(&lb);
-    setLayout(vb);
-    
-    connect(&kl, SIGNAL(textChanged(QString)), this, SLOT(changed()));
-    connect(&cb, SIGNAL(activated(QString)), this, SLOT(changeTheme(QString)));
+    lineEdit = new QLineEdit;
+    label = new QLabel;
+    QLabel *explanation = new QLabel;
+    explanation->setText("Please enter text with emoticons. They will be parsed, "
+                         "except <b>:-)</b> and <b>:)</b> which are excluded. "
+                         "Emoticon theme can be chosen from the combo box.");
+    explanation->setWordWrap(true);
+    comboBox = new QComboBox;
+
+    emoticonTheme = emoticons.theme();
+    // Theme list is repeating three times the same two themes: "Oxygen" and "kde4"
+    qDebug() << "Theme list: " << emoticons.themeList();
+    // Theme name is empty!!
+    qDebug() << "Theme name: " << emoticonTheme.themeName();
+
+    comboBox->addItems(emoticons.themeList());
+    comboBox->setCurrentIndex(emoticons.themeList().indexOf(emoticonTheme.themeName()));
+
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget(explanation);
+    layout->addWidget(lineEdit);
+    layout->addWidget(comboBox);
+    layout->addWidget(label);
+    setLayout(layout);
+
+    connect(lineEdit, SIGNAL(textChanged(QString)), this, SLOT(updateEmoticons()));
+    connect(comboBox, SIGNAL(activated(QString)), this, SLOT(changeTheme(QString)));
 }
 
-void KEmoTest::changed()
+void KEmoTest::updateEmoticons()
 {
-    QStringList excl;
-    excl << ":)" << ":-)";
-    lb.setText(t.parseEmoticons(kl.text().toHtmlEscaped(), KEmoticonsTheme::DefaultParse, excl));
+    QStringList excludedEmoticons;
+    excludedEmoticons << ":)" << ":-)";
+    label->setText(emoticonTheme.parseEmoticons(lineEdit->text().toHtmlEscaped(), KEmoticonsTheme::DefaultParse, excludedEmoticons));
 }
 
 void KEmoTest::changeTheme(const QString &theme)
 {
-    t = e.theme(theme);
-    changed();
+    emoticonTheme = emoticons.theme(theme);
+    updateEmoticons();
 }
 
 int main(int argc, char **argv)

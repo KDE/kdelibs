@@ -23,7 +23,6 @@
 #include "kemoticonstheme.h"
 
 #include <QtCore/QObject>
-#include <QtCore/QHash>
 
 #include <kservicetypetrader.h>
 
@@ -31,13 +30,13 @@ class KEmoticonsPrivate;
 
 /**
  * This class can be used to retrieve, install, create emoticons theme.
- * For example if you want to get the current emoticon theme
+ * For example, if you want to get the current emoticon theme
  * @code
  * KEmoticons ke;
  * KEmoticonsTheme et = ke.theme();
  * //do whatever you want with the theme
  * @endcode
- * it can also be used to set the emoticon theme and the parse mode in the config file
+ * It can also be used to set the emoticon theme and the parse mode in the config file
  * @author Carlo Segato (brandon.ml@gmail.com)
  */
 
@@ -52,47 +51,47 @@ public:
     KEmoticons();
 
     /**
-     * Destruct the object
+     * Destructor
      */
     ~KEmoticons();
 
     /**
-     * Retrieve the current emoticons theme
+     * Retrieves the current emoticon theme
      * @return the current KEmoticonsTheme
      */
-    KEmoticonsTheme theme();
+    KEmoticonsTheme theme() const;
 
     /**
-    * Retrieve the theme with name @p name
+    * Retrieves the emoticon theme with name @p name
     * @param name name of the theme
-    * @return the KEmoticonsTheme @p name
+    * @return the KEmoticonsTheme with name @p name
     */
-    KEmoticonsTheme theme(const QString &name);
+    KEmoticonsTheme theme(const QString &name) const;
 
     /**
-     * Retrieve the current emoticon theme name
+     * Retrieves the current emoticon theme name
      */
     static QString currentThemeName();
 
     /**
-     * Returns a list of installed theme
+     * Returns a list of installed emoticon themes
      */
     static QStringList themeList();
 
     /**
-     * Set @p theme as the current theme
-     * @param theme a pointer to a KEmoticonsTheme object
+     * Sets @p theme as the current emoticon theme
+     * @param theme a reference to a KEmoticonsTheme object
      */
     static void setTheme(const KEmoticonsTheme &theme);
 
     /**
-     * Set @p theme as the current theme
+     * Sets @p theme as the current emoticon theme
      * @param theme the name of a theme
      */
     static void setTheme(const QString &theme);
 
     /**
-     * Create a new emoticons theme
+     * Creates a new emoticon theme
      * @code
      * KEmoticonsTheme theme;
      * KService::List srv = KServiceTypeTrader::self()->query("KEmoticons");
@@ -103,20 +102,20 @@ public:
      *     }
      * }
      * @endcode
-     * @param name the name of the new emoticons theme
+     * @param name the name of the new emoticon theme
      * @param service the kind of emoticon theme to create
      */
     KEmoticonsTheme newTheme(const QString &name, const KService::Ptr &service);
 
     /**
-     * Install all themes inside the archive @p archiveName
+     * Installs all emoticon themes inside the archive @p archiveName
      * @param archiveName path to the archive
      * @return a list of installed themes
      */
     QStringList installTheme(const QString &archiveName);
 
     /**
-     * Set the parse mode to @p mode
+     * Sets the parse mode to @p mode
      */
     static void setParseMode(KEmoticonsTheme::ParseMode mode);
 
@@ -127,11 +126,11 @@ public:
 
 private:
     /**
-     * Private class
+     * Private implementation class
      */
-    KEmoticonsPrivate * const d;
+    const QScopedPointer<KEmoticonsPrivate> d;
 
-    Q_PRIVATE_SLOT(d, void themeChanged(const QString &path))
+    Q_PRIVATE_SLOT(d, void changeTheme(const QString &path))
 };
 
 #endif /* KEMOTICONS_H */

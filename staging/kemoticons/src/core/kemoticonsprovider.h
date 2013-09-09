@@ -20,17 +20,15 @@
 #define KEMOTICONS_PROVIDER_H
 
 #include <kemoticons_export.h>
-#include <QtCore/QObject>
-#include <QtCore/QVariant>
-#include <QtCore/QStringList>
-#include <QtCore/QPair>
 
-class QString;
+#include <QtCore/QObject>
+#include <QtCore/QStringList>
+
 class KEmoticonsProviderPrivate;
 struct Emoticon;
 
 /**
- * This is the base class for the emoticons provider plugins
+ * This is the base abstract class for the emoticon provider plugins.
  */
 class KEMOTICONS_EXPORT KEmoticonsProvider : public QObject
 {
@@ -66,31 +64,33 @@ public:
     virtual ~KEmoticonsProvider();
 
     /**
-     * Load the theme inside the directory @p path
+     * Loads the emoticon theme inside the directory @p path
      * @param path path to the directory
+     * @return @c true if the emoticon theme is successfully loaded
      */
-    virtual bool loadTheme(const QString &path);
+    virtual bool loadTheme(const QString &path) = 0;
 
     /**
-     * Remove the emoticon @p emo, this will not delete the image file too
+     * Removes the emoticon @p emo. This doesn't delete the image file.
      * @param emo the emoticon text to remove
-     * @return @c true if it can delete the emoticon
+     * @return @c true if the emoticon theme is successfully removed
      */
-    virtual bool removeEmoticon(const QString &emo);
+    virtual bool removeEmoticon(const QString &emo) = 0;
 
     /**
-     * Add the emoticon @p emo with text @p text
+     * Adds the emoticon @p emo with text @p text
      * @param emo path to the emoticon image
-     * @param text the text of the emoticon separated by space for multiple text
-     * @param copy whether or not copy @p emo into the theme directory
-     * @return @c true if it can add the emoticon
+     * @param text the emoticon text. If alternative texts are to be added,
+     * use spaces to separate them.
+     * @param copy whether or not to copy @p emo into the theme directory
+     * @return @c true if the emoticon is successfully added
      */
-    virtual bool addEmoticon(const QString &emo, const QString &text, AddEmoticonOption option = DoNotCopy);
+    virtual bool addEmoticon(const QString &emo, const QString &text, AddEmoticonOption option = DoNotCopy) = 0;
 
     /**
-     * Save the emoticon theme
+     * Saves the emoticon theme
      */
-    virtual void save();
+    virtual void save() = 0;
 
     /**
      * Returns the theme name
@@ -98,23 +98,23 @@ public:
     QString themeName() const;
 
     /**
-     * Set the theme name
+     * Sets the emoticon theme name
      * @param name name of the theme
      */
     void setThemeName(const QString &name);
 
     /**
-     * Returns the theme path
+     * Returns the emoticon theme path
      */
     QString themePath() const;
 
     /**
-     * Returns the file name of the theme
+     * Returns the file name of the emoticon theme
      */
     QString fileName() const;
 
     /**
-    * Returns a QHash that contains the emoticons path as keys and the text as values
+    * Returns a QHash that contains the emoticon path as keys and the text as values
     */
     QHash<QString, QStringList> emoticonsMap() const;
 
@@ -124,44 +124,60 @@ public:
     QHash<QChar, QList<Emoticon> > emoticonsIndex() const;
 
     /**
-     * Create a new theme
+     * Creates a new theme
      */
-    virtual void createNew();
+    virtual void createNew() = 0;
 
 protected:
+    /**
+     * Sets the theme inside the directory @p path
+     * @param path path to the directory
+     * @since 5.0
+     */
+    void setThemePath(const QString &path);
+
+    /**
+     * Copies the emoticon image to the theme directory
+     * @param emo path to the emoticon image
+     * @return true if the emoticon is successfully copied
+     * @since 5.0
+     */
+    bool copyEmoticon(const QString &emo);
+
     /**
      * Clears the emoticons map
      */
     void clearEmoticonsMap();
 
     /**
-     * Insert a new item in the emoticons map
+     * Inserts a new item in the emoticon map
      */
     void addEmoticonsMap(QString key, QStringList value);
 
     /**
-     * Remove an item from the emoticons map
+     * Removes an item from the emoticon map
      */
     void removeEmoticonsMap(QString key);
 
     /**
-     * Add an emoticon to the index
+     * Adds an emoticon to the index
      * @param path path to the emoticon
      * @param emoList list of text associated with this emoticon
      */
     void addEmoticonIndex(const QString &path, const QStringList &emoList);
 
     /**
-     * Remove an emoticon from the index
+     * Removes an emoticon from the index
      * @param path path to the emoticon
      * @param emoList list of text associated with this emoticon
      */
     void removeEmoticonIndex(const QString &path, const QStringList &emoList);
 
+private:
     /**
-     * Private class
+     * Private implementation class
      */
-    KEmoticonsProviderPrivate * const d;
+    const QScopedPointer<KEmoticonsProviderPrivate> d;
 };
 
 #endif /* KEMOTICONS_PROVIDER_H */

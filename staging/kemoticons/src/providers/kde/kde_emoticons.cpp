@@ -23,7 +23,6 @@
 #include <QtCore/QDebug>
 #include <QtCore/QFileInfo>
 #include <QImageReader>
-#include <QTextDocument>
 
 #include <kpluginfactory.h>
 
@@ -58,7 +57,13 @@ bool KdeEmoticons::removeEmoticon(const QString &emo)
 
 bool KdeEmoticons::addEmoticon(const QString &emo, const QString &text, AddEmoticonOption option)
 {
-    KEmoticonsProvider::addEmoticon(emo, text, option);
+    if (option == Copy) {
+        bool result = copyEmoticon(emo);
+        if (!result) {
+            qWarning() << "There was a problem copying the emoticon";
+            return false;
+        }
+    }
 
     const QStringList splitted = text.split(' ');
     QDomElement fce = m_themeXml.firstChildElement("messaging-emoticon-map");
@@ -104,30 +109,29 @@ void KdeEmoticons::save()
 
 bool KdeEmoticons::loadTheme(const QString &path)
 {
-    KEmoticonsProvider::loadTheme(path);
+    QFile file(path);
 
-    QFile fp(path);
-
-    if (!fp.exists()) {
+    if (!file.exists()) {
         qWarning() << path << "doesn't exist!";
         return false;
     }
 
-    if (!fp.open(QIODevice::ReadOnly)) {
-        qWarning() << fp.fileName() << "can't open ReadOnly!";
+    setThemePath(path);
+    if (!file.open(QIODevice::ReadOnly)) {
+        qWarning() << file.fileName() << "can't be open ReadOnly!";
         return false;
     }
 
     QString error;
     int eli, eco;
-    if (!m_themeXml.setContent(&fp, &error, &eli, &eco)) {
-        qWarning() << fp.fileName() << "can't copy to xml!";
+    if (!m_themeXml.setContent(&file, &error, &eli, &eco)) {
+        qWarning() << file.fileName() << "can't copy to xml!";
         qWarning() << error << "line:" << eli << "column:" << eco;
-        fp.close();
+        file.close();
         return false;
     }
 
-    fp.close();
+    file.close();
 
     QDomElement fce = m_themeXml.firstChildElement("messaging-emoticon-map");
 
