@@ -70,7 +70,7 @@ public:
   /**
    * This is NOT a copy constructor.
    */
-  explicit ParseContext( const ParseContext* _ctx ) : service( _ctx->service ), maxima( _ctx->maxima ),
+  explicit ParseContext( const ParseContext* _ctx ) : service( _ctx->service ), info( _ctx->info ), maxima( _ctx->maxima ),
     offers( _ctx->offers ), pluginOffers( _ctx->pluginOffers ) {}
   ParseContext( const KService::Ptr & _service, const KService::List& _offers,
         QMap<QString,PreferencesMaxima>& _m )
