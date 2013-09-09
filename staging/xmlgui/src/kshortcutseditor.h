@@ -64,6 +64,7 @@ class KShortcutsEditorPrivate;
 class XMLGUI_EXPORT KShortcutsEditor : public QWidget
 {
 	Q_OBJECT
+	Q_PROPERTY(ActionTypes actionTypes READ actionTypes WRITE setActionTypes)
 
 public:
 	enum ActionType {
@@ -205,6 +206,20 @@ public:
     XMLGUI_DEPRECATED void importConfiguration( KConfig *config);
 #endif
     void importConfiguration( KConfigBase *config);
+
+    /**
+     * Sets the types of actions to display in this widget.
+     *
+     * @param actionTypes New types of actions
+     * @since 5.0
+     */
+    void setActionTypes(ActionTypes actionTypes);
+    /**
+     *
+     * @return The types of actions currently displayed in this widget.
+     * @since 5.0
+     */
+    ActionTypes actionTypes() const;
 
 
 Q_SIGNALS:
