@@ -40,7 +40,6 @@
 
 #define POOL_USAGE 0
 
-Q_DECLARE_METATYPE(QModelIndex)
 
 /**
   Private class that helps to provide binary compatibility between releases.

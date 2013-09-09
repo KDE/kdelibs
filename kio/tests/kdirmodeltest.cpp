@@ -381,7 +381,6 @@ void KDirModelTest::testReload()
     testItemForIndex();
 }
 
-Q_DECLARE_METATYPE(QModelIndex) // needed for .value<QModelIndex>()
 
 // We want more info than just "the values differ", if they do.
 #define COMPARE_INDEXES(a, b) \

@@ -79,7 +79,6 @@ private:
     QMap<QString, QDBusInterface*> m_interfacesMap;
 };
 
-Q_DECLARE_METATYPE(QModelIndex)
 
 void KFilePlacesModelTest::initTestCase()
 {

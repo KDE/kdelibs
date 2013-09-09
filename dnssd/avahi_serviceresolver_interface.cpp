@@ -10,7 +10,6 @@
  */
 
 #include "avahi_serviceresolver_interface.h"
-Q_DECLARE_METATYPE(QList<QByteArray>)
 
 /*
  * Implementation of interface class OrgFreedesktopAvahiServiceResolverInterface

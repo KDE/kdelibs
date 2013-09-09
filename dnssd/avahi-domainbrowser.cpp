@@ -31,7 +31,6 @@
 
 
 
-Q_DECLARE_METATYPE(QList<QByteArray>)
 namespace DNSSD
 {
 

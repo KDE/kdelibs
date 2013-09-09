@@ -22,7 +22,6 @@
 #include "backportglobal.h"
 
 Q_DECLARE_METATYPE(QUrl*)
-//Q_DECLARE_METATYPE(QUrl) unneeded
 
 static QScriptValue urlCtor(QScriptContext *ctx, QScriptEngine *eng)
 {

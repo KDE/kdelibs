@@ -72,7 +72,6 @@ void KJobTest::testEmitResult()
     QCOMPARE( destroyed_spy.size(), 1 );
 }
 
-Q_DECLARE_METATYPE(KJob*)
 
 void KJobTest::testProgressTracking()
 {

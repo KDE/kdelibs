@@ -26,7 +26,6 @@
 #include "avahi_servicetypebrowser_interface.h"
 
 #define UNSPEC -1
-Q_DECLARE_METATYPE(QList<QByteArray>)
 namespace DNSSD
 {
 

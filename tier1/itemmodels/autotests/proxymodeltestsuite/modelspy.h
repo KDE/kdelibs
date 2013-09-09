@@ -46,7 +46,6 @@ enum SignalType
   ModelReset
 };
 
-Q_DECLARE_METATYPE( QModelIndex )
 
 class PROXYMODELTESTSUITE_EXPORT ModelSpy : public QObject, public QList<QVariantList>
 {
