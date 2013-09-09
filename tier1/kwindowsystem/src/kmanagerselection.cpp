@@ -137,9 +137,7 @@ KSelectionOwner::~KSelectionOwner()
 
 void KSelectionOwner::Private::claimSucceeded()
 {
-    if (state != KSelectionOwner::Private::WaitingForPreviousOwner) {
-        state = Idle;
-    }
+    state = Idle;
 
     xcb_client_message_event_t ev;
     ev.response_type = XCB_CLIENT_MESSAGE;
@@ -189,10 +187,10 @@ void KSelectionOwner::Private::gotTimestamp()
 
         // Note: We've already selected for structure notify events
         //       on the previous owner window
+    } else {
+        // If there was no previous owner, we're done
+        claimSucceeded();
     }
-
-    // If there was no previous owner, we're done
-    claimSucceeded();
 }
 
 void KSelectionOwner::Private::timeout()
@@ -208,6 +206,10 @@ void KSelectionOwner::Private::timeout()
         // Ignore any errors from the kill request
         xcb_generic_error_t *err = xcb_request_check(c, xcb_kill_client_checked(c, prev_owner));
         free(err);
+
+        claimSucceeded();
+    } else {
+        emit owner->failedToClaimOwnership();
     }
 }
 
