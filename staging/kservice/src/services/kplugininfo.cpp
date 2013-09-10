@@ -138,7 +138,7 @@ KPluginInfo::KPluginInfo(const QVariantList &args)
         }
     }
 
-    d->hidden = d->metaData.value(QStringLiteral("Hidden")).toBool();
+    d->hidden = d->metaData.value(d->_hidden).toBool();
     if (d->hidden) {
         return;
     }
@@ -263,9 +263,9 @@ QList<KPluginInfo> KPluginInfo::fromFiles(const QStringList &files, const KConfi
 QList<KPluginInfo> KPluginInfo::fromKPartsInstanceName(const QString &name, const KConfigGroup &config)
 {
     QStringList files;
-    const QStringList dirs = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, name + QLatin1String("/kpartplugins"), QStandardPaths::LocateDirectory);
+    const QStringList dirs = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, name + QStringLiteral("/kpartplugins"), QStandardPaths::LocateDirectory);
     Q_FOREACH(const QString& dir, dirs) {
-        QDirIterator it(dir, QStringList() << QLatin1String("*.desktop"));
+        QDirIterator it(dir, QStringList() << QStringLiteral("*.desktop"));
         while (it.hasNext()) {
             files.append(it.next());
         }
@@ -413,8 +413,8 @@ QList<KService::Ptr> KPluginInfo::kcmServices() const
     KPLUGININFO_ISVALID_ASSERTION;
     if ( !d->kcmservicesCached )
     {
-        d->kcmservices = KServiceTypeTrader::self()->query( QLatin1String("KCModule"), QLatin1Char('\'') + pluginName() +
-            QString::fromLatin1("' in [X-KDE-ParentComponents]") );
+        d->kcmservices = KServiceTypeTrader::self()->query( QStringLiteral("KCModule"), QLatin1Char('\'') + pluginName() +
+            QStringLiteral("' in [X-KDE-ParentComponents]") );
         //qDebug() << "found" << d->kcmservices.count() << "offers for" << d->pluginName;
 
         d->kcmservicesCached = true;
@@ -435,13 +435,13 @@ KConfigGroup KPluginInfo::config() const
     return d->config;
 }
 
-QVariant KPluginInfo::property( const QString & key ) const
+QVariant KPluginInfo::property(const QString &key) const
 {
     KPLUGININFO_ISVALID_ASSERTION;
-    if( d->service )
-        return d->service->property( key );
-    else
-        return d->metaData.value(key);
+    if(d->service) {
+        return d->service->property(key);
+    }
+    return d->metaData.value(key);
 }
 
 void KPluginInfo::save(KConfigGroup config)
@@ -449,13 +449,13 @@ void KPluginInfo::save(KConfigGroup config)
     KPLUGININFO_ISVALID_ASSERTION;
     //qDebug() << Q_FUNC_INFO;
     if (config.isValid()) {
-        config.writeEntry(pluginName() + QString::fromLatin1("Enabled"), isPluginEnabled());
+        config.writeEntry(pluginName() + QStringLiteral("Enabled"), isPluginEnabled());
     } else {
         if (!d->config.isValid()) {
             qWarning() << "no KConfigGroup, cannot save";
             return;
         }
-        d->config.writeEntry(pluginName() + QString::fromLatin1("Enabled"), isPluginEnabled());
+        d->config.writeEntry(pluginName() + QStringLiteral("Enabled"), isPluginEnabled());
     }
 }
 
@@ -464,13 +464,13 @@ void KPluginInfo::load(const KConfigGroup &config)
     KPLUGININFO_ISVALID_ASSERTION;
     //qDebug() << Q_FUNC_INFO;
     if (config.isValid()) {
-        setPluginEnabled(config.readEntry(pluginName() + QString::fromLatin1("Enabled"), isPluginEnabledByDefault()));
+        setPluginEnabled(config.readEntry(pluginName() + QStringLiteral("Enabled"), isPluginEnabledByDefault()));
     } else {
         if (!d->config.isValid()) {
             qWarning() << "no KConfigGroup, cannot load";
             return;
         }
-        setPluginEnabled(d->config.readEntry(pluginName() + QString::fromLatin1("Enabled"), isPluginEnabledByDefault()));
+        setPluginEnabled(d->config.readEntry(pluginName() + QStringLiteral("Enabled"), isPluginEnabledByDefault()));
     }
 }
 
