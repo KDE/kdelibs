@@ -123,13 +123,14 @@ public:
      *
      * Example:
      * \code
-     * KMyAppPlugin* plugin = KPluginTrader::createInstanceFromQuery<KMyAppPlugin>( serviceType, QString(), parentObject );
+     * KMyAppPlugin* plugin = KPluginTrader::createInstanceFromQuery<KMyAppPlugin>( serviceType, subDirectory, QString(), parentObject );
      * if ( plugin ) {
      *     ....
      * }
      * \endcode
      *
      * @param serviceType the type of service for which to find a plugin
+     * @param subDirectory The subdirectory under the Qt plugin pathes to search in
      * @param constraint an optional constraint to pass to the trader (see KTrader)
      * @param parent the parent object for the part itself
      * @param args A list of arguments passed to the service component
@@ -139,23 +140,25 @@ public:
      */
     template <class T>
     static T *createInstanceFromQuery(const QString &serviceType,
+            const QString &subDirectory = QString(),
             const QString &constraint = QString(), QObject *parent = 0,
             const QVariantList &args = QVariantList(), QString *error = 0)
     {
-        return createInstanceFromQuery<T>(serviceType, 0, parent, constraint, args, error);
+        return createInstanceFromQuery<T>(serviceType, 0, parent, subDirectory, constraint, args, error);
     }
 
     /**
      * Get a plugin from a trader query
      *
      * This method works like
-     * createInstanceFromQuery(const QString&, const QString&, QObject*, const QVariantList&, QString*),
-     * but you can specify an additional parent widget.  This is important for
-     * a KPart, for example.
+     * createInstanceFromQuery(const QString&, const QString& ,const QString&, QObject*,
+     * const QVariantList&, QString*),
+     * but you can specify an additional parent widget.  This is important for a KPart, for example.
      *
      * @param serviceType the type of service for which to find a plugin
      * @param parentWidget the parent widget for the plugin
      * @param parent the parent object for the part itself
+     * @param subDirectory The subdirectory under the Qt plugin pathes to search in
      * @param constraint an optional constraint to pass to the trader (see KTrader)
      * @param args A list of arguments passed to the service component
      * @param error The string passed here will contain an error description.
@@ -164,20 +167,31 @@ public:
      */
     template <class T>
     static T *createInstanceFromQuery(const QString &serviceType,
-            QWidget *parentWidget, QObject *parent, const QString &constraint = QString(),
-            const QVariantList &args = QVariantList(), QString *error = 0)
+            QWidget *parentWidget, QObject *parent,
+            const QString &subDirectory = QString(),
+            const QString &constraint = QString(),
+            const QVariantList &args = QVariantList(),
+            QString *error = 0)
     {
-        const KService::List offers = self()->query(serviceType, constraint);
-        if (error)
+        if (error) {
             error->clear();
-        Q_FOREACH (const KService::Ptr &ptr, offers) {
-            T *component = ptr->template createInstance<T>(parentWidget, parent, args, error);
-            if (component) {
-                return component;
+        }
+        const KPluginInfo::List offers = self()->query(serviceType, subDirectory, constraint);
+
+        Q_FOREACH (const KPluginInfo &info, offers) {
+            KPluginLoader loader(info.libraryPath());
+            const QVariantList argsWithMetaData = QVariantList() << loader.metaData().toVariantMap();
+            KPluginFactory* factory = loader.factory();
+            if (factory) {
+                T* component = factory->create<T>(parent, argsWithMetaData);
+                if (component) {
+                    return component;
+                }
             }
         }
-        if (error && error->isEmpty())
+        if (error && error->isEmpty()) {
             *error = QCoreApplication::translate("", "No service matching the requirements was found");
+        }
         return 0;
     }
 
