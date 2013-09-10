@@ -51,11 +51,12 @@ void ListDirTest::numFilesTestCase()
     connect(job, SIGNAL(entries(KIO::Job*,KIO::UDSEntryList)), this, SLOT(slotEntries(KIO::Job*,KIO::UDSEntryList)));
 
     QSignalSpy spy(job, SIGNAL(result(KJob*)));
-    spy.wait(100);
 
     if(numOfFiles >= 1000) QEXPECT_FAIL("", "Expected failure if you hit KIO jumbo packets.", Abort);
-    QCOMPARE(m_receivedEntryCount, numOfFiles);
+    QVERIFY(spy.wait(1000));
+
     QCOMPARE(job->error(), 0); // no error
+    QCOMPARE(m_receivedEntryCount, numOfFiles);
 }
 
 
