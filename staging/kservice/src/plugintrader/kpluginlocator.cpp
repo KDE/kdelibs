@@ -48,7 +48,7 @@ KPluginInfo::List KPluginLocator::query(const QString& servicetype, const QStrin
             KPluginInfo info(argsWithMetaData);
 
             if (info.serviceTypes().contains(servicetype)) {
-                qDebug() << "Found plugin with " << servicetype << " : " << info.name();
+                //qDebug() << "Found plugin with " << servicetype << " : " << info.name();
                 info.setLibraryPath(_f);
                 services.append(info);
             }

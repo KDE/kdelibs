@@ -201,16 +201,12 @@ KService::List KPluginTrader::query( const QString& serviceType,
 
 KPluginInfo::List KPluginTrader::query(const QString& servicetype, const QString& constraint)
 {
-    qWarning() << " Constraint currently not taken into account" << constraint;
-
     QPluginLoader loader;
     const QStringList libraryPaths = QCoreApplication::libraryPaths();
 
     KPluginInfo::List lst; // FIXME: How are we going to prevent leaking?
-    //QStringList files;
     Q_FOREACH (const QString& dir, libraryPaths) {
-        //QDirIterator it(dir+"/kf5", QStringList() << "plasma_engine_time.so", QDir::Files);
-        QDirIterator it(dir+"/kf5", QStringList() << "*.so", QDir::Files);
+        QDirIterator it(dir, QStringList() << "*.so", QDir::Files);
 
         while (it.hasNext()) {
             it.next();
@@ -224,15 +220,10 @@ KPluginInfo::List KPluginTrader::query(const QString& servicetype, const QString
                 info.setLibraryPath(_f);
                 lst << info;
             }
-//             qDebug() << " Plugininfo reports: " << info.name() << ", " << info.icon() << info.serviceTypes() << endl;
+            //qDebug() << " Plugininfo reports: " << info.name() << ", " << info.icon() << info.serviceTypes() << endl;
         }
     }
-    qDebug() << "BEFORE query for serviceType " << servicetype << constraint
-                << " : returning " << lst.count() << " offers" << endl;
     applyConstraints( lst, constraint );
-    //qDebug() << "Found " << files.count();
-    qDebug() << "AFTER query for serviceType " << servicetype << constraint
-                << " : returning " << lst.count() << " offers" << endl;
     return lst;
 
 }
