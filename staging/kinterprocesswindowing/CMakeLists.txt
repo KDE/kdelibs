@@ -26,6 +26,7 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/kinterprocesswindowing_version.h
         DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
 
 add_subdirectory(src)
+add_subdirectory(tests)
 
 include(FeatureSummary)
 
