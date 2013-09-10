@@ -34,6 +34,7 @@ class PluginTest : public QObject
         void findPluginCategory();
         void findPluginComplex();
         void findPluginEmpty();
+        void loadPlugin();
 
     private:
 };

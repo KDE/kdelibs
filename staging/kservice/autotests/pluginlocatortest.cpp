@@ -18,6 +18,7 @@
 *******************************************************************************/
 
 #include "pluginlocatortest.h"
+#include "nsaplugin.h"
 
 #include <qtest.h>
 #include <QDebug>
@@ -38,7 +39,6 @@ void PluginTest::findPluginNoConstraints()
     constraint = QString();
     res = KPluginTrader::self()->query(serviceType, QString(), constraint);
     QVERIFY(res.count() > 0);
-    res.clear();
 }
 
 void PluginTest::findPluginName()
@@ -51,7 +51,6 @@ void PluginTest::findPluginName()
     constraint = QString("[X-KDE-PluginInfo-Name] == '%1'").arg(pluginName);
     res = KPluginTrader::self()->query(serviceType, QString(), constraint);
     QVERIFY(res.count() > 0);
-    res.clear();
 }
 
 
@@ -64,8 +63,6 @@ void PluginTest::findPluginCategory()
     const QString constraint = QString("[X-KDE-PluginInfo-Category] == '%1'").arg(category);
     res = KPluginTrader::self()->query(serviceType, QString(), constraint);
     QVERIFY(res.count() > 0);
-    res.clear();
-
 }
 
 void PluginTest::findPluginComplex()
@@ -77,8 +74,6 @@ void PluginTest::findPluginComplex()
     const QString constraint = QString("([X-KDE-PluginInfo-Category] == '%1') AND ([X-KDE-PluginInfo-Email] == 'sebas@kde.org')").arg(category);
     res = KPluginTrader::self()->query(serviceType, QString(), constraint);
     QVERIFY(res.count() > 0);
-    res.clear();
-
 }
 
 void PluginTest::findPluginEmpty()
@@ -90,8 +85,24 @@ void PluginTest::findPluginEmpty()
     const QString constraint = QString("([X-KDE-PluginInfo-Category] == '%1') AND ([X-KDE-PluginInfo-Email] == 'prrrrt')").arg(category);
     res = KPluginTrader::self()->query(serviceType, QString(), constraint);
     QVERIFY(res.count() == 0);
-    res.clear();
+}
 
+
+void PluginTest::loadPlugin()
+{
+    const QString pluginName("fakeplugin");
+    const QString serviceType("KService/NSA");
+    const QString constraint = QString("[X-KDE-PluginInfo-Name] == '%1'").arg(pluginName);
+
+    QObject* plugin = KPluginTrader::createInstanceFromQuery<QObject>(serviceType, QString(), constraint, this);
+    QVERIFY(plugin != 0);
+    if (plugin) {
+        //qDebug() << "Plugin loaded successfully" << plugin->objectName();
+        QVERIFY(plugin->objectName() == QStringLiteral("Test Plugin Spy"));
+    } else {
+        //qDebug() << "Plugin failed to loaded";
+
+    }
 }
 
 

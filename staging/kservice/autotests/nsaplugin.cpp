@@ -21,22 +21,17 @@
  */
 
 #include "nsaplugin.h"
-
+#include <QDebug>
 
 
 NSAPlugin::NSAPlugin(QObject* parent, const QVariantList &args)
     : QObject(parent),
       m_pluginInfo(args)
 {
+    //qDebug() << "SUCCESS!" << m_pluginInfo.pluginName() << m_pluginInfo.name() << m_pluginInfo.comment();
+    setObjectName(m_pluginInfo.comment());
 }
 
-void NSAPlugin::initTestCase()
-{
-}
-
-void NSAPlugin::cleanupTestCase()
-{
-}
 K_PLUGIN_FACTORY_WITH_JSON(nsapluginfa, "fakeplugin.json", registerPlugin<NSAPlugin>();)
 
 #include "nsaplugin.moc"

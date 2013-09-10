@@ -34,10 +34,6 @@ class NSAPlugin : public QObject
 public:
     explicit NSAPlugin(QObject* parent, const QVariantList &args);
 
-private Q_SLOTS:
-    void initTestCase();
-    void cleanupTestCase();
-
 private:
     KPluginInfo m_pluginInfo;
 
