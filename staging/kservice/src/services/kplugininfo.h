@@ -324,12 +324,6 @@ class KSERVICE_EXPORT KPluginInfo
         QString libraryPath() const;
 
         /**
-         * @arg filename The absolute path of the plugin on disk.
-         * @since 5.0
-         */
-        void setLibraryPath(const QString &filename);
-
-        /**
          * @return The KService object for this plugin. You might need it if you
          *         want to read custom values. To do this you need to define
          *         your own servicetype and add it to the ServiceTypes keys.
@@ -416,9 +410,17 @@ class KSERVICE_EXPORT KPluginInfo
          */
         bool operator>(const KPluginInfo &rhs) const;
 
+        friend class KPluginTrader;
+
     private:
         friend KSERVICE_EXPORT uint qHash(const KPluginInfo &);
         QExplicitlySharedDataPointer<KPluginInfoPrivate> d;
+
+        /**
+         * @arg filename The absolute path of the plugin on disk.
+         * @since 5.0
+         */
+        void setLibraryPath(const QString &filename);
 };
 
 KSERVICE_EXPORT uint qHash(const KPluginInfo &);
