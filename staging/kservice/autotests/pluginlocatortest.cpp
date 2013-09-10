@@ -29,15 +29,69 @@
 
 QTEST_MAIN(PluginTest)
 
-void PluginTest::findPlugin()
+void PluginTest::findPluginNoConstraints()
 {
+    QString constraint;
+    const QString serviceType("KService/NSA");
+    KPluginInfo::List res;
+
+    constraint = QString();
+    res = KPluginTrader::self()->query(serviceType, QString(), constraint);
+    QVERIFY(res.count() > 0);
+    res.clear();
+}
+
+void PluginTest::findPluginName()
+{
+    QString constraint;
     const QString pluginName("fakeplugin");
     const QString serviceType("KService/NSA");
-    const QString category("Examples");
+    KPluginInfo::List res;
 
-    const QString constraint = QString("[X-KDE-PluginInfo-Name] == '%1'").arg(pluginName);
-    KPluginInfo::List res = KPluginTrader::self()->query(serviceType, constraint);
+    constraint = QString("[X-KDE-PluginInfo-Name] == '%1'").arg(pluginName);
+    res = KPluginTrader::self()->query(serviceType, QString(), constraint);
     QVERIFY(res.count() > 0);
+    res.clear();
+}
+
+
+void PluginTest::findPluginCategory()
+{
+    const QString serviceType("KService/NSA");
+    const QString category("Examples");
+    KPluginInfo::List res;
+
+    const QString constraint = QString("[X-KDE-PluginInfo-Category] == '%1'").arg(category);
+    res = KPluginTrader::self()->query(serviceType, QString(), constraint);
+    QVERIFY(res.count() > 0);
+    res.clear();
+
+}
+
+void PluginTest::findPluginComplex()
+{
+    const QString serviceType("KService/NSA");
+    const QString category("Examples");
+    KPluginInfo::List res;
+
+    const QString constraint = QString("([X-KDE-PluginInfo-Category] == '%1') AND ([X-KDE-PluginInfo-Email] == 'sebas@kde.org')").arg(category);
+    res = KPluginTrader::self()->query(serviceType, QString(), constraint);
+    QVERIFY(res.count() > 0);
+    res.clear();
+
+}
+
+void PluginTest::findPluginEmpty()
+{
+    const QString serviceType("KService/NSA");
+    const QString category("Examples");
+    KPluginInfo::List res;
+
+    const QString constraint = QString("([X-KDE-PluginInfo-Category] == '%1') AND ([X-KDE-PluginInfo-Email] == 'prrrrt')").arg(category);
+    res = KPluginTrader::self()->query(serviceType, QString(), constraint);
+    QVERIFY(res.count() == 0);
+    res.clear();
+
 }
 
 
