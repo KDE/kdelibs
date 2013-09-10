@@ -17,15 +17,13 @@
 */
 
 #include "kemoticontest.h"
+
 #include <QtTest/QtTest>
-
-#include <stdlib.h>
-
 #include <QDir>
 #include <QFile>
 #include <QTextStream>
-
 #include <QDebug>
+
 #include <kemoticons.h>
 
 QTEST_MAIN(KEmoticonTest)

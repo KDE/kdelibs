@@ -20,8 +20,8 @@
 #include <QMenu>
 #include <QDebug>
 
-#include <knewstuff3/core/engine.h>
-#include <knewstuff3/ui/imageloader.h>
+#include "core/engine.h"
+#include "ui/imageloader.h"
 #include <attica/provider.h>
 
 using namespace KNS3;

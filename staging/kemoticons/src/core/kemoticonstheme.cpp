@@ -22,10 +22,6 @@
 #include "kemoticonstheme.h"
 #include "kemoticons.h"
 
-#include <QtCore/QFileInfo>
-#include <QtCore/QDir>
-#include <QTextDocument>
-#include <QtCore/QtAlgorithms>
 #include <QDebug>
 
 class KEmoticonsTheme::KEmoticonsThemeData : public QSharedData

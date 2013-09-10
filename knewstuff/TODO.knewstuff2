@@ -1,0 +1,51 @@
+Junior Jobs:
+- add unit tests for everything/
+- make sure checksum works
+- make sure caching works
+- make sure signatures work (on download to validate authenticity of the package)
+- Upload authentication with a unit test or test app
+- Find (or create) a way to detect when dxs is being used, or when REST interface is being used so we can do
+   - REST voting
+   - Possibly make a REST engine to work directly with odc 
+- scan for installedfiles & unregister if not found, so user can re-install
+
+I. Finalize DXS stuff
+  a. make dxs engine work with cache
+  b. verify all dxs methods work (comments, rating, etc.)
+  
+II. Finish ui improvements
+  a. expose all information menu actions in the new interface
+  b. Zoomed thumbnail tooltip for images
+  c. Show rating, downloads, etc.
+  
+III. Finish backend improvements needed/wanted for further enhancements to work
+  a. referencecount entries to save memory (and so entry state will be shared between feeds, providers, etc.)
+  b. Fix downloadDialog() and uploadDialog() methods that according to apidox report changes with signals, but Engine
+   class has no signals...
+  c. fix issues in download dialog (signal names, etc.)
+  d. Add support for categories with support for different options per category (targetpath, uncompress, etc.)
+
+
+FEATURES:
+- support gui switching scope (user to system, and back)
+- support multiple provider urls with ui to add/remove/edit
+
+- make an app that shows all the available knsrc files, and launches download/upload dialog on selected one
+
+
+// OLD TODO's below
+
+- porting signals to Q_SIGNALS, slots to Q_SLOTS etc.
+- mass indentation (which style, which tool?)
+- API docs
+- copyrights
+- style questions (0 vs. NULL, iterators vs. for-loop etc.)
+
+- knewstuffsecure
+- packager (plasmagik)
+
+- server support
+
+
+
+

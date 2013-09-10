@@ -443,6 +443,7 @@ namespace KIO {
          * or to check if we can write to it. First case is "source", second is "dest".
          * It is necessary to know what the StatJob is for, to tune the kioslave's behavior
          * (e.g. with FTP).
+         * By default it is SourceSide.
          * @param side SourceSide or DestinationSide
          */
         void setSide(StatSide side);
@@ -453,6 +454,7 @@ namespace KIO {
          * It is necessary to know what the StatJob is for, to tune the kioslave's behavior
          * (e.g. with FTP).
          * @param source true for "source" mode, false for "dest" mode
+         * @deprecated use setSide(StatSide side).
          */
 #ifndef KDE_NO_DEPRECATED
         KIOCORE_DEPRECATED void setSide( bool source );
@@ -606,6 +608,14 @@ namespace KIO {
          * @return the mimetype of the URL
          */
         QString mimetype() const;
+
+        /**
+         * After the job has finished, it will return the final url in case a redirection
+         * has happened.
+         * @return the final url that can be empty in case no redirection has happened.
+         * @since 5.0
+         */
+        QUrl redirectUrl() const;
 
         /**
          * Set the total size of data that we are going to send

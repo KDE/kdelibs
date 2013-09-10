@@ -129,7 +129,13 @@ QString RootContext::i18np(const QString &singular, const QString &plural, const
     KLocalizedString trMessage = ki18np(singular.toUtf8().constData(), plural.toUtf8().constData());
 
     if (!param1.isNull()) {
-        trMessage = trMessage.subs(param1);
+        bool ok;
+        int num = param1.toInt(&ok);
+        if (ok) {
+            trMessage = trMessage.subs(num);
+        } else {
+            trMessage = trMessage.subs(param1);
+        }
     }
     if (!param2.isNull()) {
         trMessage = trMessage.subs(param2);
@@ -172,7 +178,13 @@ QString RootContext::i18ncp(const QString &context, const QString &singular, con
     KLocalizedString trMessage = ki18ncp(context.toUtf8().constData(), singular.toUtf8().constData(), plural.toUtf8().constData());
 
     if (!param1.isNull()) {
-        trMessage = trMessage.subs(param1);
+        bool ok;
+        int num = param1.toInt(&ok);
+        if (ok) {
+            trMessage = trMessage.subs(num);
+        } else {
+            trMessage = trMessage.subs(param1);
+        }
     }
     if (!param2.isNull()) {
         trMessage = trMessage.subs(param2);

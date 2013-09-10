@@ -25,8 +25,7 @@
 #include <QDebug>
 
 #include "core/xmlloader.h"
-
-#include <knewstuff3/entry_p.h>
+#include "entry_p.h"
 
 
 using namespace KNS3;

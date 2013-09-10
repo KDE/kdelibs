@@ -412,6 +412,8 @@ public:
 
     void printShortcuts() const;
 
+    void setActionTypes(KShortcutsEditor::ActionTypes actionTypes);
+
 // members
     QList<KActionCollection *> actionCollections;
     KShortcutsEditor *q;

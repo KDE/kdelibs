@@ -1016,6 +1016,11 @@ QString TransferJob::mimetype() const
     return d_func()->m_mimetype;
 }
 
+QUrl TransferJob::redirectUrl() const
+{
+    return d_func()->m_redirectionURL;
+}
+
 // Slave requests data
 void TransferJob::slotDataReq()
 {

@@ -65,11 +65,11 @@ public:
     struct Token {
         Token() : type(Undefined) {}
         /**
-         * Create a Token of type @p t, and text @p m
+         * Creates a Token of type @p t, and text @p m
          */
         Token(TokenType t, const QString &m) : type(t), text(m) {}
         /**
-         * Create a Token of type @p t, text @p m, image path @p p and html code @p html
+         * Creates a Token of type @p t, text @p m, image path @p p and html code @p html
          */
         Token(TokenType t, const QString &m, const QString &p, const QString &html)
                 : type(t), text(m), picPath(p), picHTMLCode(html) {}
@@ -80,8 +80,8 @@ public:
     };
 
     /**
-     * Default constructor, it creates a null emoticons theme
-     * you should probably never use this, instead use KEmoticons::theme()
+     * Default constructor, it creates a null emoticon theme
+     * You should probably never use this, use KEmoticons::theme() instead
      */
     KEmoticonsTheme();
 
@@ -92,7 +92,7 @@ public:
 
     /**
      * Another constructor where you set the KEmoticonsProvider @p p
-     * you should probably never use this, instead use KEmoticons::theme()
+     * You should probably never use this, use KEmoticons::theme() instead
      */
     KEmoticonsTheme(KEmoticonsProvider *p);
 
@@ -102,7 +102,7 @@ public:
     ~KEmoticonsTheme();
 
     /**
-     * Parse emoticons in text @p text with ParseMode @p mode and optionally excluding emoticons from @p exclude
+     * Parses emoticons in text @p text with ParseMode @p mode and optionally excluding emoticons from @p exclude
      * @code
      * KEmoticonsTheme theme = KEmoticons().theme();
      * QString text = ":D hi :)";
@@ -119,13 +119,13 @@ public:
     QString parseEmoticons(const QString &text, ParseMode mode = DefaultParse, const QStringList &exclude = QStringList()) const;
 
     /**
-     * Tokenize the message @p message with ParseMode @p mode
+     * Tokenizes the message @p message with ParseMode @p mode
      * @code
      * KEmoticonsTheme theme = KEmoticons().theme();
      * QString text = "hi :)";
      * QList<Token> tokens = theme.tokenize(text, KEmoticonsTheme::DefaultParse);
      * // tokens[0].text = "hi "
-     * // tokens[1].text = ":)" 
+     * // tokens[1].text = ":)"
      * // tokens[1].picPath = "/path/to/:).png"
      * // tokens[1].picHTMLCode = "<img align="center" title=":)" alt=":)" src="/path/to/:).png" width="24" height="24" />"
      * @endcode
@@ -133,37 +133,39 @@ public:
     QList<Token> tokenize(const QString &message, ParseMode mode = DefaultParse) const;
 
     /**
-     * Load the theme inside the directory @p path
+     * Loads the emoticon theme inside the directory @p path
      * @param path path to the directory
+     * @return @c true if the emoticon is successfully loaded
      */
     bool loadTheme(const QString &path);
 
     /**
-     * Remove the emoticon @p emo, this will not delete the image file too
+     * Removes the emoticon @p emo. This doesn't delete the image file.
      * @code
      * KEmoticonsTheme theme = KEmoticons().theme();
      * theme.removeEmoticon(":)");
      * @endcode
      * @param emo the emoticon text to remove
-     * @return @c true if it can delete the emoticon
+     * @return @c true if the emoticon is successfully removed
      */
     bool removeEmoticon(const QString &emo);
 
     /**
-     * Add the emoticon @p emo with text @p text
+     * Adds the emoticon @p emo with text @p text
      * @code
      * KEmoticonsTheme theme = KEmoticons().theme();
      * theme.addEmoticon("/path/to/smiley.png", ":) :-)");
      * @endcode
      * @param emo path to the emoticon image
-     * @param text the text of the emoticon separated by space for multiple text
-     * @param copy whether or not copy @p emo into the theme directory
-     * @return @c true if it can add the emoticon
+     * @param text the emoticon text. If alternative texts are to be added,
+     * use spaces to separate them.
+     * @param copy whether or not to copy @p emo into the theme directory
+     * @return @c true if the emoticon is successfully added
      */
     bool addEmoticon(const QString &emo, const QString &text, KEmoticonsProvider::AddEmoticonOption option = KEmoticonsProvider::DoNotCopy);
 
     /**
-     * Save the emoticon theme
+     * Saves the emoticon theme
      */
     void save();
 
@@ -173,33 +175,34 @@ public:
     QString themeName() const;
 
     /**
-     * Set the theme name
+     * Sets the emoticon theme name
      * @param name name of the theme
      */
     void setThemeName(const QString &name);
 
     /**
-     * Returns the theme path
+     * Returns the emoticon theme path
      */
     QString themePath() const;
 
     /**
-     * Returns the file name of the theme
+     * Returns the file name of the emoticon theme
      */
     QString fileName() const;
 
     /**
-     * Returns a QHash that contains the emoticons path as keys and the text as values
+     * Returns a QHash that contains the emoticon path as keys and the text as values
      */
     QHash<QString, QStringList> emoticonsMap() const;
 
     /**
-     * Create a new theme
+     * Creates a new theme
      */
     void createNew();
 
     /**
-     * Check if the theme has a valid provider and it returns true if it can't find it
+     * Checks if the emoticon theme has a valid provider
+     * @return true if it can't find a valid provider
      */
     bool isNull() const;
 
@@ -210,7 +213,7 @@ public:
 private:
     class KEmoticonsThemeData;
     /**
-     * Private class
+     * Private implementation class
      */
     QSharedDataPointer<KEmoticonsThemeData> d;
 };

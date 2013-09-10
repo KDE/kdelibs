@@ -17,16 +17,13 @@
  **********************************************************************************/
 
 #include "kemoticonsprovider.h"
-#include <QPixmap>
 #include "kemoticons.h"
 
 #include <QtCore/QFileInfo>
 #include <QtCore/QDir>
-#include <QTextDocument>
 #include <QUrl>
-
-#include <kio/copyjob.h>
-#include <kio/jobuidelegate.h>
+#include <QPixmap>
+#include <QDebug>
 
 class KEmoticonsProviderPrivate
 {
@@ -49,37 +46,6 @@ KEmoticonsProvider::KEmoticonsProvider(QObject *parent)
 }
 
 KEmoticonsProvider::~KEmoticonsProvider()
-{
-    delete d;
-}
-
-bool KEmoticonsProvider::loadTheme(const QString &path)
-{
-    QFileInfo info(path);
-    d->m_fileName = info.fileName();
-    d->m_themeName = info.dir().dirName();
-    d->m_themePath = info.absolutePath();
-    return true;
-}
-
-bool KEmoticonsProvider::removeEmoticon(const QString &emo)
-{
-    Q_UNUSED(emo);
-    return false;
-}
-
-bool KEmoticonsProvider::addEmoticon(const QString &emo, const QString &text, AddEmoticonOption option)
-{
-    if (option == Copy) {
-        KIO::CopyJob* job = KIO::copy(QUrl::fromLocalFile(emo), QUrl::fromLocalFile(d->m_themePath));
-        job->exec();
-    }
-
-    Q_UNUSED(text);
-    return false;
-}
-
-void KEmoticonsProvider::save()
 {
 }
 
@@ -125,13 +91,25 @@ QHash<QString, QStringList> KEmoticonsProvider::emoticonsMap() const
     return d->m_emoticonsMap;
 }
 
-void KEmoticonsProvider::createNew()
-{
-}
-
 QHash<QChar, QList<KEmoticonsProvider::Emoticon> > KEmoticonsProvider::emoticonsIndex() const
 {
     return d->m_emoticonsIndex;
+}
+
+void KEmoticonsProvider::setThemePath(const QString &path)
+{
+    QFileInfo info(path);
+    d->m_fileName = info.fileName();
+    d->m_themeName = info.dir().dirName();
+    d->m_themePath = info.absolutePath();
+}
+
+bool KEmoticonsProvider::copyEmoticon(const QString &emo)
+{
+    QFile file(emo);
+    QFileInfo info(file);
+    QString newPath(d->m_themePath + QLatin1Char('/') + info.fileName());
+    return file.copy(newPath);
 }
 
 void KEmoticonsProvider::addEmoticonIndex(const QString &path, const QStringList &emoList)

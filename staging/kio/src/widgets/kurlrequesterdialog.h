@@ -21,7 +21,7 @@
 #ifndef KURLREQUESTERDIALOG_H
 #define KURLREQUESTERDIALOG_H
 
-#include <kio/kio_export.h>
+#include <kio/kiowidgets_export.h>
 #include <QDialog>
 #include <QUrl>
 
@@ -36,7 +36,7 @@ class KUrlRequesterDialogPrivate;
  * @short Simple dialog to enter a filename/url.
  * @author Wilco Greven <greven@kde.org>
  */
-class KIO_EXPORT KUrlRequesterDialog : public QDialog
+class KIOWIDGETS_EXPORT KUrlRequesterDialog : public QDialog
 {
     Q_OBJECT
 
@@ -87,7 +87,7 @@ public:
      * @deprecated since 5.0
      */
 #ifndef KDE_NO_DEPRECATED
-    KIO_DEPRECATED QFileDialog *fileDialog();
+    KIOWIDGETS_DEPRECATED QFileDialog *fileDialog();
 #endif
 
     /**

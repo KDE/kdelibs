@@ -273,6 +273,15 @@ void KShortcutsEditor::printShortcuts() const
     d->printShortcuts();
 }
 
+KShortcutsEditor::ActionTypes KShortcutsEditor::actionTypes() const
+{
+    return d->actionTypes;
+}
+
+void KShortcutsEditor::setActionTypes(ActionTypes actionTypes)
+{
+    d->setActionTypes(actionTypes);
+}
 
 //---------------------------------------------------------------------
 // KShortcutsEditorPrivate
@@ -324,6 +333,28 @@ void KShortcutsEditorPrivate::initGUI( KShortcutsEditor::ActionTypes types, KSho
     ui.searchFilter->setFocus();
 }
 
+void KShortcutsEditorPrivate::setActionTypes(KShortcutsEditor::ActionTypes types)
+{
+    if (actionTypes == types) {
+        return;
+    }
+    actionTypes = types;
+
+    // show/hide the sections based on new selection
+    QHeaderView *header = ui.list->header();
+    if (actionTypes & KShortcutsEditor::GlobalAction) {
+        header->showSection(GlobalPrimary);
+    } else {
+        header->hideSection(GlobalPrimary);
+    }
+    if (actionTypes & ~KShortcutsEditor::GlobalAction) {
+        header->showSection(LocalPrimary);
+        header->showSection(LocalAlternate);
+    } else {
+        header->hideSection(LocalPrimary);
+        header->hideSection(LocalAlternate);
+    }
+}
 
 bool KShortcutsEditorPrivate::addAction(QAction *action, QTreeWidgetItem *hier[], hierarchyLevel level)
 {

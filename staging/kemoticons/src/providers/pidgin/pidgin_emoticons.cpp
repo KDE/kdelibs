@@ -17,6 +17,7 @@
  **********************************************************************************/
 
 #include "pidgin_emoticons.h"
+#include "kemoticonsprovider.h"
 
 #include <QtCore/QFile>
 #include <QtCore/QDir>
@@ -81,7 +82,13 @@ bool PidginEmoticons::removeEmoticon(const QString &emo)
 
 bool PidginEmoticons::addEmoticon(const QString &emo, const QString &text, AddEmoticonOption option)
 {
-    KEmoticonsProvider::addEmoticon(emo, text, option);
+    if (option == Copy) {
+        bool result = copyEmoticon(emo);
+        if (!result) {
+            qWarning() << "There was a problem copying the emoticon";
+            return false;
+        }
+    }
 
     const QStringList splitted = text.split(' ');
     int i = m_text.indexOf(QRegExp("^\\[default\\]$", Qt::CaseInsensitive));
@@ -126,21 +133,20 @@ void PidginEmoticons::save()
 
 bool PidginEmoticons::loadTheme(const QString &path)
 {
-    KEmoticonsProvider::loadTheme(path);
+    QFile file(path);
 
-    QFile fp(path);
-
-    if (!fp.exists()) {
+    if (!file.exists()) {
         qWarning() << path << "doesn't exist!";
         return false;
     }
 
-    if (!fp.open(QIODevice::ReadOnly)) {
-        qWarning() << fp.fileName() << "can't open ReadOnly!";
+    setThemePath(path);
+    if (!file.open(QIODevice::ReadOnly)) {
+        qWarning() << file.fileName() << "can't be open ReadOnly!";
         return false;
     }
 
-    QTextStream str(&fp);
+    QTextStream str(&file);
     bool start = false;
     m_text.clear();
     while (!str.atEnd()) {
@@ -188,7 +194,7 @@ bool PidginEmoticons::loadTheme(const QString &path)
         addEmoticonsMap(emo, sl);
     }
 
-    fp.close();
+    file.close();
 
     return true;
 }

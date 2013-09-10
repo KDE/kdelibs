@@ -19,17 +19,17 @@
 
 #include "kemoticons.h"
 #include "kemoticonsprovider.h"
-#include <qstandardpaths.h>
 
 #include <QFile>
 #include <QDir>
+#include <QMimeDatabase>
+#include <QStandardPaths>
+#include <QDebug>
 
 #include <kpluginloader.h>
-#include <QDebug>
 #include <kconfiggroup.h>
 #include <ktar.h>
 #include <kzip.h>
-#include <qmimedatabase.h>
 #include <kdirwatch.h>
 
 class KEmoticonsPrivate
@@ -47,7 +47,7 @@ public:
     KEmoticons *q;
 
     //private slots
-    void themeChanged(const QString &path);
+    void changeTheme(const QString &path);
 };
 
 KEmoticonsPrivate::KEmoticonsPrivate(KEmoticons *parent)
@@ -83,7 +83,7 @@ KEmoticonsProvider *KEmoticonsPrivate::loadProvider(const KService::Ptr &service
     return provider;
 }
 
-void KEmoticonsPrivate::themeChanged(const QString &path)
+void KEmoticonsPrivate::changeTheme(const QString &path)
 {
     QFileInfo info(path);
     QString name = info.dir().dirName();
@@ -120,20 +120,19 @@ KEmoticons::KEmoticons()
 {
     d->loadServiceList();
     d->m_dirwatch = new KDirWatch;
-    connect(d->m_dirwatch, SIGNAL(dirty(QString)), this, SLOT(themeChanged(QString)));
+    connect(d->m_dirwatch, SIGNAL(dirty(QString)), this, SLOT(changeTheme(QString)));
 }
 
 KEmoticons::~KEmoticons()
 {
-    delete d;
 }
 
-KEmoticonsTheme KEmoticons::theme()
+KEmoticonsTheme KEmoticons::theme() const
 {
     return theme(currentThemeName());
 }
 
-KEmoticonsTheme KEmoticons::theme(const QString &name)
+KEmoticonsTheme KEmoticons::theme(const QString &name) const
 {
     if (d->m_themes.contains(name)) {
         return d->m_themes.value(name);

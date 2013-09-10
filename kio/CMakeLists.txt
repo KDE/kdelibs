@@ -86,7 +86,6 @@ set(kfile_STAT_SRCS
   kfile/kpreviewwidgetbase.cpp
   kfile/kpropertiesdialog.cpp
   kfile/krecentdirs.cpp
-  kfile/kurlrequesterdialog.cpp
   kfile/getgrouplist-fake.c
   kfile/kfilemetapreview.cpp
 )
@@ -206,7 +205,6 @@ install( FILES
   kfile/kpropertiesdialog.h
   kfile/kpropsdialog.h
   kfile/krecentdirs.h
-  kfile/kurlrequesterdialog.h
 
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
 
