@@ -173,40 +173,14 @@ KService::List KPluginTrader::defaultOffers( const QString& serviceType,
     return lst;
 }
 
-KService::List KPluginTrader::query( const QString& serviceType,
-                                          const QString& constraint ) const
-{
-    if ( !KServiceTypeProfile::hasProfile( serviceType ) )
-    {
-        // Fast path: skip the profile stuff if there's none (to avoid kservice->serviceoffer->kservice)
-        // The ordering according to initial preferences is done by kbuildsycoca
-        return defaultOffers( serviceType, constraint );
-    }
-
-    KService::List lst;
-    // Get all services of this service type.
-    const KServiceOfferList offers = weightedOffers( serviceType );
-
-    // Now extract only the services; the weighting was only used for sorting.
-    KServiceOfferList::const_iterator itOff = offers.begin();
-    for( ; itOff != offers.end(); ++itOff )
-        lst.append( (*itOff).service() );
-
-    applyConstraints( lst, constraint );
-
-    //qDebug() << "query for serviceType " << serviceType << constraint
-    //             << " : returning " << lst.count() << " offers" << endl;
-    return lst;
-}
-
-KPluginInfo::List KPluginTrader::query(const QString& servicetype, const QString& constraint)
+KPluginInfo::List KPluginTrader::query(const QString& servicetype, const QString& subDirectory, const QString& constraint)
 {
     QPluginLoader loader;
     const QStringList libraryPaths = QCoreApplication::libraryPaths();
 
     KPluginInfo::List lst; // FIXME: How are we going to prevent leaking?
     Q_FOREACH (const QString& dir, libraryPaths) {
-        QDirIterator it(dir, QStringList() << "*.so", QDir::Files);
+        QDirIterator it(dir+'/'+subDirectory, QStringList() << "*.so", QDir::Files);
 
         while (it.hasNext()) {
             it.next();
