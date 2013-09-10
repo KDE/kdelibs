@@ -32,8 +32,7 @@ set(kservice_SRCS
    plugin/klibrary.cpp
    plugin/kpluginfactory.cpp
    plugin/kpluginloader.cpp
-   plugintrader/kpluginlocator.cpp
-   plugintrader/kplugintrader.cpp
+   plugin/kplugintrader.cpp
 )
 if (WIN32)
    LIST(APPEND kservice_SRCS
@@ -97,7 +96,7 @@ install(FILES
    plugin/kpluginfactory.h
    plugin/kpluginloader.h
    plugin/kexportplugin.h
-   plugintrader/kplugintrader.h
+   plugin/kplugintrader.h
    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
 
