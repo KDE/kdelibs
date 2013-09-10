@@ -1,5 +1,23 @@
 project(knewstuff3)
 
+set(_INCDIR ${CMAKE_CURRENT_BINARY_DIR}/include/knewstuff3)
+file(MAKE_DIRECTORY ${_INCDIR})
+
+file(GLOB _KNEWSTUFF3HEADERS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.h)
+message(STATUS _KNEWSTUFF3HEADERS=${_KNEWSTUFF3HEADERS})
+foreach(_KNEWSTUFF3HEADER ${_KNEWSTUFF3HEADERS})
+    string(REGEX MATCH ".*_p\\.h" _ISPRIVATE ${_KNEWSTUFF3HEADER})
+    #message(STATUS "_ISPRIVATE=${_ISPRIVATE} _KIOCOREHEADER=${_KIOCOREHEADER}")
+    if (NOT _ISPRIVATE)
+        if (NOT EXISTS ${_INCDIR}/${_KNEWSTUFF3HEADER})
+            file(WRITE ${_INCDIR}/${_KNEWSTUFF3HEADER} "#include \"${CMAKE_CURRENT_SOURCE_DIR}/${_KNEWSTUFF3HEADER}\"\n")
+        endif()
+    endif()
+endforeach()
+if (NOT EXISTS ${_INCDIR}/knewstuff3_export.h)
+    file(WRITE ${_INCDIR}/knewstuff3_export.h "#include \"${CMAKE_CURRENT_BINARY_DIR}/knewstuff3_export.h\"\n")
+endif()
+
 add_definitions(-DKDE_DEFAULT_DEBUG_AREA=550)
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
@@ -11,6 +29,7 @@ set_package_properties(LibAttica PROPERTIES DESCRIPTION "A Qt library that imple
                       )
 
 include_directories(
+   ${CMAKE_CURRENT_BINARY_DIR}/include
    ${LibAttica_INCLUDE_DIRS}
 )
 
