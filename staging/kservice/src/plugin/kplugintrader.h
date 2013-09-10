@@ -108,23 +108,6 @@ public:
     KPluginInfo::List query( const QString& servicetype, const QString& subDirectory = QString(),
                           const QString& constraint = QString() );
 
-
-    /**
-     * Returns all offers associated with a given servicetype, IGNORING the
-     * user preference. The sorting will be the one coming from the InitialPreference
-     * in the .desktop files, and services disabled by the user will still be listed here.
-     * This is used for "Revert to defaults" buttons in GUIs.
-     */
-    KService::List defaultOffers( const QString& serviceType,
-                                  const QString& constraint = QString() ) const;
-    /**
-     * Returns the preferred service for @p serviceType.
-     *
-     * @param serviceType the service type (e.g. "KMyApp/Plugin")
-     * @return the preferred service, or 0 if no service is available
-     */
-    KService::Ptr preferredService( const QString & serviceType ) const;
-
     /**
      * This is a static pointer to the KPluginTrader singleton.
      *
@@ -198,11 +181,6 @@ public:
         return 0;
     }
 
-    /**
-     * @internal  (public for KMimeTypeTrader)
-     */
-    static void applyConstraints( KService::List& lst,
-                                  const QString& constraint );
     static void applyConstraints( KPluginInfo::List& lst,
                                   const QString& constraint );
 

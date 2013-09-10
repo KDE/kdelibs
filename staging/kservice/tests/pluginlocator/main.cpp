@@ -40,7 +40,6 @@ int main(int argc, char **argv)
                           QStringLiteral("name")));
 
     int r = app.runMain();
-    qDebug() << "Exit: " << r;
     return r;
 }
 

@@ -52,8 +52,6 @@ PluginTest::PluginTest(int& argc, char** argv, QCommandLineParser *parser) :
 {
     d = new PluginTestPrivate;
     d->parser = parser;
-    //QTimer::singleShot(0, this, SLOT(runMain()));
-    //runMain();
 }
 
 PluginTest::~PluginTest()
@@ -93,7 +91,7 @@ int PluginTest::runMain()
     timings.clear();
 
     if (ok) {
-        cout << "All tests finished successfully";
+        cout << "All tests finished successfully" << endl;
         return 0;
     }
     return 1;

@@ -1,6 +1,7 @@
 /* This file is part of the KDE libraries
    Copyright (C) 2000 Torben Weis <weis@kde.org>
    Copyright (C) 2006 David Faure <faure@kde.org>
+   Copyright 2013 Sebastian Kügler <sebas@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -39,10 +40,6 @@ using namespace KTraderParse;
 
 // --------------------------------------------------
 
-namespace KServiceTypeProfile {
-    KServiceOfferList sortServiceTypeOffers( const KServiceOfferList& list, const QString& servicetype );
-}
-
 class KPluginTraderSingleton
 {
 public:
@@ -65,37 +62,12 @@ KPluginTrader::~KPluginTrader()
 {
 }
 
-// shared with KMimeTypeTrader
-void KPluginTrader::applyConstraints( KService::List& lst,
-                                const QString& constraint )
-{
-    if ( lst.isEmpty() || constraint.isEmpty() )
-        return;
-
-    const ParseTreeBase::Ptr constr = parseConstraints( constraint ); // for ownership
-    const ParseTreeBase* pConstraintTree = constr.data(); // for speed
-
-    if (!constr) { // parse error
-        lst.clear();
-    } else {
-        // Find all services matching the constraint
-        // and remove the other ones
-        KService::List::iterator it = lst.begin();
-        while( it != lst.end() )
-        {
-            if ( matchConstraint( pConstraintTree, (*it), lst ) != 1 )
-                it = lst.erase( it );
-            else
-                ++it;
-        }
-    }
-}
-
 void KPluginTrader::applyConstraints( KPluginInfo::List& lst,
                                 const QString& constraint )
 {
-    if ( lst.isEmpty() || constraint.isEmpty() )
+    if (lst.isEmpty() || constraint.isEmpty()) {
         return;
+    }
 
     const ParseTreeBase::Ptr constr = parseConstraints( constraint ); // for ownership
     const ParseTreeBase* pConstraintTree = constr.data(); // for speed
@@ -103,74 +75,17 @@ void KPluginTrader::applyConstraints( KPluginInfo::List& lst,
     if (!constr) { // parse error
         lst.clear();
     } else {
-        // Find all services matching the constraint
-        // and remove the other ones
+        // Find all plugin infos matching the constraint
+        // and remove the rest
         KPluginInfo::List::iterator it = lst.begin();
-        while( it != lst.end() )
-        {
-            if ( matchConstraintPlugin( pConstraintTree, *it, lst ) != 1 )
-                it = lst.erase( it );
-            else
+        while(it != lst.end()) {
+            if (matchConstraintPlugin(pConstraintTree, *it, lst) != 1) {
+                it = lst.erase(it);
+            } else {
                 ++it;
+            }
         }
     }
-}
-
-
-#if 0
-static void dumpOfferList( const KServiceOfferList& offers )
-{
-    // qDebug() << "Sorted list:";
-    OfferList::Iterator itOff = offers.begin();
-    for( ; itOff != offers.end(); ++itOff )
-        // qDebug() << (*itOff).service()->name() << " allow-as-default=" << (*itOff).allowAsDefault() << " preference=" << (*itOff).preference();
-}
-#endif
-
-static KServiceOfferList weightedOffers( const QString& serviceType )
-{
-    //qDebug() << "KPluginTrader::weightedOffers( " << serviceType << " )";
-
-    KServiceType::Ptr servTypePtr = KServiceTypeFactory::self()->findServiceTypeByName( serviceType );
-    if ( !servTypePtr ) {
-        qWarning() << "KPluginTrader: serviceType" << serviceType << "not found";
-        return KServiceOfferList();
-    }
-    if ( servTypePtr->serviceOffersOffset() == -1 )  // no offers in ksycoca
-        return KServiceOfferList();
-
-    // First, get all offers known to ksycoca.
-    const KServiceOfferList services = KServiceFactory::self()->offers( servTypePtr->offset(), servTypePtr->serviceOffersOffset() );
-
-    const KServiceOfferList offers = KServiceTypeProfile::sortServiceTypeOffers( services, serviceType );
-    //qDebug() << "Found profile: " << offers.count() << " offers";
-
-#if 0
-    dumpOfferList( offers );
-#endif
-
-    return offers;
-}
-
-KService::List KPluginTrader::defaultOffers( const QString& serviceType,
-                                                  const QString& constraint ) const
-{
-    KServiceType::Ptr servTypePtr = KServiceTypeFactory::self()->findServiceTypeByName( serviceType );
-    if ( !servTypePtr ) {
-        qWarning() << "KPluginTrader: serviceType" << serviceType << "not found";
-        return KService::List();
-    }
-    if ( servTypePtr->serviceOffersOffset() == -1 )
-        return KService::List();
-
-    KService::List lst =
-        KServiceFactory::self()->serviceOffers( servTypePtr->offset(), servTypePtr->serviceOffersOffset() );
-
-    applyConstraints( lst, constraint );
-
-    //qDebug() << "query for serviceType " << serviceType << constraint
-    //             << " : returning " << lst.count() << " offers" << endl;
-    return lst;
 }
 
 KPluginInfo::List KPluginTrader::query(const QString& servicetype, const QString& subDirectory, const QString& constraint)
@@ -178,7 +93,7 @@ KPluginInfo::List KPluginTrader::query(const QString& servicetype, const QString
     QPluginLoader loader;
     const QStringList libraryPaths = QCoreApplication::libraryPaths();
 
-    KPluginInfo::List lst; // FIXME: How are we going to prevent leaking?
+    KPluginInfo::List lst;
     Q_FOREACH (const QString& dir, libraryPaths) {
         QDirIterator it(dir+'/'+subDirectory, QStringList() << "*.so", QDir::Files);
 
@@ -190,29 +105,14 @@ KPluginInfo::List KPluginTrader::query(const QString& servicetype, const QString
             KPluginInfo info(argsWithMetaData);
 
             if (info.serviceTypes().contains(servicetype)) {
-                qDebug() << "Found plugin with " << servicetype << " : " << info.name();
+                //qDebug() << "Found plugin with " << servicetype << " : " << info.name();
                 info.setLibraryPath(_f);
                 lst << info;
             }
             //qDebug() << " Plugininfo reports: " << info.name() << ", " << info.icon() << info.serviceTypes() << endl;
         }
     }
-    applyConstraints( lst, constraint );
+    applyConstraints(lst, constraint);
     return lst;
 
-}
-
-KService::Ptr KPluginTrader::preferredService( const QString & serviceType ) const
-{
-    const KServiceOfferList offers = weightedOffers( serviceType );
-
-    KServiceOfferList::const_iterator itOff = offers.begin();
-    // Look for the first one that is allowed as default.
-    // Since the allowed-as-default are first anyway, we only have
-    // to look at the first one to know.
-    if( itOff != offers.end() && (*itOff).allowAsDefault() )
-        return (*itOff).service();
-
-    //qDebug() << "No offers, or none allowed as default";
-    return KService::Ptr();
 }
