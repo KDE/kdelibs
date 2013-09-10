@@ -45,6 +45,7 @@ class PluginTestPrivate {
 public:
     QString pluginName;
     QCommandLineParser *parser;
+    int retval = 0;
 };
 
 PluginTest::PluginTest(int& argc, char** argv, QCommandLineParser *parser) :
@@ -52,7 +53,8 @@ PluginTest::PluginTest(int& argc, char** argv, QCommandLineParser *parser) :
 {
     d = new PluginTestPrivate;
     d->parser = parser;
-    QTimer::singleShot(0, this, SLOT(runMain()));
+    //QTimer::singleShot(0, this, SLOT(runMain()));
+    //runMain();
 }
 
 PluginTest::~PluginTest()
@@ -60,7 +62,7 @@ PluginTest::~PluginTest()
     delete d;
 }
 
-void PluginTest::runMain()
+int PluginTest::runMain()
 {
     // measure performance
     QElapsedTimer timer;
@@ -94,7 +96,7 @@ void PluginTest::runMain()
     for (int _i = 0; _i < runs; _i++) {
         timer.restart();
         if (!loadFromMetaData2()) ok = false;
-        if (!loadFromMetaData2("Plasma/ContainmentActions")) ok = false;
+        //if (!loadFromMetaData2("Plasma/ContainmentActions")) ok = false;
         timings << timer.nsecsElapsed();
     }
     report(timings, "Metadata");
@@ -104,9 +106,9 @@ void PluginTest::runMain()
 
     if (ok) {
         cout << "All tests finished successfully";
-        exit(0);
+        return 0;
     }
-    exit(1);
+    return 1;
 }
 
 void PluginTest::report(QList<qint64> timings, const QString& msg)

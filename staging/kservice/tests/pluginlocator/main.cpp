@@ -19,6 +19,7 @@
 
 #include <qcommandlineparser.h>
 #include <qcommandlineoption.h>
+#include <QDebug>
 
 #include "plugintest.h"
 
@@ -38,6 +39,8 @@ int main(int argc, char **argv)
                           QStringLiteral("Show plugins"),
                           QStringLiteral("name")));
 
-    return app.exec();
+    int r = app.runMain();
+    qDebug() << "Exit: " << r;
+    return r;
 }
 

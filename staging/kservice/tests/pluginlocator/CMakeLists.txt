@@ -4,14 +4,16 @@ add_executable(plugintest
     main.cpp
     plugintest.cpp
 )
+add_test(kservice-pluginloadertest plugintest)
 
 target_link_libraries(plugintest
     Qt5::Core
-    Qt5::DBus
+#    Qt5::DBus
     kdeqt5staging
     KCoreAddons
     KService
 )
+ecm_mark_as_test(plugintest)
 
 message("INSTALL_TARGETS_DEFAULT_ARGS ${INSTALL_TARGETS_DEFAULT_ARGS}")
 
