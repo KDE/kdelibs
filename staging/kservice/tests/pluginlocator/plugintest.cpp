@@ -23,7 +23,6 @@
 #include <kservice.h>
 #include <kservicetypetrader.h>
 #include <kplugininfo.h>
-#include <kpluginlocator.h>
 #include <kplugintrader.h>
 #include <kshell.h>
 
@@ -84,25 +83,14 @@ int PluginTest::runMain()
     timings.clear();
 
     // -- Metadata querying
-    //for (int _i = 0; _i < runs; _i++) {
-        //timer.restart();
-        //if (!loadFromMetaData()) ok = false;
-        //timings << timer.nsecsElapsed();
-    //}
-//     report(timings, "Metadata");
-//     timings.clear();
-
-    // -- Metadata querying
     for (int _i = 0; _i < runs; _i++) {
         timer.restart();
-        if (!loadFromMetaData2()) ok = false;
+        if (!loadFromMetaData()) ok = false;
         //if (!loadFromMetaData2("Plasma/ContainmentActions")) ok = false;
         timings << timer.nsecsElapsed();
     }
     report(timings, "Metadata");
     timings.clear();
-
-
 
     if (ok) {
         cout << "All tests finished successfully";
@@ -157,13 +145,7 @@ bool PluginTest::loadFromKService(const QString &name)
 }
 
 
-bool PluginTest::loadFromMetaData(const QString& pluginName)
-{
-    const QStringList res = KPluginLocator::locatePlugin(pluginName);
-    return res.count() > 0;
-}
-
-bool PluginTest::loadFromMetaData2(const QString& serviceType)
+bool PluginTest::loadFromMetaData(const QString& serviceType)
 {
     bool ok = false;
     QString pluginName("powermanagement");
@@ -171,10 +153,10 @@ bool PluginTest::loadFromMetaData2(const QString& serviceType)
     KPluginInfo::List res = KPluginTrader::self()->query(serviceType, constraint);
     cout << "Found " << res.count() << " Plugins\n";
     ok = res.count() > 0;
-    foreach (const KPluginInfo &info, res) {
+    //foreach (const KPluginInfo &info, res) {
         //qDebug() << "   file: " << info.libraryPath();
 
-    }
+    //}
 
     return ok;
 
