@@ -28,10 +28,7 @@ set_package_properties(LibAttica PROPERTIES DESCRIPTION "A Qt library that imple
                        TYPE REQUIRED
                       )
 
-include_directories(
-   ${CMAKE_CURRENT_BINARY_DIR}/include
-   ${LibAttica_INCLUDE_DIRS}
-)
+include_directories(${CMAKE_CURRENT_BINARY_DIR}/include)
 
 set(knewstuff3_SRCS
     downloaddialog.cpp
