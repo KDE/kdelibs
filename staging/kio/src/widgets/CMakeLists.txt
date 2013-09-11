@@ -89,7 +89,6 @@ target_link_libraries(KIOWidgets
     Qt5::DBus
     KI18n
     KIconThemes   # KIconLoader
-    kdeqt5staging # QUrlPathInfo
     KWindowSystem # KStartupInfo
     KWidgetsAddons # KMessageBox
     KConfigWidgets # KColorScheme

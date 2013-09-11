@@ -25,7 +25,6 @@
 #include "avahi_server_interface.h"
 #include <QtCore/QHash>
 #include <QtNetwork/QHostAddress>
-Q_DECLARE_METATYPE(QList<QByteArray>)
 namespace DNSSD
 {
 

@@ -16,8 +16,7 @@ add_library(KCompletion ${kcompletion_SRCS})
 generate_export_header(KCompletion)
 
 target_link_libraries(KCompletion LINK_PUBLIC Qt5::Widgets
-                                  LINK_PRIVATE KNotifications   # KHistoryComboBox and KCompletion::doBeep
-                                               KConfigCore      # KConfigGroup, used in many places
+                                  LINK_PRIVATE KConfigCore      # KConfigGroup, used in many places
                                                KConfigWidgets   # KStandardAction, KStandardShortcut, KCursor
                                                KI18n            # i18n() in klineedit.cpp only
 )

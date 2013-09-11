@@ -11,7 +11,7 @@ ENDMACRO(KIO_UNIT_TESTS)
 MACRO(KIO_EXECUTABLE_TESTS)
        FOREACH(_testname ${ARGN})
                kde4_add_executable(${_testname} TEST ${_testname}.cpp)
-               target_link_libraries(${_testname} ${KDE4_KIO_LIBS} Qt5::Test kdeqt5staging XmlGui ${KCoreAddons_LIBRARIES} KI18n KIconThemes)
+               target_link_libraries(${_testname} ${KDE4_KIO_LIBS} Qt5::Test XmlGui ${KCoreAddons_LIBRARIES} KI18n KIconThemes)
        ENDFOREACH(_testname)
 ENDMACRO(KIO_EXECUTABLE_TESTS)
 

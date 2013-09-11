@@ -574,9 +574,6 @@ private:
                                    const QString& restString,
                                    KCompletionMatchesWrapper *matches) const;
 
-    enum        BeepMode { NoMatch, PartialMatch, Rotation };
-    void        doBeep( BeepMode ) const;
-
 private:
     Q_DISABLE_COPY( KCompletion )
     KCompletionPrivate* const d;

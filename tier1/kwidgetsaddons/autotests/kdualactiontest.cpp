@@ -23,9 +23,6 @@
 
 #include "kguiitem.h"
 
-
-Q_DECLARE_METATYPE(QAction*)
-
 static const QString INACTIVE_TEXT = QStringLiteral("Show Foo");
 static const QString ACTIVE_TEXT = QStringLiteral("Hide Foo");
 

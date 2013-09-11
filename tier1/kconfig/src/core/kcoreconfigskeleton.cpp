@@ -24,7 +24,6 @@
 
 #include <QUrl>
 
-Q_DECLARE_METATYPE(QList<QUrl>)
 
 static QString obscuredString(const QString &str)
 {
@@ -945,7 +944,6 @@ QVariant KCoreConfigSkeleton::ItemUrlList::property() const
     return qVariantFromValue<QList<QUrl> >(mReference);
 }
 
-Q_DECLARE_METATYPE( QList<int> )
 
 KCoreConfigSkeleton::ItemIntList::ItemIntList( const QString &_group, const QString &_key,
                                       QList<int> &reference,

@@ -43,9 +43,6 @@
 using namespace KIO;
 //using namespace KNetwork;
 
-typedef QMap<QString, QString> StringStringMap;
-Q_DECLARE_METATYPE(StringStringMap)
-
 namespace KIO {
 Q_DECLARE_OPERATORS_FOR_FLAGS(TCPSlaveBase::SslResult)
 }

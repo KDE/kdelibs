@@ -14,7 +14,7 @@ set(ksendbugmail_SRCS
 
 kde4_add_executable(ksendbugmail NOGUI ${ksendbugmail_SRCS})
 
-target_link_libraries(ksendbugmail Qt5::Widgets Qt5::Network kdeqt5staging KConfigCore KI18n ${KCoreAddons_LIBRARIES})
+target_link_libraries(ksendbugmail Qt5::Widgets Qt5::Network KConfigCore KI18n ${KCoreAddons_LIBRARIES})
 
 set_target_properties(ksendbugmail PROPERTIES COMPILE_FLAGS -DKIO_EXPORT=)
 

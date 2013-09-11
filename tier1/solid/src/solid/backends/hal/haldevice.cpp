@@ -120,7 +120,6 @@ public:
 };
 
 Q_DECLARE_METATYPE(ChangeDescription)
-Q_DECLARE_METATYPE(QList<ChangeDescription>)
 
 const QDBusArgument &operator<<(QDBusArgument &arg, const ChangeDescription &change)
 {

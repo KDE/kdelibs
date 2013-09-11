@@ -8,7 +8,6 @@ add_executable(desktoptojson
 target_link_libraries(desktoptojson
     Qt5::Core
     KConfigCore
-    kdeqt5staging
 )
 
 # "export" this target too so we can use the LOCATION property of the imported target in

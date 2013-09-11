@@ -37,7 +37,6 @@ QTEST_GUILESS_MAIN(KRunUnitTest)
 #include <kprocess.h>
 #include "kiotesthelper.h" // createTestFile etc.
 
-Q_DECLARE_METATYPE(QList<QUrl>)
 
 void KRunUnitTest::initTestCase()
 {

@@ -27,7 +27,6 @@
 
 Q_DECLARE_METATYPE(KIO::KSslCertificateRule)
 Q_DECLARE_METATYPE(KIO::KSslError::Error)
-Q_DECLARE_METATYPE(QList<KIO::KSslError::Error>)
 
 
 QDBusArgument &operator<<(QDBusArgument &argument, const QSslCertificate &cert)

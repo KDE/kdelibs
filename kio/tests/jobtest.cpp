@@ -71,7 +71,6 @@ static QString realSystemPath()
 }
 #endif
 
-Q_DECLARE_METATYPE(KIO::Job*)
 
 void JobTest::initTestCase()
 {

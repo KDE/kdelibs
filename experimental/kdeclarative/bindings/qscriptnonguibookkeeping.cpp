@@ -32,7 +32,6 @@
 
 Q_DECLARE_METATYPE(KConfigGroup)
 
-Q_DECLARE_METATYPE(KJob *)
 
 typedef KJob* KJobPtr;
 QScriptValue qScriptValueFromKJob(QScriptEngine *engine, const KJobPtr &job)
@@ -47,7 +46,6 @@ void qKJobFromQScriptValue(const QScriptValue &scriptValue, KJobPtr &job)
 }
 
 #if !KDECLARATIVE_NO_KIO
-Q_DECLARE_METATYPE(KIO::Job *)
 typedef KIO::Job* KioJobPtr;
 QScriptValue qScriptValueFromKIOJob(QScriptEngine *engine, const KioJobPtr &job)
 {

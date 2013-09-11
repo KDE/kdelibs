@@ -299,7 +299,6 @@ public:
 };
 
 Q_DECLARE_METATYPE(ChangeDescription)
-Q_DECLARE_METATYPE(QList<ChangeDescription>)
 WmiDevice::WmiDevice(const QString &udi)
     : Device(), d(new WmiDevicePrivate(udi))
 {

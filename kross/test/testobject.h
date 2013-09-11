@@ -301,7 +301,4 @@ class TestThread : public QThread
         int m_steps, m_msecs;
 };
 
-//Q_DECLARE_METATYPE( TestObject* )
-//Q_DECLARE_METATYPE( TestObject )
-
 #endif

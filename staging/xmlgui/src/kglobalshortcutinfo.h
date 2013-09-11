@@ -89,6 +89,5 @@ private:
 };
 
 Q_DECLARE_METATYPE(KGlobalShortcutInfo)
-Q_DECLARE_METATYPE(QList<KGlobalShortcutInfo>)
 
 #endif /* #ifndef KGLOBALSHORTCUTINFO_H */

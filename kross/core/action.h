@@ -394,7 +394,5 @@ namespace Kross {
 
 }
 
-Q_DECLARE_METATYPE(Kross::Action*)
-
 #endif
 

@@ -29,7 +29,6 @@
 #include <QWheelEvent>
 
 #include <klocalizedstring.h>
-#include <knotification.h>
 #include <kpixmapprovider.h>
 #include <kstandardshortcut.h>
 
@@ -319,12 +318,6 @@ void KHistoryComboBox::rotateDown()
             setEditText( itemText(d->myIterateIndex) );
         }
         else { // bottom of history
-            if ( d->myIterateIndex == -2 ) {
-                KNotification::event( "Textcompletion: No Match" ,
-                                      i18n("No further items in the history."),
-                                       QPixmap() , this, KNotification::DefaultEvent);
-            }
-
             d->myIterateIndex = -1;
             if ( currentText() != d->myText )
                 setEditText( d->myText );

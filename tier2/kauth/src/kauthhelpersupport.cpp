@@ -34,7 +34,6 @@
 
 #include "BackendsManager.h"
 
-Q_DECLARE_METATYPE(QTimer*)
 
 namespace KAuth
 {

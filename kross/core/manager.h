@@ -266,7 +266,5 @@ namespace Kross {
 
 }
 
-Q_DECLARE_METATYPE(Kross::Manager*)
-
 #endif
 

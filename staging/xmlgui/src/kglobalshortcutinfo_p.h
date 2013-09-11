@@ -48,8 +48,6 @@ XMLGUI_EXPORT const QDBusArgument &operator>> (
 
 // these should be in kglobalaccel_interface.h. But this way it's easier to
 // regenerate that file.
-Q_DECLARE_METATYPE(QList<int>)
-Q_DECLARE_METATYPE(QList<QStringList>)
 
 #endif /* #ifndef KGLOBALSHORTCUTINFO_P_H */
 

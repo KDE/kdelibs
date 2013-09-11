@@ -22,7 +22,6 @@ target_link_libraries( kcookiejar4
    ${KCoreAddons_LIBRARIES}
    KI18n
    ${KWidgetsAddons_LIBRARIES}
-   kdeqt5staging # QCommandLineParser
 )
 
 install(TARGETS kcookiejar4 ${INSTALL_TARGETS_DEFAULT_ARGS} )

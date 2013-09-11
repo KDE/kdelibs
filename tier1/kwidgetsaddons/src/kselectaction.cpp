@@ -650,9 +650,6 @@ static int TrueCurrentItem (KSelectAction *sa)
   return (curAction && curAction->isChecked ()) ? sa->actions ().indexOf (curAction) : -1;
 }
 
-// We store the QAction* as the userData of each combobox item
-Q_DECLARE_METATYPE(QAction*)
-
 bool KSelectAction::eventFilter (QObject *watched, QEvent *event)
 {
   QComboBox *comboBox = qobject_cast <QComboBox *> (watched);
