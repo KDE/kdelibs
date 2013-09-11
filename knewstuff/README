@@ -1,0 +1,7 @@
+KNewStuff3 - the third generation GHNS
+======================================
+
+The KNewStuff3 library implements collaborative data sharing for KDE 
+applications it uses Attica to support the OCS specification.
+
+Have a look at doc/*.txt for documentation.
