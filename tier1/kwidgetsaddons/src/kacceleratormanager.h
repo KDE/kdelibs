@@ -25,6 +25,7 @@
 
 class QWidget;
 class QString;
+class QStringList;
 
 /**
  * KDE Accelerator manager.
@@ -70,6 +71,13 @@ public:
      * Use this method for a widget (and its children) you want no accels to be set on.
      */
     static void setNoAccel( QWidget *widget );
+
+    /**
+     * Append names to a list of standard action names.
+     * These strings will be given higher priority when assigning keyboard accelerators.
+     * @since 5.0
+     */
+    static void addStandardActionNames(const QStringList &names);
 };
 
 

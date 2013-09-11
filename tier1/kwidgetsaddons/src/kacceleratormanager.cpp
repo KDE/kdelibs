@@ -61,9 +61,9 @@ QString KAcceleratorManagerPrivate::removed_string;
 QMap<QWidget*, int> KAcceleratorManagerPrivate::ignored_widgets;
 QStringList KAcceleratorManagerPrivate::standardNames;
 
-void KAcceleratorManagerPrivate::setStandardActionNames(const QStringList &list)
+void KAcceleratorManagerPrivate::addStandardActionNames(const QStringList &list)
 {
-    standardNames = list;
+    standardNames.append(list);
 }
 
 bool KAcceleratorManagerPrivate::standardName(const QString &str)
@@ -840,6 +840,11 @@ void QWidgetStackAccelManager::currentChanged(int child)
 void KAcceleratorManager::setNoAccel( QWidget *widget )
 {
     KAcceleratorManagerPrivate::ignored_widgets[widget] = 1;
+}
+
+void KAcceleratorManager::addStandardActionNames(const QStringList& names)
+{
+    KAcceleratorManagerPrivate::addStandardActionNames(names);
 }
 
 #include "moc_kacceleratormanager_p.cpp"
