@@ -14,7 +14,6 @@ macro(KSERVICE_UNIT_TESTS)
        KService
        Qt5::Test
        Qt5::Concurrent
-       #kdeqt5staging
        KCoreAddons
     )
     ecm_mark_as_test(${_testname})

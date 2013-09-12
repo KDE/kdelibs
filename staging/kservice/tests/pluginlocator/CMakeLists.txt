@@ -9,7 +9,6 @@ add_test(kservice-pluginloadertest plugintest)
 target_link_libraries(plugintest
     Qt5::Core
 #    Qt5::DBus
-    kdeqt5staging
     KCoreAddons
     KService
 )
