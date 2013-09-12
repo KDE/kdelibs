@@ -37,7 +37,7 @@ void PluginTest::findPluginNoConstraints()
     KPluginInfo::List res;
 
     constraint = QString();
-    res = KPluginTrader::self()->query(serviceType, QString(), constraint);
+    res = KPluginTrader::self()->query(QString(), serviceType, constraint);
     QVERIFY(res.count() > 0);
 }
 
@@ -49,7 +49,7 @@ void PluginTest::findPluginName()
     KPluginInfo::List res;
 
     constraint = QString("[X-KDE-PluginInfo-Name] == '%1'").arg(pluginName);
-    res = KPluginTrader::self()->query(serviceType, QString(), constraint);
+    res = KPluginTrader::self()->query(QString(), serviceType, constraint);
     QVERIFY(res.count() > 0);
 }
 
@@ -61,7 +61,7 @@ void PluginTest::findPluginCategory()
     KPluginInfo::List res;
 
     const QString constraint = QString("[X-KDE-PluginInfo-Category] == '%1'").arg(category);
-    res = KPluginTrader::self()->query(serviceType, QString(), constraint);
+    res = KPluginTrader::self()->query(QString(), serviceType, constraint);
     QVERIFY(res.count() > 0);
 }
 
@@ -72,7 +72,7 @@ void PluginTest::findPluginComplex()
     KPluginInfo::List res;
 
     const QString constraint = QString("([X-KDE-PluginInfo-Category] == '%1') AND ([X-KDE-PluginInfo-Email] == 'sebas@kde.org')").arg(category);
-    res = KPluginTrader::self()->query(serviceType, QString(), constraint);
+    res = KPluginTrader::self()->query(QString(), serviceType, constraint);
     QVERIFY(res.count() > 0);
 }
 
@@ -83,7 +83,7 @@ void PluginTest::findPluginEmpty()
     KPluginInfo::List res;
 
     const QString constraint = QString("([X-KDE-PluginInfo-Category] == '%1') AND ([X-KDE-PluginInfo-Email] == 'prrrrt')").arg(category);
-    res = KPluginTrader::self()->query(serviceType, QString(), constraint);
+    res = KPluginTrader::self()->query(QString(), serviceType, constraint);
     QVERIFY(res.count() == 0);
 }
 
@@ -94,7 +94,7 @@ void PluginTest::loadPlugin()
     const QString serviceType("KService/NSA");
     const QString constraint = QString("[X-KDE-PluginInfo-Name] == '%1'").arg(pluginName);
 
-    QObject* plugin = KPluginTrader::createInstanceFromQuery<QObject>(serviceType, QString(), constraint, this);
+    QObject* plugin = KPluginTrader::createInstanceFromQuery<QObject>(QString(), serviceType, constraint, this);
     QVERIFY(plugin != 0);
     if (plugin) {
         //qDebug() << "Plugin loaded successfully" << plugin->objectName();

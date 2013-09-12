@@ -86,7 +86,7 @@ void KPluginTrader::applyConstraints(KPluginInfo::List& lst, const QString& cons
     }
 }
 
-KPluginInfo::List KPluginTrader::query(const QString& servicetype, const QString& subDirectory, const QString& constraint)
+KPluginInfo::List KPluginTrader::query(const QString& subDirectory, const QString& servicetype, const QString& constraint)
 {
     QPluginLoader loader;
     const QStringList libraryPaths = QCoreApplication::libraryPaths();

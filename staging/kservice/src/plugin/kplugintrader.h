@@ -114,6 +114,33 @@ public:
      * (Type == 'Service') and (('KParts/ReadOnlyPart' in ServiceTypes) or (exist Exec))
      * \endcode
      *
+     * If you want to load a list of plugins from a specific subdirectory, you can do the following:
+     *
+     * \code
+     *
+     * KPluginInfo::List plugins = KPluginTrader::self()->query("plasma/engines");
+     *
+     * foreach (const KPluginInfo &info, plugins) {
+     *      KPluginLoader loader(info.libraryPath());
+     *      const QVariantList argsWithMetaData = QVariantList() << loader.metaData().toVariantMap();
+     *      // In many cases, plugins are actually based on KPluginFactory, this is how that works:
+     *      KPluginFactory* factory = loader.factory();
+     *      if (factory) {
+     *          T* component = factory->create<Engine>(parent, argsWithMetaData);
+     *          if (component) {
+     *              return component; // or whatever you want to do with the resulting object
+     *          }
+     *      }
+     *      // Otherwise, just use the normal QPluginLoader methods
+     *      Engine *myengine = qobject_cast<Engine*>(loader.instance());
+     *      if (myengine) {
+     *          // etc. ...
+     *      }
+     * }
+     * \endcode
+     *
+     * If you have a specific query for just one plugin, use the createInstanceFromQuery method.
+     *
      * The keys used in the query (Type, ServiceType, Exec) are all fields found in the .json files
      * which are compiled into the plugin binaries.
      *
@@ -125,7 +152,7 @@ public:
      * @return A list of services that satisfy the query
      * @see http://techbase.kde.org/Development/Tutorials/Services/Traders#The_KTrader_Query_Language
      */
-    KPluginInfo::List query(const QString& servicetype, const QString& subDirectory = QString(),
+    KPluginInfo::List query(const QString& subDirectory, const QString& serviceType = QString(),
                             const QString& constraint = QString());
 
     /**
@@ -143,7 +170,7 @@ public:
      *
      * Example:
      * \code
-     * KMyAppPlugin* plugin = KPluginTrader::createInstanceFromQuery<KMyAppPlugin>( serviceType, subDirectory, QString(), parentObject );
+     * KMyAppPlugin* plugin = KPluginTrader::createInstanceFromQuery<KMyAppPlugin>(subDirectory, serviceType, QString(), parentObject );
      * if ( plugin ) {
      *     ....
      * }
@@ -159,12 +186,14 @@ public:
      *         factory was unable to create an object of the given type.
      */
     template <class T>
-    static T *createInstanceFromQuery(const QString &serviceType,
-                                      const QString &subDirectory = QString(),
-                                      const QString &constraint = QString(), QObject *parent = 0,
-                                      const QVariantList &args = QVariantList(), QString *error = 0)
+    static T *createInstanceFromQuery(const QString &subDirectory,
+                                      const QString &serviceType = QString(),
+                                      const QString &constraint = QString(),
+                                      QObject *parent = 0,
+                                      const QVariantList &args = QVariantList(),
+                                      QString *error = 0)
     {
-        return createInstanceFromQuery<T>(serviceType, 0, parent, subDirectory, constraint, args, error);
+        return createInstanceFromQuery<T>(subDirectory, serviceType, constraint, parent, 0, args, error);
     }
 
     /**
@@ -186,17 +215,18 @@ public:
      *         factory was unable to create an object of the given type.
      */
     template <class T>
-    static T *createInstanceFromQuery(const QString &serviceType,
-                                      QWidget *parentWidget, QObject *parent,
-                                      const QString &subDirectory = QString(),
-                                      const QString &constraint = QString(),
+    static T *createInstanceFromQuery(const QString &subDirectory,
+                                      const QString &serviceType,
+                                      const QString &constraint,
+                                      QObject *parent,
+                                      QWidget *parentWidget,
                                       const QVariantList &args = QVariantList(),
                                       QString *error = 0)
     {
         if (error) {
             error->clear();
         }
-        const KPluginInfo::List offers = self()->query(serviceType, subDirectory, constraint);
+        const KPluginInfo::List offers = self()->query(subDirectory, serviceType, constraint);
 
         Q_FOREACH (const KPluginInfo &info, offers) {
             KPluginLoader loader(info.libraryPath());
