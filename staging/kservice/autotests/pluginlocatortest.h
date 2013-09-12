@@ -29,6 +29,7 @@ class PluginTest : public QObject
         PluginTest() {}
 
     private Q_SLOTS:
+        void findSomething();
         void findPluginNoConstraints();
         void findPluginName();
         void findPluginCategory();

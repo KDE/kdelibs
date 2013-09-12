@@ -30,6 +30,13 @@
 
 QTEST_MAIN(PluginTest)
 
+void PluginTest::findSomething()
+{
+    KPluginInfo::List res;
+    res = KPluginTrader::self()->query(QString());
+    QVERIFY(res.count() > 0);
+}
+
 void PluginTest::findPluginNoConstraints()
 {
     QString constraint;
