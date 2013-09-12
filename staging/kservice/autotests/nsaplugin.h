@@ -38,8 +38,6 @@ private:
     KPluginInfo m_pluginInfo;
 
 };
-Q_DECLARE_METATYPE(NSAPlugin*)
-
-// K_PLUGIN_FACTORY_WITH_JSON(nsapluginfa, "fakeplugin.json", registerPlugin<NSAPlugin>();)
+//Q_DECLARE_METATYPE(NSAPlugin*)
 
 #endif // NSAPLUGIN_H

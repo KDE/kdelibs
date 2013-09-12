@@ -11,27 +11,21 @@ macro(KSERVICE_UNIT_TESTS)
     add_executable(${_testname} ${_testname}.cpp kwaitforsignal.cpp)
     add_test(kservice-${_testname} ${_testname})
     target_link_libraries(${_testname}
+       KCoreAddons
        KService
        Qt5::Test
        Qt5::Concurrent
-       KCoreAddons
     )
     ecm_mark_as_test(${_testname})
   endforeach()
 endmacro(KSERVICE_UNIT_TESTS)
 
-# include(../KServiceMacros.cmake)
-# kservice_desktop_to_json(fakeplugin.desktop)
 
+# Build a minimal plugin, equipped with metadata for
+# the pluginlocatortest
 add_library(fakeplugin MODULE nsaplugin.cpp)
-#add_library(${plugin} MODULE ${plugin_sources} )
 set_target_properties(fakeplugin PROPERTIES PREFIX "")
-    target_link_libraries(fakeplugin
-       KService
-#        Qt5::Test
-#        Qt5::Concurrent
-        KCoreAddons
-    )
+target_link_libraries(fakeplugin KService KCoreAddons)
 
 
 kservice_unit_tests(
