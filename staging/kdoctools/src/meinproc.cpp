@@ -196,7 +196,12 @@ int main(int argc, char **argv) {
         tss = QStringLiteral("customization/htdig_index.xsl");
 
     tss = locateFileInDtdResource(tss);
+#ifndef MEINPROC_NO_KARCHIVE
     const QString cache = parser.value(QStringLiteral("cache"));
+#else
+    if(parser.isSet("cache"))
+        qWarning() << QCoreApplication::translate("The cache option is not available, please re-compile with KArchive support. See MEINPROC_NO_KARCHIVE in KDocTools");
+#endif
     const bool usingStdOut = parser.isSet(QStringLiteral("stdout"));
     const bool usingOutput = parser.isSet(QStringLiteral("output"));
     const QString outputOption = parser.value(QStringLiteral("output"));
@@ -243,16 +248,20 @@ int main(int argc, char **argv) {
             return(1);
         }
 
+#ifndef MEINPROC_NO_KARCHIVE
         if ( !cache.isEmpty() ) {
             if ( !saveToCache( output, cache ) ) {
                 qWarning() << QCoreApplication::translate("main", "Could not write to cache file %1.").arg(cache);
             }
             goto end;
         }
+#endif
 
         doOutput(output, usingStdOut, usingOutput, outputOption, true /* replaceCharset */);
     }
+#ifndef MEINPROC_NO_KARCHIVE
  end:
+#endif
     xmlCleanupParser();
     xmlMemoryDump();
     return(0);
