@@ -22,18 +22,23 @@
 #include "ktraderparsetree_p.h"
 
 #include <QtCore/QCoreApplication>
-#include <QtCore/QDir>
 #include <QtCore/QDirIterator>
 #include <QtCore/QJsonObject>
-#include <QtCore/QPluginLoader>
-
-
-
-#include <QDebug>
 
 using namespace KTraderParse;
 
-// --------------------------------------------------
+
+inline QStringList suffixFilters()
+{
+#if defined(Q_OS_WIN) || defined(Q_OS_CYGWIN)
+    return QStringList() << QStringLiteral(".dll");
+#else
+    return QStringList() << QStringLiteral("*.so")
+                         << QStringLiteral("*.dylib")
+                         << QStringLiteral("*.bundle")
+                         << QStringLiteral("*.sl");
+#endif
+}
 
 class KPluginTraderSingleton
 {
@@ -70,8 +75,7 @@ void KPluginTrader::applyConstraints( KPluginInfo::List& lst,
     if (!constr) { // parse error
         lst.clear();
     } else {
-        // Find all plugin infos matching the constraint
-        // and remove the rest
+        // Find all plugin infos matching the constraint and remove the rest
         KPluginInfo::List::iterator it = lst.begin();
         while(it != lst.end()) {
             if (matchConstraintPlugin(pConstraintTree, *it, lst) != 1) {
@@ -87,24 +91,20 @@ KPluginInfo::List KPluginTrader::query(const QString& servicetype, const QString
 {
     QPluginLoader loader;
     const QStringList libraryPaths = QCoreApplication::libraryPaths();
-
     KPluginInfo::List lst;
-    Q_FOREACH (const QString& dir, libraryPaths) {
-        QDirIterator it(dir+'/'+subDirectory, QStringList() << "*.so", QDir::Files);
 
+    Q_FOREACH (const QString& dir, libraryPaths) {
+        QDirIterator it(dir + QDir::separator() + subDirectory, suffixFilters(), QDir::Files);
         while (it.hasNext()) {
             it.next();
             const QString _f = it.fileInfo().absoluteFilePath();
             loader.setFileName(_f);
             const QVariantList argsWithMetaData = QVariantList() << loader.metaData().toVariantMap();
             KPluginInfo info(argsWithMetaData);
-
             if (info.serviceTypes().contains(servicetype)) {
-                //qDebug() << "Found plugin with " << servicetype << " : " << info.name();
                 info.setLibraryPath(_f);
                 lst << info;
             }
-            //qDebug() << " Plugininfo reports: " << info.name() << ", " << info.icon() << info.serviceTypes() << endl;
         }
     }
     applyConstraints(lst, constraint);
