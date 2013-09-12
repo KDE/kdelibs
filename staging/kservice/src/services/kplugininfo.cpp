@@ -40,22 +40,22 @@
 //#define KPLUGININFO_ISVALID_ASSERTION
 //#endif
 
-static const char HIDDEN[] = "Hidden";
-static const char NAME[] = "Name";
-static const char COMMENT[] = "Comment";
-static const char ICON[] = "Icon";
-static const char AUTHOR[] = "X-KDE-PluginInfo-Author";
-static const char EMAIL[] = "X-KDE-PluginInfo-Email";
-static const char PLUGINNAME[] = "X-KDE-PluginInfo-Name";
-static const char VERSION[] = "X-KDE-PluginInfo-Version";
-static const char WEBSITE[] = "X-KDE-PluginInfo-Website";
-static const char CATEGORY[] = "X-KDE-PluginInfo-Category";
-static const char LICENSE[] = "X-KDE-PluginInfo-License";
-static const char DEPENDENCIES[] = "X-KDE-PluginInfo-Depends";
-static const char SERVICETYPES[] = "ServiceTypes";
-static const char XKDESERVICETYPES[] = "X-KDE-ServiceTypes";
-static const char ENABLEDBYDEFAULT[] = "X-KDE-PluginInfo-EnabledByDefault";
-static const char ENABLED[] = "Enabled";
+static const char HIDDEN_KEY[] = "Hidden";
+static const char NAME_KEY[] = "Name";
+static const char COMMENT_KEY[] = "Comment";
+static const char ICON_KEY[] = "Icon";
+static const char AUTHOR_KEY[] = "X-KDE-PluginInfo-Author";
+static const char EMAIL_KEY[] = "X-KDE-PluginInfo-Email";
+static const char PLUGINNAME_KEY[] = "X-KDE-PluginInfo-Name";
+static const char VERSION_KEY[] = "X-KDE-PluginInfo-Version";
+static const char WEBSITE_KEY[] = "X-KDE-PluginInfo-Website";
+static const char CATEGORY_KEY[] = "X-KDE-PluginInfo-Category";
+static const char LICENSE_KEY[] = "X-KDE-PluginInfo-License";
+static const char DEPENDENCIES_KEY[] = "X-KDE-PluginInfo-Depends";
+static const char SERVICETYPES_KEY[] = "ServiceTypes";
+static const char XKDESERVICETYPES_KEY[] = "X-KDE-ServiceTypes";
+static const char ENABLED_KEYBYDEFAULT_KEY[] = "X-KDE-PluginInfo-EnabledByDefault";
+static const char ENABLED_KEY[] = "Enabled";
 
 
 class KPluginInfoPrivate : public QSharedData
@@ -90,23 +90,23 @@ KPluginInfo::KPluginInfo(const QString & filename /*, QStandardPaths::StandardLo
     d->entryPath = filename;
 
     KConfigGroup cg = file.desktopGroup();
-    d->hidden = cg.readEntry(HIDDEN, false);
+    d->hidden = cg.readEntry(HIDDEN_KEY, false);
     if( d->hidden )
         return;
 
-    d->metaData.insert(NAME, file.readName());
-    d->metaData.insert(COMMENT, file.readComment());
-    d->metaData.insert(ICON, cg.readEntryUntranslated(ICON));
-    d->metaData.insert(AUTHOR, cg.readEntryUntranslated(AUTHOR));
-    d->metaData.insert(EMAIL, cg.readEntryUntranslated(EMAIL ));
-    d->metaData.insert(PLUGINNAME, cg.readEntryUntranslated(PLUGINNAME));
-    d->metaData.insert(VERSION, cg.readEntryUntranslated(VERSION));
-    d->metaData.insert(WEBSITE, cg.readEntryUntranslated(WEBSITE));
-    d->metaData.insert(CATEGORY, cg.readEntryUntranslated(CATEGORY));
-    d->metaData.insert(LICENSE, cg.readEntryUntranslated(LICENSE));
-    d->metaData.insert(DEPENDENCIES, cg.readEntryUntranslated(DEPENDENCIES));
-    d->metaData.insert(ENABLEDBYDEFAULT, cg.readEntryUntranslated(ENABLEDBYDEFAULT));
-    d->enabledbydefault = cg.readEntry(ENABLEDBYDEFAULT, false);
+    d->metaData.insert(NAME_KEY, file.readName());
+    d->metaData.insert(COMMENT_KEY, file.readComment());
+    d->metaData.insert(ICON_KEY, cg.readEntryUntranslated(ICON_KEY));
+    d->metaData.insert(AUTHOR_KEY, cg.readEntryUntranslated(AUTHOR_KEY));
+    d->metaData.insert(EMAIL_KEY, cg.readEntryUntranslated(EMAIL_KEY ));
+    d->metaData.insert(PLUGINNAME_KEY, cg.readEntryUntranslated(PLUGINNAME_KEY));
+    d->metaData.insert(VERSION_KEY, cg.readEntryUntranslated(VERSION_KEY));
+    d->metaData.insert(WEBSITE_KEY, cg.readEntryUntranslated(WEBSITE_KEY));
+    d->metaData.insert(CATEGORY_KEY, cg.readEntryUntranslated(CATEGORY_KEY));
+    d->metaData.insert(LICENSE_KEY, cg.readEntryUntranslated(LICENSE_KEY));
+    d->metaData.insert(DEPENDENCIES_KEY, cg.readEntryUntranslated(DEPENDENCIES_KEY));
+    d->metaData.insert(ENABLED_KEYBYDEFAULT_KEY, cg.readEntryUntranslated(ENABLED_KEYBYDEFAULT_KEY));
+    d->enabledbydefault = cg.readEntry(ENABLED_KEYBYDEFAULT_KEY, false);
 }
 
 KPluginInfo::KPluginInfo(const QVariantList &args)
@@ -125,11 +125,11 @@ KPluginInfo::KPluginInfo(const QVariantList &args)
         }
     }
 
-    d->hidden = d->metaData.value(HIDDEN).toBool();
+    d->hidden = d->metaData.value(HIDDEN_KEY).toBool();
     if (d->hidden) {
         return;
     }
-    d->enabledbydefault = d->metaData.value(ENABLEDBYDEFAULT).toBool();
+    d->enabledbydefault = d->metaData.value(ENABLED_KEYBYDEFAULT_KEY).toBool();
 }
 
 #ifndef KDE_NO_DEPRECATED
@@ -149,19 +149,19 @@ KPluginInfo::KPluginInfo( const KService::Ptr service )
         return;
     }
 
-    d->metaData.insert(NAME, service->name());
-    d->metaData.insert(COMMENT, service->comment());
-    d->metaData.insert(ICON, service->icon());
-    d->metaData.insert(AUTHOR, service->property(AUTHOR));
-    d->metaData.insert(EMAIL, service->property(EMAIL));
-    d->metaData.insert(PLUGINNAME, service->property(PLUGINNAME));
-    d->metaData.insert(VERSION, service->property(VERSION));
-    d->metaData.insert(WEBSITE, service->property(WEBSITE));
-    d->metaData.insert(CATEGORY, service->property(CATEGORY));
-    d->metaData.insert(LICENSE, service->property(LICENSE));
-    d->metaData.insert(DEPENDENCIES, service->property(DEPENDENCIES));
-    QVariant tmp = service->property(ENABLEDBYDEFAULT);
-    d->metaData.insert(ENABLEDBYDEFAULT, (tmp.isValid() ? tmp.toBool() : false));
+    d->metaData.insert(NAME_KEY, service->name());
+    d->metaData.insert(COMMENT_KEY, service->comment());
+    d->metaData.insert(ICON_KEY, service->icon());
+    d->metaData.insert(AUTHOR_KEY, service->property(AUTHOR_KEY));
+    d->metaData.insert(EMAIL_KEY, service->property(EMAIL_KEY));
+    d->metaData.insert(PLUGINNAME_KEY, service->property(PLUGINNAME_KEY));
+    d->metaData.insert(VERSION_KEY, service->property(VERSION_KEY));
+    d->metaData.insert(WEBSITE_KEY, service->property(WEBSITE_KEY));
+    d->metaData.insert(CATEGORY_KEY, service->property(CATEGORY_KEY));
+    d->metaData.insert(LICENSE_KEY, service->property(LICENSE_KEY));
+    d->metaData.insert(DEPENDENCIES_KEY, service->property(DEPENDENCIES_KEY));
+    QVariant tmp = service->property(ENABLED_KEYBYDEFAULT_KEY);
+    d->metaData.insert(ENABLED_KEYBYDEFAULT_KEY, (tmp.isValid() ? tmp.toBool() : false));
 }
 #endif
 
@@ -290,19 +290,19 @@ bool KPluginInfo::isPluginEnabledByDefault() const
 QString KPluginInfo::name() const
 {
     KPLUGININFO_ISVALID_ASSERTION;
-    return d->metaData.value(NAME).toString();
+    return d->metaData.value(NAME_KEY).toString();
 }
 
 QString KPluginInfo::comment() const
 {
     KPLUGININFO_ISVALID_ASSERTION;
-    return d->metaData.value(COMMENT).toString();
+    return d->metaData.value(COMMENT_KEY).toString();
 }
 
 QString KPluginInfo::icon() const
 {
     KPLUGININFO_ISVALID_ASSERTION;
-    return d->metaData.value(ICON).toString();
+    return d->metaData.value(ICON_KEY).toString();
 }
 
 QString KPluginInfo::entryPath() const
@@ -314,25 +314,25 @@ QString KPluginInfo::entryPath() const
 QString KPluginInfo::author() const
 {
     KPLUGININFO_ISVALID_ASSERTION;
-    return d->metaData.value(AUTHOR).toString();
+    return d->metaData.value(AUTHOR_KEY).toString();
 }
 
 QString KPluginInfo::email() const
 {
     KPLUGININFO_ISVALID_ASSERTION;
-    return d->metaData.value(EMAIL).toString();
+    return d->metaData.value(EMAIL_KEY).toString();
 }
 
 QString KPluginInfo::category() const
 {
     KPLUGININFO_ISVALID_ASSERTION;
-    return d->metaData.value(CATEGORY).toString();
+    return d->metaData.value(CATEGORY_KEY).toString();
 }
 
 QString KPluginInfo::pluginName() const
 {
     KPLUGININFO_ISVALID_ASSERTION;
-    return d->metaData.value(PLUGINNAME).toString();
+    return d->metaData.value(PLUGINNAME_KEY).toString();
 }
 
 QString KPluginInfo::libraryPath() const
@@ -350,19 +350,19 @@ void KPluginInfo::setLibraryPath(const QString& filename)
 QString KPluginInfo::version() const
 {
     KPLUGININFO_ISVALID_ASSERTION;
-    return d->metaData.value(VERSION).toString();
+    return d->metaData.value(VERSION_KEY).toString();
 }
 
 QString KPluginInfo::website() const
 {
     KPLUGININFO_ISVALID_ASSERTION;
-    return d->metaData.value(WEBSITE).toString();
+    return d->metaData.value(WEBSITE_KEY).toString();
 }
 
 QString KPluginInfo::license() const
 {
     KPLUGININFO_ISVALID_ASSERTION;
-    return d->metaData.value(LICENSE).toString();
+    return d->metaData.value(LICENSE_KEY).toString();
 }
 
 #if 0
@@ -376,15 +376,15 @@ KAboutLicense KPluginInfo::fullLicense() const
 QStringList KPluginInfo::dependencies() const
 {
     KPLUGININFO_ISVALID_ASSERTION;
-    return d->metaData.value(DEPENDENCIES).toStringList();
+    return d->metaData.value(DEPENDENCIES_KEY).toStringList();
 }
 
 QStringList KPluginInfo::serviceTypes() const
 {
     KPLUGININFO_ISVALID_ASSERTION;
-    QStringList serviceTypes = d->metaData.value(XKDESERVICETYPES).toStringList();
+    QStringList serviceTypes = d->metaData.value(XKDESERVICETYPES_KEY).toStringList();
     if (serviceTypes.isEmpty()) {
-        serviceTypes = d->metaData.value(SERVICETYPES).toStringList();
+        serviceTypes = d->metaData.value(SERVICETYPES_KEY).toStringList();
     }
     return serviceTypes;
 }
@@ -436,13 +436,13 @@ void KPluginInfo::save(KConfigGroup config)
     KPLUGININFO_ISVALID_ASSERTION;
     //qDebug() << Q_FUNC_INFO;
     if (config.isValid()) {
-        config.writeEntry(pluginName() + ENABLED, isPluginEnabled());
+        config.writeEntry(pluginName() + ENABLED_KEY, isPluginEnabled());
     } else {
         if (!d->config.isValid()) {
             qWarning() << "no KConfigGroup, cannot save";
             return;
         }
-        d->config.writeEntry(pluginName() + ENABLED, isPluginEnabled());
+        d->config.writeEntry(pluginName() + ENABLED_KEY, isPluginEnabled());
     }
 }
 
@@ -451,13 +451,13 @@ void KPluginInfo::load(const KConfigGroup &config)
     KPLUGININFO_ISVALID_ASSERTION;
     //qDebug() << Q_FUNC_INFO;
     if (config.isValid()) {
-        setPluginEnabled(config.readEntry(pluginName() + ENABLED, isPluginEnabledByDefault()));
+        setPluginEnabled(config.readEntry(pluginName() + ENABLED_KEY, isPluginEnabledByDefault()));
     } else {
         if (!d->config.isValid()) {
             qWarning() << "no KConfigGroup, cannot load";
             return;
         }
-        setPluginEnabled(d->config.readEntry(pluginName() + ENABLED, isPluginEnabledByDefault()));
+        setPluginEnabled(d->config.readEntry(pluginName() + ENABLED_KEY, isPluginEnabledByDefault()));
     }
 }
 
