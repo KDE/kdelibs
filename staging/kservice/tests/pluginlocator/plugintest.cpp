@@ -43,15 +43,12 @@ static QTextStream cout(stdout);
 class PluginTestPrivate {
 public:
     QString pluginName;
-    QCommandLineParser *parser;
-    int retval = 0;
 };
 
 PluginTest::PluginTest(int& argc, char** argv, QCommandLineParser *parser) :
     QCoreApplication(argc, argv)
 {
     d = new PluginTestPrivate;
-    d->parser = parser;
 }
 
 PluginTest::~PluginTest()
