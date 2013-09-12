@@ -23,16 +23,27 @@
 #include "kplugininfo.h"
 
 /**
- * KDE's trader interface (similar to the CORBA Trader), which provides a way
- * to query the KDE infrastructure for specific applications or components.
+ * \class KPluginTrader kplugintrader.h <KPluginTrader>
  *
- * Basically, KPluginTrader provides a way for an application to query
- * all KDE services (that is, applications, components, plugins) that match
- * a specific set of requirements. This allows to find specific services
- * at run-time without having to hard-code their names and/or paths.
+ * A trader interface (similar to the CORBA Trader), which provides a way
+ * to query specific subdirectories in the Qt plugin paths for plugins.
+ * KPluginTrader provides an easy way to load a plugin instance from a KPluginFactory,
+ * or just querying for existing plugins.
  *
- * For anything relating to mimetypes (type of files), ignore KPluginTrader
- * and use KMimeTypeTrader instead.
+ * KPluginTrader provides a way for an application to query directories in the
+ * Qt plugin paths, accessed through QCoreApplication::libraryPaths().
+ * Plugins may match a specific set of requirements. This allows to find
+ * specific plugins at run-time without having to hard-code their names and/or
+ * paths. KPluginTrader does not search recursively, you are rather encouraged
+ * to install plugins into specific subdirectories to further speed searching.
+ *
+ * KPluginTrader exclusively searches within the plugin binaries' metadata
+ * (via QPluginLoader::metaData()). It does not search these directories recursively.
+ *
+ * KPluginTrader does not use KServiceTypeTrader or KSyCoCa. As such, it will
+ * only find binary plugins. If you are looking for a generic way to query for
+ * services, use KServiceTypeTrader. For anything relating to mimetypes (type
+ * of files), use KMimeTypeTrader.
  *
  * \par Example
  *
@@ -41,12 +52,12 @@
  * the trader for it:
  * \code
  * KPluginInfo::List offers =
- *     KPluginTrader::self()->query("KMyApp/Plugin");
+ *     KPluginTrader::self()->query("KMyApp/Plugin", "kf5");
  * \endcode
  *
  * You can add a constraint in the "trader query language". For instance:
  * \code
- * KPluginTrader::self()->query("KMyApp/Plugin",
+ * KPluginTrader::self()->query("KMyApp/Plugin", "kf5",
  *                                   "[X-KMyApp-InterfaceVersion] > 15");
  * \endcode
  *
@@ -66,7 +77,13 @@
  * Instead of the other meaning, make sure that the numeric value of "X-KMyApp-InterfaceVersion" is
  * greater than 4.
  *
- * @see KMimeTypeTrader, KPluginInfo
+ * @see KMimeTypeTrader, KServiceTypeTrader, KPluginInfo
+ * @see QCoreApplication::libraryPaths
+ * @see QT_PLUGIN_PATH (env variable)
+ * @see KPluginFactory
+ * @see kservice_desktop_to_json (Cmake macro)
+ * @see K_PLUGIN_FACTORY_WITH_JSON (macro defined in KPluginFactory)
+ *
  * @since 5.0
  */
 class KSERVICE_EXPORT KPluginTrader
@@ -80,11 +97,16 @@ public:
     /**
      * The main function in the KPluginTrader class.
      *
-     * It will return a list of services that match your
-     * specifications.  The only required parameter is the service
-     * type.  This is something like 'text/plain' or 'text/html'.  The
-     * constraint parameter is used to limit the possible choices
-     * returned based on the constraints you give it.
+     * It will return a list of plugins that match your specifications. Required parameter is the
+     * service type and subdirectory. This method will append the subDirectory to every path found
+     * in QCoreApplication::libraryPaths(), append the subDirectory parameter, and search through
+     * the plugin's metadata
+     *
+     * KPluginTrader exclusively searches within the plugin binaries' metadata
+     * (via QPluginLoader::metaData()). It does not search these directories recursively.
+     *
+     * The constraint parameter is used to limit the possible choices returned based on the
+     * constraints you give it.
      *
      * The @p constraint language is rather full.  The most common
      * keywords are AND, OR, NOT, IN, and EXIST, all used in an
@@ -93,16 +115,16 @@ public:
      * (Type == 'Service') and (('KParts/ReadOnlyPart' in ServiceTypes) or (exist Exec))
      * \endcode
      *
-     * The keys used in the query (Type, ServiceType, Exec) are all
-     * fields found in the .desktop files.
+     * The keys used in the query (Type, ServiceType, Exec) are all fields found in the .json files
+     * which are compiled into the plugin binaries.
      *
-     * @param servicetype A service type like 'KMyApp/Plugin' or 'KFilePlugin'.
+     * @param servicetype A service type like 'KMyApp/Plugin' or 'KFilePlugin'
+     * @param subDirectory The subdirectory under the Qt plugin path
      * @param constraint  A constraint to limit the choices returned, QString() to
      *                    get all services of the given @p servicetype
      *
      * @return A list of services that satisfy the query
      * @see http://techbase.kde.org/Development/Tutorials/Services/Traders#The_KTrader_Query_Language
-     * @since 5.0
      */
     KPluginInfo::List query(const QString& servicetype, const QString& subDirectory = QString(),
                           const QString& constraint = QString() );
@@ -128,10 +150,10 @@ public:
      * }
      * \endcode
      *
-     * @param serviceType the type of service for which to find a plugin
+     * @param serviceType The type of service for which to find a plugin
      * @param subDirectory The subdirectory under the Qt plugin pathes to search in
-     * @param constraint an optional constraint to pass to the trader (see KTrader)
-     * @param parent the parent object for the part itself
+     * @param constraint An optional constraint to pass to the trader (see KTrader)
+     * @param parent The parent object for the part itself
      * @param args A list of arguments passed to the service component
      * @param error The string passed here will contain an error description.
      * @return A pointer to the newly created object or a null pointer if the
