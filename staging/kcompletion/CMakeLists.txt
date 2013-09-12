@@ -19,6 +19,8 @@ ecm_setup_version(5 0 0 VARIABLE_PREFIX KCOMPLETION
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KCompletionConfigVersion.cmake")
 
 remove_definitions(-DQT_NO_KEYWORDS)
+remove_definitions(-DQT_NO_CAST_TO_ASCII)
+remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
 add_subdirectory(src)
 add_subdirectory(tests)
