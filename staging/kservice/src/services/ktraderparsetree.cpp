@@ -19,8 +19,6 @@
 
 #include "ktraderparsetree_p.h"
 
-#include <QDebug>
-
 namespace KTraderParse {
 
 bool ParseTreeOR::eval( ParseContext *_context ) const
@@ -633,7 +631,7 @@ bool ParseTreeMAX2::eval( ParseContext *_context ) const
 }
 
 int matchConstraint( const ParseTreeBase *_tree, const KService::Ptr &_service,
-             const KService::List& _list )
+                     const KService::List& _list )
 {
   // Empty tree matches always
   if ( !_tree )
@@ -679,9 +677,9 @@ bool ParseContext::initMaxima( const QString& _prop )
   // Is the property known ?
   QVariant prop;
   if ( service ) {
-      prop =  service->property( _prop );
+      prop = service->property( _prop );
   } else if ( info.isValid() ) {
-      prop =  info.property( _prop );
+      prop = info.property( _prop );
   }
   if ( !prop.isValid() )
     return false;
@@ -704,15 +702,24 @@ bool ParseContext::initMaxima( const QString& _prop )
     extrema.type = PreferencesMaxima::PM_INVALID_DOUBLE;
 
   // Iterate over all offers
-  qWarning() << "FIXME: needs work";
-  //KService::List::ConstIterator oit = offers.begin(); // FIXME: consider this as well!
-  // Iterate over all offers
-  KPluginInfo::List::ConstIterator oit = pluginOffers.begin();
-  for( ; oit != pluginOffers.end(); ++oit )
-  //for( ; oit != offers.end(); ++oit )
+  QVariantList offerValues;
+  if ( service )
   {
-    QVariant p = (*oit).property( _prop );
-    qDebug() << " P : " << p;
+    KService::List::ConstIterator oit = offers.begin();
+    for( ; oit != offers.end(); ++oit )
+    {
+      offerValues << (*oit)->property( _prop );
+    }
+  } else if ( info.isValid() ) {
+    KPluginInfo::List::ConstIterator oit = pluginOffers.begin();
+    for( ; oit != pluginOffers.end(); ++oit )
+    {
+      offerValues << (*oit).property( _prop );
+    }
+  }
+
+  foreach (const QVariant &p, offerValues)
+  {
     if ( p.isValid() )
     {
       // Determine new maximum/minimum
