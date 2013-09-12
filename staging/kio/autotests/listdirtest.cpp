@@ -44,18 +44,16 @@ void ListDirTest::numFilesTestCase()
 
     createEmptyTestFiles(numOfFiles, tempDir.path());
 
-    KIO::ListJob* job = KIO::listDir(QUrl::fromLocalFile(tempDir.path()), KIO::HideProgressInfo);
-    job->setUiDelegate( 0 );
-    m_receivedEntryCount = -2; // We start at -2 for . and .. slotResult will just increment this value
+    /*QBENCHMARK*/ {
+        m_receivedEntryCount = -2; // We start at -2 for . and .. slotResult will just increment this value
+        KIO::ListJob* job = KIO::listDir(QUrl::fromLocalFile(tempDir.path()), KIO::HideProgressInfo);
+        job->setUiDelegate( 0 );
+        connect(job, SIGNAL(entries(KIO::Job*,KIO::UDSEntryList)), this, SLOT(slotEntries(KIO::Job*,KIO::UDSEntryList)));
 
-    connect(job, SIGNAL(entries(KIO::Job*,KIO::UDSEntryList)), this, SLOT(slotEntries(KIO::Job*,KIO::UDSEntryList)));
-
-    QSignalSpy spy(job, SIGNAL(result(KJob*)));
-
-    if(numOfFiles >= 1000) QEXPECT_FAIL("", "Expected failure if you hit KIO jumbo packets.", Abort);
-    QVERIFY(spy.wait(1000));
-
-    QCOMPARE(job->error(), 0); // no error
+        QSignalSpy spy(job, SIGNAL(result(KJob*)));
+        QVERIFY(spy.wait(100000));
+        QCOMPARE(job->error(), 0); // no error
+    }
     QCOMPARE(m_receivedEntryCount, numOfFiles);
 }
 
