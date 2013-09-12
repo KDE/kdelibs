@@ -46,11 +46,11 @@ public:
     KPluginTrader instance;
 };
 
-Q_GLOBAL_STATIC(KPluginTraderSingleton, s_globalServiceTypeTrader)
+Q_GLOBAL_STATIC(KPluginTraderSingleton, s_globalPluginTrader)
 
 KPluginTrader* KPluginTrader::self()
 {
-    return &s_globalServiceTypeTrader()->instance;
+    return &s_globalPluginTrader()->instance;
 }
 
 KPluginTrader::KPluginTrader()
@@ -62,14 +62,13 @@ KPluginTrader::~KPluginTrader()
 {
 }
 
-void KPluginTrader::applyConstraints( KPluginInfo::List& lst,
-                                const QString& constraint )
+void KPluginTrader::applyConstraints(KPluginInfo::List& lst, const QString& constraint )
 {
     if (lst.isEmpty() || constraint.isEmpty()) {
         return;
     }
 
-    const ParseTreeBase::Ptr constr = parseConstraints( constraint ); // for ownership
+    const ParseTreeBase::Ptr constr = parseConstraints(constraint); // for ownership
     const ParseTreeBase* pConstraintTree = constr.data(); // for speed
 
     if (!constr) { // parse error
@@ -101,13 +100,11 @@ KPluginInfo::List KPluginTrader::query(const QString& servicetype, const QString
             loader.setFileName(_f);
             const QVariantList argsWithMetaData = QVariantList() << loader.metaData().toVariantMap();
             KPluginInfo info(argsWithMetaData, _f);
-            if (info.serviceTypes().contains(servicetype)) {
-                //qDebug() << "Found plugin with " << servicetype << " : " << info.name();
+            if (servicetype.isEmpty() || info.serviceTypes().contains(servicetype)) {
                 lst << info;
             }
         }
     }
     applyConstraints(lst, constraint);
     return lst;
-
 }

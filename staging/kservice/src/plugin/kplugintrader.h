@@ -25,10 +25,9 @@
 /**
  * \class KPluginTrader kplugintrader.h <KPluginTrader>
  *
- * A trader interface (similar to the CORBA Trader), which provides a way
- * to query specific subdirectories in the Qt plugin paths for plugins.
- * KPluginTrader provides an easy way to load a plugin instance from a KPluginFactory,
- * or just querying for existing plugins.
+ * A trader interface which provides a way to query specific subdirectories in the Qt
+ * plugin paths for plugins. KPluginTrader provides an easy way to load a plugin
+ * instance from a KPluginFactory, or just querying for existing plugins.
  *
  * KPluginTrader provides a way for an application to query directories in the
  * Qt plugin paths, accessed through QCoreApplication::libraryPaths().
@@ -127,7 +126,7 @@ public:
      * @see http://techbase.kde.org/Development/Tutorials/Services/Traders#The_KTrader_Query_Language
      */
     KPluginInfo::List query(const QString& servicetype, const QString& subDirectory = QString(),
-                          const QString& constraint = QString() );
+                            const QString& constraint = QString());
 
     /**
      * This is a static pointer to the KPluginTrader singleton.
@@ -161,9 +160,9 @@ public:
      */
     template <class T>
     static T *createInstanceFromQuery(const QString &serviceType,
-            const QString &subDirectory = QString(),
-            const QString &constraint = QString(), QObject *parent = 0,
-            const QVariantList &args = QVariantList(), QString *error = 0)
+                                      const QString &subDirectory = QString(),
+                                      const QString &constraint = QString(), QObject *parent = 0,
+                                      const QVariantList &args = QVariantList(), QString *error = 0)
     {
         return createInstanceFromQuery<T>(serviceType, 0, parent, subDirectory, constraint, args, error);
     }
@@ -188,11 +187,11 @@ public:
      */
     template <class T>
     static T *createInstanceFromQuery(const QString &serviceType,
-            QWidget *parentWidget, QObject *parent,
-            const QString &subDirectory = QString(),
-            const QString &constraint = QString(),
-            const QVariantList &args = QVariantList(),
-            QString *error = 0)
+                                      QWidget *parentWidget, QObject *parent,
+                                      const QString &subDirectory = QString(),
+                                      const QString &constraint = QString(),
+                                      const QVariantList &args = QVariantList(),
+                                      QString *error = 0)
     {
         if (error) {
             error->clear();
@@ -216,8 +215,8 @@ public:
         return 0;
     }
 
-    static void applyConstraints( KPluginInfo::List& lst,
-                                  const QString& constraint );
+    static void applyConstraints(KPluginInfo::List& lst,
+                                  const QString& constraint);
 
 private:
     /**
@@ -226,11 +225,11 @@ private:
     KPluginTrader();
 
     // disallow copy ctor and assignment operator
-    KPluginTrader( const KPluginTrader& other );
-    KPluginTrader& operator=( const KPluginTrader& rhs );
+    KPluginTrader(const KPluginTrader& other);
+    KPluginTrader& operator=(const KPluginTrader& rhs);
 
     class Private;
-    Private * const d;
+    Private* const d;
 
     friend class KPluginTraderSingleton;
 };
