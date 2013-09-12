@@ -15,7 +15,7 @@ kde4_add_ui_files(console_SRCS jsconsole.ui )
 
 qt5_add_resources(console_SRCS console.qrc )
 
-kde4_add_executable(kjsconsole ${console_SRCS})
+add_executable(kjsconsole ${console_SRCS})
 
 target_link_libraries(kjsconsole kjsembed)
 

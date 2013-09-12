@@ -2,11 +2,6 @@ add_subdirectory( tests )
 
 ####### kcookiejar: command line tool for talking to the kded kcookiejar module #######
 
-set(kcookiejar_SRCS
-main.cpp
-)
-
-
 qt5_generate_dbus_interface( ${CMAKE_SOURCE_DIR}/kded/kdedadaptor.h org.kde.kded5.xml )
 qt5_add_dbus_interfaces(kcookiejar_SRCS ${CMAKE_CURRENT_BINARY_DIR}/org.kde.kded5.xml)
 
@@ -15,7 +10,9 @@ set(kcookieserver_xml ${CMAKE_CURRENT_BINARY_DIR}/org.kde.KCookieServer.xml)
 set_source_files_properties(${kcookieserver_xml} PROPERTIES INCLUDE "kcookiejar_include.h")
 qt5_add_dbus_interfaces(kcookiejar_SRCS ${kcookieserver_xml})
 
-kde4_add_executable( kcookiejar4 NOGUI ${kcookiejar_SRCS})
+set(kcookiejar_SRCS ${kcookiejar_SRCS} main.cpp)
+add_executable( kcookiejar4 ${kcookiejar_SRCS})
+ecm_mark_nongui_executable(kcookiejar4)
 
 target_link_libraries( kcookiejar4
    Qt5::DBus

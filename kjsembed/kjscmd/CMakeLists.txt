@@ -25,7 +25,7 @@ else (NOT DEFINED QT_ONLY)
 endif (NOT DEFINED QT_ONLY)
 
 
-kde4_add_executable(${KJSCMDNAME} ${kjscmd_SRCS})
+add_executable(${KJSCMDNAME} ${kjscmd_SRCS})
 
 target_link_libraries(${KJSCMDNAME} Qt5::Widgets ${KCoreAddons_LIBRARIES} ${KJSEMBEDLIBNAME} KJS KI18n KDE4Support)
 

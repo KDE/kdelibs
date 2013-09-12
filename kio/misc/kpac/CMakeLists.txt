@@ -36,9 +36,8 @@ endif()
 
 ########### next target ###############
 
-set(kpac_dhcp_helper_SRCS kpac_dhcp_helper.c)
-
-kde4_add_executable(kpac_dhcp_helper NOGUI ${kpac_dhcp_helper_SRCS})
+add_executable(kpac_dhcp_helper kpac_dhcp_helper.c)
+ecm_mark_nongui_executable(kpac_dhcp_helper)
 
 if (HAVE_NSL_LIBRARY)
   # Assume Solaris

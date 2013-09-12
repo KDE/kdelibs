@@ -11,8 +11,8 @@ set(ksendbugmail_SRCS
   ${CMAKE_SOURCE_DIR}/staging/kio/src/core/kemailsettings.cpp # not worth linking kiocore for just one file
 )
 
-
-kde4_add_executable(ksendbugmail NOGUI ${ksendbugmail_SRCS})
+add_executable(ksendbugmail ${ksendbugmail_SRCS})
+ecm_mark_nongui_executable(ksendbugmail)
 
 target_link_libraries(ksendbugmail Qt5::Widgets Qt5::Network KConfigCore KI18n ${KCoreAddons_LIBRARIES})
 

@@ -24,6 +24,7 @@ set_package_properties(Strigi PROPERTIES DESCRIPTION "Desktop indexing and searc
 include(FeatureSummary)
 
 include(ECMSetupVersion)
+include(ECMMarkNonGuiExecutable)
 
 ecm_setup_version(5 0 0 VARIABLE_PREFIX KDE4SUPPORT
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kde4support_version.h"
@@ -38,7 +39,8 @@ remove_definitions(-DQT_NO_CAST_FROM_BYTEARRAY)
 remove_definitions(-DQT_NO_CAST_TO_ASCII)
 remove_definitions(-DQT_NO_KEYWORDS)
 
-kde4_add_executable(kf5-config NOGUI kde-config.cpp )
+add_executable(kf5-config kde-config.cpp )
+ecm_mark_nongui_executable(kf5-config)
 
 target_link_libraries(kf5-config ${KCoreAddons_LIBRARIES} KI18n KConfigCore KDE4Support)
 target_include_directories(kf5-config PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/../..")
