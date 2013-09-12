@@ -20,7 +20,6 @@
 #ifndef __kplugintrader_h__
 #define __kplugintrader_h__
 
-#include "kservice.h"
 #include "kplugininfo.h"
 
 /**

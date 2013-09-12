@@ -19,6 +19,7 @@
 */
 
 #include "kplugintrader.h"
+#include "ktraderparsetree_p.h"
 
 #include <QtCore/QCoreApplication>
 #include <QtCore/QDir>
@@ -26,12 +27,6 @@
 #include <QtCore/QJsonObject>
 #include <QtCore/QPluginLoader>
 
-
-#include "ktraderparsetree_p.h"
-#include <kservicetypeprofile.h>
-#include "kservicetype.h"
-#include "kservicetypefactory.h"
-#include "kservicefactory.h"
 
 
 #include <QDebug>
