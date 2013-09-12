@@ -109,10 +109,11 @@ KPluginInfo::KPluginInfo(const QString & filename /*, QStandardPaths::StandardLo
     d->enabledbydefault = cg.readEntry(s_enabledbyDefaultKey, false);
 }
 
-KPluginInfo::KPluginInfo(const QVariantList &args)
+KPluginInfo::KPluginInfo(const QVariantList &args, const QString &libraryPath)
 : d( new KPluginInfoPrivate )
 {
     static const QString metaData = QStringLiteral("MetaData");
+    d->libraryPath = libraryPath;
 
     foreach (const QVariant &v, args) {
         if (v.canConvert<QVariantMap>()) {
@@ -339,12 +340,6 @@ QString KPluginInfo::libraryPath() const
 {
     KPLUGININFO_ISVALID_ASSERTION;
     return d->libraryPath;
-}
-
-void KPluginInfo::setLibraryPath(const QString& filename)
-{
-    KPLUGININFO_ISVALID_ASSERTION;
-    d->libraryPath = filename;
 }
 
 QString KPluginInfo::version() const
