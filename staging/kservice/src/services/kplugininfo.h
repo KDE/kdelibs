@@ -156,7 +156,7 @@ class KSERVICE_EXPORT KPluginInfo
          * \see KPluginFactory::factory()
          * @since 5.0
          */
-        explicit KPluginInfo( const QVariantList &args );
+        explicit KPluginInfo( const QVariantList &args, const QString &libraryPath = QString() );
 
         /**
          * Creates an invalid plugin.

@@ -100,9 +100,9 @@ KPluginInfo::List KPluginTrader::query(const QString& servicetype, const QString
             const QString _f = it.fileInfo().absoluteFilePath();
             loader.setFileName(_f);
             const QVariantList argsWithMetaData = QVariantList() << loader.metaData().toVariantMap();
-            KPluginInfo info(argsWithMetaData);
+            KPluginInfo info(argsWithMetaData, _f);
             if (info.serviceTypes().contains(servicetype)) {
-                info.setLibraryPath(_f);
+                //qDebug() << "Found plugin with " << servicetype << " : " << info.name();
                 lst << info;
             }
         }
