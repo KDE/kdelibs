@@ -105,7 +105,7 @@ public:
      * @see http://techbase.kde.org/Development/Tutorials/Services/Traders#The_KTrader_Query_Language
      * @since 5.0
      */
-    KPluginInfo::List query( const QString& servicetype, const QString& subDirectory = QString(),
+    KPluginInfo::List query(const QString& servicetype, const QString& subDirectory = QString(),
                           const QString& constraint = QString() );
 
     /**
