@@ -9,7 +9,6 @@ add_subdirectory(ktextwidgets)
 add_subdirectory(xmlgui)
 
 add_subdirectory(kwallet)
-add_subdirectory(ki18n) # must be before kwidgets, etc.
 add_subdirectory(kservice)
 add_subdirectory(kio)
 add_subdirectory(frameworkintegration)
