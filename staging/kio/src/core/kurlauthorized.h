@@ -18,11 +18,11 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef KAUTHORIZED_H
-#define KAUTHORIZED_H
+#ifndef KURLAUTHORIZED_H
+#define KURLAUTHORIZED_H
 
 #include <kio/kiocore_export.h>
-#include <kcoreauthorized.h>
+#include <kauthorized.h>
 
 class QUrl;
 class QString;
@@ -30,7 +30,7 @@ class QString;
 /**
 * Kiosk authorization framework.
 */
-namespace KAuthorized
+namespace KUrlAuthorized
 {
   /**
    * Returns whether a certain URL related action is authorized.
@@ -43,6 +43,8 @@ namespace KAuthorized
    * @param baseUrl The url where the action originates from
    * @param destUrl The object of the action
    * @return true when the action is authorized, false otherwise.
+   *
+   * @since 5.0
    */
   KIOCORE_EXPORT bool authorizeUrlAction(const QString& action, const QUrl& baseUrl, const QUrl& destUrl);
 
@@ -53,6 +55,8 @@ namespace KAuthorized
    * @param action The name of the action.
    * @param baseUrl The url where the action originates from
    * @param _destUrl The object of the action
+   *
+   * @since 5.0
    */
   KIOCORE_EXPORT void allowUrlAction(const QString& action, const QUrl& baseUrl, const QUrl&  _destUrl);
 }

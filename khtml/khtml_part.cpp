@@ -93,7 +93,7 @@ using namespace DOM;
 #include <kmimetypetrader.h>
 #include <qtemporaryfile.h>
 #include <ktoolinvocation.h>
-#include <kauthorized.h>
+#include <kurlauthorized.h>
 #include <kparts/browserinterface.h>
 #include <kparts/scriptableextension.h>
 #include <kactionmenu.h>
@@ -2633,7 +2633,7 @@ void KHTMLPart::slotRedirect()
   if ( openedByJS() && d->m_opener )
       cUrl = d->m_opener->url();
 
-  if (!KAuthorized::authorizeUrlAction("redirect", cUrl, url))
+  if (!KUrlAuthorized::authorizeUrlAction("redirect", cUrl, url))
   {
     qWarning() << "KHTMLPart::scheduleRedirection: Redirection from " << cUrl << " to " << url << " REJECTED!";
     emit completed();
@@ -6819,7 +6819,7 @@ bool KHTMLPart::checkLinkSecurity(const QUrl &linkURL,const KLocalizedString &me
   bool linkAllowed = true;
 
   if ( d->m_doc )
-    linkAllowed = KAuthorized::authorizeUrlAction("redirect", url(), linkURL);
+    linkAllowed = KUrlAuthorized::authorizeUrlAction("redirect", url(), linkURL);
 
   if ( !linkAllowed ) {
     khtml::Tokenizer *tokenizer = d->m_doc->tokenizer();

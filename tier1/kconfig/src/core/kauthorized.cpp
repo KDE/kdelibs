@@ -18,7 +18,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "kcoreauthorized.h"
+#include "kauthorized.h"
 
 #include <QtCore/QDir>
 #include <QtCore/QRegExp>

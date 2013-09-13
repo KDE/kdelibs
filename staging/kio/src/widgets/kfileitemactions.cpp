@@ -24,7 +24,7 @@
 #include <kmimetypetrader.h>
 #include <kdesktopfileactions.h>
 #include <klocalizedstring.h>
-#include <kcoreauthorized.h>
+#include <kurlauthorized.h>
 #include <kconfiggroup.h>
 #include <kdesktopfile.h>
 #include <kservicetypetrader.h>

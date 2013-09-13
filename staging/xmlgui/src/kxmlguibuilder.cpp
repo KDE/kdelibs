@@ -26,7 +26,7 @@
 #include "kxmlguiwindow.h"
 #include "kmenumenuhandler_p.h"
 
-#include <kcoreauthorized.h>
+#include <kauthorized.h>
 #include <klocalizedstring.h>
 
 #include <QtXml/QDomElement>

@@ -34,7 +34,7 @@
 #include <QtCore/QMap>
 #include <qmimedatabase.h>
 
-#include <kcoreauthorized.h>
+#include <kauthorized.h>
 #include <kdesktopfile.h>
 #include <kconfiggroup.h>
 

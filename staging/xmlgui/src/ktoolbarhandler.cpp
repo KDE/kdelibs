@@ -23,7 +23,7 @@
 #include <QMenu>
 
 #include <kactionmenu.h>
-#include <kcoreauthorized.h>
+#include <kauthorized.h>
 #include <klocalizedstring.h>
 #include <kstandardaction.h>
 

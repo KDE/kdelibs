@@ -42,7 +42,7 @@
 #include <QDBusMessage>
 #include <QDebug>
 
-#include <kcoreauthorized.h>
+#include <kauthorized.h>
 #include <kconfig.h>
 #include <ksharedconfig.h>
 #include <kicontheme.h>

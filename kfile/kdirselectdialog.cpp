@@ -36,7 +36,7 @@
 #include <jobuidelegate.h>
 #include <kabstractfilemodule.h>
 #include <kactioncollection.h>
-#include <kcoreauthorized.h>
+#include <kauthorized.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <kfiletreeview.h>

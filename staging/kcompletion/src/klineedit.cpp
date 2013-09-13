@@ -28,7 +28,7 @@
 #include "klineedit.h"
 #include "klineedit_p.h"
 
-#include <kcoreauthorized.h>
+#include <kauthorized.h>
 #include <ksharedconfig.h>
 #include <kconfiggroup.h>
 #include <kcursor.h>

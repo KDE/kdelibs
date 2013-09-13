@@ -24,7 +24,7 @@
 
 #include <QApplication>
 #include <ktoolinvocation.h>
-#include <kcoreauthorized.h>
+#include <kauthorized.h>
 #include <kmessagebox.h>
 #include <QDebug>
 #include <klocalizedstring.h>

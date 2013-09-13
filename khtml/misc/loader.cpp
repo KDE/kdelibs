@@ -64,7 +64,7 @@
 #include <QMovie>
 #include <QWidget>
 #include <QtCore/QDebug>
-#include <kauthorized.h>
+#include <kurlauthorized.h>
 #include <kio/job.h>
 #include <kio/jobuidelegate.h>
 #include <kio/jobclasses.h>
@@ -1056,7 +1056,7 @@ static inline bool securityCheckUrl(const QUrl& fullURL, KHTMLPart* part, DOM::D
         if (isImg && part && part->forcePermitLocalImages() && fullURL.scheme() == "file")
             return true;
         else
-            return KAuthorized::authorizeUrlAction("redirect", doc->URL(), fullURL);
+            return KUrlAuthorized::authorizeUrlAction("redirect", doc->URL(), fullURL);
     }
 
     return true;

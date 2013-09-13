@@ -34,7 +34,7 @@
 #include <QtDBus/QtDBus>
 #include <QtCore/QMetaType>
 
-#include "kcoreauthorized.h"
+#include "kauthorized.h"
 #include "k4aboutdata.h"
 #include "kcrash.h"
 #include "kconfig.h"

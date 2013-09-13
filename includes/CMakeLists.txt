@@ -443,6 +443,7 @@ install( FILES
   KUriFilterData
   KUriFilterPlugin
   KUrl
+  KUrlAuthorized
   KUrlComboBox
   KUrlComboRequester
   KUrlCompletion

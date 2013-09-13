@@ -37,7 +37,7 @@
 #include <QtDBus/QtDBus>
 
 #include <kapplication.h>
-#include <kauthorized.h>
+#include <kurlauthorized.h>
 #include <kaboutdata.h>
 #include <klocalizedstring.h>
 #include <kiconloader.h>
@@ -333,7 +333,7 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent,
     // check codebase first
     const QUrl kbaseURL( baseurl );
     const QUrl newURL(kbaseURL.resolved(QUrl(codebase)));
-    if (KAuthorized::authorizeUrlAction("redirect", QUrl(baseurl), newURL))
+    if (KUrlAuthorized::authorizeUrlAction("redirect", QUrl(baseurl), newURL))
         applet->setCodeBase (newURL.toString());
     applet->setAppletClass (classname);
     KJavaAppletContext* const cxt = serverMaintainer()->getContext (parent, baseurl);
