@@ -4,7 +4,7 @@ include(ECMMarkAsTest)
 macro(KDE4SUPPORT_EXAMPLES)
   foreach(_testname ${ARGN})
     add_executable(${_testname} ${_testname}.cpp)
-    target_link_libraries(${_testname} KDE4Support Qt5::Test Qt5::Network Qt5::Widgets KWidgetsAddons ${KCoreAddons_LIBRARIES} KI18n XmlGui KCompletion KIconThemes)
+    target_link_libraries(${_testname} KDE4Support Qt5::Test Qt5::Network Qt5::Widgets KWidgetsAddons ${KCoreAddons_LIBRARIES} KI18n XmlGui KCompletion KIconThemes KIOCore)
     ecm_mark_as_test(${_testname})
   endforeach()
 endmacro()
@@ -32,6 +32,7 @@ kde4support_examples(
   kiopassdlgtest
   kmfitest
   kscantest
+  netaccesstest
 )
 
 if (X11_FOUND)

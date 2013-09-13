@@ -20,7 +20,6 @@
 #include <QApplication>
 #include <qtest.h>
 #include <kio/copyjob.h>
-#include <kio/netaccess.h>
 #include <kio/paste.h>
 #include <kio/deletejob.h>
 #include "kiotesthelper.h" // createTestFile etc.

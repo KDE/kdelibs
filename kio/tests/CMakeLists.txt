@@ -43,7 +43,6 @@ KIO_EXECUTABLE_TESTS(
   kionetrctest
   kpropsdlgtest
   ksycocaupdatetest
-  netaccesstest
   kdirmodeltest_gui
   kmimetypechoosertest_gui
   kdbusservicestartertest

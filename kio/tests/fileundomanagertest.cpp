@@ -30,7 +30,6 @@
 #include <kio/copyjob.h>
 #include <kio/job.h>
 #include <kio/deletejob.h>
-#include <kio/netaccess.h>
 #include <kio/paste.h>
 #include <kprotocolinfo.h>
 #include <kurlmimedata.h>

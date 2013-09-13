@@ -134,6 +134,7 @@ set(libkde4support_SRCS
     kio/kfilewriteplugin.cpp
 #     kio/kpreviewprops.cpp
     kio/kscan.cpp
+    kio/netaccess.cpp
 
     kparts/factory.cpp
 )
@@ -199,6 +200,7 @@ target_link_libraries(KDE4Support
    KCrash
    ${KWidgetsAddons_LIBRARIES}
    KConfigWidgets
+   KIOCore
    kio
    ${KIO_EXTRA_LIBS}
    KI18n
@@ -299,6 +301,7 @@ install(FILES
     kio/kfileshare.h
     kio/kfileitemactionplugin.h
     kio/kscan.h
+    kio/netaccess.h
 
     kdeui/k4style.h
     kdeui/kaccelgen.h

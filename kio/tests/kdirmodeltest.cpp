@@ -34,7 +34,6 @@
 #include <QDebug>
 #include <kio/deletejob.h>
 #include <kio/job.h>
-#include <kio/netaccess.h>
 #include <kdirwatch.h>
 #include "kiotesthelper.h"
 #include <QUrl>

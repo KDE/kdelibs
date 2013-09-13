@@ -22,7 +22,6 @@
 
 #include "jobremotetest.h"
 
-#include <kio/netaccess.h>
 #include <QDebug>
 #include <klocalizedstring.h>
 
