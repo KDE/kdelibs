@@ -137,6 +137,7 @@ public:
      *         get the reason it failed.
      *
      * @see lastErrorString()
+     * @deprecated since 5.0, use KIO::storedGet + KJobWidgets::setWindow + job->exec() instead
      */
     static bool download(const QUrl& src, QString & target, QWidget* window);
 
@@ -170,6 +171,7 @@ public:
      *               prompted for passwords as needed.
      *
      * @return true if successful, false for failure
+     * @deprecated since 5.0, use KIO::storedPut + KJobWidgets::setWindow + job->exec() instead
      */
     static bool upload(const QString& src, const QUrl& target, QWidget* window);
 
@@ -280,6 +282,7 @@ public:
      *               again be prompted for passwords as needed.
      * @return true if the URL exists and we can do the operation specified by
      *              @p source, false otherwise
+     * @deprecated since 5.0, use QFile::exists for local files and KIO::stat for transparency
      */
     static bool exists(const QUrl& url, StatSide statSide, QWidget* window);
 
@@ -298,6 +301,7 @@ public:
      *               cached only for a short duration after which the user will
      *               again be prompted for passwords as needed.
      * @return true if successful, false for failure
+     * @deprecated since 5.0, use KIO::stat + KJobWidgets::setWindow + job->exec() instead
      */
     static bool stat(const QUrl& url, KIO::UDSEntry & entry, QWidget* window);
 
@@ -316,6 +320,7 @@ public:
      *               again be prompted for passwords as needed.
      * @return a local URL corresponding to the same resource than the
      *         original URL, or the original URL if no local URL can be mapped
+     * @deprecated since 5.0, use KIO::mostLocalUrl + KJobWidgets::setWindow + job->exec() instead
      */
     static QUrl mostLocalUrl(const QUrl& url, QWidget* window);
 
@@ -409,6 +414,7 @@ public:
      *                 meta data from the job.
      *
      * @return true on success, false on failure.
+     * @deprecated since 5.0, KJobWidgets::setWindow + job->exec() instead
      */
     static bool synchronousRun( Job* job, QWidget* window, QByteArray* data=0,
                                 QUrl* finalURL=0, QMap<QString,QString>* metaData=0 );
@@ -430,6 +436,7 @@ public:
      *               cached only for a short duration after which the user will
      *               again be prompted for passwords as needed.
      * @return The mimetype name.
+     * @deprecated since 5.0, use KIO::mimetype + KJobWidgets::setWindow + job->exec() instead
      */
     static QString mimetype( const QUrl & url, QWidget* window );
 
