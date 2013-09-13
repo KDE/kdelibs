@@ -11,7 +11,7 @@ include(CMakePackageConfigHelpers)
 include(ECMSetupVersion)
 
 find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
-
+set(REQUIRED_QT_VERSION "5.2.0")
 find_package(Qt5Test 5.2.0 REQUIRED NO_MODULE)
 
 ecm_setup_version(5 0 0 VARIABLE_PREFIX KI18N
