@@ -22,8 +22,6 @@
 #include "config-kinterprocesswindowing.h"
 
 #if HAVE_X11
-#include <qx11info_x11.h>
-#include "kwindowsystem.h"
 #include <netwm.h>
 #include <QX11Info>
 #endif
@@ -37,18 +35,11 @@ unsigned long KUserTimestamp::userTimestamp()
 #endif
 }
 
-void KUserTimestamp::updateUserTimestamp(int time)
+void KUserTimestamp::updateUserTimestamp(unsigned long time)
 {
 #if HAVE_X11
     if (time == 0) { // get current X timestamp
-        Window w = XCreateSimpleWindow( QX11Info::display(), QX11Info::appRootWindow(), 0, 0, 1, 1, 0, 0, 0 );
-        XSelectInput( QX11Info::display(), w, PropertyChangeMask );
-        unsigned char data[ 1 ];
-        XChangeProperty( QX11Info::display(), w, XA_ATOM, XA_ATOM, 8, PropModeAppend, data, 1 );
-        XEvent ev;
-        XWindowEvent( QX11Info::display(), w, PropertyChangeMask, &ev );
-        time = ev.xproperty.time;
-        XDestroyWindow( QX11Info::display(), w );
+        time = QX11Info::getTimestamp();
     }
 
     if (QX11Info::appUserTime() == 0

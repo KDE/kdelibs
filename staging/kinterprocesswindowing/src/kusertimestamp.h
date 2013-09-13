@@ -35,7 +35,7 @@ namespace KUserTimestamp
      * if 0 is given. Do not use unless you're really sure what you're doing.
      * Consult focus stealing prevention section in kdebase/kwin/README.
      */
-    KINTERPROCESSWINDOWING_EXPORT void updateUserTimestamp(int time = 0);
+    KINTERPROCESSWINDOWING_EXPORT void updateUserTimestamp(unsigned long time = 0);
 };
 
 #endif
