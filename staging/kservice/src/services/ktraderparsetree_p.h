@@ -96,8 +96,8 @@ public:
   KPluginInfo info;
 
   QMap<QString,PreferencesMaxima>& maxima;
-  const KService::List& offers;
-  const KPluginInfo::List& pluginOffers;
+  KService::List offers;
+  KPluginInfo::List pluginOffers;
 };
 
 /**

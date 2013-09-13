@@ -126,9 +126,9 @@ public:
      *      // In many cases, plugins are actually based on KPluginFactory, this is how that works:
      *      KPluginFactory* factory = loader.factory();
      *      if (factory) {
-     *          T* component = factory->create<Engine>(parent, argsWithMetaData);
+     *          Engine* component = factory->create<Engine>(parent, argsWithMetaData);
      *          if (component) {
-     *              return component; // or whatever you want to do with the resulting object
+     *              // Do whatever you want to do with the resulting object
      *          }
      *      }
      *      // Otherwise, just use the normal QPluginLoader methods
@@ -144,8 +144,8 @@ public:
      * The keys used in the query (Type, ServiceType, Exec) are all fields found in the .json files
      * which are compiled into the plugin binaries.
      *
-     * @param servicetype A service type like 'KMyApp/Plugin' or 'KFilePlugin'
      * @param subDirectory The subdirectory under the Qt plugin path
+     * @param servicetype A service type like 'KMyApp/Plugin' or 'KFilePlugin'
      * @param constraint  A constraint to limit the choices returned, QString() to
      *                    get all services of the given @p servicetype
      *
@@ -176,8 +176,8 @@ public:
      * }
      * \endcode
      *
-     * @param serviceType The type of service for which to find a plugin
      * @param subDirectory The subdirectory under the Qt plugin pathes to search in
+     * @param serviceType The type of service for which to find a plugin
      * @param constraint An optional constraint to pass to the trader (see KTrader)
      * @param parent The parent object for the part itself
      * @param args A list of arguments passed to the service component
@@ -204,11 +204,11 @@ public:
      * const QVariantList&, QString*),
      * but you can specify an additional parent widget.  This is important for a KPart, for example.
      *
-     * @param serviceType the type of service for which to find a plugin
-     * @param parentWidget the parent widget for the plugin
-     * @param parent the parent object for the part itself
      * @param subDirectory The subdirectory under the Qt plugin pathes to search in
+     * @param serviceType the type of service for which to find a plugin
      * @param constraint an optional constraint to pass to the trader (see KTrader)
+     * @param parent the parent object for the part itself
+     * @param parentWidget the parent widget for the plugin
      * @param args A list of arguments passed to the service component
      * @param error The string passed here will contain an error description.
      * @return A pointer to the newly created object or a null pointer if the

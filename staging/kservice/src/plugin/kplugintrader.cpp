@@ -28,7 +28,7 @@
 using namespace KTraderParse;
 
 
-inline QStringList suffixFilters()
+static inline QStringList suffixFilters()
 {
 #if defined(Q_OS_WIN) || defined(Q_OS_CYGWIN)
     return QStringList() << QStringLiteral(".dll");

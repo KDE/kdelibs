@@ -151,6 +151,7 @@ class KSERVICE_EXPORT KPluginInfo
            \endverbatim
          * @param args QVariantList with arguments, should contain a QVariantMap, keyed "MetaData"
          * as provided by QPluginLoader::metaData()
+         * @param libraryPath The path to the plugin file on disk
          *
          * \see K_PLUGIN_FACTORY_WITH_JSON()
          * \see KPluginFactory::factory()
@@ -318,7 +319,8 @@ class KSERVICE_EXPORT KPluginInfo
         QStringList serviceTypes() const;
 
         /**
-         * @return The absolute path of the plugin on disk
+         * @return The absolute path of the plugin on disk. This can be used to load the plugin from, using
+         * KPluginLoader or QPluginLoader
          * @since 5.0
          */
         QString libraryPath() const;
@@ -415,12 +417,6 @@ class KSERVICE_EXPORT KPluginInfo
     private:
         friend KSERVICE_EXPORT uint qHash(const KPluginInfo &);
         QExplicitlySharedDataPointer<KPluginInfoPrivate> d;
-
-        /**
-         * @arg filename The absolute path of the plugin on disk.
-         * @since 5.0
-         */
-        void setLibraryPath(const QString &filename);
 };
 
 KSERVICE_EXPORT uint qHash(const KPluginInfo &);
