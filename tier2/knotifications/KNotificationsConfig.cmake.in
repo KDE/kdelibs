@@ -1,6 +1,6 @@
 @PACKAGE_INIT@
 
-find_dependency(QtWidgets5 @REQUIRED_QT_VERSION@)
+find_dependency(Qt5Widgets @REQUIRED_QT_VERSION@)
 find_dependency(KWindowSystem "${PACKAGE_VERSION}")
 
 set(KNotifications_INSTALL_PREFIX "@PACKAGE_CMAKE_INSTALL_PREFIX@")
