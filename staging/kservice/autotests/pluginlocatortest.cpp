@@ -20,7 +20,7 @@
 #include "pluginlocatortest.h"
 #include "nsaplugin.h"
 
-#include <qtest.h>
+#include <QtTest>
 #include <QDebug>
 
 #include <kplugininfo.h>
@@ -39,25 +39,21 @@ void PluginTest::findSomething()
 
 void PluginTest::findPluginNoConstraints()
 {
-    QString constraint;
     const QString serviceType("KService/NSA");
     KPluginInfo::List res;
-
-    constraint = QString();
-    res = KPluginTrader::self()->query(QString(), serviceType, constraint);
-    QVERIFY(res.count() > 0);
+    res = KPluginTrader::self()->query(QString(), serviceType, QString());
+    QCOMPARE(res.count(), 1);
 }
 
 void PluginTest::findPluginName()
 {
-    QString constraint;
     const QString pluginName("fakeplugin");
     const QString serviceType("KService/NSA");
     KPluginInfo::List res;
 
-    constraint = QString("[X-KDE-PluginInfo-Name] == '%1'").arg(pluginName);
+    const QString constraint = QString("[X-KDE-PluginInfo-Name] == '%1'").arg(pluginName);
     res = KPluginTrader::self()->query(QString(), serviceType, constraint);
-    QVERIFY(res.count() > 0);
+    QCOMPARE(res.count(), 1);
 }
 
 
@@ -69,7 +65,7 @@ void PluginTest::findPluginCategory()
 
     const QString constraint = QString("[X-KDE-PluginInfo-Category] == '%1'").arg(category);
     res = KPluginTrader::self()->query(QString(), serviceType, constraint);
-    QVERIFY(res.count() > 0);
+    QCOMPARE(res.count(), 1);
 }
 
 void PluginTest::findPluginComplex()
@@ -80,7 +76,7 @@ void PluginTest::findPluginComplex()
 
     const QString constraint = QString("([X-KDE-PluginInfo-Category] == '%1') AND ([X-KDE-PluginInfo-Email] == 'sebas@kde.org')").arg(category);
     res = KPluginTrader::self()->query(QString(), serviceType, constraint);
-    QVERIFY(res.count() > 0);
+    QCOMPARE(res.count(), 1);
 }
 
 void PluginTest::findPluginEmpty()
@@ -91,9 +87,8 @@ void PluginTest::findPluginEmpty()
 
     const QString constraint = QString("([X-KDE-PluginInfo-Category] == '%1') AND ([X-KDE-PluginInfo-Email] == 'prrrrt')").arg(category);
     res = KPluginTrader::self()->query(QString(), serviceType, constraint);
-    QVERIFY(res.count() == 0);
+    QCOMPARE(res.count(), 0);
 }
-
 
 void PluginTest::loadPlugin()
 {
@@ -105,7 +100,7 @@ void PluginTest::loadPlugin()
     QVERIFY(plugin != 0);
     if (plugin) {
         //qDebug() << "Plugin loaded successfully" << plugin->objectName();
-        QVERIFY(plugin->objectName() == QStringLiteral("Test Plugin Spy"));
+        QCOMPARE(plugin->objectName(), QStringLiteral("Test Plugin Spy"));
     } else {
         //qDebug() << "Plugin failed to loaded";
 
