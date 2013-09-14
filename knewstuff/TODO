@@ -4,5 +4,10 @@ TODO for KNewStuff3
 - Indicator when fetching the next page of items (when scrolling down)
 - Scrolling with mousewheel jumps over multiple items
 - Details dialog: buttons don't get updated
+- support gui switching scope (user to system, and back)
+- support multiple provider urls with ui to add/remove/edit
+
+- make an app that shows all the available knsrc files, and launches download/upload dialog on selected one
+
 
 
