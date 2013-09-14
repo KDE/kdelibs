@@ -33,14 +33,14 @@ endif (WIN32)
 
 # on win32 kdeinit5 has to be a console application
 # to be able to catch stderr based --verbose output
+add_executable(kdeinit5 ${kdeinit_SRCS})
 if (APPLE)
   # this has to be GUI on OSX because it launches GUI apps and need a quartz context
-  kde4_add_executable(kdeinit5 ${kdeinit_SRCS})
   set_target_properties(kdeinit5 PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.template)
   set_target_properties(kdeinit5 PROPERTIES MACOSX_BUNDLE_GUI_IDENTIFIER "org.kde.kdeinit5")
   set_target_properties(kdeinit5 PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "KDE Init")
 else (APPLE)
-  kde4_add_executable(kdeinit5 NOGUI ${kdeinit_SRCS})
+  ecm_mark_nongui_executable(kdeinit5)
 endif (APPLE)
 
 target_link_libraries(kdeinit5 ${kdeinit_LIBS} ${KINIT_SOCKET_LIBRARY} ${KCoreAddons_LIBRARIES} KI18n KService KDE4Support KCrash KWindowSystem Qt5::DBus Qt5::Gui Qt5::Widgets)
@@ -57,7 +57,8 @@ else (WIN32)
   set(kwrapper_SRCS kwrapper.cpp  )
 endif (WIN32)
 
-kde4_add_executable(kwrapper4 NOGUI ${kwrapper_SRCS})
+add_executable(kwrapper4 ${kwrapper_SRCS})
+ecm_mark_nongui_executable(kwrapper4)
 
 target_link_libraries(kwrapper4 ${KINIT_SOCKET_LIBRARY} Qt5::Core)
 install(TARGETS kwrapper4 ${INSTALL_TARGETS_DEFAULT_ARGS} )
@@ -66,7 +67,8 @@ if (NOT WIN32)
 
   ########### kdeinit5_wrapper ###############
 
-  kde4_add_executable(kdeinit5_wrapper NOGUI wrapper.cpp)
+  add_executable(kdeinit5_wrapper wrapper.cpp)
+  ecm_mark_nongui_executable(kdeinit5_wrapper)
 
   target_link_libraries(kdeinit5_wrapper  ${KINIT_SOCKET_LIBRARY} Qt5::Core)
 
@@ -78,7 +80,8 @@ if (NOT WIN32)
 
   ########### kshell4 ###############
 
-  kde4_add_executable(kshell4 NOGUI shell.cpp)
+  add_executable(kshell4 shell.cpp)
+  ecm_mark_nongui_executable(kshell4)
 
   target_link_libraries(kshell4 ${KINIT_SOCKET_LIBRARY} Qt5::Core)
 
@@ -86,7 +89,8 @@ if (NOT WIN32)
 
   ########### kdeinit5_shutdown ###############
 
-  kde4_add_executable(kdeinit5_shutdown NOGUI wrapper.cpp)
+  add_executable(kdeinit5_shutdown wrapper.cpp)
+  ecm_mark_nongui_executable(kdeinit5_shutdown)
 
   target_link_libraries(kdeinit5_shutdown  ${KINIT_SOCKET_LIBRARY} Qt5::Core)
 
@@ -97,10 +101,8 @@ endif (NOT WIN32)
 
 ########### kioslave ###############
 
-set(kioslave_SRCS kioslave.cpp)
-
-
-kde4_add_executable(kioslave NOGUI ${kioslave_SRCS})
+add_executable(kioslave kioslave.cpp)
+ecm_mark_nongui_executable(kioslave)
 
 target_link_libraries(kioslave  ${KDE4_KIO_LIBS})
 
@@ -133,12 +135,10 @@ install(TARGETS klauncher DESTINATION ${LIBEXEC_INSTALL_DIR} )
 
 ########### start_kdeinit ###############
 if (NOT WIN32)
-  set(start_kdeinit_SRCS start_kdeinit.c)
-  kde4_add_executable(start_kdeinit ${start_kdeinit_SRCS})
+  add_executable(start_kdeinit start_kdeinit.c)
   target_include_directories(start_kdeinit PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/..")
 
-  set(start_kdeinit_wrapper_SRCS start_kdeinit_wrapper.c)
-  kde4_add_executable(start_kdeinit_wrapper ${start_kdeinit_wrapper_SRCS})
+  add_executable(start_kdeinit_wrapper start_kdeinit_wrapper.c)
   target_include_directories(start_kdeinit_wrapper PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/..")
 
   install(TARGETS start_kdeinit DESTINATION ${LIBEXEC_INSTALL_DIR})

@@ -25,10 +25,8 @@ target_link_libraries(kdeclarative ${Qt5Qml_LIBRARIES} ${Qt5Quick_LIBRARIES} ${K
 
 
 ## test
-set(kdeclarative_TEST_SRCS
-    test/test.cpp)
-
-kde4_add_executable(kdeclarativetest ${kdeclarative_TEST_SRCS})
+#TODO: move into a tests subdirectory
+add_executable(kdeclarativetest test/test.cpp)
 
 find_package(Qt5Script 5.2.0 REQUIRED NO_MODULE)
 

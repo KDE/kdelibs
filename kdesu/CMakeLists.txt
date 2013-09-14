@@ -64,9 +64,8 @@ install(TARGETS kdesu EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARG
 
 ########### next target ###############
 
-set(kdesu_stub_SRCS kdesu_stub.c )
-
-kde4_add_executable(kdesu_stub NOGUI ${kdesu_stub_SRCS})
+add_executable(kdesu_stub kdesu_stub.c)
+ecm_mark_nongui_executable(kdesu_stub)
 
 install(TARGETS kdesu_stub DESTINATION ${LIBEXEC_INSTALL_DIR} )
 

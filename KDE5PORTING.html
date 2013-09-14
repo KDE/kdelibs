@@ -67,7 +67,12 @@ KDE 4.x when you want to port them to KDE Frameworks 5.<br>
 
 <h2 id="globalchanges">Global Changes</h2>
 <ul>
-    <li>The NOGUI tag in kde4_add_executable should be replaced by the ecm_mark_nongui_executable() macro in ECM</li>
+    <li>The kde4_add_executable macro uses, should be changed into CMake's add_executable command.
+    <ul>
+        <li>The NOGUI tag in kde4_add_executable should be replaced by the ecm_mark_nongui_executable() macro in ECM</li>
+        <li>The TEST tag in kde4_add_executable should be replaced by the ecm_mark_as_test() macro in ECM</li>
+    </ul>
+    </li>
 </ul>
 
 <h4 align="right"><a href="#TOC">Return to the Table of Contents</a></h4>

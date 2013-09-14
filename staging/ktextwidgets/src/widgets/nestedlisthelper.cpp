@@ -60,26 +60,6 @@ bool NestedListHelper::handleBeforeKeyPressEvent(QKeyEvent *event)
         handled = true;
     }
 
-    if (cursor.hasSelection()
-            && cursor.currentList()
-            && event->key() == Qt::Key_Backspace
-            && cursor.atBlockStart()) {
-
-        // Workaround for qt bug 211460:
-        // If there is a list with selection like this:
-        //
-        //   * one
-        //   * <cursor>t<anchor>wo
-        //
-        // and backspace is pressed, the bullet is removed, but not
-        // the 't'.
-        // Fixed scheduled for qt4.5
-        // -- Stephen Kelly, 8th June 2008
-
-        cursor.removeSelectedText();
-        handled = true;
-    }
-
     return handled;
 }
 

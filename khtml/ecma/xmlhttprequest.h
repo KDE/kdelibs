@@ -139,7 +139,7 @@ namespace KJS {
     QString m_mimeTypeOverride;
     QString contentType;
 
-    KIO::TransferJob * job;
+    KIO::StoredTransferJob * job;
 
     XMLHttpRequestState m_state;
     JSEventListener *onReadyStateChangeListener;

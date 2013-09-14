@@ -27,12 +27,12 @@
 #include <QApplication>
 #include <klocalizedstring.h>
 #include <kstandardshortcut.h>
+#include <kacceleratormanager.h>
 
 #include "kdualaction.h"
 #include "krecentfilesaction.h"
 #include "ktogglefullscreenaction.h"
 #include "kpastetextaction.h"
-#include "kacceleratormanager_p.h"
 
 namespace KStandardAction
 {
@@ -74,7 +74,7 @@ QAction *create(StandardAction id, const QObject *recvr, const char *slot, QObje
   static bool stdNamesInitialized = false;
 
   if (!stdNamesInitialized) {
-      KAcceleratorManagerPrivate::setStandardActionNames(stdNames());
+      KAcceleratorManager::addStandardActionNames(stdNames());
       stdNamesInitialized = true;
   }
 

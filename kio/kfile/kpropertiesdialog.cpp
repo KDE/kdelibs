@@ -101,8 +101,8 @@ extern "C" {
 #include <kio/chmodjob.h>
 #include <kio/directorysizejob.h>
 #include <kio/renamedialog.h>
-#include <kio/netaccess.h>
 #include <kio/jobuidelegate.h>
+#include <kjobwidgets.h>
 #include <kmountpoint.h>
 #include <kmessagebox.h>
 #include <kservice.h>
@@ -253,8 +253,10 @@ KPropertiesDialog::KPropertiesDialog (const QUrl& _url,
 
     d->m_singleUrl = _url;
 
-    KIO::UDSEntry entry;
-    KIO::NetAccess::stat(_url, entry, parent);
+    KIO::StatJob *job = KIO::stat(_url);
+    KJobWidgets::setWindow(job, parent);
+    job->exec();
+    KIO::UDSEntry entry = job->statResult();
 
     d->m_items.append(KFileItem(entry, _url));
     d->init();
@@ -1430,8 +1432,10 @@ void KFilePropsPlugin::slotCopyFinished( KJob * job )
         // Note: The desktop ioslave does this as well, but not when
         //       the file is copied from a template.
         if ( d->m_bFromTemplate ) {
-            KIO::UDSEntry entry;
-            KIO::NetAccess::stat(properties->url(), entry, 0);
+            KIO::StatJob *job = KIO::stat(properties->url());
+            job->exec();
+            KIO::UDSEntry entry = job->statResult();
+
             KFileItem item( entry, properties->url() );
             KDesktopFile config( item.localPath() );
             KConfigGroup cg = config.desktopGroup();
@@ -1482,7 +1486,11 @@ void KFilePropsPlugin::applyIconChanges()
     // handle icon changes - only local files (or pseudo-local) for now
     // TODO: Use KTempFile and KIO::file_copy with overwrite = true
     QUrl url = properties->url();
-    url = KIO::NetAccess::mostLocalUrl( url, properties );
+    KIO::StatJob *job = KIO::mostLocalUrl(url);
+    KJobWidgets::setWindow(job, properties);
+    job->exec();
+    url = job->mostLocalUrl();
+
     if ( url.isLocalFile()) {
         QString path;
 
@@ -2628,7 +2636,11 @@ KUrlPropsPlugin::KUrlPropsPlugin( KPropertiesDialog *_props )
     d->URLEdit = new KUrlRequester( d->m_frame );
     layout->addWidget(d->URLEdit);
 
-    QUrl url = KIO::NetAccess::mostLocalUrl(properties->url(), properties);
+    KIO::StatJob *job = KIO::mostLocalUrl(properties->url());
+    KJobWidgets::setWindow(job, properties);
+    job->exec();
+    QUrl url = job->mostLocalUrl();
+
     if (url.isLocalFile()) {
         QString path = url.toLocalFile();
 
@@ -2685,7 +2697,11 @@ bool KUrlPropsPlugin::supports( const KFileItemList& _items )
 
 void KUrlPropsPlugin::applyChanges()
 {
-    const QUrl url = KIO::NetAccess::mostLocalUrl(properties->url(), properties);
+    KIO::StatJob *job = KIO::mostLocalUrl(properties->url());
+    KJobWidgets::setWindow(job, properties);
+    job->exec();
+    const QUrl url = job->mostLocalUrl();
+
     if (!url.isLocalFile()) {
         //FIXME: 4.2 add this: KMessageBox::sorry(0, i18n("Could not save properties. Only entries on local file systems are supported."));
         return;
@@ -2840,7 +2856,11 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropertie
 
     layout->setRowStretch(7, 1);
 
-    QUrl url = KIO::NetAccess::mostLocalUrl(_props->url(), _props);
+    KIO::StatJob *job = KIO::mostLocalUrl(_props->url());
+    KJobWidgets::setWindow(job, _props);
+    job->exec();
+    QUrl url = job->mostLocalUrl();
+
     if (!url.isLocalFile()) {
         return;
     }
@@ -2980,7 +3000,11 @@ bool KDevicePropsPlugin::supports( const KFileItemList& _items )
 
 void KDevicePropsPlugin::applyChanges()
 {
-    const QUrl url = KIO::NetAccess::mostLocalUrl(properties->url(), properties);
+    KIO::StatJob *job = KIO::mostLocalUrl(properties->url());
+    KJobWidgets::setWindow(job, properties);
+    job->exec();
+    const QUrl url = job->mostLocalUrl();
+
     if ( !url.isLocalFile() )
         return;
     const QString path = url.toLocalFile();
@@ -3074,7 +3098,11 @@ KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
 
     // now populate the page
 
-    QUrl url = KIO::NetAccess::mostLocalUrl(_props->url(), _props);
+    KIO::StatJob *job = KIO::mostLocalUrl(_props->url());
+    KJobWidgets::setWindow(job, _props);
+    job->exec();
+    QUrl url = job->mostLocalUrl();
+
     if (!url.isLocalFile()) {
         return;
     }
@@ -3229,8 +3257,11 @@ void KDesktopPropsPlugin::checkCommandChanged()
 void KDesktopPropsPlugin::applyChanges()
 {
     // qDebug();
+    KIO::StatJob *job = KIO::mostLocalUrl(properties->url());
+    KJobWidgets::setWindow(job, properties);
+    job->exec();
+    const QUrl url = job->mostLocalUrl();
 
-    const QUrl url = KIO::NetAccess::mostLocalUrl(properties->url(), properties);
     if (!url.isLocalFile()) {
         KMessageBox::sorry(0, i18n("Could not save properties. Only entries on local file systems are supported."));
         return;

@@ -11,10 +11,8 @@ add_subdirectory( kntlm )
 
 ########### next target ###############
 
-set(kmailservice_SRCS kmailservice.cpp )
-
-
-kde4_add_executable(kmailservice NOGUI ${kmailservice_SRCS})
+add_executable(kmailservice kmailservice.cpp)
+ecm_mark_nongui_executable(kmailservice)
 
 target_link_libraries(kmailservice ${KCoreAddons_LIBRARIES} Qt5::Widgets)
 
@@ -23,10 +21,8 @@ install(PROGRAMS kmailservice.desktop DESTINATION ${XDG_APPS_INSTALL_DIR})
 
 ########### next target ###############
 
-set(ktelnetservice_SRCS ktelnetservice.cpp )
-
-
-kde4_add_executable(ktelnetservice NOGUI ${ktelnetservice_SRCS})
+add_executable(ktelnetservice ktelnetservice.cpp)
+ecm_mark_nongui_executable(ktelnetservice)
 
 target_link_libraries(ktelnetservice ${KCoreAddons_LIBRARIES} KService KConfigGui KWidgetsAddons KI18n Qt5::Widgets)
 

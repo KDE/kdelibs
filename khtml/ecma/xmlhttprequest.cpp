@@ -41,9 +41,6 @@
 #include <QtCore/QHash>
 #include <QDebug>
 
-#include <kio/netaccess.h>
-using KIO::NetAccess;
-
 using namespace KJS;
 using namespace DOM;
 //
@@ -491,7 +488,7 @@ void XMLHttpRequest::send(const QString& _body, int& ec)
     // for charset.
     QByteArray buf = _body.toUtf8();
 
-    job = KIO::http_post( url, buf, KIO::HideProgressInfo );
+    job = KIO::storedHttpPost( buf, url, KIO::HideProgressInfo );
     if(contentType.isNull())
       job->addMetaData( "content-type", "Content-type: text/plain" );
     else
@@ -499,7 +496,7 @@ void XMLHttpRequest::send(const QString& _body, int& ec)
 
   }
   else {
-    job = KIO::get( url, KIO::NoReload, KIO::HideProgressInfo );
+    job = KIO::storedGet( url, KIO::NoReload, KIO::HideProgressInfo );
   }
 
   // Regardless of job type, make sure the method is set
@@ -544,7 +541,10 @@ void XMLHttpRequest::send(const QString& _body, int& ec)
     data = KWQServeSynchronousRequest(khtml::Cache::loader(), doc->docLoader(), job, finalURL, headers);
 #else
     QMap<QString, QString> metaData;
-    if ( NetAccess::synchronousRun( job, 0, &data, &finalURL, &metaData ) ) {
+
+    if ( job->exec() ) {
+      data = job->data();
+      finalURL = job->redirectUrl().isEmpty() ? job->url() : job->redirectUrl();
       headers = metaData[ "HTTP-Headers" ];
     }
 #endif

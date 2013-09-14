@@ -209,9 +209,7 @@ public:
 
     static void manage(QWidget *widget);
     static bool programmers_mode;
-    // We export this function because KStandardAction uses it (sets list of standard action names).
-    // KStandardAction calls this function only once when the first standard action is created.
-    static void KWIDGETSADDONS_EXPORT setStandardActionNames(const QStringList &strList);
+    static void addStandardActionNames(const QStringList &strList);
     static bool standardName(const QString &str);
 
     static bool checkChange(const KAccelString &as)  {

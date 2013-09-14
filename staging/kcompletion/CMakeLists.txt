@@ -8,7 +8,8 @@ set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
 find_package(KF5 5.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 
-find_package(Qt5Widgets 5.2.0 REQUIRED NO_MODULE)
+set(REQUIRED_QT_VERSION "5.2.0")
+find_package(Qt5Widgets ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE)
 
 include(FeatureSummary)
 
@@ -19,6 +20,8 @@ ecm_setup_version(5 0 0 VARIABLE_PREFIX KCOMPLETION
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KCompletionConfigVersion.cmake")
 
 remove_definitions(-DQT_NO_KEYWORDS)
+remove_definitions(-DQT_NO_CAST_TO_ASCII)
+remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
 add_subdirectory(src)
 add_subdirectory(tests)

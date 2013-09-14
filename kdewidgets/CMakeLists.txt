@@ -7,10 +7,8 @@ add_subdirectory( tests )
 
 ########### next target ###############
 
-set(makekdewidgets_SRCS makekdewidgets.cpp )
-
-
-kde4_add_executable(makekdewidgets NOGUI ${makekdewidgets_SRCS})
+add_executable(makekdewidgets makekdewidgets.cpp)
+ecm_mark_nongui_executable(makekdewidgets)
 
 target_link_libraries(makekdewidgets KConfigCore ${KCoreAddons_LIBRARIES} KI18n)
 
@@ -27,7 +25,7 @@ if(Qt5Designer_FOUND)
 
   include_directories(${Qt5Designer_INCLUDE_DIRS})
   # get the name of the generated wrapper script (which sets up LD_LIBRARY_PATH)
-  get_target_property(MAKEKDEWIDGETS_EXECUTABLE makekdewidgets WRAPPER_SCRIPT)
+  get_target_property(MAKEKDEWIDGETS_EXECUTABLE makekdewidgets LOCATION)
 
   add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/kdewidgets.cpp
     COMMAND "${MAKEKDEWIDGETS_EXECUTABLE}" -o ${CMAKE_CURRENT_BINARY_DIR}/kdewidgets.cpp ${CMAKE_CURRENT_SOURCE_DIR}/kde.widgets

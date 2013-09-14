@@ -696,12 +696,10 @@ static pid_t launch(int argc, const char *_name, const char *args,
         exit(255);
      }
 
-#warning QT5 Port to QFunctionPointer
-     void* sym = (void*)l.resolve( "kdeinitmain");
+     QFunctionPointer sym = l.resolve( "kdeinitmain");
      if (!sym )
         {
-#warning QT5 Port to QFunctionPointer
-        sym = (void*)l.resolve( "kdemain" );
+        sym = l.resolve( "kdemain" );
         if ( !sym )
            {
             QString ltdlError = l.errorString();

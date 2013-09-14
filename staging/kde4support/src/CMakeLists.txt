@@ -134,6 +134,7 @@ set(libkde4support_SRCS
     kio/kfilewriteplugin.cpp
 #     kio/kpreviewprops.cpp
     kio/kscan.cpp
+    kio/netaccess.cpp
 
     kparts/factory.cpp
 )
@@ -199,6 +200,7 @@ target_link_libraries(KDE4Support
    KCrash
    ${KWidgetsAddons_LIBRARIES}
    KConfigWidgets
+   KIOCore
    kio
    ${KIO_EXTRA_LIBS}
    KI18n
@@ -238,7 +240,7 @@ if(NOT KIO_NO_NEPOMUK)
 endif(NOT KIO_NO_NEPOMUK)
 
 if(NOT KIO_NO_NEPOMUK)
-    kde4_add_executable(kfilemetadatareader kio/kfilemetadatareaderprocess.cpp)
+    add_executable(kfilemetadatareader kio/kfilemetadatareaderprocess.cpp)
     target_link_libraries(kfilemetadatareader ${KDE4_NEPOMUK_LIBRARY} nepomukutils ${KCoreAddons_LIBRARIES} KI18n KDE4Support)
     install(TARGETS kfilemetadatareader ${INSTALL_TARGETS_DEFAULT_ARGS})
 endif(NOT KIO_NO_NEPOMUK)
@@ -299,6 +301,7 @@ install(FILES
     kio/kfileshare.h
     kio/kfileitemactionplugin.h
     kio/kscan.h
+    kio/netaccess.h
 
     kdeui/k4style.h
     kdeui/kaccelgen.h

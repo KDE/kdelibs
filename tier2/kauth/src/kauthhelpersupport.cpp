@@ -49,7 +49,7 @@ static bool remote_dbg = false;
 static void fixEnvironment()
 {
     //try correct HOME
-    char *home = "HOME";
+    const char *home = "HOME";
     if(getenv(home)==NULL)
     {
         struct passwd *pw = getpwuid(getuid());

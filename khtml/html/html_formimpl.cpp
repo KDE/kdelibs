@@ -53,13 +53,15 @@
 #ifndef KHTML_NO_WALLET
 #include <kwallet.h>
 #endif
-#include <netaccess.h>
+#include <kio/job.h>
+#include <kjobwidgets.h>
 #include <kfileitem.h>
 #include <qmimedatabase.h>
 #include <QtCore/QFile>
 #include <QtCore/QDir>
 #include <QtCore/QTextCodec>
 #include <QStandardPaths>
+#include <QTemporaryFile>
 
 // for keygen
 #include <ksslkeygen.h>
@@ -1724,22 +1726,24 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
                 fileurl = QUrl(val);
             }
 
-            KIO::UDSEntry filestat;
-
             // can't submit file in www-url-form encoded
             QWidget* const toplevel = document()->view() ? document()->view()->topLevelWidget() : 0;
             if (multipart) {
                 QByteArray filearray;
-                if ( KIO::NetAccess::stat(fileurl, filestat, toplevel)) {
-                    const KFileItem fileitem(filestat, fileurl, true, false);
-                    if ( fileitem.isFile() &&
-                         KIO::NetAccess::download(fileurl, local, toplevel) ) {
-                        QFile file(local);
-                        if ( file.open( QIODevice::ReadOnly ) ) {
-                            filearray = file.read( file.size() );
-                            file.close();
+                KIO::StatJob *job = KIO::stat(fileurl);
+                KJobWidgets::setWindow(job, toplevel);
+
+                if ( job->exec()) {
+                    const KFileItem fileitem(job->statResult(), fileurl, true, false);
+                    if ( fileitem.isFile() ) {
+                        QTemporaryFile tmpFile;
+                        if ( tmpFile.open() ) {
+                            KIO::FileCopyJob *job = KIO::file_copy(fileurl, QUrl::fromLocalFile(tmpFile.fileName()), -1, KIO::Overwrite);
+                            if( job->exec() )
+                            {
+                                filearray = tmpFile.read( tmpFile.size() );
+                            }
                         }
-                        KIO::NetAccess::removeTempFile( local );
                     }
                 }
                 encoding += filearray;

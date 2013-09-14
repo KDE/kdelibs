@@ -668,7 +668,8 @@ void SlaveBase::listEntry( const UDSEntry& entry, bool _ready )
         d->pendingListEntries.append(entry);
 
         // If more then maximum_updatetime time is passed, emit the current batch
-        if (d->m_timeSinceLastBatch.elapsed() > maximum_updatetime) {
+        // Also emit if we have piled up a large number of entries already, to save memory (and time)
+        if (d->m_timeSinceLastBatch.elapsed() > maximum_updatetime || d->pendingListEntries.size() > 200) {
             _ready = true;
         }
     }

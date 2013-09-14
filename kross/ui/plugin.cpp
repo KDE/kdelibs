@@ -24,7 +24,6 @@
 #include <kactioncollection.h>
 #include <kross/core/manager.h>
 #include <kross/core/actioncollection.h>
-#include <kio/netaccess.h>
 
 #include <QAction>
 #include <QPointer>

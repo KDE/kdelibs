@@ -780,7 +780,7 @@ if(NOT MSVC)
     )
 
 
-    kde4_add_executable(testkhtml ${testkhtml_SRCS})
+    add_executable(testkhtml ${testkhtml_SRCS})
 
     target_link_libraries(testkhtml khtml XmlGui KTextWidgets)
 
@@ -791,7 +791,7 @@ if(NOT MSVC)
     )
 
 
-    kde4_add_executable(testkhtml_static ${testkhtml_static_SRCS} )
+    add_executable(testkhtml_static ${testkhtml_static_SRCS} )
 
     target_link_libraries(testkhtml_static khtml XmlGui KTextWidgets)
 
@@ -809,7 +809,7 @@ if (KHTML_BUILD_TESTREGRESSION)
 
     include_directories( ${QT_INCLUDE_DIR}/../src/3rdparty/harfbuzz/src )
 
-    kde4_add_executable(testregression ${testregression_SRCS})
+    add_executable(testregression ${testregression_SRCS})
 
     target_link_libraries(testregression  ${X11_X11_LIB} khtml)
 
@@ -825,7 +825,7 @@ if (KHTML_BUILD_TESTREGRESSION)
     kde4_add_ui_files(testregressiongui_SRCS test_regression_gui.ui)
 
 
-    kde4_add_executable(testregressiongui ${testregressiongui_SRCS})
+    add_executable(testregressiongui ${testregressiongui_SRCS})
 
     target_link_libraries(testregressiongui khtml)
 endif (KHTML_BUILD_TESTREGRESSION)

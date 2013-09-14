@@ -33,6 +33,7 @@
 #include <QDesktopWidget>
 #include <QIcon>
 #include <QMetaMethod>
+#include <QWindow>
 #include <QX11Info>
 
 #include <X11/Xatom.h>
@@ -651,13 +652,18 @@ WId KWindowSystem::transientFor( WId win )
     return None;
 }
 
-void KWindowSystem::setMainWindow( QWidget* subwindow, WId mainwindow )
+void KWindowSystem::setMainWindow( QWidget* subWidget, WId mainWindowId )
 {
-    subwindow->setAttribute( Qt::WA_X11BypassTransientForHint );
-    if( mainwindow != 0 )
-        XSetTransientForHint( QX11Info::display(), subwindow->winId(), mainwindow );
-    else
-        XDeleteProperty( QX11Info::display(), subwindow->winId(), XA_WM_TRANSIENT_FOR );
+    // Set the WA_NativeWindow attribute to force the creation of the QWindow.
+    // Without this QWidget::windowHandle() returns 0.
+    subWidget->setAttribute(Qt::WA_NativeWindow, true);
+    QWindow *subWindow = subWidget->windowHandle();
+    Q_ASSERT(subWindow);
+
+    QWindow *mainWindow = QWindow::fromWinId(mainWindowId);
+    // mainWindow is not the child of any object, so make sure it gets deleted at some point
+    connect(subWidget, &QObject::destroyed, mainWindow, &QObject::deleteLater);
+    subWindow->setTransientParent(mainWindow);
 }
 
 WId KWindowSystem::groupLeader( WId win )

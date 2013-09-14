@@ -82,7 +82,6 @@ using namespace DOM;
 #include <kio/jobuidelegate.h>
 #include <kio/global.h>
 #include <kio/pixmaploader.h>
-#include <kio/netaccess.h>
 #include <kio/hostinfo.h>
 #include <kprotocolmanager.h>
 #include <QDebug>
@@ -1047,18 +1046,17 @@ QString KHTMLPart::documentSource() const
      sourceStr = stream.readAll();
   } else
   {
-    QString tmpFile;
-    if( KIO::NetAccess::download( url(), tmpFile, NULL ) )
+    QTemporaryFile tmpFile;
+    if ( !tmpFile.open() ) {
+        return sourceStr;
+    }
+
+    KIO::FileCopyJob *job = KIO::file_copy(url(), QUrl::fromLocalFile(tmpFile.fileName()), KIO::Overwrite);
+    if( job->exec() )
     {
-      QFile f( tmpFile );
-      if ( f.open( QIODevice::ReadOnly ) )
-      {
-        QTextStream stream( &f );
-        stream.setCodec( QTextCodec::codecForName( encoding().toLatin1().constData() ) );
-        sourceStr = stream.readAll();
-        f.close();
-      }
-      KIO::NetAccess::removeTempFile( tmpFile );
+      QTextStream stream( &tmpFile );
+      stream.setCodec( QTextCodec::codecForName( encoding().toLatin1().constData() ) );
+      sourceStr = stream.readAll();
     }
   }
 

@@ -4,16 +4,10 @@ remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
 ########### next target ###############
 
-set(kpartstest_SRCS
-testmainwindow.cpp
-parts.cpp
-notepad.cpp
-)
-
 set(PARTS_TEST_LIBRARY_DEPENDENCIES ${KDE4_KPARTS_LIBS} Qt5::Test ${KCoreAddons_LIBRARIES} KI18n XmlGui)
 
-
-kde4_add_executable(kpartstest TEST ${kpartstest_SRCS})
+add_executable(kpartstest testmainwindow.cpp parts.cpp notepad.cpp)
+ecm_mark_as_test(kpartstest)
 
 target_link_libraries(kpartstest ${PARTS_TEST_LIBRARY_DEPENDENCIES})
 
@@ -27,23 +21,21 @@ notepad.cpp
 )
 
 
-kde4_add_executable(normalktmtest TEST ${normalktmtest_SRCS})
-
+add_executable(normalktmtest ${normalktmtest_SRCS})
+ecm_mark_as_test(normalktmtest)
 target_link_libraries(normalktmtest ${PARTS_TEST_LIBRARY_DEPENDENCIES})
 
 
 ########### next target ###############
 
-set(partviewer_SRCS
-partviewer.cpp
-)
-
-kde4_add_executable(partviewer TEST ${partviewer_SRCS})
+add_executable(partviewer partviewer.cpp)
+ecm_mark_as_test(partviewer)
 target_link_libraries(partviewer ${PARTS_TEST_LIBRARY_DEPENDENCIES})
 
 ########### test prog for "open or save question" ###############
 
-kde4_add_executable(openorsavequestion TEST openorsavequestion.cpp)
+add_executable(openorsavequestion openorsavequestion.cpp)
+ecm_mark_as_test(openorsavequestion)
 target_link_libraries(openorsavequestion ${PARTS_TEST_LIBRARY_DEPENDENCIES})
 
 ########### next target ###############
@@ -79,7 +71,8 @@ MACRO(KPARTS_UNIT_TESTS)
 ENDMACRO(KPARTS_UNIT_TESTS)
 MACRO(KPARTS_EXECUTABLE_TESTS)
        FOREACH(_testname ${ARGN})
-               kde4_add_executable(${_testname} TEST ${_testname}.cpp)
+               add_executable(${_testname}  ${_testname}.cpp)
+               ecm_mark_as_test(${_testname})
                target_link_libraries(${_testname} ${KDE4_KPARTS_LIBS} Qt5::Test)
        ENDFOREACH(_testname)
 ENDMACRO(KPARTS_EXECUTABLE_TESTS)

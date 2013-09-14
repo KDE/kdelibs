@@ -25,7 +25,7 @@
 
 #include <QtCore/QObject>
 #include <QtCore/QString>
-#include "kio_export.h"
+#include <kde4support_export.h>
 #include <kio/global.h>
 #include <kio/udsentry.h>
 #include <kio/jobclasses.h> // for KIO::JobFlags
@@ -64,7 +64,7 @@ namespace KIO {
    *
    * @short Provides a blocking interface to KIO file operations.
    */
-class KIO_EXPORT NetAccess : public QObject
+class KDE4SUPPORT_DEPRECATED_EXPORT NetAccess : public QObject
 {
   Q_OBJECT
 
@@ -137,6 +137,7 @@ public:
      *         get the reason it failed.
      *
      * @see lastErrorString()
+     * @deprecated since 5.0, use KIO::storedGet + KJobWidgets::setWindow + job->exec() instead
      */
     static bool download(const QUrl& src, QString & target, QWidget* window);
 
@@ -170,6 +171,7 @@ public:
      *               prompted for passwords as needed.
      *
      * @return true if successful, false for failure
+     * @deprecated since 5.0, use KIO::storedPut + KJobWidgets::setWindow + job->exec() instead
      */
     static bool upload(const QString& src, const QUrl& target, QWidget* window);
 
@@ -191,8 +193,8 @@ public:
      * @deprecated since 5.0, use KIO::file_copy + job->ui()->setWindow() + job->exec() instead
      */
 #ifndef KDE_NO_DEPRECATED
-    static KIO_DEPRECATED bool file_copy( const QUrl& src, const QUrl& target, QWidget* window = 0 );
-    static KIO_DEPRECATED bool copy( const QUrl& src, const QUrl& target,
+    static KDE4SUPPORT_DEPRECATED_EXPORT bool file_copy( const QUrl& src, const QUrl& target, QWidget* window = 0 );
+    static KDE4SUPPORT_DEPRECATED_EXPORT bool copy( const QUrl& src, const QUrl& target,
                                      QWidget* window = 0 );
 #endif
 
@@ -218,7 +220,7 @@ public:
      * @deprecated since 5.0, use KIO::copy + job->ui()->setWindow() + job->exec() instead
      */
 #ifndef KDE_NO_DEPRECATED
-    static KIO_DEPRECATED bool dircopy( const QUrl& src, const QUrl& target, QWidget* window );
+    static KDE4SUPPORT_DEPRECATED_EXPORT bool dircopy( const QUrl& src, const QUrl& target, QWidget* window );
 #endif
 
     /**
@@ -226,7 +228,7 @@ public:
      * @deprecated since 5.0, use KIO::copy + job->ui()->setWindow() + job->exec() instead
      */
 #ifndef KDE_NO_DEPRECATED
-    static KIO_DEPRECATED bool dircopy( const QList<QUrl>& src, const QUrl& target, QWidget* window = 0L );
+    static KDE4SUPPORT_DEPRECATED_EXPORT bool dircopy( const QList<QUrl>& src, const QUrl& target, QWidget* window = 0L );
 #endif
     /**
      * Full-fledged equivalent of KIO::move.
@@ -234,7 +236,7 @@ public:
      * @deprecated since 5.0, use KIO::move + job->ui()->setWindow() + job->exec() instead
      */
 #ifndef KDE_NO_DEPRECATED
-    static KIO_DEPRECATED bool move( const QUrl& src, const QUrl& target, QWidget* window = 0L );
+    static KDE4SUPPORT_DEPRECATED_EXPORT bool move( const QUrl& src, const QUrl& target, QWidget* window = 0L );
 #endif
 
     /**
@@ -243,7 +245,7 @@ public:
      * @deprecated since 5.0, use KIO::move + job->ui()->setWindow() + job->exec() instead
      */
 #ifndef KDE_NO_DEPRECATED
-    static KIO_DEPRECATED bool move( const QList<QUrl>& src, const QUrl& target, QWidget* window = 0L );
+    static KDE4SUPPORT_DEPRECATED_EXPORT bool move( const QList<QUrl>& src, const QUrl& target, QWidget* window = 0L );
 #endif
 
     /**
@@ -264,7 +266,7 @@ public:
      * @deprecated use the StatSide enum instead of the bool source
      */
 #ifndef KDE_NO_DEPRECATED
-    static KIO_DEPRECATED bool exists(const QUrl& url, bool source, QWidget* window);
+    static KDE4SUPPORT_DEPRECATED_EXPORT bool exists(const QUrl& url, bool source, QWidget* window);
 #endif
 
     /**
@@ -280,6 +282,7 @@ public:
      *               again be prompted for passwords as needed.
      * @return true if the URL exists and we can do the operation specified by
      *              @p source, false otherwise
+     * @deprecated since 5.0, use QFile::exists for local files and KIO::stat for transparency
      */
     static bool exists(const QUrl& url, StatSide statSide, QWidget* window);
 
@@ -298,6 +301,7 @@ public:
      *               cached only for a short duration after which the user will
      *               again be prompted for passwords as needed.
      * @return true if successful, false for failure
+     * @deprecated since 5.0, use KIO::stat + KJobWidgets::setWindow + job->exec() instead
      */
     static bool stat(const QUrl& url, KIO::UDSEntry & entry, QWidget* window);
 
@@ -316,6 +320,7 @@ public:
      *               again be prompted for passwords as needed.
      * @return a local URL corresponding to the same resource than the
      *         original URL, or the original URL if no local URL can be mapped
+     * @deprecated since 5.0, use KIO::mostLocalUrl + KJobWidgets::setWindow + job->exec() instead
      */
     static QUrl mostLocalUrl(const QUrl& url, QWidget* window);
 
@@ -335,7 +340,7 @@ public:
      * @deprecated since 5.0, use KIO::del + job->ui()->setWindow() + job->exec() instead
      */
 #ifndef KDE_NO_DEPRECATED
-    static KIO_DEPRECATED bool del( const QUrl & url, QWidget* window );
+    static KDE4SUPPORT_DEPRECATED_EXPORT bool del( const QUrl & url, QWidget* window );
 #endif
 
     /**
@@ -355,7 +360,7 @@ public:
      * @deprecated since 5.0, use KIO::mkdir + job->ui()->setWindow() + job->exec() instead
      */
 #ifndef KDE_NO_DEPRECATED
-    static KIO_DEPRECATED bool mkdir( const QUrl & url, QWidget* window, int permissions = -1 );
+    static KDE4SUPPORT_DEPRECATED_EXPORT bool mkdir( const QUrl & url, QWidget* window, int permissions = -1 );
 #endif
 
     /**
@@ -409,6 +414,7 @@ public:
      *                 meta data from the job.
      *
      * @return true on success, false on failure.
+     * @deprecated since 5.0, KJobWidgets::setWindow + job->exec() instead
      */
     static bool synchronousRun( Job* job, QWidget* window, QByteArray* data=0,
                                 QUrl* finalURL=0, QMap<QString,QString>* metaData=0 );
@@ -430,6 +436,7 @@ public:
      *               cached only for a short duration after which the user will
      *               again be prompted for passwords as needed.
      * @return The mimetype name.
+     * @deprecated since 5.0, use KIO::mimetype + KJobWidgets::setWindow + job->exec() instead
      */
     static QString mimetype( const QUrl & url, QWidget* window );
 

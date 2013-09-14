@@ -56,7 +56,6 @@ set(kiocore_STAT_SRCS
   kio/kdbusservicestarter.cpp
   kio/kimageio.cpp
   kio/kmimetypechooser.cpp
-  kio/netaccess.cpp
 )
 
 if(NOT KDE_NO_DEPRECATED)
@@ -188,7 +187,6 @@ install( FILES
 DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
 
 install(  FILES
-  kio/netaccess.h
   ${CMAKE_CURRENT_BINARY_DIR}/kio_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/kio COMPONENT Devel)
 

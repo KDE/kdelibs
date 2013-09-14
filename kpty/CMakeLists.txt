@@ -34,8 +34,8 @@ install( FILES
 ########### next target ###############
 
 if (NOT HAVE_OPENPTY)
-   kde4_add_executable(kgrantpty NOGUI kgrantpty.c)
-   target_link_libraries(kgrantpty )
+   add_executable(kgrantpty kgrantpty.c)
+   ecm_mark_nongui_executable(kgrantpty)
    install(TARGETS kgrantpty DESTINATION ${LIBEXEC_INSTALL_DIR})
 endif (NOT HAVE_OPENPTY)
 
