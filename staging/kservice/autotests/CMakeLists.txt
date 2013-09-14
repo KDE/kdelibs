@@ -11,7 +11,6 @@ macro(KSERVICE_UNIT_TESTS)
     add_executable(${_testname} ${_testname}.cpp kwaitforsignal.cpp)
     add_test(kservice-${_testname} ${_testname})
     target_link_libraries(${_testname}
-       KCoreAddons
        KService
        Qt5::Test
        Qt5::Concurrent
