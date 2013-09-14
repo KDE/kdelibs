@@ -25,21 +25,22 @@
 
 int main(int argc, char **argv)
 {
-    QCommandLineParser *parser = new QCommandLineParser;
-    PluginTest app(argc, argv, parser);
+    QCoreApplication app(argc, argv);
+    QCommandLineParser parser;
 
     const QString description = "PluginLocator test app";
     const char version[] = "1.0";
 
     app.setApplicationVersion(version);
-    parser->addVersionOption();
-    parser->setApplicationDescription(description);
+    parser.addVersionOption();
+    parser.addHelpOption();
+    parser.setApplicationDescription(description);
 
-    parser->addOption(QCommandLineOption(QStringList() << "s" << "show",
+    parser.addOption(QCommandLineOption(QStringList() << "s" << "show",
                           QStringLiteral("Show plugins"),
                           QStringLiteral("name")));
 
-    int r = app.runMain();
-    return r;
+    PluginTest test;
+    return test.runMain();
 }
 

@@ -45,8 +45,8 @@ public:
     QString pluginName;
 };
 
-PluginTest::PluginTest(int& argc, char** argv, QCommandLineParser *parser) :
-    QCoreApplication(argc, argv)
+PluginTest::PluginTest() :
+    QObject(0)
 {
     d = new PluginTestPrivate;
 }

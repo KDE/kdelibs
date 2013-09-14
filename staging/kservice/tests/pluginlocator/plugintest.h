@@ -20,18 +20,16 @@
 #ifndef PLUGINTEST_H
 #define PLUGINTEST_H
 
-#include <QCoreApplication>
-
-class QCommandLineParser;
+#include <QObject>
 
 class PluginTestPrivate;
 
-class PluginTest : public QCoreApplication
+class PluginTest : public QObject
 {
     Q_OBJECT
 
     public:
-        PluginTest(int& argc, char** argv, QCommandLineParser *parser);
+        PluginTest();
         virtual ~PluginTest();
 
     public Q_SLOTS:
