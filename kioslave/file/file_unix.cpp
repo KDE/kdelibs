@@ -324,7 +324,7 @@ void FileProtocol::listDir( const QUrl& url)
             error(KIO::ERR_IS_FILE, path);
             break;
 #ifdef ENOMEDIUM
-	case ENOMEDIUM:
+        case ENOMEDIUM:
             error(ERR_SLAVE_DEFINED,
                   i18n("No media in device for %1", path));
             break;
@@ -333,7 +333,7 @@ void FileProtocol::listDir( const QUrl& url)
             error(KIO::ERR_CANNOT_ENTER_DIRECTORY, path);
             break;
         }
-	return;
+        return;
     }
 
     /* set the current dir to the path to speed up
