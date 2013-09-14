@@ -21,6 +21,16 @@
 
 namespace KTraderParse {
 
+QVariant ParseContext::property( const QString &_key ) const
+{
+  if ( service ) {
+    return service->property( _key );
+  } else if ( info.isValid() ) {
+    return info.property( _key );
+  }
+  return QVariant();
+}
+
 bool ParseTreeOR::eval( ParseContext *_context ) const
 {
   ParseContext c1( _context );
@@ -405,12 +415,7 @@ bool ParseTreeEXIST::eval( ParseContext *_context ) const
 {
   _context->type = ParseContext::T_BOOL;
 
-  QVariant prop;
-  if ( _context->service ) {
-    prop = _context->service->property( m_id );
-  } else if ( _context->info.isValid() ) {
-    prop = _context->info.property( m_id );
-  }
+  QVariant prop = _context->property( m_id );
   _context->b = prop.isValid();
 
   return true;
@@ -499,12 +504,7 @@ bool ParseTreeIN::eval( ParseContext *_context ) const
 
 bool ParseTreeID::eval( ParseContext *_context ) const
 {
-  QVariant prop;
-  if ( _context->service ) {
-    prop = _context->service->property( m_str );
-  } else if ( _context->info.isValid() ) {
-    prop = _context->info.property( m_str );
-  }
+  QVariant prop = _context->property( m_str );
 
   if ( !prop.isValid() )
     return false;
@@ -559,12 +559,7 @@ bool ParseTreeMIN2::eval( ParseContext *_context ) const
 {
   _context->type = ParseContext::T_DOUBLE;
 
-  QVariant prop;
-  if ( _context->service ) {
-    prop = _context->service->property( m_strId );
-  } else if ( _context->info.isValid() ) {
-    prop = _context->info.property( m_strId );
-  }
+  QVariant prop = _context->property( m_strId );
 
   if ( !prop.isValid() )
     return false;
@@ -596,12 +591,8 @@ bool ParseTreeMAX2::eval( ParseContext *_context ) const
 {
   _context->type = ParseContext::T_DOUBLE;
 
-  QVariant prop;
-  if ( _context->service ) {
-    prop = _context->service->property( m_strId );
-  } else if ( _context->info.isValid() ) {
-    prop = _context->info.property( m_strId );
-  }
+  QVariant prop = _context->property( m_strId );
+
   if ( !prop.isValid() )
     return false;
 
@@ -675,12 +666,8 @@ int matchConstraintPlugin( const ParseTreeBase *_tree, KPluginInfo _info,
 bool ParseContext::initMaxima( const QString& _prop )
 {
   // Is the property known ?
-  QVariant prop;
-  if ( service ) {
-      prop = service->property( _prop );
-  } else if ( info.isValid() ) {
-      prop = info.property( _prop );
-  }
+  QVariant prop = property( _prop );
+
   if ( !prop.isValid() )
     return false;
 

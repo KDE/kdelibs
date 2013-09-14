@@ -81,6 +81,8 @@ public:
 
   bool initMaxima( const QString& _prop);
 
+  QVariant property( const QString& _key ) const;
+
   enum Type { T_STRING = 1, T_DOUBLE = 2, T_NUM = 3, T_BOOL = 4,
 	      T_STR_SEQ = 5, T_SEQ = 6 };
 
