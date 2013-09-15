@@ -25,6 +25,7 @@ set(ThreadWeaver_LIB_SRCS
     JobCollection.cpp
     JobSequence.cpp
     DependencyPolicy.cpp
+    Dependency.cpp
     ResourceRestrictionPolicy.cpp
 )
 
@@ -53,6 +54,7 @@ install(FILES
     WeaverObserver.h
     JobCollection.h
     JobSequence.h
+    Dependency.h
     DependencyPolicy.h
     ResourceRestrictionPolicy.h
     Queue.h

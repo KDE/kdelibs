@@ -12,6 +12,7 @@
 #include <DebuggingAids.h>
 #include <JobCollection.h>
 #include <ResourceRestrictionPolicy.h>
+#include <Dependency.h>
 #include <DependencyPolicy.h>
 #include <QObjectJobDecorator.h>
 
@@ -175,7 +176,7 @@ void JobTests::IncompleteCollectionTest()
     col.collection()->addRawJob(&jobA);
 
     WaitForIdleAndFinished w(Weaver::instance());
-    DependencyPolicy::instance().addDependency(&jobA, &jobB);
+    DependencyPolicy::instance().addDependency(Dependency(&jobA, &jobB));
     QSignalSpy collectionDoneSignalSpy(&col, SIGNAL(done(ThreadWeaver::JobPointer)));
     QSignalSpy jobADoneSignalSpy(&jobA, SIGNAL(done(ThreadWeaver::JobPointer)));
     QCOMPARE(collectionDoneSignalSpy.count(), 0);
@@ -185,7 +186,7 @@ void JobTests::IncompleteCollectionTest()
     QCoreApplication::processEvents();
     QCOMPARE(collectionDoneSignalSpy.count(), 0);
     QCOMPARE(jobADoneSignalSpy.count(), 0);
-    DependencyPolicy::instance().removeDependency(&jobA, &jobB);
+    DependencyPolicy::instance().removeDependency(Dependency(&jobA, &jobB));
     Weaver::instance()->finish();
     QCoreApplication::processEvents();
     QVERIFY(col.collection()->isFinished());
@@ -252,7 +253,7 @@ void JobTests::CollectionDependenciesTest()
     connect(&col, SIGNAL(started(ThreadWeaver::JobPointer)), &loop, SLOT(quit()));
 
     QSharedPointer<AppendCharacterJob> jobC(new AppendCharacterJob(QChar('c'), &result));
-    ThreadWeaver::DependencyPolicy::instance().addDependency(&col, jobC.data());
+    ThreadWeaver::DependencyPolicy::instance().addDependency(Dependency(&col, jobC));
 
     // queue collection, but not jobC, the collection should not be executed
     WaitForIdleAndFinished w(ThreadWeaver::Weaver::instance()); Q_UNUSED(w);

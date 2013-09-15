@@ -39,36 +39,47 @@ JobSequence::JobSequence()
 {
 }
 
-void JobSequence::aboutToBeQueued_locked (QueueAPI *api )
+void JobSequence::execute(JobPointer self_, Thread *thread)
 {
-    Q_ASSERT(!mutex()->tryLock());
-    REQUIRE (api != 0);
-
-    const int jobs = jobListLength_locked();
-    if (jobs > 0) {
-        DependencyPolicy::instance().addDependency(jobAt(0).data(), this);
-        // set up the dependencies:
-        for (int i = 1; i < jobs; ++i) {
-            JobPointer jobA = jobAt(i);
-            JobPointer jobB = jobAt(i-1);
-            P_ASSERT(jobA != 0);
-            P_ASSERT(jobB != 0);
-            DependencyPolicy::instance().addDependency(jobA.data(), jobB.data());
+    {
+        QMutexLocker l(mutex()); Q_UNUSED(l);
+        const int jobs = jobListLength_locked();
+        if (jobs > 0) {
+            DependencyPolicy::instance().addDependency(jobAt(0), self_);
+            // set up the dependencies:
+            for (int i = 1; i < jobs; ++i) {
+                JobPointer jobA = jobAt(i);
+                JobPointer jobB = jobAt(i-1);
+                P_ASSERT(jobA != 0);
+                P_ASSERT(jobB != 0);
+                DependencyPolicy::instance().addDependency(jobA, jobB);
+            }
         }
     }
-    JobCollection::aboutToBeQueued_locked(api);
+    JobCollection::execute(self_, thread);
 }
+
+//void JobSequence::aboutToBeQueued_locked(QueueAPI *api )
+//{
+//    Q_ASSERT(!mutex()->tryLock());
+//    REQUIRE (api != 0);
+
+//    JobCollection::aboutToBeQueued_locked(api);
+//}
 
 void JobSequence::elementFinished(JobPointer job, Thread *thread)
 {
-    REQUIRE ( job != 0 );
+    REQUIRE(job != 0);
+
+    JobPointer s(self());
+    Q_ASSERT(!s.isNull());
     JobCollection::elementFinished(job, thread);
     if (!job->success()) {
         stop(job);
     }
     QMutexLocker l(mutex()); Q_UNUSED(l);
     if (jobListLength_locked() > 0) {
-        DependencyPolicy::instance().removeDependency(jobAt(0).data(), this);
+        DependencyPolicy::instance().removeDependency(jobAt(0), s);
     }
 }
 

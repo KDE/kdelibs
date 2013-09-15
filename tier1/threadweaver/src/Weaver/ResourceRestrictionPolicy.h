@@ -31,53 +31,49 @@ $Id: Job.h 32 2005-08-17 08:38:01Z mirko $
 
 #include <QtGlobal>
 
+#include <JobPointer.h>
+
 #include "QueuePolicy.h"
 
 namespace ThreadWeaver {
 
+class JobInterface;
 
-    /** ResourceRestrictionPolicy is used to limit the number of concurrent accesses to the same resource.
+/** @brief ResourceRestrictionPolicy is used to limit the number of concurrent accesses to the same resource.
+ *
+ *  If a set of Jobs accesses a resource that can be overloaded, this may degrade application performance. For
+ *  example, loading too many files from the hard disc at the same time may lead to longer load times.
+ *  ResourceRestrictionPolicy can be used to cap the number of accesses. Resource restriction policies are
+ *  shared between the affected jobs. All jobs that share a resurce restriction policy have to acquire
+ *  permission from the policy before they can run. In this way, resource restrictions can be compared to
+ *  semaphores, only that they require no locking at the thread level.
+ *  The SMIV example uses a resource restriction to limit the number of images files that are loaded from
+ *  the disk at the same time.
+ */
 
-    If a set of Jobs accesses a resource that can be overloaded, this may
-    degrade application performance. For example, loading too many files
-    from the hard disc at the same time may lead to longer load times.
-    ResourceRestrictionPolicy can be used to cap the number of
-    accesses. Resource restriction policies are shared between the
-    affected jobs. All jobs that share a resurce restriction policy have
-    to acquire permission from the policy before they can run. In this
-    way, resource restrictions can be compared to semaphores, only that
-    they require no locking at the thread level.
+class THREADWEAVER_EXPORT ResourceRestrictionPolicy : public QueuePolicy
+{
+public:
+    explicit ResourceRestrictionPolicy(int cap = 0);
+    ~ResourceRestrictionPolicy();
 
-    The SMIV example uses a resource restriction to limit the number of
-    images files that are loaded from the disk at the same time.
+    /** @brief Cap the number of simultaniously executing jobs.
+     *  Capping the amount of jobs will make sure that at max the number of jobs executing at any time is
+     *  limited to the capped amount. Note that immediately after setting the amount of running jobs may be
+     *  higher than the set amount. This setting only limits the starting of new jobs.
+     *  @param newCap the new cap to limit the amount of parallel jobs.
+     */
+    void setCap(int newCap);
+    int cap() const;
+    bool canRun(JobPointer) Q_DECL_OVERRIDE;
+    void free(JobPointer) Q_DECL_OVERRIDE;
+    void release(JobPointer) Q_DECL_OVERRIDE;
+    void destructed(JobInterface* job) Q_DECL_OVERRIDE;
 
-    */
-
-    class THREADWEAVER_EXPORT ResourceRestrictionPolicy : public QueuePolicy
-    {
-    public:
-        explicit ResourceRestrictionPolicy(int cap = 0);
-        ~ResourceRestrictionPolicy();
-
-        /**
-         * Cap the number of simulataniously executing jobs.
-         * Capping the amount of jobs will make sure that at max the number of jobs
-         * executing at any time is limited to the capped amount.
-         * Note that immediately after setting the amount of running jobs may be higher
-         * than the set amount. This setting only limits the starting of new jobs.
-         * @param newCap the new cap to limit the amount of parallel jobs.
-         */
-        void setCap(int newCap);
-        int cap() const;
-        bool canRun(JobInterface*) Q_DECL_OVERRIDE;
-        void free(JobInterface*) Q_DECL_OVERRIDE;
-        void release(JobInterface*) Q_DECL_OVERRIDE;
-        void destructed(JobInterface*) Q_DECL_OVERRIDE;
-
-    private:
-        class Private;
-        Private* const d;
-    };
+private:
+    class Private;
+    Private* const d;
+};
 
 }
 

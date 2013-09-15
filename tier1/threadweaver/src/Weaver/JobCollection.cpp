@@ -223,6 +223,11 @@ void JobCollection::elementFinished(JobPointer job, Thread *thread)
     }
 }
 
+JobPointer JobCollection::self() const
+{
+    return d->self;
+}
+
 JobPointer JobCollection::jobAt(int i)
 {
     Q_ASSERT(!mutex()->tryLock());
@@ -243,8 +248,9 @@ int JobCollection::jobListLength_locked() const
 
 void JobCollection::finalCleanup()
 {
+    Q_ASSERT(!self().isNull());
     Q_ASSERT(!mutex()->tryLock());
-    freeQueuePolicyResources();
+    freeQueuePolicyResources(self());
     setFinished(true);
     d->api = 0;
 }

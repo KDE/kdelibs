@@ -48,16 +48,22 @@ void IdDecorator::defaultEnd(JobPointer self, Thread *thread)
     job()->defaultEnd(self, thread);
 }
 
-void IdDecorator::freeQueuePolicyResources()
+void IdDecorator::freeQueuePolicyResources(JobPointer j)
 {
     Q_ASSERT(d);
-    job()->freeQueuePolicyResources();
+    job()->freeQueuePolicyResources(j);
 }
 
 void IdDecorator::removeQueuePolicy(QueuePolicy* policy)
 {
     Q_ASSERT(d);
     job()->removeQueuePolicy(policy);
+}
+
+QList<QueuePolicy *> IdDecorator::queuePolicies() const
+{
+    Q_ASSERT(d);
+    return job()->queuePolicies();
 }
 
 void IdDecorator::assignQueuePolicy(QueuePolicy* policy)
@@ -70,12 +76,6 @@ bool IdDecorator::isFinished() const
 {
     Q_ASSERT(d);
     return job()->isFinished();
-}
-
-bool IdDecorator::canBeExecuted(JobPointer self)
-{
-    Q_ASSERT(d);
-    return job()->canBeExecuted(self);
 }
 
 void IdDecorator::aboutToBeQueued(QueueAPI *api)

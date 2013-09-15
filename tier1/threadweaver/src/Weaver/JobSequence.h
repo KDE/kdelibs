@@ -38,15 +38,19 @@ namespace ThreadWeaver {
  * It is implemented by automatically creating the necessary dependencies between the Jobs in the sequence.
  *
  * JobSequence provides a handy cleanup and unwind mechanism: the stop() slot. If it is called, the processing
- * of the sequence will stop, and all its remaining Jobs will be dequeued. */
+ * of the sequence will stop, and all its remaining Jobs will be dequeued.
+ * A JobSequence is the first element of itself. */
 class THREADWEAVER_EXPORT JobSequence : public JobCollection
 {
 public:
     explicit JobSequence();
 
 protected:
-    /** Overload to queue the sequence. */
-    void aboutToBeQueued_locked(QueueAPI *api) Q_DECL_OVERRIDE;
+    /** Create the necessary dependencies before executing. */
+    void execute(JobPointer self, Thread *thread);
+
+//    /** Overload to queue the sequence. */
+//    void aboutToBeQueued_locked(QueueAPI *api) Q_DECL_OVERRIDE;
 
     /** reimplemented */
     void elementFinished(JobPointer job, Thread *thread) Q_DECL_OVERRIDE;
