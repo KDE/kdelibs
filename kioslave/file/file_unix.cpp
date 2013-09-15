@@ -394,17 +394,16 @@ void FileProtocol::listDir( const QUrl& url)
                 // even if we don't know the link dest (and DeleteJob doesn't care...)
                 entry.insert(KIO::UDSEntry::UDS_LINK_DEST, QLatin1String("Dummy Link Target"));
             }
-            listEntry(entry, false);
+            listEntry(entry);
 
         } else {
             if (createUDSEntry(filename, QByteArray(ep->d_name), entry, details, true)) {
-                listEntry(entry, false);
+                listEntry(entry);
             }
         }
     }
 
     closedir(dp);
-    listEntry(entry, true); // ready
 
     // Restore the path
     QDir::setCurrent(pathBuffer);
