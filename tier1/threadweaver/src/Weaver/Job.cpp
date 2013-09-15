@@ -71,8 +71,6 @@ static DefaultExecutor defaultExecutor;
 
 namespace ThreadWeaver {
 
-class QueuePolicyList : public QList<QueuePolicy*> {};
-
 class Job::Private
 {
 public:
@@ -87,7 +85,7 @@ public:
     {}
 
     /* The list of QueuePolicies assigned to this Job. */
-    QueuePolicyList queuePolicies;
+    QList<QueuePolicy*> queuePolicies;
 
     mutable QMutex mutex;
     /* d->finished is set to true when the Job has been executed. */
@@ -156,23 +154,22 @@ bool Job::success () const
     return true;
 }
 
-void Job::freeQueuePolicyResources()
+void Job::freeQueuePolicyResources(JobPointer job)
 {
     for (int index = 0; index < d->queuePolicies.size(); ++index) {
-        d->queuePolicies.at(index)->free(this);
+        d->queuePolicies.at(index)->free(job);
     }
 }
 
 void Job::defaultBegin(JobPointer, Thread *)
 {
-    //FIXME document - not valid anymore: job is the job the queue see. this could be decorated, and then job.data != thiss
+    //FIXME document - not valid anymore: job is the job the queue see. this could be decorated, and then job.data != this
     //Q_ASSERT(job.data() == this);
 }
 
-void Job::defaultEnd(JobPointer, Thread *)
+void Job::defaultEnd(JobPointer job, Thread *)
 {
-    //Q_ASSERT(job.data() == this);
-    freeQueuePolicyResources();
+    freeQueuePolicyResources(job);
 }
 
 void Job::aboutToBeQueued(QueueAPI* api)
@@ -195,36 +192,6 @@ void Job::aboutToBeDequeued_locked (QueueAPI*)
 {
 }
 
-bool Job::canBeExecuted(JobPointer job) {
-    QueuePolicyList acquired;
-
-    bool success = true;
-
-    if (!d->queuePolicies.isEmpty()) {
-        debug( 4, "Job::canBeExecuted: acquiring permission from %i queue %s.\n",
-               d->queuePolicies.size(), d->queuePolicies.size()==1 ? "policy" : "policies" );
-        for (int index = 0; index < d->queuePolicies.size(); ++index) {
-            if (d->queuePolicies.at(index)->canRun(job.data())) {
-                acquired.append(d->queuePolicies.at(index));
-            } else {
-                success = false;
-                break;
-            }
-        }
-
-        debug(4, "Job::canBeExecuted: queue policies returned %s.\n", success ? "true" : "false");
-
-        if (!success) {
-            for (int index = 0; index < acquired.size(); ++index) {
-                acquired.at(index)->release(job.data());
-            }
-        }
-    } else {
-        debug(4, "Job::canBeExecuted: no queue policies, this job can be executed.\n");
-    }
-    return success;
-}
-
 void Job::assignQueuePolicy(QueuePolicy* policy)
 {
     if (! d->queuePolicies.contains(policy)) {
@@ -238,6 +205,11 @@ void Job::removeQueuePolicy(QueuePolicy* policy)
     if (index != -1) {
         d->queuePolicies.removeAt(index);
     }
+}
+
+QList<QueuePolicy *> Job::queuePolicies() const
+{
+    return d->queuePolicies;
 }
 
 bool Job::isFinished() const

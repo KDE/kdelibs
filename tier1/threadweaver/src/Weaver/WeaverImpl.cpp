@@ -48,6 +48,7 @@ $Id: WeaverImpl.cpp 30 2005-08-16 16:16:04Z mirko $
 #include "WorkingHardState.h"
 #include "ShuttingDownState.h"
 #include "InConstructionState.h"
+#include "QueuePolicy.h"
 
 using namespace ThreadWeaver;
 
@@ -420,6 +421,40 @@ void WeaverImpl::adjustInventory ( int numberOfNewJobs )
     }
 }
 
+bool WeaverImpl::canBeExecuted(JobPointer job)
+{
+    Q_ASSERT(!m_mutex->tryLock()); //mutex has to be held when this method is called
+
+    QList<QueuePolicy*> acquired;
+
+    bool success = true;
+
+    QList<QueuePolicy*> policies = job->queuePolicies();
+    if (!policies.isEmpty()) {
+        debug(4, "WeaverImpl::canBeExecuted: acquiring permission from %i queue %s.\n",
+              policies.size(), policies.size()==1 ? "policy" : "policies" );
+        for (int index = 0; index < policies.size(); ++index) {
+            if (policies.at(index)->canRun(job)) {
+                acquired.append(policies.at(index));
+            } else {
+                success = false;
+                break;
+            }
+        }
+
+        debug(4, "WeaverImpl::canBeExecuted: queue policies returned %s.\n", success ? "true" : "false");
+
+        if (!success) {
+            for (int index = 0; index < acquired.size(); ++index) {
+                acquired.at(index)->release(job);
+            }
+        }
+    } else {
+        debug(4, "WeaverImpl::canBeExecuted: no queue policies, this job can be executed.\n");
+    }
+    return success;
+}
+
 Thread* WeaverImpl::createThread()
 {
     return new Thread( this );
@@ -495,7 +530,7 @@ JobPointer WeaverImpl::takeFirstAvailableJobOrSuspendOrWait(Thread *th, JobPoint
     JobPointer next;
     for (int index = 0; index < m_assignments.size(); ++index) {
         const JobPointer& candidate = m_assignments.at(index);
-        if (candidate->canBeExecuted(candidate)) {
+        if (canBeExecuted(candidate)) {
             next = candidate;
             m_assignments.removeAt (index);
             break;
@@ -546,7 +581,7 @@ void WeaverImpl::dumpJobs()
     for ( int index = 0; index < m_assignments.size(); ++index ) {
         debug( 0, "--> %4i: %p (priority %i, can be executed: %s)\n", index, (void*)m_assignments.at( index ).data(),
                m_assignments.at(index)->priority(),
-               m_assignments.at(index)->canBeExecuted(m_assignments.at(index)) ? "yes" : "no");
+               canBeExecuted(m_assignments.at(index)) ? "yes" : "no");
     }
 }
 

@@ -41,7 +41,6 @@ namespace ThreadWeaver {
 class Thread;
 class QueuePolicy;
 class QueueAPI;
-class QueuePolicyList;
 class Executor;
 
 
@@ -153,15 +152,6 @@ public:
     /** Called from aboutToBeDequeued() while the mutex is being held. */
     virtual void aboutToBeDequeued_locked(QueueAPI *api) Q_DECL_OVERRIDE;
 
-    /** canBeExecuted() returns true if all the jobs queue policies agree to it.
-     *
-     * If it returns true, it expects that the job is executed right after that. The done() methods of the queue policies will be
-     * automatically called when the job is finished.
-     *
-     * If it returns false, all queue policy resources have been freed, and the method can be called again at a later time.
-     */
-    virtual bool canBeExecuted(JobPointer) Q_DECL_OVERRIDE;
-
     /** Returns true if the jobs's execute method finished. */
     bool isFinished() const;
 
@@ -175,13 +165,16 @@ public:
     /** Remove a queue policy from this job. */
     void removeQueuePolicy(QueuePolicy*) Q_DECL_OVERRIDE;
 
+    /** @brief Return the queue policies assigned to this Job. */
+    QList<QueuePolicy*> queuePolicies() const;
+
 private:
     class Private;
     Private* d;
 
 protected:
     /** Free the queue policies acquired before this job has been executed. */
-    void freeQueuePolicyResources() Q_DECL_OVERRIDE;
+    void freeQueuePolicyResources(JobPointer) Q_DECL_OVERRIDE;
 
     friend class Executor;
     /** The method that actually performs the job.

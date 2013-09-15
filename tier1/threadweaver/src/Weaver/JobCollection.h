@@ -100,7 +100,10 @@ protected:
     virtual void elementStarted(JobPointer job, Thread* thread);
     virtual void elementFinished(JobPointer job, Thread* thread);
 
-private:
+    //FIXME needed when using BlockExecutionPolicy?
+    JobPointer self() const;
+
+protected:
     /** Overload the execute method. */
     void execute(JobPointer job, Thread*) Q_DECL_OVERRIDE;
 
@@ -109,6 +112,7 @@ private:
      * We have to. */
     void run(JobPointer self, Thread* thread) Q_DECL_OVERRIDE;
 
+private:
     /** Dequeue all elements of the collection.
      * Note: This will not dequeue the collection itself.
      */
@@ -116,7 +120,6 @@ private:
 
     class Private;
     Private * const d;
-
 };
 
 }

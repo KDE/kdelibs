@@ -32,24 +32,25 @@
 #include <QtCore/QMutex>
 
 #include "DebuggingAids.h"
+#include "ManagedJobPointer.h"
 
 using namespace ThreadWeaver;
 
-class ResourceRestrictionPolicy::Private
-{
+class ResourceRestrictionPolicy::Private {
 public:
     Private ( int theCap )
         : cap ( theCap)
     {}
+    QMutex* mutex() { return &mutex_; }
 
     int cap;
-    QList<JobInterface*> customers;
-    QMutex mutex;
+    QList<JobPointer> customers;
+    QMutex mutex_;
 };
 
-ResourceRestrictionPolicy::ResourceRestrictionPolicy ( int cap)
-    : QueuePolicy ()
-    , d (new Private (cap))
+ResourceRestrictionPolicy::ResourceRestrictionPolicy(int cap)
+    : QueuePolicy()
+    , d(new Private(cap))
 {
 }
 
@@ -58,23 +59,22 @@ ResourceRestrictionPolicy::~ResourceRestrictionPolicy()
     delete d;
 }
 
-void ResourceRestrictionPolicy::setCap (int cap)
+void ResourceRestrictionPolicy::setCap(int cap)
 {
-    QMutexLocker l ( & d->mutex );
+    QMutexLocker l (d->mutex());
     d->cap = cap;
 }
 
 int ResourceRestrictionPolicy::cap() const
 {
-    QMutexLocker l ( & d->mutex );
+    QMutexLocker l(d->mutex());
     return d->cap;
 }
 
-bool ResourceRestrictionPolicy::canRun(JobInterface *job )
+bool ResourceRestrictionPolicy::canRun(JobPointer job)
 {
-    QMutexLocker l ( & d->mutex );
-    if ( d->customers.size() < d->cap )
-    {
+    QMutexLocker l(d->mutex());
+    if (d->customers.size() < d->cap) {
         d->customers.append( job );
         return true;
     } else {
@@ -82,24 +82,23 @@ bool ResourceRestrictionPolicy::canRun(JobInterface *job )
     }
 }
 
-void ResourceRestrictionPolicy::free (JobInterface *job )
+void ResourceRestrictionPolicy::free(JobPointer job)
 {
-    QMutexLocker l ( & d->mutex );
-    int position = d->customers.indexOf (job);
+    QMutexLocker l (d->mutex());
+    int position = d->customers.indexOf(job);
 
-    if (position != -1)
-    {
-        debug ( 4, "ResourceRestrictionPolicy::free: job %p done.\n", (void*)job );
-        d->customers.removeAt (position);
+    if (position != -1) {
+        debug(4, "ResourceRestrictionPolicy::free: job %p done.\n", (void*)job.data());
+        d->customers.removeAt(position);
     }
 }
 
-void ResourceRestrictionPolicy::release (JobInterface *job )
+void ResourceRestrictionPolicy::release(JobPointer job)
 {
-    free (job);
+    free(job);
 }
 
-void ResourceRestrictionPolicy::destructed (JobInterface *job )
+void ResourceRestrictionPolicy::destructed(JobInterface *job)
 {
-    free (job);
+    free(ManagedJobPointer(job));
 }

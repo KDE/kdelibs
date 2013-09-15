@@ -189,6 +189,14 @@ protected:
         inventory need to lock the weaver's mutex to synchronize
         the job management. */
 private:
+    /** Check with the assigned queue policies if the job can be executed.
+     *
+     * If it returns true, it expects that the job is executed right after that. The done() methods of the
+     * queue policies will be automatically called when the job is finished.
+     *
+     * If it returns false, all queue policy resources have been freed, and the method can be called again
+     * at a later time. */
+    bool canBeExecuted(JobPointer);
     /** The thread inventory. */
     QList<Thread*> m_inventory;
     /** The job queue. */
