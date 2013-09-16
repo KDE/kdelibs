@@ -33,7 +33,6 @@
 #include <kconfiggroup.h>
 #include <kcursor.h>
 #include <kcompletionbox.h>
-#include <klocalizedstring.h>
 #include <kstandardaction.h>
 #include <kstandardshortcut.h>
 #include <kurlmimedata.h>
@@ -82,7 +81,7 @@ public:
         // (e.g. "Enter search pattern").
         // By default the text is set in italic, which may not be appropriate
         // for some languages and scripts (e.g. for CJK ideographs).
-        QString metaMsg = i18nc("Italic placeholder text in line edits: 0 no, 1 yes", "1");
+        QString metaMsg = q->tr("1", "Italic placeholder text in line edits: 0 no, 1 yes");
         italicizePlaceholder = (metaMsg.trimmed() != QString('0'));
     }
 
@@ -275,7 +274,7 @@ void KLineEdit::setClearButtonShown(bool show)
         d->clearButton = new KLineEditButton(this);
         d->clearButton->setObjectName("KLineEditButton");
         d->clearButton->setCursor( Qt::ArrowCursor );
-        d->clearButton->setToolTip( i18nc( "@action:button Clear current text in the line edit", "Clear text" ) );
+        d->clearButton->setToolTip( tr( "Clear text", "@action:button Clear current text in the line edit"   ) );
 
         updateClearButtonIcon(text());
         updateClearButton();
@@ -1183,19 +1182,19 @@ QMenu* KLineEdit::createStandardContextMenu()
     // menu item.
     if ( compObj() && !isReadOnly() && KAuthorized::authorize("lineedit_text_completion") )
     {
-        QMenu *subMenu = popup->addMenu( QIcon::fromTheme("text-completion"), i18nc("@title:menu", "Text Completion") );
+        QMenu *subMenu = popup->addMenu( QIcon::fromTheme("text-completion"), tr("Text Completion", "@title:menu") );
         connect( subMenu, SIGNAL(triggered(QAction*)),
                  this, SLOT(completionMenuActivated(QAction*)) );
 
         popup->addSeparator();
 
         QActionGroup* ag = new QActionGroup( this );
-        d->noCompletionAction = ag->addAction( i18nc("@item:inmenu Text Completion", "None"));
-        d->shellCompletionAction = ag->addAction( i18nc("@item:inmenu Text Completion", "Manual") );
-        d->autoCompletionAction = ag->addAction( i18nc("@item:inmenu Text Completion", "Automatic") );
-        d->popupCompletionAction = ag->addAction( i18nc("@item:inmenu Text Completion", "Dropdown List") );
-        d->shortAutoCompletionAction = ag->addAction( i18nc("@item:inmenu Text Completion", "Short Automatic") );
-        d->popupAutoCompletionAction = ag->addAction( i18nc("@item:inmenu Text Completion", "Dropdown List && Automatic"));
+        d->noCompletionAction = ag->addAction( tr("None", "@item:inmenu Text Completion"));
+        d->shellCompletionAction = ag->addAction( tr("Manual", "@item:inmenu Text Completion") );
+        d->autoCompletionAction = ag->addAction( tr("Automatic", "@item:inmenu Text Completion") );
+        d->popupCompletionAction = ag->addAction( tr("Dropdown List", "@item:inmenu Text Completion") );
+        d->shortAutoCompletionAction = ag->addAction( tr("Short Automatic", "@item:inmenu Text Completion") );
+        d->popupAutoCompletionAction = ag->addAction( tr("Dropdown List && Automatic", "@item:inmenu Text Completion"));
         subMenu->addActions( ag->actions() );
 
         //subMenu->setAccel( KStandardShortcut::completion(), ShellCompletion );
@@ -1226,7 +1225,7 @@ QMenu* KLineEdit::createStandardContextMenu()
         if ( mode != defaultMode && !d->disableCompletionMap[ defaultMode ] )
         {
             subMenu->addSeparator();
-            d->defaultAction = subMenu->addAction( i18nc("@item:inmenu Text Completion", "Default") );
+            d->defaultAction = subMenu->addAction( tr("Default", "@item:inmenu Text Completion") );
         }
     }
 
