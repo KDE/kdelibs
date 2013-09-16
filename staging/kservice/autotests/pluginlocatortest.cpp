@@ -30,64 +30,45 @@
 
 QTEST_MAIN(PluginTest)
 
+void PluginTest::findPlugin_data()
+{
+    QTest::addColumn<QString>("serviceType");
+    QTest::addColumn<QString>("constraint");
+    QTest::addColumn<int>("expectedResult");
+
+    const QString _st = "KService/NSA";
+    QString _c = "";
+    QTest::newRow("no constraints") << _st << _c << 1;
+
+    _c = QString("[X-KDE-PluginInfo-Name] == '%1'").arg("fakeplugin");
+    QTest::newRow("by pluginname") << _st << _c << 1;
+
+    _c = QString("[X-KDE-PluginInfo-Category] == '%1'").arg("Examples");
+    QTest::newRow("by category") << _st << _c << 1;
+
+    _c = QString("([X-KDE-PluginInfo-Category] == 'Examples') AND ([X-KDE-PluginInfo-Email] == 'sebas@kde.org')");
+    QTest::newRow("complex query") << _st << _c << 1;
+
+    _c = QString("([X-KDE-PluginInfo-Category] == 'Examples') AND ([X-KDE-PluginInfo-Email] == 'prrrrt')");
+    QTest::newRow("empty query") << _st << _c << 0;
+}
+
+void PluginTest::findPlugin()
+{
+    QFETCH(QString, serviceType);
+    QFETCH(QString, constraint);
+    QFETCH(int, expectedResult);
+
+    KPluginInfo::List res;
+    res = KPluginTrader::self()->query(QString(), serviceType, constraint);
+    QCOMPARE(res.count(), expectedResult);
+}
+
 void PluginTest::findSomething()
 {
     KPluginInfo::List res;
     res = KPluginTrader::self()->query(QString());
     QVERIFY(res.count() > 0);
-}
-
-void PluginTest::findPluginNoConstraints()
-{
-    const QString serviceType("KService/NSA");
-    KPluginInfo::List res;
-    res = KPluginTrader::self()->query(QString(), serviceType, QString());
-    QCOMPARE(res.count(), 1);
-}
-
-void PluginTest::findPluginName()
-{
-    const QString pluginName("fakeplugin");
-    const QString serviceType("KService/NSA");
-    KPluginInfo::List res;
-
-    const QString constraint = QString("[X-KDE-PluginInfo-Name] == '%1'").arg(pluginName);
-    res = KPluginTrader::self()->query(QString(), serviceType, constraint);
-    QCOMPARE(res.count(), 1);
-}
-
-
-void PluginTest::findPluginCategory()
-{
-    const QString serviceType("KService/NSA");
-    const QString category("Examples");
-    KPluginInfo::List res;
-
-    const QString constraint = QString("[X-KDE-PluginInfo-Category] == '%1'").arg(category);
-    res = KPluginTrader::self()->query(QString(), serviceType, constraint);
-    QCOMPARE(res.count(), 1);
-}
-
-void PluginTest::findPluginComplex()
-{
-    const QString serviceType("KService/NSA");
-    const QString category("Examples");
-    KPluginInfo::List res;
-
-    const QString constraint = QString("([X-KDE-PluginInfo-Category] == '%1') AND ([X-KDE-PluginInfo-Email] == 'sebas@kde.org')").arg(category);
-    res = KPluginTrader::self()->query(QString(), serviceType, constraint);
-    QCOMPARE(res.count(), 1);
-}
-
-void PluginTest::findPluginEmpty()
-{
-    const QString serviceType("KService/NSA");
-    const QString category("Examples");
-    KPluginInfo::List res;
-
-    const QString constraint = QString("([X-KDE-PluginInfo-Category] == '%1') AND ([X-KDE-PluginInfo-Email] == 'prrrrt')").arg(category);
-    res = KPluginTrader::self()->query(QString(), serviceType, constraint);
-    QCOMPARE(res.count(), 0);
 }
 
 void PluginTest::loadPlugin()
@@ -99,14 +80,8 @@ void PluginTest::loadPlugin()
     QObject* plugin = KPluginTrader::createInstanceFromQuery<QObject>(QString(), serviceType, constraint, this);
     QVERIFY(plugin != 0);
     if (plugin) {
-        //qDebug() << "Plugin loaded successfully" << plugin->objectName();
         QCOMPARE(plugin->objectName(), QStringLiteral("Test Plugin Spy"));
-    } else {
-        //qDebug() << "Plugin failed to loaded";
-
     }
 }
 
-
 #include "moc_pluginlocatortest.cpp"
-
