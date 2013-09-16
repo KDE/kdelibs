@@ -55,7 +55,7 @@
 #include "krecentdocument.h"
 #include "kdesktopfileactions.h"
 
-#include <kauthorized.h>
+#include <kurlauthorized.h>
 #include <kmessagebox.h>
 #include <ktoolinvocation.h>
 #include <klocalizedstring.h>
@@ -1189,7 +1189,7 @@ void KRun::init()
         d->startTimer();
         return;
     }
-    if (!KAuthorized::authorizeUrlAction("open", QUrl(), d->m_strURL)) {
+    if (!KUrlAuthorized::authorizeUrlAction("open", QUrl(), d->m_strURL)) {
         QString msg = KIO::buildErrorString(KIO::ERR_ACCESS_DENIED, d->m_strURL.toDisplayString());
         handleInitError(KIO::ERR_ACCESS_DENIED, msg);
         d->m_bFault = true;

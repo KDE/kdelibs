@@ -70,7 +70,7 @@
 
 #include <kshell.h>
 #include <kmessagebox.h>
-#include <kauthorized.h>
+#include <kurlauthorized.h>
 #include <kjobwidgets.h>
 
 class KFileWidgetPrivate
@@ -962,7 +962,7 @@ void KFileWidget::slotOk()
         KJobWidgets::setWindow(statJob, this);
         int res = statJob->exec();
 
-        if (!KAuthorized::authorizeUrlAction("open", QUrl(), url)) {
+        if (!KUrlAuthorized::authorizeUrlAction("open", QUrl(), url)) {
             QString msg = KIO::buildErrorString(KIO::ERR_ACCESS_DENIED, d->url.toDisplayString());
             KMessageBox::error(this, msg);
             return;

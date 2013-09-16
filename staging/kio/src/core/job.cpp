@@ -27,7 +27,7 @@
 #include <QtCore/QTimer>
 #include <QtCore/QFile>
 
-#include <kauthorized.h>
+#include <kurlauthorized.h>
 #include <klocalizedstring.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
@@ -746,7 +746,7 @@ void StatJobPrivate::slotRedirection(const QUrl &url)
 {
      Q_Q(StatJob);
      //qDebug() << m_url << "->" << url;
-     if (!KAuthorized::authorizeUrlAction("redirect", m_url, url))
+     if (!KUrlAuthorized::authorizeUrlAction("redirect", m_url, url))
      {
        qWarning() << "Redirection from" << m_url << "to" << url << "REJECTED!";
        q->setError( ERR_ACCESS_DENIED );
@@ -879,7 +879,7 @@ void TransferJob::slotRedirection(const QUrl &url)
 {
     Q_D(TransferJob);
     //qDebug() << url;
-    if (!KAuthorized::authorizeUrlAction("redirect", d->m_url, url))
+    if (!KUrlAuthorized::authorizeUrlAction("redirect", d->m_url, url))
     {
         qWarning() << "Redirection from" << d->m_url << "to" << url << "REJECTED!";
         return;
@@ -1410,7 +1410,7 @@ static int isUrlPortBad(const QUrl& url)
     if ((url.scheme() != "http") && (url.scheme() != "https" ))
         _error = KIO::ERR_POST_DENIED;
 
-    if (!_error && !KAuthorized::authorizeUrlAction("open", QUrl(), url))
+    if (!_error && !KUrlAuthorized::authorizeUrlAction("open", QUrl(), url))
         _error = KIO::ERR_ACCESS_DENIED;
 
     return _error;
@@ -2538,7 +2538,7 @@ void ListJob::slotResult( KJob * job )
 void ListJobPrivate::slotRedirection(const QUrl & url)
 {
     Q_Q(ListJob);
-    if (!KAuthorized::authorizeUrlAction("redirect", m_url, url))
+    if (!KUrlAuthorized::authorizeUrlAction("redirect", m_url, url))
     {
         qWarning() << "Redirection from" << m_url << "to" << url << "REJECTED!";
         return;
@@ -2617,7 +2617,7 @@ void ListJob::setUnrestricted(bool unrestricted)
 void ListJobPrivate::start(Slave *slave)
 {
     Q_Q(ListJob);
-    if (!KAuthorized::authorizeUrlAction("list", m_url, m_url) &&
+    if (!KUrlAuthorized::authorizeUrlAction("list", m_url, m_url) &&
         !(m_extraFlags & EF_ListJobUnrestricted))
     {
         q->setError( ERR_ACCESS_DENIED );
@@ -2796,7 +2796,7 @@ void MultiGetJob::slotRedirection(const QUrl &url)
 {
   Q_D(MultiGetJob);
   if (!d->findCurrentEntry()) return; // Error
-  if (!KAuthorized::authorizeUrlAction("redirect", d->m_url, url))
+  if (!KUrlAuthorized::authorizeUrlAction("redirect", d->m_url, url))
   {
      qWarning() << "Redirection from" << d->m_currentEntry.url << "to" << url << "REJECTED!";
      return;

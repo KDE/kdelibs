@@ -683,17 +683,34 @@ public:
     int readData( QByteArray &buffer );
 
     /**
-     * internal function to be called by the slave.
      * It collects entries and emits them via listEntries
      * when enough of them are there or a certain time
      * frame exceeded (to make sure the app gets some
      * items in time but not too many items one by one
-     * as this will cause a drastic performance penalty)
+     * as this will cause a drastic performance penalty).
      * @param _entry The UDSEntry containing all of the object attributes.
      * @param ready set to true after emitting all items. @p _entry is not
      *        used in this case
+     * @deprecated since 5.0. the listEntry(entry, true) indicated
+     * that the entry listing was completed. However, each slave should
+     * already call finished() to also tell us that we're done listing.
+     * You should make sure that finished() is called when the entry
+     * listing is completed and simply remove the call to listEntry(entry, true).
      */
-    void listEntry( const UDSEntry& _entry, bool ready);
+#ifndef KDE_NO_DEPRECATED
+    KIOCORE_DEPRECATED void listEntry(const UDSEntry& _entry, bool ready);
+#endif
+
+    /**
+     * It collects entries and emits them via listEntries
+     * when enough of them are there or a certain time
+     * frame exceeded (to make sure the app gets some
+     * items in time but not too many items one by one
+     * as this will cause a drastic performance penalty).
+     * @param entry The UDSEntry containing all of the object attributes.
+     * @since 5.0
+     */
+    void listEntry(const UDSEntry& entry);
 
     /**
      * internal function to connect a slave to/ disconnect from

@@ -31,7 +31,7 @@
 #include "kxmlguiclient.h"
 #include "kxmlguifactory.h"
 
-#include <kcoreauthorized.h>
+#include <kauthorized.h>
 #include <kconfiggroup.h>
 #include <ksharedconfig.h>
 

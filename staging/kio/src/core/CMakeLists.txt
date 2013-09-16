@@ -59,7 +59,7 @@ set(kiocore_SRCS
   kprotocolmanager.cpp
   hostinfo.cpp
   kdirnotify.cpp
-  kauthorized.cpp
+  kurlauthorized.cpp
   kacl.cpp
   udsentry.cpp
   global.cpp
@@ -166,7 +166,7 @@ install( FILES
 
 install(FILES
   kacl.h
-  kauthorized.h
+  kurlauthorized.h
   kcoredirlister.h
   kemailsettings.h
   kremoteencoding.h

@@ -31,9 +31,9 @@
 #include <QUrl>
 #include <qstandardpaths.h>
 
+#include "kauthorized.h"
 #include "kconfig_p.h"
 #include "kconfiggroup.h"
-#include "kcoreauthorized.h"
 #include "kconfigini_p.h"
 
 class KDesktopFilePrivate : public KConfigPrivate

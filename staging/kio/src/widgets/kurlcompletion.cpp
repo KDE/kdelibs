@@ -41,7 +41,7 @@
 #include <QtCore/QDebug>
 #include <qplatformdefs.h> // QT_LSTAT, QT_STAT, QT_STATBUF
 
-#include <kauthorized.h>
+#include <kurlauthorized.h>
 #include <kio/job.h>
 #include <kprotocolmanager.h>
 #include <kconfig.h>
@@ -1102,7 +1102,7 @@ QString KUrlCompletionPrivate::listDirectories(
                 it != end;
                 ++it) {
             QUrl url = QUrl::fromLocalFile(*it);
-            if (KAuthorized::authorizeUrlAction(QLatin1String("list"), QUrl(), url))
+            if (KUrlAuthorized::authorizeUrlAction(QLatin1String("list"), QUrl(), url))
                 dirs.append(*it);
         }
 

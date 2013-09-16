@@ -51,6 +51,7 @@ ecm_mark_as_test(test_kconfigutils)
 
 kconfiggui_unit_tests(
    kconfigguitest
+   kconfigloadertest
    kconfigskeletontest
    kstandardshortcuttest
 )

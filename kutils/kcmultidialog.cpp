@@ -31,7 +31,7 @@
 #include <QDesktopServices>
 #include <QPushButton>
 
-#include <kcoreauthorized.h>
+#include <kauthorized.h>
 #include <kguiitem.h>
 #include <kiconloader.h>
 #include <klocalizedstring.h>

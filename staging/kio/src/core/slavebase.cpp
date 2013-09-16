@@ -63,13 +63,18 @@ typedef QList<QByteArray> AuthKeysList;
 typedef QMap<QString,QByteArray> AuthKeysMap;
 #define KIO_DATA QByteArray data; QDataStream stream( &data, QIODevice::WriteOnly ); stream
 #define KIO_FILESIZE_T(x) quint64(x)
+static const int KIO_MAX_ENTRIES_PER_BATCH = 200;
+static const int KIO_MAX_SEND_BATCH_TIME = 300;
 
 namespace KIO {
 
 class SlaveBasePrivate {
 public:
     SlaveBase* q;
-    SlaveBasePrivate(SlaveBase* owner): q(owner), m_passwdServer(0) {}
+    SlaveBasePrivate(SlaveBase* owner): q(owner), m_passwdServer(0)
+    {
+        pendingListEntries.reserve(KIO_MAX_ENTRIES_PER_BATCH);
+    }
     ~SlaveBasePrivate() { delete m_passwdServer; }
 
     UDSEntryList pendingListEntries;
@@ -437,6 +442,11 @@ void SlaveBase::connected()
 
 void SlaveBase::finished()
 {
+    if (!d->pendingListEntries.isEmpty()) {
+        listEntries(d->pendingListEntries);
+        d->pendingListEntries.clear();
+    }
+
     if (d->m_state == d->FinishedCalled) {
         qWarning() << "finished() called twice! Please fix the KIO slave.";
         return;
@@ -655,27 +665,31 @@ void SlaveBase::statEntry( const UDSEntry& entry )
     send( MSG_STAT_ENTRY, data );
 }
 
+#ifndef KDE_NO_DEPRECATED
 void SlaveBase::listEntry( const UDSEntry& entry, bool _ready )
 {
-    static const int maximum_updatetime = 300;
+    if (_ready) {
+        listEntries(d->pendingListEntries);
+        d->pendingListEntries.clear();
+    } else {
+        listEntry(entry);
+    }
+}
+#endif
 
+void SlaveBase::listEntry(const UDSEntry &entry)
+{
     // We start measuring the time from the point we start filling the list
     if (d->pendingListEntries.isEmpty()) {
         d->m_timeSinceLastBatch.restart();
     }
 
-    if (!_ready) {
-        d->pendingListEntries.append(entry);
+    d->pendingListEntries.append(entry);
 
-        // If more then maximum_updatetime time is passed, emit the current batch
-        // Also emit if we have piled up a large number of entries already, to save memory (and time)
-        if (d->m_timeSinceLastBatch.elapsed() > maximum_updatetime || d->pendingListEntries.size() > 200) {
-            _ready = true;
-        }
-    }
-
-    if (_ready) { // may happen when we started with !ready
-        listEntries( d->pendingListEntries );
+    // If more then KIO_MAX_SEND_BATCH_TIME time is passed, emit the current batch
+    // Also emit if we have piled up a large number of entries already, to save memory (and time)
+    if (d->m_timeSinceLastBatch.elapsed() > KIO_MAX_SEND_BATCH_TIME || d->pendingListEntries.size() > KIO_MAX_ENTRIES_PER_BATCH) {
+        listEntries(d->pendingListEntries);
         d->pendingListEntries.clear();
 
         // Restart time
@@ -686,10 +700,11 @@ void SlaveBase::listEntry( const UDSEntry& entry, bool _ready )
 void SlaveBase::listEntries( const UDSEntryList& list )
 {
     KIO_DATA << (quint32)list.count();
-    UDSEntryList::ConstIterator it = list.begin();
-    const UDSEntryList::ConstIterator end = list.end();
-    for (; it != end; ++it)
-      stream << *it;
+
+    foreach(const UDSEntry &entry, list) {
+        stream << entry;
+    }
+
     send( MSG_LIST_ENTRIES, data);
     d->sentListEntries+=(uint)list.count();
 }

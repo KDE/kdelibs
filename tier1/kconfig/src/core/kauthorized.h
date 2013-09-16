@@ -18,8 +18,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef KCOREAUTHORIZED_H
-#define KCOREAUTHORIZED_H
+#ifndef KAUTHORIZED_H
+#define KAUTHORIZED_H
 
 #include <kconfigcore_export.h>
 

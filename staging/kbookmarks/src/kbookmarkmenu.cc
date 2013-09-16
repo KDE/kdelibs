@@ -23,7 +23,7 @@
 
 #include "kbookmarkdialog.h"
 
-#include <kcoreauthorized.h>
+#include <kauthorized.h>
 #include <kstandardaction.h>
 #include <kstringhandler.h>
 #include <krun.h>

@@ -87,7 +87,7 @@ extern "C" {
 }
 #endif
 
-#include <kcoreauthorized.h>
+#include <kauthorized.h>
 #include <kdirnotify.h>
 #include <kdiskfreespaceinfo.h>
 #include <kdesktopfile.h>

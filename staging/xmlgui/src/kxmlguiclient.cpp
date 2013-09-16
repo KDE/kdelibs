@@ -35,7 +35,7 @@
 #include <QStandardPaths>
 #include <QDebug>
 
-#include <kcoreauthorized.h>
+#include <kauthorized.h>
 
 #include <assert.h>
 
