@@ -1,7 +1,7 @@
 @PACKAGE_INIT@
 
 find_dependency(Qt5Widgets @REQUIRED_QT_VERSION@)
-find_dependency(KCoreAddons ${PACKAGE_VERSION})
+find_dependency(KCoreAddons "${PACKAGE_VERSION}")
 
 set(ItemViews_INSTALL_PREFIX "@PACKAGE_CMAKE_INSTALL_PREFIX@")
 set_and_check(ItemViews_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")
