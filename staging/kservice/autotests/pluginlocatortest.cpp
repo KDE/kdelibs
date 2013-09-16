@@ -58,16 +58,13 @@ void PluginTest::findPlugin()
     QFETCH(QString, serviceType);
     QFETCH(QString, constraint);
     QFETCH(int, expectedResult);
-
-    KPluginInfo::List res;
-    res = KPluginTrader::self()->query(QString(), serviceType, constraint);
+    const KPluginInfo::List res = KPluginTrader::self()->query(QString(), serviceType, constraint);
     QCOMPARE(res.count(), expectedResult);
 }
 
 void PluginTest::findSomething()
 {
-    KPluginInfo::List res;
-    res = KPluginTrader::self()->query(QString());
+    const KPluginInfo::List res = KPluginTrader::self()->query(QString());
     QVERIFY(res.count() > 0);
 }
 
