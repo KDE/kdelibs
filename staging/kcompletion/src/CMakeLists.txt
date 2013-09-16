@@ -15,7 +15,6 @@ generate_export_header(KCompletion)
 target_link_libraries(KCompletion LINK_PUBLIC Qt5::Widgets
                                   LINK_PRIVATE KConfigCore      # KConfigGroup, used in many places
                                                KConfigWidgets   # KStandardAction, KStandardShortcut, KCursor
-                                               KI18n            # i18n() in klineedit.cpp only
 )
 
 set_target_properties(KCompletion PROPERTIES VERSION   ${KCOMPLETION_VERSION_STRING}

@@ -18,7 +18,7 @@ remove_definitions(-DQT_USE_FAST_CONCATENATION)
 remove_definitions(-DQT_USE_FAST_OPERATOR_PLUS)
 
 set(REQUIRED_QT_VERSION 5.2.0)
-find_package(Qt5 ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE COMPONENTS DBus Widgets Test)
+find_package(Qt5 ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE COMPONENTS Widgets)
 
 include(FeatureSummary)
 

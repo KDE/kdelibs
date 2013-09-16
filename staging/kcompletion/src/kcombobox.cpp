@@ -31,7 +31,6 @@
 #include <kcompletionbox.h>
 #include <kcursor.h>
 #include <klineedit.h>
-#include <klocalizedstring.h>
 
 
 class KComboBox::KComboBoxPrivate
