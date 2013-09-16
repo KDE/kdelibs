@@ -2644,14 +2644,15 @@ NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
     p->window = window;
     p->root = rootWindow;
     p->mapping_state = Withdrawn;
-    p->mapping_state_dirty = True;
+    p->mapping_state_dirty = true;
     p->state = 0;
     p->types[ 0 ] = Unknown;
     p->name = (char *) 0;
     p->visible_name = (char *) 0;
     p->icon_name = (char *) 0;
     p->visible_icon_name = (char *) 0;
-    p->desktop = p->pid = p->handled_icons = 0;
+    p->desktop = p->pid = 0;
+    p->handled_icons = false;
     p->user_time = -1U;
     p->startup_id = NULL;
     p->transient_for = None;
@@ -2710,14 +2711,15 @@ NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
     p->window = window;
     p->root = rootWindow;
     p->mapping_state = Withdrawn;
-    p->mapping_state_dirty = True;
+    p->mapping_state_dirty = true;
     p->state = 0;
     p->types[ 0 ] = Unknown;
     p->name = (char *) 0;
     p->visible_name = (char *) 0;
     p->icon_name = (char *) 0;
     p->visible_icon_name = (char *) 0;
-    p->desktop = p->pid = p->handled_icons = 0;
+    p->desktop = p->pid = 0;
+    p->handled_icons = false;
     p->user_time = -1U;
     p->startup_id = NULL;
     p->transient_for = None;
@@ -2788,13 +2790,13 @@ const NETWinInfo &NETWinInfo::operator=(const NETWinInfo &wininfo) {
 }
 
 
-void NETWinInfo::setIcon(NETIcon icon, Bool replace)
+void NETWinInfo::setIcon(NETIcon icon, bool replace)
 {
     setIconInternal(p->icons, p->icon_count, net_wm_icon, icon, replace);
 }
 
 
-void NETWinInfo::setIconInternal(NETRArray<NETIcon> &icons, int &icon_count, Atom property, NETIcon icon, Bool replace)
+void NETWinInfo::setIconInternal(NETRArray<NETIcon> &icons, int &icon_count, Atom property, NETIcon icon, bool replace)
 {
     if (p->role != Client)
         return;
@@ -3366,7 +3368,7 @@ void NETWinInfo::setPid(int pid)
 }
 
 
-void NETWinInfo::setHandledIcons(Bool handled)
+void NETWinInfo::setHandledIcons(bool handled)
 {
     if (p->role != Client)
         return;
@@ -4514,7 +4516,7 @@ bool NETWinInfo::isBlockingCompositing() const {
     return p->blockCompositing;
 }
 
-Bool NETWinInfo::handledIcons() const {
+bool NETWinInfo::handledIcons() const {
     return p->handled_icons;
 }
 

@@ -130,7 +130,7 @@ struct NETWinInfoPrivate {
     xcb_connection_t *conn;
     Window window, root;
     NET::MappingState mapping_state;
-    Bool mapping_state_dirty;
+    bool mapping_state_dirty;
 
     NETRArray<NETIcon> icons;
     int icon_count;
@@ -146,7 +146,7 @@ struct NETWinInfoPrivate {
     char *name, *visible_name, *icon_name, *visible_icon_name;
     int desktop;
     int pid;
-    int handled_icons;
+    bool handled_icons;
     Time user_time;
     char* startup_id;
     unsigned long opacity;

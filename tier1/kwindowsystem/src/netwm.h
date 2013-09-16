@@ -1002,7 +1002,7 @@ public:
 
        @return true if this client handles icons, false otherwise
     **/
-    Bool handledIcons() const;
+    bool handledIcons() const;
 
     /**
        Returns the mapping state for the window (see the NET base class
@@ -1021,7 +1021,7 @@ public:
 
        @param replace true to replace, false to append to the list of icons
     **/
-    void setIcon(NETIcon icon, Bool replace = True);
+    void setIcon(NETIcon icon, bool replace = true);
 
     /**
        Set the icon geometry for the application window.
@@ -1119,7 +1119,7 @@ public:
 
        @param handled true if the window handles icons, false otherwise
     **/
-    void setHandledIcons(Bool handled);
+    void setHandledIcons(bool handled);
 
     /**
        Set the frame decoration strut, i.e. the width of the decoration borders.
@@ -1378,7 +1378,7 @@ protected:
 private:
     void update( const unsigned long[] );
     void updateWMState();
-    void setIconInternal(NETRArray<NETIcon>& icons, int& icon_count, Atom property, NETIcon icon, Bool replace);
+    void setIconInternal(NETRArray<NETIcon>& icons, int& icon_count, Atom property, NETIcon icon, bool replace);
     NETIcon iconInternal(NETRArray<NETIcon>& icons, int icon_count, int width, int height) const;
 
 protected:
