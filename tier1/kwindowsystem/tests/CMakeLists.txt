@@ -15,4 +15,5 @@ endmacro()
 
 kwindowsystem_executable_tests(
   setmainwindowtest
+  createpixmapfromhandletest
 )

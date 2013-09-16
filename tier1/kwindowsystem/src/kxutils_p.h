@@ -22,6 +22,7 @@
 #define KXUTILS_H
 
 #include <QWidget>
+#include <QScopedPointer>
 #include <QPixmap>
 #include <config-kwindowsystem.h>
 
@@ -34,6 +35,13 @@
  */
 namespace KXUtils
 {
+
+template <typename T>
+class ScopedCPointer : public QScopedPointer<T, QScopedPointerPodDeleter>
+{
+public:
+    ScopedCPointer(T *p = 0) : QScopedPointer<T, QScopedPointerPodDeleter>(p) {}
+};
 
 /**
  * Creates a QPixmap that contains a copy of the pixmap given by the X handle @p pixmap

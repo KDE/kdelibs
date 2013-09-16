@@ -1,6 +1,7 @@
 /*
     This file is part of the KDE libraries
     Copyright (C) 2008 Lubos Lunak (l.lunak@kde.org)
+    Copyright (C) 2013 Martin Gräßlin <mgraesslin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -20,79 +21,159 @@
 
 #include "kxutils_p.h"
 
-#include <config-kwindowsystem.h>
-
 #if HAVE_X11
-
-#include <kxerrorhandler_p.h>
 #include <qbitmap.h>
-#include <qpixmap.h>
+#include <QX11Info>
+#include <QDebug>
 
-#if HAVE_XRENDER
-#include <X11/extensions/Xrender.h>
-#endif
+#include <xcb/xcb.h>
 
 namespace KXUtils
 {
 
-// Create QPixmap from X pixmap. Take care of different depths if needed.
-QPixmap createPixmapFromHandle( WId pixmap, WId /*pixmap_mask*/ )
+static uint8_t defaultDepth()
 {
-    Display* dpy = QX11Info::display();
-    KXErrorHandler handler;
-    Window root;
-    int x, y;
-    unsigned int w = 0;
-    unsigned int h = 0;
-    unsigned int border_w, depth;
-    if( XGetGeometry( dpy, pixmap, &root, &x, &y, &w, &h, &border_w, &depth )
-        && !handler.error( false ) && w > 0 && h > 0 )
-    {
-        QPixmap pm( w, h );
-        // Always detach before doing something behind QPixmap's back.
-        pm.detach();
-#warning delete this whole code and find another solution (QPixmap::x11PictureHandle() does not exist anymore)
-#if 0
-#if HAVE_XRENDER
-        if( int( depth ) != pm.depth() && depth != 1 && pm.x11PictureHandle() != None )
-        {
-            XRenderPictFormat tmpl;
-            tmpl.type = PictTypeDirect;
-            tmpl.depth = depth;
-            XRenderPictFormat* format = XRenderFindFormat( dpy, PictFormatType | PictFormatDepth, &tmpl, 0 );
-            Picture pic = XRenderCreatePicture( dpy, pixmap, format, 0, NULL );
-            XRenderComposite( dpy, PictOpSrc, pic, None, pm.x11PictureHandle(), 0, 0, 0, 0, 0, 0, w, h );
-            XRenderFreePicture( dpy, pic );
-        }
-        else
-#endif
-        { // the normal X11 way
-            GC gc = XCreateGC( dpy, pixmap, 0, NULL );
-            if( depth == 1 )
-            {
-                QBitmap bm( w, h );
-                XCopyArea( dpy, pixmap, bm.handle(), gc, 0, 0, w, h, 0, 0 );
-                pm = bm;
-            }
-            else // depth == pm.depth()
-                XCopyArea( dpy, pixmap, pm.handle(), gc, 0, 0, w, h, 0, 0 );
-            XFreeGC( dpy, gc );
-        }
+    xcb_connection_t *c = QX11Info::connection();
+    int screen = QX11Info::appScreen();
 
-        if( pixmap_mask != None )
-        {
-            QBitmap bm( w, h );
-            bm.detach();
-            GC gc = XCreateGC( dpy, pixmap_mask, 0, NULL );
-            XCopyArea( dpy, pixmap_mask, bm.handle(), gc, 0, 0, w, h, 0, 0 );
-            pm.setMask( bm );
-            XFreeGC( dpy, gc );
+    xcb_screen_iterator_t it = xcb_setup_roots_iterator(xcb_get_setup(c));
+    for (; it.rem; --screen, xcb_screen_next(&it)) {
+        if (screen == 0) {
+            return it.data->root_depth;
         }
-        if( !handler.error( true )) // sync, check for error
-            return pm;
-#endif
     }
+    return 0;
+}
+
+static QImage::Format findFormat()
+{
+    xcb_connection_t *c = QX11Info::connection();
+    int screen = QX11Info::appScreen();
+
+    xcb_screen_iterator_t screenIt = xcb_setup_roots_iterator(xcb_get_setup(c));
+    for (; screenIt.rem; --screen, xcb_screen_next(&screenIt)) {
+        if (screen != 0) {
+            continue;
+        }
+        xcb_depth_iterator_t depthIt = xcb_screen_allowed_depths_iterator(screenIt.data);
+        for (; depthIt.rem; xcb_depth_next(&depthIt)) {
+            xcb_visualtype_iterator_t visualIt = xcb_depth_visuals_iterator(depthIt.data);
+            for (; visualIt.rem; xcb_visualtype_next(&visualIt)) {
+                if (screenIt.data->root_visual != visualIt.data->visual_id) {
+                    continue;
+                }
+                xcb_visualtype_t *visual = visualIt.data;
+                if ((depthIt.data->depth == 24 || depthIt.data->depth == 32) &&
+                        visual->red_mask   == 0x00ff0000 &&
+                        visual->green_mask == 0x0000ff00 &&
+                        visual->blue_mask  == 0x000000ff) {
+                    return QImage::Format_ARGB32_Premultiplied;
+                }
+                if (depthIt.data->depth == 16 &&
+                        visual->red_mask   == 0xf800 &&
+                        visual->green_mask == 0x07e0 &&
+                        visual->blue_mask  == 0x001f) {
+                    return QImage::Format_RGB16;
+                }
+                break;
+            }
+        }
+    }
+    return QImage::Format_Invalid;
+}
+
+template <typename T> T fromNative(xcb_pixmap_t pixmap)
+{
+    xcb_connection_t *c = QX11Info::connection();
+
+    const xcb_get_geometry_cookie_t geoCookie = xcb_get_geometry_unchecked(c,  pixmap);
+    ScopedCPointer<xcb_get_geometry_reply_t> geo(xcb_get_geometry_reply(c, geoCookie, Q_NULLPTR));
+    if (geo.isNull()) {
+        // getting geometry for the pixmap failed
+        return T();
+    }
+
+    const xcb_get_image_cookie_t imageCookie = xcb_get_image_unchecked(c, XCB_IMAGE_FORMAT_Z_PIXMAP, pixmap,
+                                                                       0, 0, geo->width, geo->height, ~0);
+    ScopedCPointer<xcb_get_image_reply_t> xImage(xcb_get_image_reply(c, imageCookie, Q_NULLPTR));
+    if (xImage.isNull()) {
+        // request for image data failed
+        return T();
+    }
+    QImage::Format format = QImage::Format_ARGB32_Premultiplied;
+    switch (xImage->depth) {
+    case 1:
+        format = QImage::Format_MonoLSB;
+        break;
+    case 30: {
+        // Qt doesn't have a matching image format. We need to convert manually
+        uint32_t *pixels = reinterpret_cast<uint32_t *>(xcb_get_image_data(xImage.data()));
+        for (int i = 0; i < xImage.data()->length; ++i) {
+            int r = (pixels[i] >> 22) & 0xff;
+            int g = (pixels[i] >> 12) & 0xff;
+            int b = (pixels[i] >>  2) & 0xff;
+
+            pixels[i] = qRgba(r, g, b, 0xff);
+        }
+        QImage image(reinterpret_cast<uchar*>(pixels), geo->width, geo->height,
+                     xcb_get_image_data_length(xImage.data())/geo->height, QImage::Format_ARGB32_Premultiplied);
+        if (image.isNull()) {
+            return T();
+        }
+        return T::fromImage(image);
+    }
+    case 32:
+        format = QImage::Format_ARGB32_Premultiplied;
+        break;
+    default:
+        if (xImage->depth == defaultDepth()) {
+            format = findFormat();
+            if (format == QImage::Format_Invalid) {
+                return T();
+            }
+        } else {
+            // we don't know
+            return T();
+        }
+    }
+    QImage image(xcb_get_image_data(xImage.data()), geo->width, geo->height,
+                 xcb_get_image_data_length(xImage.data())/geo->height, format);
+    if (image.isNull()) {
+        return T();
+    }
+    if (image.format() == QImage::Format_MonoLSB) {
+        // work around an abort in QImage::color
+        image.setColorCount(2);
+        image.setColor(0, QColor(Qt::white).rgb());
+        image.setColor(1, QColor(Qt::black).rgb());
+    }
+    return T::fromImage(image);
+}
+
+// Create QPixmap from X pixmap. Take care of different depths if needed.
+QPixmap createPixmapFromHandle( WId pixmap, WId pixmap_mask )
+{
+    xcb_connection_t *c = QX11Info::connection();
+
+#if Q_BYTE_ORDER == Q_BIG_ENDIAN
+    qDebug() << "Byte order not supported";
     return QPixmap();
+#endif
+    const xcb_setup_t *setup = xcb_get_setup(c);
+    if (setup->image_byte_order != XCB_IMAGE_ORDER_LSB_FIRST) {
+        qDebug() << "Byte order not supported";
+        return QPixmap();
+    }
+
+    QPixmap pix = fromNative<QPixmap>(pixmap);
+    if (pixmap_mask != XCB_PIXMAP_NONE) {
+        QBitmap mask = fromNative<QBitmap>(pixmap_mask);
+        if (mask.size() != pix.size()) {
+            return QPixmap();
+        }
+        pix.setMask(mask);
+    }
+    return pix;
 }
 
 // Functions for X timestamp comparing. For Time being 32bit they're fairly simple
