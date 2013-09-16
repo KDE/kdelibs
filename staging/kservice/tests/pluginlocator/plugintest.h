@@ -36,6 +36,7 @@ class PluginTest : public QObject
         int runMain();
         bool loadFromKService(const QString &name = "time");
         bool loadFromMetaData(const QString &serviceType = "Plasma/DataEngine");
+        bool findPlugins();
         void report(QList<qint64> timings, const QString &msg = "Test took ");
 
     private:

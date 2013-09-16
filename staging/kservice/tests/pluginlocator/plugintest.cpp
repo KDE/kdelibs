@@ -69,6 +69,7 @@ int PluginTest::runMain()
     // KSycoca querying
     timer.start();
 
+    /*
     for (int _i = 0; _i < runs; _i++) {
         timer.restart();
         if (!loadFromKService("time")) ok = false;
@@ -86,6 +87,8 @@ int PluginTest::runMain()
     }
     report(timings, "Metadata");
     timings.clear();
+    */
+    findPlugins();
 
     if (ok) {
         cout << "All tests finished successfully" << endl;
@@ -100,16 +103,17 @@ void PluginTest::report(QList<qint64> timings, const QString& msg)
 
     int unitDiv = 1000;
     QString unit = "microsec";
-
-    foreach (int t, timings) {
-        //int msec = t/1000;
-        //cout << "  Run " << i << ": " << msec << " microsec\n";
+    int i = 0;
+    foreach (qint64 t, timings) {
+        int msec = t/1000000;
+        qDebug() << "  Run " << i << ": " << msec << " msec";
         totalTime += t;
+        i++;
 
         //i++;
     }
     QString av = QString::number((totalTime/timings.count()/unitDiv), 'f', 1);
-    cout << " Average: " << av << " " << unit << " (" << msg << ")" << endl;
+    qDebug() << " Average: " << av << " " << unit << " (" << msg << ")" << endl;
 }
 
 
@@ -157,6 +161,54 @@ bool PluginTest::loadFromMetaData(const QString& serviceType)
 
 }
 
+
+bool PluginTest::findPlugins()
+{
+    QElapsedTimer timer;
+    int runs = 1;
+    QList<qint64> timings;
+// testsizes = (50, 100, 150, 200, 250, 300, 400, 500, 600, 700, 800, 1000, 1500, 2000, 5000)
+
+
+    const QString pluginDir("/media/storage/testdata/");
+    const QStringList sizes = QStringList() << "50"
+                                            << "100"
+                                            << "150"
+                                            << "200"
+                                            << "250"
+                                            << "300"
+                                            << "400"
+                                            << "500"
+                                            << "600"
+                                            << "700"
+                                            << "800"
+                                            << "1000"
+                                            << "1500"
+                                            << "2000"
+                                            << "5000";
+   QStringList datadirs;
+
+    foreach (const QString &_s, sizes) {
+        datadirs << pluginDir + _s;
+    }
+    foreach (const QString &subdir, datadirs) {
+        const QString pluginName;
+        const QString constraint;
+        const QString serviceType;
+
+        timer.restart();
+
+        KPluginInfo::List res = KPluginTrader::self()->query(subdir, serviceType, constraint);
+
+        timings << timer.nsecsElapsed();
+
+        qDebug() << "Found " << res.count() << " Plugins in " << subdir;
+        cout << "Found " << res.count() << " Plugins in " << subdir;
+    }
+    report(timings, "reading monsterdirs");
+
+    return true;
+}
 
 #include "moc_plugintest.cpp"
 

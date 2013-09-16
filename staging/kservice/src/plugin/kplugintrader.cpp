@@ -25,6 +25,9 @@
 #include <QtCore/QDirIterator>
 #include <QtCore/QJsonObject>
 
+
+#include <QDebug>
+
 using namespace KTraderParse;
 
 
@@ -89,11 +92,19 @@ void KPluginTrader::applyConstraints(KPluginInfo::List& lst, const QString& cons
 KPluginInfo::List KPluginTrader::query(const QString& subDirectory, const QString& servicetype, const QString& constraint)
 {
     QPluginLoader loader;
-    const QStringList libraryPaths = QCoreApplication::libraryPaths();
+    QStringList libraryPaths;
     KPluginInfo::List lst;
 
-    Q_FOREACH (const QString& dir, libraryPaths) {
-        QDirIterator it(dir + QDir::separator() + subDirectory, suffixFilters(), QDir::Files);
+    if (QDir::isAbsolutePath(subDirectory)) {
+        //qDebug() << "ABSOLUTE path: " << subDirectory;
+        libraryPaths << subDirectory;
+    } else {
+        Q_FOREACH (const QString& dir, QCoreApplication::libraryPaths()) {
+            libraryPaths << dir + QDir::separator() + subDirectory;
+        }
+    }
+    Q_FOREACH (const QString& plugindir, libraryPaths) {
+        QDirIterator it(plugindir, suffixFilters(), QDir::Files);
         while (it.hasNext()) {
             it.next();
             const QString _f = it.fileInfo().absoluteFilePath();
