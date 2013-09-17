@@ -67,10 +67,10 @@ class View;
  * \author Niko Sams \<niko.sams@gmail.com\>
  * \since 4.2
  */
-class KTEXTEDITOR_EXPORT CodeCompletionModelControllerInterface
+class KTEXTEDITOR_EXPORT_DEPRECATED CodeCompletionModelControllerInterface
 {
 public:
-    KDE_DEPRECATED CodeCompletionModelControllerInterface();
+    CodeCompletionModelControllerInterface();
     virtual ~CodeCompletionModelControllerInterface();
 
     /**

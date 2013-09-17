@@ -293,15 +293,14 @@ public:
 
     static int gifReaderBridge(GifFileType* gifInfo, GifByteType* data, int limit)
     {
-        int toRet = 0;
         GIFLoader* me = static_cast<GIFLoader*>(gifInfo->UserData);
-        if(me) {
-            int remBytes = me->buffer.size() - me->bufferReadPos;
-            toRet    = qMin(remBytes, limit);
-            
-            memcpy(data, me->buffer.data() + me->bufferReadPos, toRet);
-            me->bufferReadPos += toRet;
-        }
+        
+        int remBytes = me->buffer.size() - me->bufferReadPos;
+        int toRet    = qMin(remBytes, limit);
+        
+        memcpy(data, me->buffer.data() + me->bufferReadPos, toRet);
+        me->bufferReadPos += toRet;
+        
         return toRet;
     }
     
