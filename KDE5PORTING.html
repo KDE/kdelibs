@@ -137,6 +137,7 @@ If the resource is available in QStandardPaths (i.e. for all of the above), then
     dirs.findDirs("data", "kconf_update") -&gt; QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "kconf_update", QStandardPaths::LocateDirectory)
     saveLocation -&gt; writableLocation (note that you might have to mkpath it if it doesn't exist)
     locateLocal(type, file) -&gt; writableLocation(type) + '/' + file (you might have to mkpath the directory)
+    locateLocal(tmp, file) -&gt; QDir::tempPath() + '/' + file
     resourceDirs("xdgdata-apps") -&gt; QStandardPaths::standardLocations(QStandardPaths::ApplicationsLocation)  (no trailing slashes anymore though)
 </pre>
 Otherwise, you need to use GenericDataLocation and add the subdirectory name manually.
