@@ -32,6 +32,7 @@
 #include <QDesktopWidget>
 #include <QDir>
 #include <QMenu>
+#include <QComboBox>
 
 #include <kconfig.h>
 #include <kconfiggroup.h>
@@ -39,14 +40,16 @@
 
 
 KRecentFilesAction::KRecentFilesAction(QObject *parent)
-  : KSelectAction(*new KRecentFilesActionPrivate, parent)
+  : KSelectAction(parent),
+    d_ptr(new KRecentFilesActionPrivate(this))
 {
   Q_D(KRecentFilesAction);
   d->init();
 }
 
 KRecentFilesAction::KRecentFilesAction(const QString &text, QObject *parent)
-  : KSelectAction(*new KRecentFilesActionPrivate, parent)
+  : KSelectAction(parent),
+    d_ptr(new KRecentFilesActionPrivate(this))
 {
   Q_D(KRecentFilesAction);
   d->init();
@@ -56,7 +59,8 @@ KRecentFilesAction::KRecentFilesAction(const QString &text, QObject *parent)
 }
 
 KRecentFilesAction::KRecentFilesAction(const QIcon &icon, const QString &text, QObject *parent)
-  : KSelectAction(*new KRecentFilesActionPrivate, parent)
+  : KSelectAction(parent),
+    d_ptr(new KRecentFilesActionPrivate(this))
 {
   Q_D(KRecentFilesAction);
   d->init();
@@ -84,6 +88,7 @@ void KRecentFilesActionPrivate::init()
 
 KRecentFilesAction::~KRecentFilesAction()
 {
+    delete d_ptr;
 }
 
 void KRecentFilesActionPrivate::_k_urlSelected( QAction* action )
@@ -196,22 +201,15 @@ void KRecentFilesAction::addUrl(const QUrl& _url, const QString& name)
 
 void KRecentFilesAction::addAction(QAction* action, const QUrl& url, const QString& name)
 {
-  Q_D(KRecentFilesAction);
-  //qDebug () << "KRecentFilesAction::addAction(" << action << ")";
+    Q_D(KRecentFilesAction);
 
-  action->setActionGroup(selectableActionGroup());
-
-  // Keep in sync with createToolBarWidget()
-  foreach (QToolButton* button, d->m_buttons)
-    button->insertAction(button->actions().value(0), action);
-
-  foreach (QComboBox* comboBox, d->m_comboBoxes)
-    comboBox->insertAction(comboBox->actions().value(0), action);
-
-  menu()->insertAction(menu()->actions().value(0), action);
-
-  d->m_shortNames.insert( action, name );
-  d->m_urls.insert( action, url );
+    if (actions().isEmpty()) {
+        addAction(action);
+    } else {
+        insertAction(actions().first(), action);
+    }
+    d->m_shortNames.insert( action, name );
+    d->m_urls.insert( action, url );
 }
 
 QAction* KRecentFilesAction::removeAction(QAction* action)

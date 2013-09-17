@@ -28,14 +28,15 @@
 #ifndef KRECENTFILESACTION_P_H
 #define KRECENTFILESACTION_P_H
 
-#include "kselectaction_p.h"
+#include "krecentfilesaction.h"
 
-class KRecentFilesActionPrivate : public KSelectActionPrivate
+class KRecentFilesActionPrivate
 {
     Q_DECLARE_PUBLIC(KRecentFilesAction)
 
 public:
-  KRecentFilesActionPrivate()
+  KRecentFilesActionPrivate(KRecentFilesAction *parent)
+  : q_ptr(parent)
   {
     m_maxItems = 10;
     m_noEntriesAction = 0;
@@ -57,6 +58,8 @@ public:
   QAction *m_noEntriesAction;
   QAction *clearSeparator;
   QAction *clearAction;
+
+  KRecentFilesAction *q_ptr;
 };
 
 /* vim: et sw=2 ts=2

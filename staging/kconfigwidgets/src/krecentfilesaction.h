@@ -184,6 +184,8 @@ private:
     // addAction() says, addAction( QAction* ) should not be used.
     using KSelectAction::addAction;
 
+    KRecentFilesActionPrivate *d_ptr;
+
     Q_PRIVATE_SLOT( d_func(), void _k_urlSelected(QAction*) )
 };
 

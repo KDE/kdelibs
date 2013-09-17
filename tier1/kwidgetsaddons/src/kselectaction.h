@@ -215,7 +215,7 @@ public:
     /**
      * Add \a action to the list of selectable actions.
      */
-    virtual void addAction(QAction* action);
+    void addAction(QAction* action);
 
     /**
      * \overload addAction(QAction* action)
@@ -243,6 +243,15 @@ public:
      * You take ownership here, so save or delete it in order to not leak the action.
      */
     virtual QAction* removeAction(QAction* action);
+
+    /**
+     * Inserts the action action to this widget's list of actions, before the action before.
+     * It appends the action if before is 0 or before is not a valid action for this widget.
+     *
+     * @since 5.0
+     */
+    virtual void insertAction(QAction* before, QAction* action);
+
 
     /**
      * Convenience function to create the list of selectable items.
