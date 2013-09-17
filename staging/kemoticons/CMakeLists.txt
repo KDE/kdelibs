@@ -6,6 +6,9 @@ find_package(ECM 0.0.8 REQUIRED NO_MODULE)
 
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
+set(REQUIRED_QT_VERSION 5.2.0)
+find_package(Qt5 ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE COMPONENTS Widgets)
+
 find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 
 include(FeatureSummary)
@@ -14,7 +17,8 @@ include(ECMSetupVersion)
 
 ecm_setup_version(5 0 0 VARIABLE_PREFIX KEMOTICONS
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kemoticons_version.h"
-                 )
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KEmoticonsConfigVersion.cmake")
+
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/kemoticons_version.h
         DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
@@ -27,4 +31,25 @@ remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 add_subdirectory(src)
 add_subdirectory(autotests)
 add_subdirectory(tests)
+
+# create a Config.cmake and a ConfigVersion.cmake file and install them
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KEmoticons")
+
+include(CMakePackageConfigHelpers)
+
+configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/KEmoticonsConfig.cmake.in"
+                              "${CMAKE_CURRENT_BINARY_DIR}/KEmoticonsConfig.cmake"
+                              INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
+                              PATH_VARS  INCLUDE_INSTALL_DIR CMAKE_INSTALL_PREFIX
+                             )
+
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/KEmoticonsConfig.cmake"
+              "${CMAKE_CURRENT_BINARY_DIR}/KEmoticonsConfigVersion.cmake"
+        DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
+        COMPONENT Devel
+       )
+
+if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
+  feature_summary(WHAT ALL   FATAL_ON_MISSING_REQUIRED_PACKAGES)
+endif()
 

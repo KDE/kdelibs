@@ -8,8 +8,16 @@ set(kemoticons_LIB_SRCS
 
 add_library(KEmoticons ${LIBRARY_TYPE} ${kemoticons_LIB_SRCS})
 generate_export_header(KEmoticons)
-target_link_libraries(KEmoticons LINK_PUBLIC Qt5::Widgets KService)
-target_link_libraries(KEmoticons LINK_PRIVATE KWidgetsAddons KIOWidgets ${KArchive_LIBRARIES} ${KConfig_CORE_LIBRARY})
+
+target_link_libraries(KEmoticons
+LINK_PUBLIC
+    Qt5::Widgets # for QPixmap
+    KService     # for KService::Ptr, KServiceTypeTrader
+LINK_PRIVATE
+    KCoreAddons # for KDirWatch
+    KArchive    # for KTar, KZip
+)
+
 set_target_properties(KEmoticons PROPERTIES
                       VERSION ${GENERIC_LIB_VERSION}
                       SOVERSION ${GENERIC_LIB_SOVERSION})
