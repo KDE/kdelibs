@@ -25,6 +25,7 @@
 #include <QtCore/QMap>
 
 #include <kservice.h>
+#include <kplugininfo.h>
 
 namespace KTraderParse {
 
@@ -38,6 +39,8 @@ class ParseTreeBase;
  */
 int matchConstraint( const ParseTreeBase *_tree, const KService::Ptr &,
                      const KService::List& );
+int matchConstraintPlugin( const ParseTreeBase *_tree, KPluginInfo _info,
+             const KPluginInfo::List& _list );
 
 /**
  * @internal
@@ -67,13 +70,18 @@ public:
   /**
    * This is NOT a copy constructor.
    */
-  explicit ParseContext( const ParseContext* _ctx ) : service( _ctx->service ), maxima( _ctx->maxima ),
-    offers( _ctx->offers ) {}
+  explicit ParseContext( const ParseContext* _ctx ) : service( _ctx->service ), info( _ctx->info ), maxima( _ctx->maxima ),
+    offers( _ctx->offers ), pluginOffers( _ctx->pluginOffers ) {}
   ParseContext( const KService::Ptr & _service, const KService::List& _offers,
-		QMap<QString,PreferencesMaxima>& _m )
-    : service( _service ), maxima( _m ), offers( _offers ) {}
+        QMap<QString,PreferencesMaxima>& _m )
+    : service( _service ), info( KPluginInfo() ), maxima( _m ), offers( _offers ), pluginOffers( KPluginInfo::List() ) {}
+  ParseContext( KPluginInfo _info, const KPluginInfo::List& _offers,
+        QMap<QString,PreferencesMaxima>& _m )
+    : service( 0 ), info( _info ), maxima( _m ), offers( KService::List() ), pluginOffers( _offers ) {}
 
   bool initMaxima( const QString& _prop);
+
+  QVariant property( const QString& _key ) const;
 
   enum Type { T_STRING = 1, T_DOUBLE = 2, T_NUM = 3, T_BOOL = 4,
 	      T_STR_SEQ = 5, T_SEQ = 6 };
@@ -87,9 +95,11 @@ public:
   Type type;
 
   KService::Ptr service;
+  KPluginInfo info;
 
   QMap<QString,PreferencesMaxima>& maxima;
-  const KService::List& offers;
+  KService::List offers;
+  KPluginInfo::List pluginOffers;
 };
 
 /**
