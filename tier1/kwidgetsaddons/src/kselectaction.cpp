@@ -239,26 +239,7 @@ void KSelectAction::setMaxComboViewCount( int n )
 
 void KSelectAction::addAction(QAction* action)
 {
-  Q_D(KSelectAction);
-  //qDebug () << "KSelectAction::addAction(" << action << ")";
-
-  action->setActionGroup(selectableActionGroup());
-
-  // Re-Enable when an action is added
-  setEnabled(true);
-
-  // Keep in sync with createToolBarWidget()
-  foreach (QToolButton* button, d->m_buttons) {
-    button->setEnabled(true);
-    button->addAction(action);
-  }
-
-  foreach (QComboBox* comboBox, d->m_comboBoxes) {
-    comboBox->setEnabled(true);
-    comboBox->addAction(action);
-  }
-
-  menu()->addAction(action);
+  insertAction(0, action);
 }
 
 QAction* KSelectAction::addAction(const QString &text)
@@ -315,6 +296,29 @@ QAction* KSelectAction::removeAction(QAction* action)
 
   return action;
 }
+
+void KSelectAction::insertAction(QAction* before, QAction* action)
+{
+    Q_D(KSelectAction);
+    action->setActionGroup(selectableActionGroup());
+
+    // Re-Enable when an action is added
+    setEnabled(true);
+
+    // Keep in sync with createToolBarWidget()
+    foreach (QToolButton* button, d->m_buttons) {
+        button->setEnabled(true);
+        button->insertAction(before, action);
+    }
+
+    foreach (QComboBox* comboBox, d->m_comboBoxes) {
+        comboBox->setEnabled(true);
+        comboBox->insertAction(before, action);
+    }
+
+    menu()->insertAction(before, action);
+}
+
 
 void KSelectAction::actionTriggered(QAction* action)
 {
