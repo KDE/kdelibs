@@ -151,12 +151,13 @@ class KSERVICE_EXPORT KPluginInfo
            \endverbatim
          * @param args QVariantList with arguments, should contain a QVariantMap, keyed "MetaData"
          * as provided by QPluginLoader::metaData()
+         * @param libraryPath The path to the plugin file on disk
          *
          * \see K_PLUGIN_FACTORY_WITH_JSON()
          * \see KPluginFactory::factory()
          * @since 5.0
          */
-        explicit KPluginInfo( const QVariantList &args );
+        explicit KPluginInfo( const QVariantList &args, const QString &libraryPath = QString() );
 
         /**
          * Creates an invalid plugin.
@@ -312,6 +313,19 @@ class KSERVICE_EXPORT KPluginInfo
         QStringList dependencies() const;
 
         /**
+         * @return A list of ServiceTypes this plugin offers
+         * @since 5.0
+         */
+        QStringList serviceTypes() const;
+
+        /**
+         * @return The absolute path of the plugin on disk. This can be used to load the plugin from, using
+         * KPluginLoader or QPluginLoader
+         * @since 5.0
+         */
+        QString libraryPath() const;
+
+        /**
          * @return The KService object for this plugin. You might need it if you
          *         want to read custom values. To do this you need to define
          *         your own servicetype and add it to the ServiceTypes keys.
@@ -397,6 +411,8 @@ class KSERVICE_EXPORT KPluginInfo
          * Greater than relation comparing the categories and if they are the same using the names.
          */
         bool operator>(const KPluginInfo &rhs) const;
+
+        friend class KPluginTrader;
 
     private:
         friend KSERVICE_EXPORT uint qHash(const KPluginInfo &);
