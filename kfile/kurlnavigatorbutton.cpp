@@ -34,6 +34,7 @@
 #include <QKeyEvent>
 #include <QStyleOption>
 #include <QMimeData>
+#include <QCollator>
 
 namespace KDEPrivate
 {
@@ -468,12 +469,23 @@ void KUrlNavigatorButton::statFinished(KJob* job)
 }
 
 /**
- * Helper function for openSubDirsMenu
+ * Helper class for openSubDirsMenu
  */
-static bool naturalLessThan(const QPair<QString, QString>& s1, const QPair<QString, QString>& s2)
+class NaturalLessThan
 {
-    return KStringHandler::naturalCompare(s1.first, s2.first, Qt::CaseInsensitive) < 0;
-}
+public:
+    NaturalLessThan() {
+        m_collator.setCaseSensitivity(Qt::CaseInsensitive);
+        m_collator.setNumericMode(true);
+    }
+
+    bool operator()(const QPair<QString, QString>& s1, const QPair<QString, QString>& s2) {
+        return m_collator.compare(s1.first, s2.first) < 0;
+    }
+
+private:
+    QCollator m_collator;
+};
 
 void KUrlNavigatorButton::openSubDirsMenu(KJob* job)
 {
@@ -485,7 +497,8 @@ void KUrlNavigatorButton::openSubDirsMenu(KJob* job)
         return;
     }
 
-    qSort(m_subDirs.begin(), m_subDirs.end(), naturalLessThan);
+    NaturalLessThan nlt;
+    qSort(m_subDirs.begin(), m_subDirs.end(), nlt);
     setDisplayHintEnabled(PopupActiveHint, true);
     update(); // ensure the button is drawn highlighted
 
@@ -527,7 +540,8 @@ void KUrlNavigatorButton::replaceButton(KJob* job)
         return;
     }
 
-    qSort(m_subDirs.begin(), m_subDirs.end(), naturalLessThan);
+    NaturalLessThan nlt;
+    qSort(m_subDirs.begin(), m_subDirs.end(), nlt);
 
     // Get index of the directory that is shown currently in the button
     const QString currentDir = m_url.fileName();

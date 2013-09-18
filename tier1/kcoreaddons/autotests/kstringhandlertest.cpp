@@ -55,12 +55,6 @@ void KStringHandlerTest::naturalCompare()
     QCOMPARE(KStringHandler::naturalCompare("b", "a", Qt::CaseSensitive), +1);
     QCOMPARE(KStringHandler::naturalCompare("a", "a", Qt::CaseSensitive), 0);
 
-    QCOMPARE(KStringHandler::naturalCompare("A", "a", Qt::CaseSensitive), QString::localeAwareCompare("A", "a"));
-    QCOMPARE(KStringHandler::naturalCompare("A", "a", Qt::CaseInsensitive), 0);
-    QCOMPARE(KStringHandler::naturalCompare("a", "A", Qt::CaseInsensitive), 0);
-    QCOMPARE(KStringHandler::naturalCompare("aAa", "AaA", Qt::CaseInsensitive), 0);
-    QCOMPARE(KStringHandler::naturalCompare("aaa", "AAA", Qt::CaseInsensitive), 0);
-
     QCOMPARE(KStringHandler::naturalCompare("1", "2", Qt::CaseSensitive), -1);
     QCOMPARE(KStringHandler::naturalCompare("1", "10", Qt::CaseSensitive), -1);
     QCOMPARE(KStringHandler::naturalCompare("9", "10", Qt::CaseSensitive), -1);
@@ -131,14 +125,6 @@ void KStringHandlerTest::naturalCompare()
     QCOMPARE(KStringHandler::naturalCompare("Car and Driver 2008-10","Car and Driver Buyer's Guide 2010", Qt::CaseSensitive), -1);
     QCOMPARE(KStringHandler::naturalCompare("Car and Driver 2008-10", "Car and Driver 2009-11", Qt::CaseSensitive), -1);
     QCOMPARE(KStringHandler::naturalCompare("Car and Driver 2009-11", "Car and Driver 2010-05", Qt::CaseSensitive), -1);
-
-    // bug 237788
-    QCOMPARE(KStringHandler::naturalCompare(" ", ".", Qt::CaseInsensitive), -1);
-    QCOMPARE(KStringHandler::naturalCompare(".", "_", Qt::CaseInsensitive), -1);
-    QCOMPARE(KStringHandler::naturalCompare(" ", "_", Qt::CaseInsensitive), -1);
-    QCOMPARE(KStringHandler::naturalCompare("abc.jpg", "abc1.jpg", Qt::CaseInsensitive), -1);
-    QCOMPARE(KStringHandler::naturalCompare("abc1.jpg", "abc_a.jpg", Qt::CaseInsensitive), -1);
-    QCOMPARE(KStringHandler::naturalCompare("abc.jpg", "abc_a.jpg", Qt::CaseInsensitive), -1);
 }
 
 void KStringHandlerTest::obscure()

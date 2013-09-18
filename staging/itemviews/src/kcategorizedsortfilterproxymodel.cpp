@@ -25,8 +25,7 @@
 #include <QItemSelection>
 #include <QStringList>
 #include <QSize>
-
-#include <kstringhandler.h>
+#include <QCollator>
 
 KCategorizedSortFilterProxyModel::KCategorizedSortFilterProxyModel(QObject *parent)
     : QSortFilterProxyModel(parent)
@@ -93,10 +92,12 @@ bool KCategorizedSortFilterProxyModel::sortCategoriesByNaturalComparison() const
 }
 
 #ifndef KDE_NO_DEPRECATED
-int KCategorizedSortFilterProxyModel::naturalCompare(const QString &a,
-                                                     const QString &b)
+int KCategorizedSortFilterProxyModel::naturalCompare(const QString &a, const QString &b)
 {
-    return KStringHandler::naturalCompare(a, b);
+    QCollator c;
+    c.setNumericMode(true);
+    c.setCaseSensitivity(Qt::CaseSensitive);
+    return c.compare(a, b);
 }
 #endif
 
@@ -140,7 +141,7 @@ int KCategorizedSortFilterProxyModel::compareCategories(const QModelIndex &left,
 
         if (d->sortCategoriesByNaturalComparison)
         {
-            return KStringHandler::naturalCompare(lstr, rstr);
+            return d->m_collator.compare(lstr, rstr);
         }
         else
         {

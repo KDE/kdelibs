@@ -54,6 +54,9 @@ KShortcutsEditorItem::KShortcutsEditorItem(QTreeWidgetItem *parent, QAction *act
         qWarning() << "Action without text!" << m_action->objectName();
         m_actionNameInTable = m_id;
     }
+
+    m_collator.setNumericMode(true);
+    m_collator.setCaseSensitivity(Qt::CaseSensitive);
 }
 
 
@@ -206,7 +209,7 @@ QVariant KShortcutsEditorItem::data(int column, int role) const
 bool KShortcutsEditorItem::operator<(const QTreeWidgetItem &other) const
 {
     const int column = treeWidget() ? treeWidget()->sortColumn() : 0;
-    return KStringHandler::naturalCompare(text(column), other.text(column)) < 0;
+    return m_collator(text(column), other.text(column)) < 0;
 }
 
 

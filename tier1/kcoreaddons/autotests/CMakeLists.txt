@@ -32,5 +32,6 @@ kcoreaddons_unit_tests(
     kshareddatacachetest
     kshelltest
     kurlmimedatatest
+    kstringhandlertest
 )
 

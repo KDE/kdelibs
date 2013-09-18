@@ -29,16 +29,19 @@
 #include <kconfiggroup.h>
 #include <ksharedconfig.h>
 
+#include <QCollator>
+
 class KDirSortFilterProxyModel::KDirSortFilterProxyModelPrivate
 {
 public:
     KDirSortFilterProxyModelPrivate(KDirSortFilterProxyModel* q);
 
-    int compare(const QString&, const QString&, Qt::CaseSensitivity caseSensitivity  = Qt::CaseSensitive) const;
+    int compare(const QString&, const QString&, Qt::CaseSensitivity caseSensitivity  = Qt::CaseSensitive);
     void slotNaturalSortingChanged();
 
     bool m_sortFoldersFirst;
     bool m_naturalSorting;
+    QCollator m_collator;
 };
 
 KDirSortFilterProxyModel::KDirSortFilterProxyModelPrivate::KDirSortFilterProxyModelPrivate(KDirSortFilterProxyModel* q) :
@@ -49,21 +52,22 @@ KDirSortFilterProxyModel::KDirSortFilterProxyModelPrivate::KDirSortFilterProxyMo
 
 int KDirSortFilterProxyModel::KDirSortFilterProxyModelPrivate::compare(const QString& a,
                                                                        const QString& b,
-                                                                       Qt::CaseSensitivity caseSensitivity) const
+                                                                       Qt::CaseSensitivity caseSensitivity)
 {
-    if (caseSensitivity == Qt::CaseInsensitive) {
-        const int result = m_naturalSorting ? KStringHandler::naturalCompare(a, b, Qt::CaseInsensitive)
-                                            : QString::compare(a, b, Qt::CaseInsensitive);
-        if (result != 0) {
-            // Only return the result, if the strings are not equal. If they are equal by a case insensitive
-            // comparison, still a deterministic sort order is required. A case sensitive
-            // comparison is done as fallback.
-            return result;
-        }
+    if (m_naturalSorting) {
+        m_collator.setCaseSensitivity(caseSensitivity);
+        return m_collator.compare(a, b);
     }
 
-    return m_naturalSorting ? KStringHandler::naturalCompare(a, b, Qt::CaseSensitive)
-                            : QString::compare(a, b, Qt::CaseSensitive);
+    const int result = QString::compare(a, b, caseSensitivity);
+    if (caseSensitivity == Qt::CaseSensitive || result != 0) {
+        // Only return the result, if the strings are not equal. If they are equal by a case insensitive
+        // comparison, still a deterministic sort order is required. A case sensitive
+        // comparison is done as fallback.
+        return result;
+    }
+
+    return QString::compare(a, b, Qt::CaseSensitive);
 }
 
 
@@ -205,7 +209,7 @@ bool KDirSortFilterProxyModel::subSortLessThan(const QModelIndex& left,
 
             // If one of them has unknown child items, place them on the end. If we
             // were comparing two unknown childed items, the previous comparation
-            // sorted them by naturalCompare between them. This case is when we
+            // sorted them by QCollator between them. This case is when we
             // have an unknown childed item, and another known.
             if (leftCount == KDirModel::ChildCountUnknown) {
                 return false;

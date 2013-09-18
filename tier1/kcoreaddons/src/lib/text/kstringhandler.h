@@ -212,8 +212,9 @@ namespace KStringHandler
       @param caseSensitivity whether to use case sensitive compare or not
 
       @since 4.1
+      @deprecated since 5.0, should use QCollator instead.
      */
-    KCOREADDONS_EXPORT int naturalCompare( const QString& a, const QString& b, Qt::CaseSensitivity caseSensitivity = Qt::CaseSensitive );
+    KCOREADDONS_DEPRECATED_EXPORT int naturalCompare( const QString& a, const QString& b, Qt::CaseSensitivity caseSensitivity = Qt::CaseSensitive );
 
     /**
       Preprocesses the given string in order to provide additional line breaking

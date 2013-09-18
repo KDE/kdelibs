@@ -92,7 +92,7 @@ public:
 
     /**
       * Set if the sorting using CategorySortRole will use a natural comparison
-      * in the case that strings were returned. If enabled, QString::localeAwareCompare
+      * in the case that strings were returned. If enabled, QCollator
       * will be used for sorting.
       *
       * @param sortCategoriesByNaturalComparison whether to sort using a natural comparison or not.
@@ -109,7 +109,7 @@ public:
       * is smaller than \a b. A positive value is returned if \a a is greater than \a b. 0
       * is returned if both values are equal.
       * @deprecated
-      * Use KStringHandler::naturalCompare() instead.
+      * Use QCollator instead.
       */
 #ifndef KDE_NO_DEPRECATED
     ITEMVIEWS_DEPRECATED static int naturalCompare(const QString &a, const QString &b);

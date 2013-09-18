@@ -22,6 +22,8 @@
 #ifndef KCATEGORIZEDSORTFILTERPROXYMODEL_P_H
 #define KCATEGORIZEDSORTFILTERPROXYMODEL_P_H
 
+#include <QtCore/QCollator>
+
 class KCategorizedSortFilterProxyModel;
 
 class KCategorizedSortFilterProxyModel::Private
@@ -33,6 +35,8 @@ public:
         , categorizedModel(false)
         , sortCategoriesByNaturalComparison(true)
     {
+        m_collator.setNumericMode(true);
+        m_collator.setCaseSensitivity(Qt::CaseSensitive);
     }
 
     ~Private()
@@ -43,6 +47,7 @@ public:
     Qt::SortOrder sortOrder;
     bool categorizedModel;
     bool sortCategoriesByNaturalComparison;
+    QCollator m_collator;
 };
 
 #endif

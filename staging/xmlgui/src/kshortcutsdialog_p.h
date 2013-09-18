@@ -37,6 +37,7 @@
 #include <QModelIndex>
 #include <QTreeWidget>
 #include <QtCore/QList>
+#include <QtCore/QCollator>
 #include <QGroupBox>
 
 class QLabel;
@@ -336,6 +337,9 @@ private:
 
     //! The action id. Needed for exporting and importing
     QString m_id;
+
+    //! The collator, for sorting
+    QCollator m_collator;
 
 };
 

@@ -22,8 +22,8 @@
 #include "kcompletion_p.h"
 
 #include <QDebug>
-#include <kstringhandler.h>
 #include <QtCore/QMutableVectorIterator>
+#include <QCollator>
 
 class KCompletionPrivate
 {
@@ -750,11 +750,6 @@ void KCompTreeNode::remove( const QString& str )
     }
 }
 
-bool lessThan( const QString &left, const QString &right )
-{
-    return KStringHandler::naturalCompare( left, right ) < 0;
-}
-
 QStringList KCompletionMatchesWrapper::list() const
 {
     if ( sortedList && dirty ) {
@@ -768,7 +763,9 @@ QStringList KCompletionMatchesWrapper::list() const
         for ( it = sortedList->constBegin(); it != sortedList->constEnd(); ++it )
             stringList.prepend( (*it).value() );
     } else if ( compOrder == KCompletion::Sorted ) {
-        qStableSort(stringList.begin(), stringList.end(), lessThan);
+        QCollator c;
+        c.setCaseSensitivity(Qt::CaseSensitive);
+        qStableSort(stringList.begin(), stringList.end(), c);
     }
 
     return stringList;
