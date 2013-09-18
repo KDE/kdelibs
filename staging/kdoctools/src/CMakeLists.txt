@@ -1,47 +1,4 @@
-cmake_minimum_required(VERSION 2.8.11)
-
-project(KDocTools)
-
-find_package(ECM 0.0.8 REQUIRED NO_MODULE)
-
-set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
-
-find_package(KF5 5.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
-find_package(Qt5Core 5.2.0 REQUIRED NO_MODULE)
-
-find_package(LibXslt)
-set_package_properties(LibXslt PROPERTIES
-                       URL "http://xmlsoft.org/XSLT"
-                       TYPE REQUIRED
-                       PURPOSE "Required by the KDE help system to process DocBook XML"
-                      )
-
-find_package(LibXml2)
-set_package_properties(LibXml2 PROPERTIES
-                       URL "http://xmlsoft.org"
-                       TYPE REQUIRED
-                       PURPOSE "Required by the KDE help system to process DocBook XML"
-                      )
-
-
-find_package(DocBookXML)
-
-set_package_properties(DocBookXML PROPERTIES DESCRIPTION "DocBook XML"
-                       URL "http://www.oasis-open.org/docbook/xml/${DOCBOOKXML_CURRENTDTD_VERSION}"
-                       TYPE REQUIRED
-                       PURPOSE "Required by the KDE help system to process DocBook XML"
-                      )
-
-find_package(DocBookXSL)
-set_package_properties(DocBookXSL PROPERTIES DESCRIPTION "DocBook XSL"
-                       URL "http://docbook.sourceforge.net/release/xsl/current/"
-                       TYPE REQUIRED
-                       PURPOSE "Required by the KDE help system to process DocBook XML"
-                      )
-
-
 include_directories( ${LIBXML2_INCLUDE_DIR} ${LIBXSLT_INCLUDE_DIR} )
-
 
 set (_custom_dtd_kdex "customization/dtd/kdex.dtd")
 configure_file(${_custom_dtd_kdex}.cmake ${CMAKE_CURRENT_BINARY_DIR}/${_custom_dtd_kdex} )
