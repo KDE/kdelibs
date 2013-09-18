@@ -23,6 +23,7 @@
 #include "private/kiconprovider_p.h"
 
 #include <QCoreApplication>
+#include <QDebug>
 #include <QtQml/QQmlComponent>
 #include <QtQml/QQmlContext>
 #include <QtQml/QQmlEngine>
@@ -80,20 +81,18 @@ void KDeclarative::setupBindings()
     addImportPath adds the path at the beginning, so to honour user's
     paths we need to traverse the list in reverse order*/
 
-    const QStringList pluginPathList = QCoreApplication::libraryPaths();
-    QStringListIterator pluginPathIterator(pluginPathList);
-    pluginPathIterator.toBack();
-    while (pluginPathIterator.hasPrevious()) {
-        d->declarativeEngine.data()->addImportPath(pluginPathIterator.previous() + "/imports");
-    }
+    const QStringList pluginPathList = d->declarativeEngine.data()->importPathList();
 
+    //add platformqml stuff before the others, so it will "win" in import name resolution
     const QString target = componentsTarget();
     if (target != defaultComponentsTarget()) {
         const QStringList paths = pluginPathList;
         QStringListIterator it(paths);
         it.toBack();
         while (it.hasPrevious()) {
-            d->declarativeEngine.data()->addImportPath(it.previous() + "/platformimports/" + target);
+            QString path = it.previous();
+            path = path.left(path.lastIndexOf("/"));
+            d->declarativeEngine.data()->addImportPath(path + "/platformqml/" + target);
         }
     }
 
