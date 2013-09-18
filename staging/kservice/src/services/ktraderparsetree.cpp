@@ -692,14 +692,14 @@ bool ParseContext::initMaxima( const QString& _prop )
   QVariantList offerValues;
   if ( service )
   {
-    KService::List::ConstIterator oit = offers.begin();
-    for( ; oit != offers.end(); ++oit )
+    KService::List::ConstIterator oit = offers.cbegin();
+    for( ; oit != offers.cend(); ++oit )
     {
       offerValues << (*oit)->property( _prop );
     }
   } else if ( info.isValid() ) {
-    KPluginInfo::List::ConstIterator oit = pluginOffers.begin();
-    for( ; oit != pluginOffers.end(); ++oit )
+    KPluginInfo::List::ConstIterator oit = pluginOffers.cbegin();
+    for( ; oit != pluginOffers.cend(); ++oit )
     {
       offerValues << (*oit).property( _prop );
     }
