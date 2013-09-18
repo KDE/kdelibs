@@ -95,6 +95,7 @@ set(Sonnet_LIBRARIES ${Sonnet_SonnetUi_LIBRARY} ${Sonnet_SonnetCore_LIBRARY} )
 # tier1/ already builds standalone, so it should not get any include dirs from here.
 
 add_subdirectory( tier2 )
+add_subdirectory( tier3 )
 
 set(KAuth_LIBRARIES  KAuth)
 
