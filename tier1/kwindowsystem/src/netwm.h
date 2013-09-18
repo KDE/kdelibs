@@ -201,7 +201,7 @@ public:
       @overload
       @since 4.4
      **/
-    void setSupported( NET::WindowType property, bool on = true );
+    void setSupported( NET::WindowTypeMask property, bool on = true );
 
     /**
       @overload
@@ -228,7 +228,7 @@ public:
     /**
        @overload
     **/
-    bool isSupported( NET::WindowType type ) const;
+    bool isSupported( NET::WindowTypeMask type ) const;
     /**
        @overload
     **/

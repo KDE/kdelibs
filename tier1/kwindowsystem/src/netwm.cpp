@@ -2470,7 +2470,7 @@ void NETRootInfo::setSupported( NET::Property2 property, bool on ) {
     }
 }
 
-void NETRootInfo::setSupported( NET::WindowType property, bool on ) {
+void NETRootInfo::setSupported( NET::WindowTypeMask property, bool on ) {
     if ( p->role != WindowManager )
         return;
 
@@ -2517,7 +2517,7 @@ bool NETRootInfo::isSupported( NET::Property2 property ) const {
     return p->properties[ PROTOCOLS2 ] & property;
 }
 
-bool NETRootInfo::isSupported( NET::WindowType type ) const {
+bool NETRootInfo::isSupported( NET::WindowTypeMask type ) const {
     return p->properties[ WINDOW_TYPES ] & type;
 }
 
