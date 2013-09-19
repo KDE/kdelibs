@@ -16,7 +16,6 @@
  */
 
 #include "kcolorutilsdemo.h"
-#include <kcolorspaces.h>
 #include <kcolorutils.h>
 #include <kcolorscheme.h>
 
@@ -37,10 +36,11 @@ KColorUtilsDemo::KColorUtilsDemo(QWidget *parent) : QWidget(parent),
 
 void KColorUtilsDemo::inputChanged()
 {
-    KColorSpaces::KHCY c(inColor->color());
-    ifHue->setValue(c.h);
-    ifChroma->setValue(c.c);
-    ifLuma->setValue(c.y);
+    qreal hue, chroma, luma;
+    KColorUtils::getHcy(inColor->color(), &hue, &chroma, &luma);
+    ifHue->setValue(hue);
+    ifChroma->setValue(chroma);
+    ifLuma->setValue(luma);
     ifGray->setValue(qGray(inColor->color().rgb()));
 
     lumaChanged();
