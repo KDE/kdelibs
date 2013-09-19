@@ -1,0 +1,20 @@
+{
+    "Comment": "Test Plugin Spy",
+    "Icon": "preferences-system-time",
+    "Name": "NSA Plugin",
+    "Type": "Service",
+    "X-KDE-Library": "fakeplugin",
+    "X-KDE-PluginInfo-Author": "Sebastian Kügler",
+    "X-KDE-PluginInfo-Category": "Examples",
+    "X-KDE-PluginInfo-Depends": [
+    ],
+    "X-KDE-PluginInfo-Email": "sebas@kde.org",
+    "X-KDE-PluginInfo-EnabledByDefault": true,
+    "X-KDE-PluginInfo-License": "LGPL",
+    "X-KDE-PluginInfo-Name": "fakeplugin",
+    "X-KDE-PluginInfo-Version": "1.0",
+    "X-KDE-PluginInfo-Website": "http://kde.org/",
+    "X-KDE-ServiceTypes": [
+        "KService/NSA"
+    ]
+}

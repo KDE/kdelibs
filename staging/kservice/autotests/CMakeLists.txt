@@ -19,10 +19,19 @@ macro(KSERVICE_UNIT_TESTS)
   endforeach()
 endmacro(KSERVICE_UNIT_TESTS)
 
+
+# Build a minimal plugin, equipped with metadata for
+# the pluginlocatortest
+add_library(fakeplugin MODULE nsaplugin.cpp)
+set_target_properties(fakeplugin PROPERTIES PREFIX "")
+target_link_libraries(fakeplugin KService KCoreAddons)
+
+
 kservice_unit_tests(
  kautostarttest
  ksycocadicttest
  ksycocathreadtest
  kservicetest
+ pluginlocatortest
 )
 
