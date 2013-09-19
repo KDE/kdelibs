@@ -2754,18 +2754,6 @@ NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
 }
 
 
-NETWinInfo2::NETWinInfo2(Display *display, Window window, Window rootWindow,
-    const unsigned long properties[], int properties_size, Role role)
-    : NETWinInfo(display, window, rootWindow, properties, properties_size, role) {
-}
-
-
-NETWinInfo2::NETWinInfo2(Display *display, Window window, Window rootWindow,
-    unsigned long properties, Role role)
-    : NETWinInfo(display, window, rootWindow, properties, role) {
-}
-
-
 NETWinInfo::NETWinInfo(const NETWinInfo &wininfo) {
     p = wininfo.p;
     p->ref++;
@@ -2929,7 +2917,7 @@ void NETWinInfo::setStrut(NETStrut strut)
 }
 
 
-void NETWinInfo2::setFullscreenMonitors(NETFullscreenMonitors topology)
+void NETWinInfo::setFullscreenMonitors(NETFullscreenMonitors topology)
 {
     if (p->role != Client)
         return;
@@ -3718,8 +3706,7 @@ void NETWinInfo::event(xcb_generic_event_t *event, unsigned long* properties, in
                     message->data.data32[3]
                    );
 #endif
-            if (NETWinInfo2* this2 = dynamic_cast< NETWinInfo2* >( this ))
-                this2->changeFullscreenMonitors(topology);
+            changeFullscreenMonitors(topology);
         }
     }
 
@@ -4382,7 +4369,7 @@ NETExtendedStrut NETWinInfo::extendedStrut() const {
     return p->extended_strut;
 }
 
-NETFullscreenMonitors NETWinInfo2::fullscreenMonitors() const {
+NETFullscreenMonitors NETWinInfo::fullscreenMonitors() const {
     return p->fullscreen_monitors;
 }
 
