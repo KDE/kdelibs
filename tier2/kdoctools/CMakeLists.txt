@@ -7,7 +7,8 @@ find_package(ECM 0.0.8 REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
 find_package(KF5 5.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
-find_package(Qt5Core 5.2.0 REQUIRED NO_MODULE)
+set(REQUIRED_QT_VERSION 5.2.0)
+find_package(Qt5Core ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE)
 
 find_package(LibXslt)
 set_package_properties(LibXslt PROPERTIES
@@ -40,6 +41,8 @@ set_package_properties(DocBookXSL PROPERTIES DESCRIPTION "DocBook XSL"
                       )
 
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
+
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KDocTools")
 
 add_subdirectory(src)
 

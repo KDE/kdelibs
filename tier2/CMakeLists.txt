@@ -4,3 +4,5 @@ add_subdirectory(kauth)
 add_subdirectory(kcrash)
 add_subdirectory(knotifications)
 add_subdirectory(ki18n)
+add_subdirectory(kdoctools)
+
