@@ -1235,7 +1235,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
     return pix;
 }
 
-KPixmapSequence KIconLoader::loadPixmapSequence(const QString& xdgIconName, int size)
+KPixmapSequence KIconLoader::loadPixmapSequence(const QString& xdgIconName, int size) const
 {
     return KPixmapSequence(iconPath(xdgIconName, -size), size);
 }

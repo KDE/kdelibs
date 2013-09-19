@@ -70,7 +70,7 @@ public:
      * \param iconName The full path of the icon
      * \param size The icon/frame size
      */
-    explicit KPixmapSequence(const QString &fullPath, int size);
+    KPixmapSequence(const QString &fullPath, int size);
 
     /**
      * Destructor

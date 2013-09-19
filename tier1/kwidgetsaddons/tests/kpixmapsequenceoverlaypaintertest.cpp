@@ -1,7 +1,6 @@
 #include "kpixmapsequenceoverlaypaintertest.h"
 #include "kpixmapsequenceoverlaypainter.h"
 #include "kpixmapsequence.h"
-#include "kpixmapsequence_config.h"
 
 #include <QApplication>
 #include <QGridLayout>
@@ -9,8 +8,8 @@
 #include <QSpinBox>
 #include <QVariant>
 #include <QEvent>
+#include <QTest>
 
-#include <QDebug>
 Q_DECLARE_METATYPE(Qt::Alignment)
 
 TestWidget::TestWidget()
@@ -46,7 +45,7 @@ TestWidget::TestWidget()
     connect(m_offsetX, SIGNAL(valueChanged(int)), this, SLOT(offsetChanged()));
     connect(m_offsetY, SIGNAL(valueChanged(int)), this, SLOT(offsetChanged()));
 
-    m_painter = new KPixmapSequenceOverlayPainter(KPixmapSequence(QString::fromUtf8(ANIMATION_FILE), 22), this);
+    m_painter = new KPixmapSequenceOverlayPainter(KPixmapSequence(QFINDTESTDATA("kpixmap-animation.png"), 22), this);
     m_painter->setWidget(m_widget);
     m_painter->start();
 }

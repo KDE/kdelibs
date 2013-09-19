@@ -266,8 +266,9 @@ public:
      *
      * @param name The name of the icon, without extension.
      * @param size the size/group to be used
+     * @since 5.0
      */
-    KPixmapSequence loadPixmapSequence(const QString &iconName, int size = SizeSmall);
+    KPixmapSequence loadPixmapSequence(const QString &iconName, int size = SizeSmall) const;
 
     /**
      * Creates an icon set, that will do on-demand loading of the icon.
