@@ -37,7 +37,7 @@ if (WIN32)
 
     set(KDOCTOOLS_MEINPROC_EXECUTABLE          ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/meinproc5 )
 else (WIN32)
-    set(KDOCTOOLS_MEINPROC_EXECUTABLE          ${EXECUTABLE_OUTPUT_PATH}/../staging/kdoctools/src/meinproc5${CMAKE_EXECUTABLE_SUFFIX} )
+    set(KDOCTOOLS_MEINPROC_EXECUTABLE          ${EXECUTABLE_OUTPUT_PATH}/../tier2/kdoctools/src/meinproc5${CMAKE_EXECUTABLE_SUFFIX} )
 endif (WIN32)
 
 set( _KDOCTOOLS_MEINPROC_EXECUTABLE_DEP meinproc5)
@@ -53,8 +53,8 @@ macro (KDOCTOOLS_CREATE_HANDBOOK _docbook)
 
    #Bootstrap
    if (_kdeBootStrapping)
-      set(_ssheet "${CMAKE_BINARY_DIR}/staging/kdoctools/src/customization/kde-chunk.xsl")
-      set(_bootstrapOption "--srcdir=${CMAKE_BINARY_DIR}/staging/kdoctools/src")
+      set(_ssheet "${CMAKE_BINARY_DIR}/tier2/kdoctools/src/customization/kde-chunk.xsl")
+      set(_bootstrapOption "--srcdir=${CMAKE_BINARY_DIR}/tier2/kdoctools/src")
    else (_kdeBootStrapping)
        set(_ssheet "${KDE4_DATA_INSTALL_DIR}/ksgmltools2/customization/kde-chunk.xsl")
       set(_bootstrapOption)
@@ -132,8 +132,8 @@ macro (KDOCTOOLS_CREATE_MANPAGE _docbook _section)
 
    #Bootstrap
    if (_kdeBootStrapping)
-      set(_ssheet "${CMAKE_BINARY_DIR}/staging/kdoctools/src/customization/kde-include-man.xsl")
-      set(_bootstrapOption "--srcdir=${CMAKE_BINARY_DIR}/staging/kdoctools/src/")
+      set(_ssheet "${CMAKE_BINARY_DIR}/tier2/kdoctools/src/customization/kde-include-man.xsl")
+      set(_bootstrapOption "--srcdir=${CMAKE_BINARY_DIR}/tier2/kdoctools/src/")
    else (_kdeBootStrapping)
       set(_ssheet "${KDOCTOOLS_DATA_INSTALL_DIR}/ksgmltools2/customization/kde-include-man.xsl")
       set(_bootstrapOption)
