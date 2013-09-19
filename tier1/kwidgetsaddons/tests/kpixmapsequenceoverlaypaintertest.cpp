@@ -1,5 +1,7 @@
 #include "kpixmapsequenceoverlaypaintertest.h"
 #include "kpixmapsequenceoverlaypainter.h"
+#include "kpixmapsequence.h"
+#include "kpixmapsequence_config.h"
 
 #include <QApplication>
 #include <QGridLayout>
@@ -8,7 +10,7 @@
 #include <QVariant>
 #include <QEvent>
 
-
+#include <QDebug>
 Q_DECLARE_METATYPE(Qt::Alignment)
 
 TestWidget::TestWidget()
@@ -30,21 +32,21 @@ TestWidget::TestWidget()
     layout->addWidget(m_offsetX, 2, 0, 1, 1);
     layout->addWidget(m_offsetY, 2, 1, 1, 1);
 
-    m_alignment->addItem("Center", QVariant::fromValue(Qt::Alignment(Qt::AlignCenter)));
-    m_alignment->addItem("Top-left", QVariant::fromValue(Qt::Alignment(Qt::AlignTop|Qt::AlignLeft)));
-    m_alignment->addItem("Top", QVariant::fromValue(Qt::Alignment(Qt::AlignTop|Qt::AlignHCenter)));
-    m_alignment->addItem("Top-right", QVariant::fromValue(Qt::Alignment(Qt::AlignTop|Qt::AlignRight)));
-    m_alignment->addItem("Right", QVariant::fromValue(Qt::Alignment(Qt::AlignRight|Qt::AlignVCenter)));
-    m_alignment->addItem("Bottom-right", QVariant::fromValue(Qt::Alignment(Qt::AlignRight|Qt::AlignBottom)));
-    m_alignment->addItem("Bottom", QVariant::fromValue(Qt::Alignment(Qt::AlignHCenter|Qt::AlignBottom)));
-    m_alignment->addItem("Bottom-left", QVariant::fromValue(Qt::Alignment(Qt::AlignLeft|Qt::AlignBottom)));
-    m_alignment->addItem("Left", QVariant::fromValue(Qt::Alignment(Qt::AlignLeft|Qt::AlignVCenter)));
+    m_alignment->addItem(QLatin1Literal("Center"), QVariant::fromValue(Qt::Alignment(Qt::AlignCenter)));
+    m_alignment->addItem(QLatin1Literal("Top-left"), QVariant::fromValue(Qt::Alignment(Qt::AlignTop|Qt::AlignLeft)));
+    m_alignment->addItem(QLatin1Literal("Top"), QVariant::fromValue(Qt::Alignment(Qt::AlignTop|Qt::AlignHCenter)));
+    m_alignment->addItem(QLatin1Literal("Top-right"), QVariant::fromValue(Qt::Alignment(Qt::AlignTop|Qt::AlignRight)));
+    m_alignment->addItem(QLatin1Literal("Right"), QVariant::fromValue(Qt::Alignment(Qt::AlignRight|Qt::AlignVCenter)));
+    m_alignment->addItem(QLatin1Literal("Bottom-right"), QVariant::fromValue(Qt::Alignment(Qt::AlignRight|Qt::AlignBottom)));
+    m_alignment->addItem(QLatin1Literal("Bottom"), QVariant::fromValue(Qt::Alignment(Qt::AlignHCenter|Qt::AlignBottom)));
+    m_alignment->addItem(QLatin1Literal("Bottom-left"), QVariant::fromValue(Qt::Alignment(Qt::AlignLeft|Qt::AlignBottom)));
+    m_alignment->addItem(QLatin1Literal("Left"), QVariant::fromValue(Qt::Alignment(Qt::AlignLeft|Qt::AlignVCenter)));
 
     connect(m_alignment, SIGNAL(activated(int)), this, SLOT(alignementChanged(int)));
     connect(m_offsetX, SIGNAL(valueChanged(int)), this, SLOT(offsetChanged()));
     connect(m_offsetY, SIGNAL(valueChanged(int)), this, SLOT(offsetChanged()));
 
-    m_painter = new KPixmapSequenceOverlayPainter(this);
+    m_painter = new KPixmapSequenceOverlayPainter(KPixmapSequence(QString::fromUtf8(ANIMATION_FILE), 22), this);
     m_painter->setWidget(m_widget);
     m_painter->start();
 }
@@ -90,7 +92,7 @@ bool TestWidget::eventFilter(QObject* o, QEvent* e)
 /* --- MAIN -----------------------*/
 int main(int argc, char **argv)
 {
-  QApplication::setApplicationName("test");
+  QApplication::setApplicationName(QLatin1Literal("test"));
   TestWidget   *window;
 
   QApplication testapp(argc, argv);
