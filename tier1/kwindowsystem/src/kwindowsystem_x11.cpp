@@ -357,8 +357,8 @@ bool KWindowSystemPrivate::mapViewport()
 
 // this test is duplicated in KWindowSystem::mapViewport()
     if( isSupported( NET::DesktopViewport ) && numberOfDesktops( true ) <= 1
-        && ( desktopGeometry( currentDesktop( true )).width > QApplication::desktop()->width()
-            || desktopGeometry( currentDesktop( true )).height > QApplication::desktop()->height()))
+        && ( desktopGeometry().width > QApplication::desktop()->width()
+            || desktopGeometry().height > QApplication::desktop()->height()))
         return true;
     return false;
 }
@@ -526,7 +526,7 @@ int KWindowSystem::numberOfDesktops()
     if( mapViewport()) {
         init( INFO_BASIC );
         KWindowSystemPrivate* const s_d = s_d_func();
-        NETSize s = s_d->desktopGeometry( s_d->currentDesktop( true ));
+        NETSize s = s_d->desktopGeometry();
         return s.width / qApp->desktop()->width() * s.height / qApp->desktop()->height();
     }
 
@@ -1090,8 +1090,8 @@ bool KWindowSystem::mapViewport()
         return false;
     NETRootInfo info( QX11Info::display(), NET::NumberOfDesktops | NET::CurrentDesktop | NET::DesktopGeometry );
     if( info.numberOfDesktops( true ) <= 1
-        && ( info.desktopGeometry( info.currentDesktop( true )).width > QApplication::desktop()->width()
-            || info.desktopGeometry( info.currentDesktop( true )).height > QApplication::desktop()->height()))
+        && ( info.desktopGeometry().width > QApplication::desktop()->width()
+            || info.desktopGeometry().height > QApplication::desktop()->height()))
         return true;
     return false;
 }
@@ -1100,7 +1100,7 @@ int KWindowSystem::viewportToDesktop( const QPoint& p )
 {
     init( INFO_BASIC );
     KWindowSystemPrivate* const s_d = s_d_func();
-    NETSize s = s_d->desktopGeometry( s_d->currentDesktop( true ));
+    NETSize s = s_d->desktopGeometry();
     QSize vs = qApp->desktop()->size();
     int xs = s.width / vs.width();
     int x = p.x() < 0 ? 0 : p.x() >= s.width ? xs - 1 : p.x() / vs.width();
@@ -1117,7 +1117,7 @@ int KWindowSystem::viewportWindowToDesktop( const QRect& r )
     // make absolute
     p = QPoint( p.x() + s_d->desktopViewport( s_d->currentDesktop( true )).x,
         p.y() + s_d->desktopViewport( s_d->currentDesktop( true )).y );
-    NETSize s = s_d->desktopGeometry( s_d->currentDesktop( true ));
+    NETSize s = s_d->desktopGeometry();
     QSize vs = qApp->desktop()->size();
     int xs = s.width / vs.width();
     int x = p.x() < 0 ? 0 : p.x() >= s.width ? xs - 1 : p.x() / vs.width();
@@ -1130,7 +1130,7 @@ QPoint KWindowSystem::desktopToViewport( int desktop, bool absolute )
 {
     init( INFO_BASIC );
     KWindowSystemPrivate* const s_d = s_d_func();
-    NETSize s = s_d->desktopGeometry( s_d->currentDesktop( true ));
+    NETSize s = s_d->desktopGeometry();
     QSize vs = qApp->desktop()->size();
     int xs = s.width / vs.width();
     int ys = s.height / vs.height();
@@ -1157,7 +1157,7 @@ QPoint KWindowSystem::constrainViewportRelativePosition( const QPoint& pos )
 {
     init( INFO_BASIC );
     KWindowSystemPrivate* const s_d = s_d_func();
-    NETSize s = s_d->desktopGeometry( s_d->currentDesktop( true ));
+    NETSize s = s_d->desktopGeometry();
     NETPoint c = s_d->desktopViewport( s_d->currentDesktop( true ));
     int x = ( pos.x() + c.x ) % s.width;
     int y = ( pos.y() + c.y ) % s.height;

@@ -1026,7 +1026,7 @@ void NETRootInfo::setDesktopName(int desktop, const char *desktopName)
 }
 
 
-void NETRootInfo::setDesktopGeometry(int , const NETSize &geometry)
+void NETRootInfo::setDesktopGeometry(const NETSize &geometry)
 {
 #ifdef NETWMDEBUG
     fprintf(stderr, "NETRootInfo::setDesktopGeometry( -- , { %d, %d }) (%s)\n",
@@ -2549,7 +2549,7 @@ int NETRootInfo::clientListStackingCount() const {
 }
 
 
-NETSize NETRootInfo::desktopGeometry(int) const {
+NETSize NETRootInfo::desktopGeometry() const {
     return p->geometry.width != 0 ? p->geometry : p->rootSize;
 }
 

@@ -296,18 +296,13 @@ public:
     /**
        Returns the desktop geometry size.
 
-       The desktop argument is ignored. Early drafts of the NET WM
-       Specification were unclear about the semantics of this property.
-
        NOTE: KDE uses virtual desktops and does not directly support
        viewport in any way. You should use calls for virtual desktops,
        viewport is mapped to them if needed.
 
-       @param desktop the number of the desktop
-
        @return the size of the desktop
     **/
-    NETSize desktopGeometry(int desktop) const;
+    NETSize desktopGeometry() const;
 
     /**
        Returns the viewport of the specified desktop.
@@ -451,18 +446,13 @@ public:
     /**
        Sets the desktop geometry to the specified geometry.
 
-       The desktop argument is ignored. Early drafts of the NET WM
-       Specification were unclear about the semantics of this property.
-
        NOTE: KDE uses virtual desktops and does not directly support
        viewport in any way. You should use calls for virtual desktops,
        viewport is mapped to them if needed.
 
-       @param desktop the number of the desktop
-
        @param geometry the new size of the desktop
     **/
-    void setDesktopGeometry(int desktop, const NETSize &geometry);
+    void setDesktopGeometry(const NETSize &geometry);
 
     /**
        Sets the viewport for the current desktop to the specified point.
