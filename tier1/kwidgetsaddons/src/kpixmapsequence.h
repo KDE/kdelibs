@@ -24,8 +24,7 @@
 #include <QtCore/QSharedDataPointer>
 #include <QtCore/QSize>
 
-#include "kiconthemes_export.h"
-#include <kiconloader.h>
+#include <kwidgetsaddons_export.h>
 
 class QPixmap;
 
@@ -42,7 +41,7 @@ class QPixmap;
  *
  * \since 4.4
  */
-class KICONTHEMES_EXPORT KPixmapSequence
+class KWIDGETSADDONS_EXPORT KPixmapSequence
 {
 public:
     /**
@@ -68,10 +67,10 @@ public:
     /**
      * Create a sequence from an icon name.
      *
-     * \param iconName The name of the icon (example: process-working)
+     * \param iconName The full path of the icon
      * \param size The icon/frame size
      */
-    explicit KPixmapSequence(const QString &iconName, int size = KIconLoader::SizeSmall);
+    explicit KPixmapSequence(const QString &fullPath, int size);
 
     /**
      * Destructor

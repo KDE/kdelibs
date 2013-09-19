@@ -53,6 +53,9 @@ set(kwidgetsaddons_SRCS
   kmessagewidget.cpp
   knewpassworddialog.cpp
   lineediturldropeventfilter.cpp
+  kpixmapsequence.cpp
+  kpixmapsequenceoverlaypainter.cpp
+  kpixmapsequencewidget.cpp
 )
 
 set(kwidgetsaddon_UI
@@ -130,6 +133,9 @@ install(FILES
   kmessagewidget.h
   knewpassworddialog.h
   lineediturldropeventfilter.h
+  kpixmapsequence.h
+  kpixmapsequenceoverlaypainter.h
+  kpixmapsequencewidget.h
   ${CMAKE_CURRENT_BINARY_DIR}/kwidgetsaddons_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )

@@ -33,6 +33,7 @@
 class KPixmapSequenceOverlayPainter::Private
 {
 public:
+    void init(KPixmapSequenceOverlayPainter *p);
     void _k_timeout();
     void paintFrame();
 
@@ -54,6 +55,16 @@ public:
     KPixmapSequenceOverlayPainter *q;
 };
 
+
+void KPixmapSequenceOverlayPainter::Private::init(KPixmapSequenceOverlayPainter* p)
+{
+    q = p;
+    m_widget = 0;
+    m_alignment = Qt::AlignCenter;
+    m_started = false;
+    q->setInterval(200);
+    connect(&m_timer, SIGNAL(timeout()), q, SLOT(_k_timeout()));
+}
 
 void KPixmapSequenceOverlayPainter::Private::_k_timeout()
 {
@@ -79,10 +90,6 @@ void KPixmapSequenceOverlayPainter::Private::paintFrame()
 
 KPixmapSequence& KPixmapSequenceOverlayPainter::Private::sequence()
 {
-    // make sure we have a valid default sequence
-    if(m_sequence.isEmpty())
-        m_sequence = KPixmapSequence("process-working", 22);
-
     return m_sequence;
 }
 
@@ -109,17 +116,19 @@ QRect KPixmapSequenceOverlayPainter::Private::pixmapRect()
     return QRect( pos, sequence().frameSize());
 }
 
-
 KPixmapSequenceOverlayPainter::KPixmapSequenceOverlayPainter(QObject *parent)
         : QObject(parent),
         d(new Private)
 {
-    d->q = this;
-    d->m_widget = 0;
-    d->m_alignment = Qt::AlignCenter;
-    d->m_started = false;
-    setInterval(200);
-    connect(&d->m_timer, SIGNAL(timeout()), this, SLOT(_k_timeout()));
+    d->init(this);
+}
+
+KPixmapSequenceOverlayPainter::KPixmapSequenceOverlayPainter(const KPixmapSequence &seq, QObject *parent)
+        : QObject(parent),
+        d(new Private)
+{
+    d->init(this);
+    d->m_sequence = seq;
 }
 
 

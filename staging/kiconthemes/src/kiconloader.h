@@ -36,6 +36,8 @@ class KIconLoaderPrivate;
 class KIconEffect;
 class KIconTheme;
 
+class KPixmapSequence;
+
 /**
  * Iconloader for KDE.
  *
@@ -258,6 +260,14 @@ public:
     QPixmap loadMimeTypeIcon( const QString& iconName, KIconLoader::Group group, int size=0,
                               int state=KIconLoader::DefaultState, const QStringList &overlays = QStringList(),
                               QString *path_store=0 ) const;
+
+    /**
+     * Loads a pixmapSequence given the xdg icon name
+     *
+     * @param name The name of the icon, without extension.
+     * @param size the size/group to be used
+     */
+    KPixmapSequence loadPixmapSequence(const QString &iconName, int size = SizeSmall);
 
     /**
      * Creates an icon set, that will do on-demand loading of the icon.

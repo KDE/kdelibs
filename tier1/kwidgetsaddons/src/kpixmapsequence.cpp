@@ -25,9 +25,6 @@
 #include <QtCore/QVector>
 #include <QtCore/QtDebug>
 
-#include <kiconloader.h>
-
-
 class KPixmapSequence::Private : public QSharedData
 {
 public:
@@ -87,10 +84,10 @@ KPixmapSequence::KPixmapSequence(const QPixmap &bigPixmap, const QSize &frameSiz
 }
 
 
-KPixmapSequence::KPixmapSequence(const QString &xdgIconName, int size)
+KPixmapSequence::KPixmapSequence(const QString &fullPath, int size)
         : d(new Private)
 {
-    d->loadSequence(QPixmap(KIconLoader::global()->iconPath(xdgIconName, -size)), QSize(size, size));
+    d->loadSequence(QPixmap(fullPath), QSize(size, size));
 }
 
 

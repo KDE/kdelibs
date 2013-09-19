@@ -22,7 +22,7 @@
 
 #include <QWidget>
 
-#include "kiconthemes_export.h"
+#include <kwidgetsaddons_export.h>
 
 class KPixmapSequence;
 
@@ -40,7 +40,7 @@ class KPixmapSequence;
  *
  * \since 4.4
  */
-class KICONTHEMES_EXPORT KPixmapSequenceWidget : public QWidget
+class KWIDGETSADDONS_EXPORT KPixmapSequenceWidget : public QWidget
 {
     Q_OBJECT
     Q_PROPERTY(int interval READ interval WRITE setInterval)
@@ -50,6 +50,7 @@ public:
      * Constructor
      */
     KPixmapSequenceWidget(QWidget *parent = 0);
+    KPixmapSequenceWidget(const KPixmapSequence &seq, QWidget *parent = 0);
 
     /**
      * Destructor

@@ -15,5 +15,4 @@ kiconthemes_executable_tests(
   kicondialogtest
   kiconloadertest
   kiconeffecttest
-  kpixmapsequenceoverlaypaintertest
 )

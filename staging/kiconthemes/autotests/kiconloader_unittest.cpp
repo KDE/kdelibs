@@ -27,6 +27,7 @@
 #include <QDir>
 #include <QtTest/QtTest>
 #include <qtemporarydir.h>
+#include <kpixmapsequence.h>
 
 class KIconLoader_UnitTest : public QObject
 {
@@ -259,6 +260,12 @@ private Q_SLOTS:
     {
         QPixmap pix = KIconLoader::global()->loadIcon("connected", KIconLoader::NoGroup);
         QVERIFY(!pix.isNull());
+    }
+
+    void testLoadPixmapSequence()
+    {
+       KPixmapSequence seq =  KIconLoader::global()->loadPixmapSequence("process-working", 22);
+       QVERIFY(seq.isValid());
     }
 };
 

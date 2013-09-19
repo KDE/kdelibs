@@ -6,9 +6,6 @@ set(kiconthemes_SRCS
   kiconengine.cpp
   kiconloader.cpp
   kicontheme.cpp
-  kpixmapsequence.cpp
-  kpixmapsequenceoverlaypainter.cpp
-  kpixmapsequencewidget.cpp
 )
 
 add_library(KIconThemes ${kiconthemes_SRCS})
@@ -20,6 +17,7 @@ target_link_libraries(KIconThemes LINK_PRIVATE Qt5::DBus Qt5::Svg
    KConfigCore    # for KConfig/KConfigGroup
    KConfigWidgets # for KColorScheme
    KI18n
+   KWidgetsAddons # for KPixmapSequence family
 )
 
 set_target_properties(KIconThemes PROPERTIES VERSION   ${KICONTHEMES_VERSION_STRING}
@@ -34,9 +32,6 @@ install(FILES
   kiconeffect.h
   kiconloader.h
   kicontheme.h
-  kpixmapsequence.h
-  kpixmapsequenceoverlaypainter.h
-  kpixmapsequencewidget.h
   ${CMAKE_CURRENT_BINARY_DIR}/kiconthemes_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )

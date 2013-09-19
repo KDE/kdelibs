@@ -24,41 +24,52 @@
 class KPixmapSequenceWidget::Private
 {
 public:
-    KPixmapSequenceOverlayPainter m_painter;
+    KPixmapSequenceOverlayPainter *m_painter;
 };
 
-
 KPixmapSequenceWidget::KPixmapSequenceWidget(QWidget *parent)
+    : QWidget(parent),
+    d(new Private)
+{
+    d->m_painter = new KPixmapSequenceOverlayPainter(this);
+    d->m_painter->setWidget(this);
+}
+
+KPixmapSequenceWidget::KPixmapSequenceWidget(const KPixmapSequence &seq, QWidget *parent)
         : QWidget(parent),
         d(new Private)
 {
-    d->m_painter.setWidget(this);
-    setSequence(d->m_painter.sequence());
+    d->m_painter = new KPixmapSequenceOverlayPainter(seq);
+    d->m_painter->setWidget(this);
+    if (seq.isValid()) {
+        d->m_painter->start();
+    }
 }
 
 
 KPixmapSequenceWidget::~KPixmapSequenceWidget()
 {
+    delete d->m_painter;
     delete d;
 }
 
 
 KPixmapSequence KPixmapSequenceWidget::sequence() const
 {
-    return d->m_painter.sequence();
+    return d->m_painter->sequence();
 }
 
 
 int KPixmapSequenceWidget::interval() const
 {
-    return d->m_painter.interval();
+    return d->m_painter->interval();
 }
 
 
 QSize KPixmapSequenceWidget::sizeHint() const
 {
-    if(d->m_painter.sequence().isValid())
-        return d->m_painter.sequence().frameSize();
+    if(d->m_painter->sequence().isValid())
+        return d->m_painter->sequence().frameSize();
     else
         return QWidget::sizeHint();
 }
@@ -66,19 +77,19 @@ QSize KPixmapSequenceWidget::sizeHint() const
 
 void KPixmapSequenceWidget::setSequence(const KPixmapSequence &seq)
 {
-    d->m_painter.setSequence(seq);
+    d->m_painter->setSequence(seq);
     if(seq.isValid()) {
         setFixedSize(seq.frameSize());
-        d->m_painter.start();
+        d->m_painter->start();
     }
     else {
-        d->m_painter.stop();
+        d->m_painter->stop();
     }
 }
 
 
 void KPixmapSequenceWidget::setInterval(int msecs)
 {
-    d->m_painter.setInterval(msecs);
+    d->m_painter->setInterval(msecs);
 }
 

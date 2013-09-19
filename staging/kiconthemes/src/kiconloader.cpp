@@ -58,6 +58,9 @@
 #include "kicontheme.h"
 #include "kiconeffect.h"
 
+//kwidgetsaddons
+#include <kpixmapsequence.h>
+
 // Used to make cache keys for icons with no group. Result type is QString*
 Q_GLOBAL_STATIC_WITH_ARGS(QString, NULL_EFFECT_FINGERPRINT, (QString::fromLatin1("noeffect")))
 
@@ -1230,6 +1233,11 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
     }
 
     return pix;
+}
+
+KPixmapSequence KIconLoader::loadPixmapSequence(const QString& xdgIconName, int size)
+{
+    return KPixmapSequence(iconPath(xdgIconName, -size), size);
 }
 
 QMovie *KIconLoader::loadMovie(const QString& name, KIconLoader::Group group, int size, QObject *parent) const

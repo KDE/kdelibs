@@ -32,4 +32,5 @@ kwidgetsaddons_executable_tests(
   kassistantdialogtest
   kmessagewidgettest
   knewpassworddialogtest
+#   kpixmapsequenceoverlaypaintertest
 )
