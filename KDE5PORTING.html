@@ -397,6 +397,7 @@ In styles based on KStyle, this will work out of the box.
 </li>
 <li>KStyle: Was copied as K4Style in KDE4Support framework. New KStyle class has been trimmed down and reimplements only necessary methods to enforce some of the user settings (for example icons).
 K4Style users should use K_EXPORT_K4STYLE instead of K_EXPORT_STYLE</li>
+<li>KPixmapSequence now can only be instanced with a fullPath, to use XDG icons use KIconLoader::loadPixmapSequence.</li>
 <li>ToolBar has moved to XMLGUI. If you don't want to depend on XMLGUI, use QToolBar instead, with the following setup:
    <ul>
    <li>Set ToolButtonStyle to Qt::ToolButtonFollowStyle, this will make QToolBar use the settings for "Main Toolbar"</li>
