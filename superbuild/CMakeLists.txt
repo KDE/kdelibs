@@ -28,6 +28,7 @@ sb_add_project(tier1/kcodecs )
 sb_add_project(tier1/kconfig)
 sb_add_project(tier1/kcoreaddons )
 sb_add_project(tier1/kdbusaddons )
+sb_add_project(tier1/kguiaddons )
 sb_add_project(tier1/kidletime )
 sb_add_project(tier1/kjs )
 sb_add_project(tier1/kplotting )
@@ -38,8 +39,6 @@ sb_add_project(tier1/sonnet )
 sb_add_project(tier1/threadweaver )
 
 sb_add_project(tier2/kauth DEPENDS kcoreaddons)
-
-sb_add_project(staging/kguiaddons DEPENDS kconfig)
 
 sb_add_project(staging/kcrash         DEPENDS kcoreaddons kwindowsystem)
 sb_add_project(staging/itemviews      DEPENDS kcoreaddons)
