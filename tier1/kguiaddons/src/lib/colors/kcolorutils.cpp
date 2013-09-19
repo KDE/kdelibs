@@ -43,6 +43,20 @@ qreal KColorUtils::luma(const QColor &color)
     return KColorSpaces::KHCY::luma(color);
 }
 
+void KColorUtils::getHcy(const QColor &color, qreal *h, qreal *c, qreal *y, qreal *a)
+{
+    if (!c || !h || !y) {
+        return;
+    }
+    KColorSpaces::KHCY khcy(color);
+    *c = khcy.c;
+    *h = khcy.h;
+    *y = khcy.y;
+    if (a) {
+        *a = khcy.a;
+    }
+}
+
 static qreal contrastRatioForLuma(qreal y1, qreal y2)
 {
     if (y1 > y2)

@@ -44,6 +44,12 @@ namespace KColorUtils {
     KGUIADDONS_EXPORT qreal luma(const QColor&);
 
     /**
+     * Calculate hue, chroma and luma of a color in one call.
+     * @since 5.0
+     */
+    KGUIADDONS_EXPORT void getHcy(const QColor&, qreal *hue, qreal *chroma, qreal *luma, qreal *alpha = 0);
+
+    /**
      * Calculate the contrast ratio between two colors, according to the
      * W3C/WCAG2.0 algorithm, (Lmax + 0.05)/(Lmin + 0.05), where Lmax and Lmin
      * are the luma values of the lighter color and the darker color,
