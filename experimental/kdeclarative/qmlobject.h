@@ -116,15 +116,21 @@ public:
      * with the same QQmlEngine and the same root context as the amin object,
      * that will be the parent of the newly created object 
      * @param source url where the QML file is located
+     * @param initialProperties optional properties that will be set on 
+     *             the object when created (and before Component.onCompleted
+     *             gets emitted
      */
-    QObject *createObjectFromSource(const QUrl &source);
+    QObject *createObjectFromSource(const QUrl &source, const QVariantHash &initialProperties = QVariantHash());
 
 public Q_SLOTS:
     /**
      * Finishes the process of initialization.
      * If isInitializationDelayed() is false, calling this will have no effect.
+     * @param initialProperties optional properties that will be set on 
+     *             the object when created (and before Component.onCompleted
+     *             gets emitted
      */
-    void completeInitialization();
+    void completeInitialization(const QVariantHash &initialProperties = QVariantHash());
 
 Q_SIGNALS:
     /**

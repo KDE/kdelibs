@@ -35,6 +35,21 @@
 //#include "private/declarative/dataenginebindings_p.h"
 
 
+class QmlObjectIncubator : public QQmlIncubator
+{
+public:
+    QVariantHash m_initialProperties;
+protected:
+    virtual void setInitialState(QObject *object)
+    {
+        QHashIterator<QString, QVariant> i(m_initialProperties);
+        while (i.hasNext()) {
+            i.next();
+            object->setProperty(i.key().toLatin1().data(), i.value());
+        }
+    }
+};
+
 class QmlObjectPrivate
 {
 public:
@@ -44,6 +59,10 @@ public:
           component(0),
           delay(false)
     {
+        executionEndTimer = new QTimer(q);
+        executionEndTimer->setInterval(0);
+        executionEndTimer->setSingleShot(true);
+        QObject::connect(executionEndTimer, SIGNAL(timeout()), q, SLOT(scheduleExecutionEnd()));
     }
 
     ~QmlObjectPrivate()
@@ -66,9 +85,10 @@ public:
 
     QUrl source;
     QQmlEngine* engine;
-    QQmlIncubator incubator;
+    QmlObjectIncubator incubator;
     QQmlComponent* component;
     QPointer<QObject> root;
+    QTimer *executionEndTimer;
     bool delay : 1;
 };
 
@@ -107,7 +127,7 @@ void QmlObjectPrivate::execute(const QUrl &source)
     component->loadUrl(source);
 
     if (delay) {
-        QTimer::singleShot(0, q, SLOT(scheduleExecutionEnd()));
+        executionEndTimer->start(0);
     } else {
         scheduleExecutionEnd();
     }
@@ -176,8 +196,9 @@ QQmlComponent *QmlObject::mainComponent() const
     return d->component;
 }
 
-void QmlObject::completeInitialization()
+void QmlObject::completeInitialization(const QVariantHash &initialProperties)
 {
+    d->executionEndTimer->stop();
     if (d->root) {
         return;
     }
@@ -186,6 +207,7 @@ void QmlObject::completeInitialization()
         return;
     }
 
+    d->incubator.m_initialProperties = initialProperties;
     d->component->create(d->incubator);
 
     while (!d->incubator.isReady() && d->incubator.status() != QQmlIncubator::Error) {
@@ -206,10 +228,11 @@ void QmlObject::completeInitialization()
     emit finished();
 }
 
-QObject *QmlObject::createObjectFromSource(const QUrl &source)
+QObject *QmlObject::createObjectFromSource(const QUrl &source, const QVariantHash &initialProperties)
 {
     QQmlComponent *component = new QQmlComponent(d->engine, this);
     component->loadUrl(source);
+    d->incubator.m_initialProperties = initialProperties;
     component->create(d->incubator, d->engine->rootContext());
     while (!d->incubator.isReady() && d->incubator.status() != QQmlIncubator::Error) {
         QCoreApplication::processEvents(QEventLoop::AllEvents, 50);
