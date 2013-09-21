@@ -1,0 +1,55 @@
+remove_definitions(-DQT_NO_CAST_FROM_ASCII)
+
+########### kcmutils ###############
+set(kcmutils_LIB_SRCS
+    kcmoduleinfo.cpp
+    kcmoduleloader.cpp
+    kcmultidialog.cpp
+    kcmoduleproxy.cpp
+    kpluginselector.cpp
+    kcmodulecontainer.cpp
+    ksettingswidgetadaptor.cpp
+    ksettings/dispatcher.cpp
+    ksettings/dialog.cpp
+    ksettings/pluginpage.cpp
+    ksettings/componentsdialog.cpp
+)
+
+add_library(KCMUtils ${LIBRARY_TYPE} ${kcmutils_LIB_SRCS})
+generate_export_header(KCMUtils)
+
+target_link_libraries(KCMUtils
+  LINK_PUBLIC
+    Qt5::Widgets
+    KConfigWidgets  # KCModule
+    KService        # KService
+  LINK_PRIVATE
+    KCoreAddons
+    KI18n
+    KIconThemes     # KIconLoader
+    ItemViews       # KWidgetItemDelegate
+    XmlGui          # KAboutApplicationDialog
+)
+set_target_properties(KCMUtils PROPERTIES
+                      VERSION ${GENERIC_LIB_VERSION}
+                      SOVERSION ${GENERIC_LIB_SOVERSION})
+
+install( FILES
+ ${CMAKE_CURRENT_BINARY_DIR}/kcmutils_export.h
+ kcmoduleinfo.h
+ kcmoduleloader.h
+ kcmultidialog.h
+ kcmoduleproxy.h
+ kpluginselector.h
+ kcmodulecontainer.h
+ DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
+
+install(FILES
+        ksettings/dispatcher.h
+        ksettings/dialog.h
+        ksettings/pluginpage.h
+        DESTINATION ${INCLUDE_INSTALL_DIR}/ksettings
+        COMPONENT Devel)
+
+install(TARGETS KCMUtils EXPORT KCMUtilsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+
