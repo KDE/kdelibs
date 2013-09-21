@@ -25,12 +25,12 @@
 #include <QMimeDatabase>
 #include <QStandardPaths>
 #include <QDebug>
+#include <QFileSystemWatcher>
 
 #include <kpluginloader.h>
 #include <kconfiggroup.h>
 #include <ktar.h>
 #include <kzip.h>
-#include <kdirwatch.h>
 
 class KEmoticonsPrivate
 {
@@ -43,7 +43,7 @@ public:
 
     QList<KService::Ptr> m_loaded;
     QHash<QString, KEmoticonsTheme> m_themes;
-    KDirWatch *m_dirwatch;
+    QFileSystemWatcher m_fileWatcher;
     KEmoticons *q;
 
     //private slots
@@ -57,7 +57,6 @@ KEmoticonsPrivate::KEmoticonsPrivate(KEmoticons *parent)
 
 KEmoticonsPrivate::~KEmoticonsPrivate()
 {
-    delete m_dirwatch;
 }
 
 bool priorityLessThan(const KService::Ptr &s1, const KService::Ptr &s2)
@@ -105,10 +104,7 @@ KEmoticonsTheme KEmoticonsPrivate::loadTheme(const QString &name)
             KEmoticonsTheme theme(provider);
             theme.loadTheme(path);
             m_themes.insert(name, theme);
-
-            if (!m_dirwatch->contains(path)) {
-                m_dirwatch->addFile(path);
-            }
+            m_fileWatcher.addPath(path);
             return theme;
         }
     }
@@ -119,8 +115,7 @@ KEmoticons::KEmoticons()
         : d(new KEmoticonsPrivate(this))
 {
     d->loadServiceList();
-    d->m_dirwatch = new KDirWatch;
-    connect(d->m_dirwatch, SIGNAL(dirty(QString)), this, SLOT(changeTheme(QString)));
+    connect(&d->m_fileWatcher, SIGNAL(fileChanged(QString)), this, SLOT(changeTheme(QString)));
 }
 
 KEmoticons::~KEmoticons()

@@ -14,7 +14,6 @@ LINK_PUBLIC
     Qt5::Widgets # for QPixmap
     KService     # for KService::Ptr, KServiceTypeTrader
 LINK_PRIVATE
-    KCoreAddons # for KDirWatch
     KArchive    # for KTar, KZip
 )
 
