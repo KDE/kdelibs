@@ -382,8 +382,8 @@ void FileProtocol::listDir( const KUrl& url)
             entry.insert(KIO::UDSEntry::UDS_NAME, filename);
 #ifdef HAVE_DIRENT_D_TYPE
             entry.insert(KIO::UDSEntry::UDS_FILE_TYPE,
-                         (ep->d_type & DT_DIR) ? S_IFDIR : S_IFREG );
-            const bool isSymLink = (ep->d_type & DT_LNK);
+                         (ep->d_type == DT_DIR) ? S_IFDIR : S_IFREG );
+            const bool isSymLink = (ep->d_type == DT_LNK);
 #else
             // oops, no fast way, we need to stat (e.g. on Solaris)
             if (KDE_lstat(ep->d_name, &st) == -1) {
