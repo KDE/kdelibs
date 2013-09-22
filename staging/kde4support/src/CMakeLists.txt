@@ -24,7 +24,21 @@ if(NOT KIO_NO_NEPOMUK)
     )
 endif(NOT KIO_NO_NEPOMUK)
 
+
+find_package(OpenSSL)
+set_package_properties(OpenSSL PROPERTIES DESCRIPTION "Support for secure network communications (SSL and TLS)"
+                       URL "http://openssl.org"
+                       TYPE RECOMMENDED
+                       PURPOSE "KDE uses OpenSSL for the bulk of secure communications, including secure web browsing via HTTPS"
+                      )
+if(OPENSSL_FOUND)
+   set(KSSL_HAVE_SSL 1)
+   include_directories(${OPENSSL_INCLUDE_DIR})
+endif(OPENSSL_FOUND)
+
 add_subdirectory( kioslave )
+add_subdirectory( kssl/kssl )
+add_subdirectory( kssl/kcm )
 
 set(libkde4support_SRCS
     kdecore/k4aboutdata.cpp
@@ -117,6 +131,11 @@ set(libkde4support_SRCS
     kio/kfilemetainfowidget.cpp
     kio/kdiskfreespace.cpp
     kio/metainfojob.cpp
+    kssl/ksslx509v3.cpp
+    kssl/kssl.cpp
+    kssl/ksslutils.cpp
+    kssl/ksslcertchain.cpp
+    kssl/ksslcertificate.cpp
     kio/kfileshare.cpp
     kio/kfileitemactionplugin.cpp
     kio/passworddialog.cpp
@@ -185,7 +204,8 @@ set(kde4support_INCLUDES
   "${CMAKE_CURRENT_SOURCE_DIR}/kdecore"
   "${CMAKE_CURRENT_SOURCE_DIR}/kdeui"
   "${CMAKE_CURRENT_SOURCE_DIR}/kio"
-  "${CMAKE_SOURCE_DIR}"
+  "${CMAKE_CURRENT_SOURCE_DIR}/kssl"
+  "${CMAKE_CURRENT_BINARY_DIR}/kssl" # ksslconfig.h
   "${CMAKE_CURRENT_SOURCE_DIR}/kparts"
 )
 target_include_directories(KDE4Support PUBLIC "$<BUILD_INTERFACE:${kde4support_INCLUDES}>")
@@ -301,7 +321,11 @@ install(FILES
     kio/kfileshare.h
     kio/kfileitemactionplugin.h
     kio/kscan.h
-    kio/netaccess.h
+    kssl/ksslcertificate.h
+    kssl/ksslx509v3.h
+    kssl/kssl.h
+    kssl/ksslutils.h
+    kssl/ksslcertchain.h
 
     kdeui/k4style.h
     kdeui/kaccelgen.h
@@ -355,6 +379,9 @@ install(FILES
     DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
 
+configure_file(kssl/ksslconfig.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconfig.h )
+set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconfig.h )
+
 install( FILES kdebug.areas kdebugrc DESTINATION ${CONFIG_INSTALL_DIR} )
 
 install( FILES kdeui/40.colors kdeui/Oxygen.colors kdeui/Web.colors kdeui/Royal.colors kdeui/Rainbow.colors
@@ -369,6 +396,7 @@ endif ()
 install(FILES
     kio/metainfojob.h
     kio/passworddialog.h
+    kio/netaccess.h
     DESTINATION ${INCLUDE_INSTALL_DIR}/kio COMPONENT Devel
 )
 

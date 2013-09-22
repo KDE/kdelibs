@@ -22,7 +22,7 @@
 #define _KSSL_H
 
 #include <ksslsettings.h>
-#include <kio_export.h>
+#include <kde4support_export.h>
 
 class QIODevice;
 class KSSLPrivate;
@@ -37,7 +37,7 @@ class KSSLSession;
  * @see KExtendedSocket, TCPSlaveBase
  * @short KDE SSL Class
  */
-class KIO_EXPORT KSSL {
+class KDE4SUPPORT_DEPRECATED_EXPORT KSSL {
 public:
 	/**
 	 *  Construct a KSSL object

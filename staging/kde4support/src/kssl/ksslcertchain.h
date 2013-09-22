@@ -39,7 +39,7 @@ class QStringList;
  * @see KSSL, KSSLCertificate, KSSLPeerInfo
  * @short KDE X.509 Certificate Chain
  */
-class KIO_EXPORT KSSLCertChain {
+class KDE4SUPPORT_DEPRECATED_EXPORT KSSLCertChain {
 friend class KSSL;
 friend class KSSLPeerInfo;
 

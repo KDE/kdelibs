@@ -8,17 +8,6 @@ if(KDE_PLATFORM_FEATURE_BINARY_INCOMPATIBLE_FEATURE_REDUCTION)
    set(KIO_NO_SOLID TRUE)
 endif(KDE_PLATFORM_FEATURE_BINARY_INCOMPATIBLE_FEATURE_REDUCTION)
 
-find_package(OpenSSL)
-set_package_properties(OpenSSL PROPERTIES DESCRIPTION "Support for secure network communications (SSL and TLS)"
-                       URL "http://openssl.org"
-                       TYPE RECOMMENDED
-                       PURPOSE "KDE uses OpenSSL for the bulk of secure communications, including secure web browsing via HTTPS"
-                      )
-if(OPENSSL_FOUND)
-   set(KSSL_HAVE_SSL 1)
-   include_directories(${OPENSSL_INCLUDE_DIR})
-endif(OPENSSL_FOUND)
-
 if(NOT WIN32)
     find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS X11Extras)
 endif(NOT WIN32)
@@ -47,9 +36,6 @@ include(ConfigureChecks.cmake)
 configure_file(kio/config-kio.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kio/config-kio.h )
 
 configure_file(kfile/config-kfile.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kfile/config-kfile.h )
-
-configure_file(kssl/ksslconfig.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconfig.h )
-set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconfig.h )
 
 set(kiocore_STAT_SRCS
   kio/defaultviewadapter.cpp
@@ -99,14 +85,6 @@ endif(NOT KIO_NO_SOLID)
 
 qt5_add_resources(kfile_STAT_SRCS kfile/kacleditwidget.qrc)
 
-set(kssl_STAT_SRCS
-  kssl/ksslcertificate.cpp # TODO: remove after porting khtml/java
-  kssl/ksslcertchain.cpp # TODO: remove together with ksslcertificate.cpp
-  kssl/ksslutils.cpp # TODO: remove together with ksslcertificate.cpp
-  kssl/kssl.cpp # same
-  kssl/ksslx509v3.cpp # same
-)
-
 
 ########### next target ###############
 
@@ -115,14 +93,11 @@ set(kssl_STAT_SRCS
 set(kio_LIB_SRCS
    ${kiocore_STAT_SRCS}
    ${kfile_STAT_SRCS}
-   ${kssl_STAT_SRCS}
 )
 
 kde4_add_ui_files(kio_LIB_SRCS
    kfile/kpropertiesdesktopadvbase.ui
    kfile/kpropertiesdesktopbase.ui
-   kssl/keygenwizard.ui
-   kssl/keygenwizard2.ui
 )
 
 add_library(kio ${LIBRARY_TYPE} ${kio_LIB_SRCS})
@@ -131,12 +106,10 @@ generate_export_header(kio)
 set(kio_INCLUDES
    ${CMAKE_CURRENT_SOURCE_DIR}/kio
    ${CMAKE_CURRENT_SOURCE_DIR}/kfile
-   ${CMAKE_CURRENT_SOURCE_DIR}/kssl
    ${CMAKE_CURRENT_SOURCE_DIR}/httpfilter
    ${CMAKE_CURRENT_BINARY_DIR}/..      # for including kio/kio_export.h
 
    ${CMAKE_CURRENT_BINARY_DIR}/kio
-   ${CMAKE_CURRENT_BINARY_DIR}/kssl
    ${CMAKE_CURRENT_BINARY_DIR}/kfile
    ${CMAKE_CURRENT_BINARY_DIR}      # e.g. for observer_stub.h
    ${CMAKE_SOURCE_DIR}/interfaces
@@ -163,8 +136,6 @@ set_target_properties(kio PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION}
                                      SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION}
                      )
 
-add_subdirectory( kssl/kssl )
-add_subdirectory( kssl/kcm )
 add_subdirectory( misc )
 add_subdirectory( tests )
 add_subdirectory( httpfilter/autotests )

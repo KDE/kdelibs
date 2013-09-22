@@ -588,7 +588,12 @@ qt5_generate_dbus_interface(${CMAKE_CURRENT_SOURCE_DIR}/../kioslave/http/kcookie
 set_source_files_properties(${kcookiejar_XML} PROPERTIES INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/../kioslave/http/kcookiejar/kcookiejar_include.h")
 qt5_add_dbus_interface(khtml_LIB_SRCS ${kcookiejar_XML} kcookiejar_interface)
 
-kde4_add_ui_files(khtml_LIB_SRCS kjserrordlgbase.ui htmlpageinfo.ui )
+kde4_add_ui_files(khtml_LIB_SRC
+   kjserrordlgbase.ui
+   htmlpageinfo.ui
+   html/keygenwizard.ui
+   html/keygenwizard2.ui
+)
 
 add_library(khtml ${LIBRARY_TYPE} ${khtml_LIB_SRCS})
 

@@ -23,7 +23,7 @@
 
 #include <QtCore/QString>
 
-#include <kio_export.h>
+#include <kde4support_export.h>
 
 /**
  * KDE X509v3 Flag Class
@@ -34,7 +34,7 @@
  * @see KExtendedSocket, TCPSlaveBase
  * @short KDE SSL Class
  */
-class KIO_EXPORT KSSLX509V3 {
+class KDE4SUPPORT_DEPRECATED_EXPORT KSSLX509V3 {
 friend class KSSLCertificate;
 friend class KSSLCertificatePrivate;
 public:

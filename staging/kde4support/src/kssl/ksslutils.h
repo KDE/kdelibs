@@ -20,7 +20,7 @@
 #ifndef _INCLUDE_KSSLUTILS_H
 #define _INCLUDE_KSSLUTILS_H
 
-#include <kio/kio_export.h>
+#include <kde4support_export.h>
 #include <ksslconfig.h>
 
 #if KSSL_HAVE_SSL
