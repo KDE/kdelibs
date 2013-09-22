@@ -34,8 +34,7 @@
 
 #include <kio/job.h>
 #include <kio/kprotocolmanager.h>
-#include <ksslcertificate.h>
-#include <ksslcertchain.h>
+#include <qsslcertificate.h>
 
 #include <QtCore/QTimer>
 #include <QtCore/QPointer>
@@ -113,9 +112,8 @@ class KJavaAppletServerPrivate
 {
 friend class KJavaAppletServer;
 private:
-   KJavaAppletServerPrivate() : kssl( 0L ) {}
+   KJavaAppletServerPrivate() {}
    ~KJavaAppletServerPrivate() {
-       delete kssl;
    }
    int counter;
    QMap< int, QPointer<KJavaAppletContext> > contexts;
@@ -124,7 +122,6 @@ private:
    KIOJobMap kiojobs;
    bool javaProcessFailed;
    bool useKIO;
-   KSSL * kssl;
    //int locked_context;
    //QValueList<QByteArray> java_requests;
 };
@@ -654,33 +651,31 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
                 const int certsnr = args[1].toInt();
                 Q_ASSERT(args.size() > certsnr + 1);
                 QString text;
-                QList<KSSLCertificate *> certs;
                 for (int i = certsnr - 1; i >= 0; --i) {
                     const QByteArray &arg = args[i + 2].toLatin1();
-                    KSSLCertificate * cert = KSSLCertificate::fromString(arg.constData());
-                    if (cert) {
-                        certs.prepend(cert);
-                        if (cert->isSigner())
-                            text += i18n("Signed by (validation: %1)", KSSLCertificate::verifyText(cert->validate()));
+                    QSslCertificate cert(arg);
+                    if (!cert.isNull()) {
+#if 0 // KDE 5 TODO: finish port
+                        if (cert.isSigner())
+                            text += i18n("Signed by (validation: %1)", KSSLCertificate::verifyText(cert.validate()));
                         else
-                            text += i18n("Certificate (validation: %1)", KSSLCertificate::verifyText(cert->validate()));
+                            text += i18n("Certificate (validation: %1)", KSSLCertificate::verifyText(cert.validate()));
                         text += "\n";
-                        QString subject = cert->getSubject() + QChar('\n');
+                        QString subject = cert.getSubject() + QChar('\n');
                         QRegExp reg(QString("/[A-Z]+="));
                         int pos = 0;
                         while ((pos = subject.indexOf(reg, pos)) > -1)
                             subject.replace(pos, 1, QString("\n    "));
                         text += subject.mid(1);
+#else
+                        text += "TODO Security confirm";
+#endif
                     }
                 }
                 // qDebug() << "Security confirm " << args.first() << certs.count();
-                if ( !certs.isEmpty() ) {
-                    KSSLCertChain chain;
-                    chain.setChain( certs );
-                    if ( chain.isValid() )
-                        answer = PermissionDialog( qApp->activeWindow() ).exec( text, args[0] );
+                if ( !text.isEmpty() ) {
+                    answer = PermissionDialog( qApp->activeWindow() ).exec( text, args[0] );
                 }
-                qDeleteAll(certs);
             }
             sl.push_front( answer );
             sl.push_front( QString::number(ID_num) );
