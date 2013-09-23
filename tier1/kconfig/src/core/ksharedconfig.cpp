@@ -42,7 +42,7 @@ KSharedConfigPtr KSharedConfig::openConfig(const QString& _fileName,
 {
     QString fileName(_fileName);
     GlobalSharedConfigList *list = globalSharedConfigList();
-    if (fileName.isEmpty()) {
+    if (fileName.isEmpty() && !flags.testFlag(KConfig::SimpleConfig)) {
         // Determine the config file name that KConfig will make up (see KConfigPrivate::changeFileName)
         fileName = KConfig::mainConfigName();
     }
