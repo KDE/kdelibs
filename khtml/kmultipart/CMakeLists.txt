@@ -11,7 +11,8 @@ include_directories(${ZLIB_INCLUDE_DIR})
 set(kmultipart_PART_SRCS kmultipart.cpp ${CMAKE_SOURCE_DIR}/kio/httpfilter/httpfilter.cc )
 
 
-kde4_add_plugin(kmultipart WITH_PREFIX ${kmultipart_PART_SRCS})
+add_library(kmultipart MODULE ${kmultipart_PART_SRCS})
+set_target_properties(kmultipart PROPERTIES PREFIX "${CMAKE_SHARED_LIBRARY_PREFIX}")
 
 target_link_libraries(kmultipart  ${KDE4_KPARTS_LIBS} ${ZLIB_LIBRARY} ${KArchive_LIBRARIES} ${KDE4Support_LIBRARIES} ${KWidgetsAddons_LIBRARIES} XmlGui KI18n KTextWidgets)
 

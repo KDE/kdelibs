@@ -42,7 +42,7 @@ if(Qt5Designer_FOUND)
 
   qt5_add_resources(kdewidgets_PART_SRCS kdewidgets.qrc)
 
-  kde4_add_plugin(kdewidgets ${kdewidgets_PART_SRCS})
+  add_library(kdewidgets MODULE ${kdewidgets_PART_SRCS})
 
   target_link_libraries(kdewidgets  ${KDE4_KIO_LIBS}  ${KPlotting_LIBRARIES} KDE4Attic KDE4Support ${KWidgetsAddons_LIBRARIES} KI18n KIconThemes KTextWidgets ItemViews)
   if(NOT WIN32)
@@ -73,7 +73,7 @@ if(Qt5Designer_FOUND)
 
     qt5_add_resources(kdedeprecated_PART_SRCS kdedeprecated.qrc)
 
-    kde4_add_plugin(kdedeprecated ${kdedeprecated_PART_SRCS})
+    add_library(kdedeprecated MODULE ${kdedeprecated_PART_SRCS})
 
     target_link_libraries(kdedeprecated KDE4Support ${KDE4_KIO_LIBS} KDE4Attic)
     if(NOT WIN32)
@@ -105,7 +105,7 @@ if(Qt5Designer_FOUND)
 
   qt5_add_resources(kdewebkitwidgets_PART_SRCS kdewebkitwidgets.qrc)
 
-  kde4_add_plugin(kdewebkitwidgets ${kdewebkitwidgets_PART_SRCS})
+  add_library(kdewebkitwidgets MODULE ${kdewebkitwidgets_PART_SRCS})
 
   target_link_libraries(kdewebkitwidgets ${KDE4_KDEWEBKIT_LIBS} Qt5::WebKitWidgets)
   if(NOT WIN32)

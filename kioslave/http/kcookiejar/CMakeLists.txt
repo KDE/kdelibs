@@ -34,7 +34,7 @@ set(kded_kcookiejar_SRCS
 qt5_add_dbus_adaptor( kded_kcookiejar_SRCS ${CMAKE_CURRENT_BINARY_DIR}/org.kde.KCookieServer.xml kcookieserver.h KCookieServer )
 
 
-kde4_add_plugin(kded_kcookiejar ${kded_kcookiejar_SRCS})
+add_library(kded_kcookiejar MODULE ${kded_kcookiejar_SRCS})
 
 target_link_libraries(kded_kcookiejar
    ${KDE4_KIO_LIBS}

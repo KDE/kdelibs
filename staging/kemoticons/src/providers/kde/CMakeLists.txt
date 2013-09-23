@@ -2,7 +2,7 @@
 ########### next target ###############
 set(kdeemoticons_SRCS kde_emoticons.cpp)
 
-kde4_add_plugin(emoticonstheme_kde ${kdeemoticons_SRCS})
+add_library(emoticonstheme_kde MODULE ${kdeemoticons_SRCS})
 
 target_link_libraries(emoticonstheme_kde
 LINK_PRIVATE

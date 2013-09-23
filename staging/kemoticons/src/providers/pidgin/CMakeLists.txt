@@ -2,7 +2,7 @@
 ########### next target ###############
 set(pidginemoticons_SRCS pidgin_emoticons.cpp)
 
-kde4_add_plugin(emoticonstheme_pidgin ${pidginemoticons_SRCS})
+add_library(emoticonstheme_pidgin MODULE ${pidginemoticons_SRCS})
 
 target_link_libraries(emoticonstheme_pidgin LINK_PRIVATE KEmoticons)
 

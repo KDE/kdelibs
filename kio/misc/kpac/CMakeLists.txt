@@ -22,7 +22,7 @@ if (Qt5Script_FOUND)
       discovery.cpp
     )
 
-    kde4_add_plugin(kded_proxyscout ${kded_proxyscout_PART_SRCS})
+    add_library(kded_proxyscout MODULE ${kded_proxyscout_PART_SRCS})
 
     target_link_libraries(kded_proxyscout Qt5::Script ${KPAC_EXTRA_LIBS} kio ${KCoreAddons_LIBRARIES} )
 

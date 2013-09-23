@@ -747,7 +747,8 @@ install(TARGETS khtml EXPORT KHtmlTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 set(khtmlpart_PART_SRCS khtml_factory.cpp )
 
 
-kde4_add_plugin(khtmlpart WITH_PREFIX ${khtmlpart_PART_SRCS})
+add_library(khtmlpart MODULE ${khtmlpart_PART_SRCS})
+set_target_properties(khtmlpart PROPERTIES PREFIX "${CMAKE_SHARED_LIBRARY_PREFIX}")
 
 target_link_libraries(khtmlpart khtml XmlGui KTextWidgets)
 
@@ -758,7 +759,7 @@ install(TARGETS khtmlpart  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 # Note that khtmlimage.cpp is part of libkhtml because it uses internal objects (render tree and loader)
 # Only the entry point is separated into khtmlimage_init.cpp
-kde4_add_plugin(khtmlimagepart khtmlimage_init.cpp)
+add_library(khtmlimagepart MODULE khtmlimage_init.cpp)
 
 
 target_link_libraries(khtmlimagepart khtml ${KWidgetsAddons_LIBRARIES} XmlGui KTextWidgets)
@@ -767,7 +768,7 @@ install(TARGETS khtmlimagepart  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 ########### next target ###############
 
-kde4_add_plugin(khtmladaptorpart khtmladaptorpart.cpp)
+add_library(khtmladaptorpart MODULE khtmladaptorpart.cpp)
 
 target_link_libraries(khtmladaptorpart ${KDE4_KPARTS_LIBS} KJS KI18n XmlGui)
 

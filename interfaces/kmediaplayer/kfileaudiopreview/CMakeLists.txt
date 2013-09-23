@@ -9,7 +9,7 @@ mediacontrols.cpp
 )
 
 
-kde4_add_plugin(kfileaudiopreview ${kfileaudiopreview_PART_SRCS})
+add_library(kfileaudiopreview MODULE ${kfileaudiopreview_PART_SRCS})
 
 target_link_libraries(kfileaudiopreview ${KDE4_KIO_LIBS} ${PHONON_LIBRARIES} KI18n)
 

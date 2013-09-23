@@ -26,7 +26,7 @@ target_link_libraries(krossqtstest krossqtsplugin krosscore Qt5::Script ${KCoreA
 ########### next target ###############
 
 set(krossqts_PART_SRCS interpreter.cpp script.cpp)
-kde4_add_plugin(krossqts ${krossqts_PART_SRCS})
+add_library(krossqts MODULE ${krossqts_PART_SRCS})
 target_link_libraries(krossqts ${KCoreAddons_LIBRARIES} KConfigCore KI18n krosscore Qt5::Script Qt5::Widgets Qt5::Gui)
 
 install(TARGETS krossqts DESTINATION ${PLUGIN_INSTALL_DIR})

@@ -21,7 +21,7 @@ set(kjavaappletviewer_PART_SRCS
 )
 
 
-kde4_add_plugin(kjavaappletviewer ${kjavaappletviewer_PART_SRCS})
+add_library(kjavaappletviewer MODULE ${kjavaappletviewer_PART_SRCS})
 
 target_link_libraries(kjavaappletviewer ${KDE4_KPARTS_LIBS} ${KWindowSystem_LIBRARIES} KInterProcessWindowing KDE4Support XmlGui KI18n KIconThemes)
 

@@ -87,7 +87,7 @@ install( FILES
 set(kfilemodule_SRCS
   kfilemodule.cpp
 )
-kde4_add_plugin(kfilemodule ${kfilemodule_SRCS})
+add_library(kfilemodule MODULE ${kfilemodule_SRCS})
 target_link_libraries(kfilemodule ${KDE4_KFILE_LIBS} ${KDE4_KIO_LIBS} ${KCoreAddons_LIBRARIES} )
 install(TARGETS kfilemodule DESTINATION ${PLUGIN_INSTALL_DIR})
 install(FILES kfilemodule.desktop DESTINATION ${SERVICES_INSTALL_DIR})

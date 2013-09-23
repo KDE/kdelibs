@@ -6,7 +6,7 @@ project(kioslave-metainfo)
 set(kio_metainfo_PART_SRCS metainfo.cpp )
 
 
-kde4_add_plugin(kio_metainfo ${kio_metainfo_PART_SRCS})
+add_library(kio_metainfo MODULE ${kio_metainfo_PART_SRCS})
 
 
 target_link_libraries(kio_metainfo KDE4Support kio ${KCoreAddons_LIBRARIES} KI18n)

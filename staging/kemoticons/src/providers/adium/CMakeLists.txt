@@ -2,7 +2,7 @@
 ########### next target ###############
 set(adiumemoticons_SRCS adium_emoticons.cpp)
 
-kde4_add_plugin(emoticonstheme_adium ${adiumemoticons_SRCS})
+add_library(emoticonstheme_adium MODULE ${adiumemoticons_SRCS})
 
 target_link_libraries(emoticonstheme_adium
 LINK_PRIVATE

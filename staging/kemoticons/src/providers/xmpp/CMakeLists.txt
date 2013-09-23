@@ -2,7 +2,7 @@
 ########### next target ###############
 set(xmppemoticons_SRCS xmpp_emoticons.cpp)
 
-kde4_add_plugin(emoticonstheme_xmpp ${xmppemoticons_SRCS})
+add_library(emoticonstheme_xmpp MODULE ${xmppemoticons_SRCS})
 
 target_link_libraries(emoticonstheme_xmpp
 LINK_PRIVATE

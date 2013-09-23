@@ -42,7 +42,7 @@ target_link_libraries(openorsavequestion ${PARTS_TEST_LIBRARY_DEPENDENCIES})
 
 set(spellcheckplugin_PART_SRCS plugin_spellcheck.cpp )
 
-kde4_add_plugin(spellcheckplugin ${spellcheckplugin_PART_SRCS})
+add_library(spellcheckplugin MODULE ${spellcheckplugin_PART_SRCS})
 
 target_link_libraries(spellcheckplugin ${PARTS_TEST_LIBRARY_DEPENDENCIES} )
 
@@ -54,7 +54,7 @@ install(TARGETS spellcheckplugin  DESTINATION ${PLUGIN_INSTALL_DIR} )
 set(notepadpart_PART_SRCS notepad.cpp)
 
 
-kde4_add_plugin(notepadpart ${notepadpart_PART_SRCS})
+add_library(notepadpart MODULE ${notepadpart_PART_SRCS})
 
 target_link_libraries(notepadpart ${PARTS_TEST_LIBRARY_DEPENDENCIES})
 
