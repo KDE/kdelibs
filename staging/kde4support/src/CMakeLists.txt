@@ -207,6 +207,7 @@ set(kde4support_INCLUDES
   "${CMAKE_CURRENT_SOURCE_DIR}/kssl"
   "${CMAKE_CURRENT_BINARY_DIR}/kssl" # ksslconfig.h
   "${CMAKE_CURRENT_SOURCE_DIR}/kparts"
+  "${CMAKE_SOURCE_DIR}"
 )
 target_include_directories(KDE4Support PUBLIC "$<BUILD_INTERFACE:${kde4support_INCLUDES}>")
 
