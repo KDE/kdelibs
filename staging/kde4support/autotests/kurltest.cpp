@@ -757,9 +757,11 @@ void KUrlTest::testDirectory()
   u2.cleanPath();
   QCOMPARE( u2.url(), QString("file:///home/dfaure/") );
   u2.addPath( "/..//foo" );
+  QCOMPARE( u2.url(), QString("file:///home/foo") ); // Qt >= 5.2: cleaned up already
+  u2 = KUrl(QByteArray("file:///home/dfaure/..//foo"));
   QCOMPARE( u2.url(), QString("file:///home/dfaure/..//foo") );
   u2.cleanPath(KUrl::KeepDirSeparators);
-  QCOMPARE( u2.url(), QString("file:///home//foo") );
+  QCOMPARE( u2.url(), QString("file:///home/foo") );
   u2.cleanPath(KUrl::SimplifyDirSeparators);
   QCOMPARE( u2.url(), QString("file:///home/foo") );
 
@@ -1067,7 +1069,7 @@ void KUrlTest::testBaseURL() // those are tests for the KUrl(base,relative) cons
 
   baseURL = "http://www.foo.bar";
   KUrl rel_url( baseURL, "/top//test/../test1/file.html" );
-  QCOMPARE( rel_url.url(), QString("http://www.foo.bar/top//test1/file.html" ));
+  QCOMPARE( rel_url.url(), QString("http://www.foo.bar/top/test1/file.html" ));
 
 
   baseURL = "http://www.foo.bar/top//test2/file2.html";
@@ -1082,7 +1084,7 @@ void KUrlTest::testBaseURL() // those are tests for the KUrl(base,relative) cons
 
   baseURL = "file:/usr/local/src/kde2/kdelibs/kio/";
   KUrl url2( baseURL, "../../////kdebase/konqueror" );
-  QCOMPARE( url2.url(), QString("file:///usr/local/src/kde2/////kdebase/konqueror" ));
+  QCOMPARE( url2.url(), QString("file:///usr/local/src/kde2/kdebase/konqueror" ));
 
 
   // WABA: The following tests are to test the handling of relative URLs as
@@ -1778,7 +1780,7 @@ void KUrlTest::testSmb()
 
   KUrl noImplicitSmb("//path1/path2");
   QVERIFY(noImplicitSmb.isLocalFile());
-  QCOMPARE(noImplicitSmb.path(), QString("//path1/path2"));
+  QCOMPARE(noImplicitSmb.path(), QString("/path1/path2"));
 }
 
 void KUrlTest::testOtherProtocols()
