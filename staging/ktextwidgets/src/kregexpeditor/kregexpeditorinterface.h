@@ -45,7 +45,8 @@
  * regular expression dialog:
  *
  * \code
- * QDialog *editorDialog = KServiceTypeTrader::createInstanceFromQuery<QDialog>( "KRegExpEditor/KRegExpEditor" );
+ * QDialog *editorDialog = KPluginTrader::createInstanceFromQuery<QDialog>(QLatin1String("kregexpeditor"),
+                                                                           QLatin1String("KRegExpEditor/KRegExpEditor"));
  * if ( editorDialog ) {
  *   // kdeutils was installed, so the dialog was found fetch the editor interface
  *   KRegExpEditorInterface *editor = static_cast<KRegExpEditorInterface *>( editorDialog->qt_cast( "KRegExpEditorInterface" ) );

@@ -37,7 +37,7 @@
 
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
-#include <kservicetypetrader.h>
+#include <kplugintrader.h>
 #include <kguiitem.h>
 #include <khistorycombobox.h>
 
@@ -415,7 +415,11 @@ void KFindDialog::KFindDialogPrivate::_k_showPatterns()
 {
     if ( !regexpDialogQueryDone )
     {
-        regexpDialog = KServiceTypeTrader::createInstanceFromQuery<QDialog>( QLatin1String("KRegExpEditor/KRegExpEditor"), QString(), q );
+        regexpDialog = KPluginTrader::createInstanceFromQuery<QDialog>(QLatin1String("kregexpeditor"),
+                                                                       QLatin1String("KRegExpEditor/KRegExpEditor"),
+                                                                       QString(),
+                                                                       0,
+                                                                       q);
         regexpDialogQueryDone = true;
     }
 
