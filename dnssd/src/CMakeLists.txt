@@ -87,7 +87,7 @@ set_target_properties(KDNSSD PROPERTIES
 install(TARGETS KDNSSD EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 ########### install files ###############
-install( FILES  ${CMAKE_CURRENT_BINARY_DIR}/dnssd_export.h
+install( FILES  ${KDNSSD_BINARY_DIR}/dnssd/dnssd_export.h
                 ${CMAKE_CURRENT_BINARY_DIR}/settings.h
                 ${kdnssd_HEADERS}
          DESTINATION  ${INCLUDE_INSTALL_DIR}/dnssd COMPONENT Devel)
