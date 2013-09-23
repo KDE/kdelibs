@@ -4,7 +4,7 @@ remove_definitions(-DQT_NO_CAST_TO_ASCII)
 
 include(ECMMarkAsTest)
 
-find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS Test Network)
+find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS Test)
 find_package(X11)
 find_package(XCB COMPONENTS XCB)
 
@@ -12,7 +12,7 @@ macro(KWINDOWSYSTEM_UNIT_TESTS)
    foreach(_testname ${ARGN})
       add_executable(${_testname} ${_testname}.cpp)
       add_test(kwindowsystem-${_testname} ${_testname})
-      target_link_libraries(${_testname} KWindowSystem Qt5::Test Qt5::DBus Qt5::Network Qt5::Widgets Qt5::X11Extras )
+      target_link_libraries(${_testname} KWindowSystem Qt5::Test Qt5::Widgets Qt5::X11Extras )
       if(X11_FOUND)
         target_link_libraries(${_testname} ${XCB_XCB_LIBRARY})
       endif()

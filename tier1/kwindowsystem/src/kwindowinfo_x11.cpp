@@ -28,7 +28,6 @@
 #include <QBitmap>
 #include <QDesktopWidget>
 #include <QDialog>
-#include <QtDBus/QtDBus>
 #include <QX11Info>
 #include <X11/Xatom.h>
 

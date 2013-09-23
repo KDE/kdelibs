@@ -26,7 +26,6 @@
 #include <QBitmap>
 #include <QDesktopWidget>
 #include <QDialog>
-#include <QtDBus/QtDBus>
 #include <QDebug>
 
 #include <Carbon/Carbon.h>
