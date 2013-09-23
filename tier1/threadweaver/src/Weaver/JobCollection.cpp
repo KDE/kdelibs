@@ -181,7 +181,7 @@ void JobCollection::execute(JobPointer job, Thread *thread)
         QMutexLocker l(mutex()); Q_UNUSED(l);
         d->self = job;
         d->jobCounter.fetchAndStoreOrdered(d->elements.count() + 1); //including self
-        Q_FOREACH(JobPointer child, d->elements) {
+        Q_FOREACH(const JobPointer& child, d->elements) {
             d->api->enqueue(child);
         }
     }
