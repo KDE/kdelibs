@@ -410,7 +410,7 @@ void WeaverImpl::adjustInventory ( int numberOfNewJobs )
             th->moveToThread( th ); // be sane from the start
             m_inventory.append(th);
             connect(th, SIGNAL(jobStarted(ThreadWeaver::JobPointer,ThreadWeaver::Thread*)),
-                    SIGNAL (threadBusy(ThreadWeaver::JobPointerThreadWeaver::Thread*)));
+                    SIGNAL (threadBusy(ThreadWeaver::JobPointer,ThreadWeaver::Thread*)));
             connect(th, SIGNAL(jobDone(ThreadWeaver::JobPointer)),
                     SIGNAL (jobDone(ThreadWeaver::JobPointer)));
             th->start();
