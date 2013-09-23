@@ -23,6 +23,7 @@ cmake_minimum_required(VERSION 2.8.11)
 include(SuperBuild.cmake)
 
 sb_add_project(tier1/itemmodels )
+sb_add_project(tier1/itemviews )
 sb_add_project(tier1/karchive )
 sb_add_project(tier1/kcodecs )
 sb_add_project(tier1/kconfig)
@@ -41,7 +42,6 @@ sb_add_project(tier1/threadweaver )
 sb_add_project(tier2/kauth DEPENDS kcoreaddons)
 
 sb_add_project(staging/kcrash         DEPENDS kcoreaddons kwindowsystem)
-sb_add_project(staging/itemviews      DEPENDS kcoreaddons)
 sb_add_project(staging/kconfigwidgets DEPENDS kconfig kwidgetsaddons)
 
 if(SB_EVERYTHING_DISABLED)
