@@ -39,6 +39,14 @@ remove_definitions(-DQT_NO_CAST_FROM_BYTEARRAY)
 remove_definitions(-DQT_NO_CAST_TO_ASCII)
 remove_definitions(-DQT_NO_KEYWORDS)
 
+add_definitions(
+  -DKDE4SUPPORT_DEPRECATED=
+)
+# This one won't be needed when CMake 2.8.13 is depended on.
+add_definitions(
+  -DKDE4SUPPORT_DEPRECATED_EXPORT=KDE4SUPPORT_EXPORT
+)
+
 add_executable(kf5-config kde-config.cpp )
 ecm_mark_nongui_executable(kf5-config)
 
