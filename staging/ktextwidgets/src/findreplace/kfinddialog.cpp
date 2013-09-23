@@ -415,8 +415,8 @@ void KFindDialog::KFindDialogPrivate::_k_showPatterns()
 {
     if ( !regexpDialogQueryDone )
     {
-        regexpDialog = KPluginTrader::createInstanceFromQuery<QDialog>(QLatin1String("kregexpeditor"),
-                                                                       QLatin1String("KRegExpEditor/KRegExpEditor"),
+        regexpDialog = KPluginTrader::createInstanceFromQuery<QDialog>(QStringLiteral("kregexpeditor"),
+                                                                       QStringLiteral("KRegExpEditor/KRegExpEditor"),
                                                                        QString(),
                                                                        0,
                                                                        q);
