@@ -27,6 +27,10 @@
 
 #include <math.h>
 
+#ifdef Q_CC_MSVC
+#define isnan(n) _isnan(n)
+#endif
+
 // BEGIN internal helper functions
 static inline qreal mixQreal(qreal a, qreal b, qreal bias)
 {
