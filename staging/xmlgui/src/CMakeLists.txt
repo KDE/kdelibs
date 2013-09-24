@@ -96,15 +96,12 @@ target_link_libraries(XmlGui
 LINK_PUBLIC
     Qt5::DBus
     Qt5::Xml
-    Qt5::Widgets
-    KConfigCore
     KCoreAddons
     KConfigWidgets
 LINK_PRIVATE
     Qt5::Network
     Qt5::PrintSupport
     Qt5::X11Extras
-    KWidgetsAddons
     ItemViews
     KI18n
     KIconThemes
