@@ -11,13 +11,17 @@ set(kiconthemes_SRCS
 add_library(KIconThemes ${kiconthemes_SRCS})
 generate_export_header(KIconThemes)
 
-target_link_libraries(KIconThemes LINK_PUBLIC Qt5::Widgets)
-target_link_libraries(KIconThemes LINK_PRIVATE Qt5::DBus Qt5::Svg
-   ItemViews      # for KListWidgetSearchLine
-   KConfigCore    # for KConfig/KConfigGroup
-   KConfigWidgets # for KColorScheme
-   KI18n
-   KWidgetsAddons # for KPixmapSequence family
+target_link_libraries(KIconThemes
+  LINK_PUBLIC
+    Qt5::Widgets
+  LINK_PRIVATE
+    Qt5::DBus
+    Qt5::Svg
+    KI18n
+    ItemViews      # for KListWidgetSearchLine
+    KConfigWidgets # for KColorScheme
+    #KConfigCore    # for KConfig/KConfigGroup
+    #KWidgetsAddons # for KPixmapSequence family
 )
 
 set_target_properties(KIconThemes PROPERTIES VERSION   ${KICONTHEMES_VERSION_STRING}
