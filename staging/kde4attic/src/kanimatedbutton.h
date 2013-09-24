@@ -67,9 +67,9 @@ public:
    * Sets the name of the animated icons to load.  This will use the
    * KIconLoader::loadAnimated method for the actual loading.
    *
-   * @param icons The name of the icons to use for the animation
+   * @param path The path of the icons to use for the animation
    */
-  void setIcons( const QString& icons );
+  void setIcons(const QString &path);
 
 public Q_SLOTS:
   /**

@@ -99,7 +99,6 @@ target_link_libraries(KDE4Attic
     Qt5::Concurrent
     KI18n
     KUnitConversion
-    KIconThemes
     KNotifications
     KWindowSystem
     ${kde4attic_OPTIONAL_LIBS}

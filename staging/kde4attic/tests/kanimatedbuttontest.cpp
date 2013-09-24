@@ -29,7 +29,7 @@
 #include <QPushButton>
 #include <QSpinBox>
 
-AnimationGroup::AnimationGroup(const QString &name, int size, QWidget *parent)
+AnimationGroup::AnimationGroup(const QString &path, int size, QWidget *parent)
     : QGroupBox(parent)
 {
     QHBoxLayout *lay = new QHBoxLayout(this);
@@ -40,9 +40,9 @@ AnimationGroup::AnimationGroup(const QString &name, int size, QWidget *parent)
     QPushButton *stop = new QPushButton("Stop", this);
     lay->addWidget(stop);
 
-    setTitle(QString("%1 (%2)").arg(name).arg(size));
+    setTitle(QString("%1 (%2)").arg(path).arg(size));
     m_animButton->setIconSize(QSize(size, size));
-    m_animButton->setIcons(name);
+    m_animButton->setIcons(path);
 
     connect(start, SIGNAL(clicked()), m_animButton, SLOT(start()));
     connect(stop, SIGNAL(clicked()), m_animButton, SLOT(stop()));
@@ -59,19 +59,19 @@ MainWindow::MainWindow(QWidget *parent)
     QWidget *top = new QWidget(central);
     lay->addWidget(top);
     QHBoxLayout *lay2 = new QHBoxLayout(top);
-    m_name = new QLineEdit(top);
-    lay2->addWidget(m_name);
+    m_path = new QLineEdit(top);
+    lay2->addWidget(m_path);
     m_size = new QSpinBox(top);
     lay2->addWidget(m_size);
 
     m_size->setValue(22);
 
-    connect(m_name, SIGNAL(returnPressed()), this, SLOT(slotAddNew()));
+    connect(m_path, SIGNAL(returnPressed()), this, SLOT(slotAddNew()));
 }
 
 void MainWindow::slotAddNew()
 {
-    AnimationGroup *group = new AnimationGroup(m_name->text(), m_size->value(), centralWidget());
+    AnimationGroup *group = new AnimationGroup(m_path->text(), m_size->value(), centralWidget());
     centralWidget()->layout()->addWidget(group);
 }
 

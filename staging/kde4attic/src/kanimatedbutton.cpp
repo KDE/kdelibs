@@ -20,15 +20,12 @@
 
 #include <kanimatedbutton.h>
 
-#include <QAction>
+#include <QImageReader>
+#include <QMovie>
+#include <QPainter>
 #include <QPixmap>
 #include <QTimer>
-#include <QImage>
-#include <QToolBar>
-#include <QPainter>
-#include <QMovie>
-
-#include <kiconloader.h>
+#include <QToolButton>
 
 class KAnimatedButtonPrivate
 {
@@ -49,7 +46,7 @@ public:
   int                    current_frame;
   QPixmap                pixmap;
   QTimer                 timer;
-  QString                icon_name;
+  QString                icon_path;
   QVector<QPixmap*>      framesCache; // We keep copies of each frame so that
                                       // the icon code can properly cache them in QPixmapCache,
                                       // and not fill it up with dead copies
@@ -93,19 +90,19 @@ void KAnimatedButton::stop()
     }
 }
 
-void KAnimatedButton::setIcons( const QString& icons )
+void KAnimatedButton::setIcons(const QString &path)
 {
-  if ( d->icon_name == icons )
+  if ( d->icon_path == path )
     return;
 
   d->timer.stop();
-  d->icon_name = icons;
+  d->icon_path = path;
   updateIcons();
 }
 
 QString KAnimatedButton::icons( ) const
 {
-   return d->icon_name;
+   return d->icon_path;
 }
 
 void KAnimatedButton::slotTimerUpdate()
@@ -161,23 +158,27 @@ void KAnimatedButton::updateIcons()
 {
     const int icon_size = iconDimensions();
     d->pixmap = QPixmap();
-    QMovie *movie = KIconLoader::global()->loadMovie(d->icon_name, KIconLoader::NoGroup, -icon_size);
-    if (movie) {
+    QMovie *movie = 0;
+    QImageReader reader(d->icon_path);
+    if (QMovie::supportedFormats().contains(reader.format())) {
+        movie = new QMovie(d->icon_path);
         d->frames = 0;
         movie->setCacheMode(QMovie::CacheAll);
         connect(movie, SIGNAL(frameChanged(int)), this, SLOT(_k_movieFrameChanged(int)));
         connect(movie, SIGNAL(finished()), this, SLOT(_k_movieFinished()));
     } else {
-        const QString path = KIconLoader::global()->iconPath(d->icon_name, -icon_size);
-        QImage img(path);
-        if (img.isNull())
+        delete movie;
+        movie = 0;
+
+        const QPixmap pix(d->icon_path);
+        if (pix.isNull())
             return;
 
-        if ((img.width() % icon_size != 0) || (img.height() % icon_size != 0))
+        if ((pix.height() % icon_size != 0) || (pix.width() % icon_size != 0))
             return;
 
-        d->frames = (img.height() / icon_size) * (img.width() / icon_size);
-        d->pixmap = QPixmap::fromImage(img);
+        d->frames = (pix.height() / icon_size) * (pix.width() / icon_size);
+        d->pixmap = pix;
     }
 
     d->current_frame = 0;

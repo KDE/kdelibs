@@ -50,7 +50,7 @@ private Q_SLOTS:
     void slotAddNew();
 
 private:
-    QLineEdit *m_name;
+    QLineEdit *m_path;
     QSpinBox *m_size;
 };
 
