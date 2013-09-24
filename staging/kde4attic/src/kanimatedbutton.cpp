@@ -35,9 +35,11 @@ public:
     {
     }
 
+    void updateIcons();
     void updateCurrentIcon();
     void _k_movieFrameChanged(int number);
     void _k_movieFinished();
+    void _k_timerUpdate();
 
     KAnimatedButton *q;
     QMovie *movie;
@@ -55,7 +57,7 @@ public:
 KAnimatedButton::KAnimatedButton( QWidget *parent )
     : QToolButton(parent), d(new KAnimatedButtonPrivate(this))
 {
-  connect( &d->timer, SIGNAL(timeout()), this, SLOT(slotTimerUpdate()));
+  connect( &d->timer, SIGNAL(timeout()), this, SLOT(_k_timerUpdate()));
 }
 
 KAnimatedButton::~KAnimatedButton()
@@ -90,31 +92,31 @@ void KAnimatedButton::stop()
     }
 }
 
-void KAnimatedButton::setIcons(const QString &path)
+void KAnimatedButton::setAnimationPath(const QString &path)
 {
   if ( d->icon_path == path )
     return;
 
   d->timer.stop();
   d->icon_path = path;
-  updateIcons();
+  d->updateIcons();
 }
 
-QString KAnimatedButton::icons( ) const
+QString KAnimatedButton::animationPath() const
 {
    return d->icon_path;
 }
 
-void KAnimatedButton::slotTimerUpdate()
+void KAnimatedButtonPrivate::_k_timerUpdate()
 {
-  if(!isVisible())
+  if(!q->isVisible())
     return;
 
-  d->current_frame++;
-  if (d->current_frame == d->frames)
-     d->current_frame = 0;
+  current_frame++;
+  if (current_frame == frames)
+     current_frame = 0;
 
-  d->updateCurrentIcon();
+  updateCurrentIcon();
 }
 
 void KAnimatedButtonPrivate::updateCurrentIcon()
@@ -125,7 +127,7 @@ void KAnimatedButtonPrivate::updateCurrentIcon()
   QPixmap* frame = framesCache[current_frame];
   if (!frame)
   {
-        const int icon_size = q->iconDimensions();
+        const int icon_size = qMin(q->iconSize().width(), q->iconSize().height());
         const int row_size = pixmap.width() / icon_size;
         const int row = current_frame / row_size;
         const int column = current_frame % row_size;
@@ -154,51 +156,43 @@ void KAnimatedButtonPrivate::_k_movieFinished()
     }
 }
 
-void KAnimatedButton::updateIcons()
+void KAnimatedButtonPrivate::updateIcons()
 {
-    const int icon_size = iconDimensions();
-    d->pixmap = QPixmap();
-    QMovie *movie = 0;
-    QImageReader reader(d->icon_path);
+    const int icon_size = qMin(q->iconSize().width(), q->iconSize().height());
+    pixmap = QPixmap();
+    QMovie *newMovie = 0;
+    QImageReader reader(icon_path);
     if (QMovie::supportedFormats().contains(reader.format())) {
-        movie = new QMovie(d->icon_path);
-        d->frames = 0;
-        movie->setCacheMode(QMovie::CacheAll);
-        connect(movie, SIGNAL(frameChanged(int)), this, SLOT(_k_movieFrameChanged(int)));
-        connect(movie, SIGNAL(finished()), this, SLOT(_k_movieFinished()));
+        newMovie = new QMovie(icon_path);
+        frames = 0;
+        newMovie->setCacheMode(QMovie::CacheAll);
+        QObject::connect(newMovie, SIGNAL(frameChanged(int)), q, SLOT(_k_movieFrameChanged(int)));
+        QObject::connect(newMovie, SIGNAL(finished()), q, SLOT(_k_movieFinished()));
     } else {
-        delete movie;
-        movie = 0;
-
-        const QPixmap pix(d->icon_path);
+        const QPixmap pix(icon_path);
         if (pix.isNull())
             return;
 
         if ((pix.height() % icon_size != 0) || (pix.width() % icon_size != 0))
             return;
 
-        d->frames = (pix.height() / icon_size) * (pix.width() / icon_size);
-        d->pixmap = pix;
+        frames = (pix.height() / icon_size) * (pix.width() / icon_size);
+        pixmap = pix;
     }
 
-    d->current_frame = 0;
-    qDeleteAll(d->framesCache);
-    d->framesCache.fill(0);
-    d->framesCache.resize(d->frames);
-    delete d->movie;
-    d->movie = movie;
+    current_frame = 0;
+    qDeleteAll(framesCache);
+    framesCache.fill(0);
+    framesCache.resize(frames);
+    delete movie;
+    movie = newMovie;
 
-    if (d->movie) {
-        d->movie->jumpToFrame(0);
-        d->_k_movieFrameChanged(0);
+    if (movie) {
+        movie->jumpToFrame(0);
+        _k_movieFrameChanged(0);
     } else {
-        d->updateCurrentIcon();
+        updateCurrentIcon();
     }
-}
-
-int KAnimatedButton::iconDimensions() const
-{
-  return qMin(iconSize().width(), iconSize().height());
 }
 
 #include "moc_kanimatedbutton.cpp"

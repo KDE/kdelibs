@@ -23,22 +23,20 @@
 #include <QToolButton>
 
 /**
- * @short An extended version of QToolButton which can display an animated icon.
+ * @short An extended version of QToolButton which can display an animation.
  *
- * This widget extends QToolButton with the ability to display animation
- * using a sequence of individual pixmaps.  All you need to do is pass along
- * a list of icon names and their size and everything else is taken
- * care of.
- *
- * \note if you change the iconSize() via setIconSize(), you will need to call
- *       updateIcons() also to force reloading of the correct icon size.
+ * This widget extends QToolButton with the ability to display an animation.
+ * All you need to do is pass along a path to a file containing an animation,
+ * it can be anything supported by QMovie, or a picture containing all the
+ * frames of the animation next to each other (each frame being assumed of
+ * having the same size).
  *
  * @author Kurt Granroth <granroth@kde.org>
  */
 class KDE4ATTIC_EXPORT KAnimatedButton : public QToolButton
 {
   Q_OBJECT
-  Q_PROPERTY( QString icons READ icons WRITE setIcons )
+  Q_PROPERTY(QString animationPath READ animationPath WRITE setAnimationPath)
 
 public:
   /**
@@ -46,7 +44,7 @@ public:
    *
    * @param parent The parent widget
    */
-  explicit KAnimatedButton(QWidget *parent = 0L);
+  explicit KAnimatedButton(QWidget *parent = 0);
 
   /**
    * Destructor
@@ -54,22 +52,16 @@ public:
   virtual ~KAnimatedButton();
 
   /**
-   * Returns the current maximum dimension (width or length) for an icon.
-   */
-  int iconDimensions() const;
-
-  /**
-  * Returns the current icons
+  * Returns the path used to load the animation
   */
-  QString icons() const;
+  QString animationPath() const;
 
   /**
-   * Sets the name of the animated icons to load.  This will use the
-   * KIconLoader::loadAnimated method for the actual loading.
+   * Sets the path to the file which contains the animation to load.
    *
-   * @param path The path of the icons to use for the animation
+   * @param path The path of the file containing the animation
    */
-  void setIcons(const QString &path);
+  void setAnimationPath(const QString &path);
 
 public Q_SLOTS:
   /**
@@ -82,27 +74,14 @@ public Q_SLOTS:
    */
   void stop();
 
-  /**
-   * Updates the icons by reloading them if required.
-   *
-   * You must call this after you change the icon size, in order for the correct
-   * size icon to be loaded.
-   */
-  void updateIcons();
-
-Q_SIGNALS:
-  void clicked();
-
-protected Q_SLOTS:
-  void slotTimerUpdate();
-
 private:
   class KAnimatedButtonPrivate *const d;
 
-    Q_PRIVATE_SLOT(d, void _k_movieFrameChanged(int))
-    Q_PRIVATE_SLOT(d, void _k_movieFinished())
+  Q_PRIVATE_SLOT(d, void _k_movieFrameChanged(int))
+  Q_PRIVATE_SLOT(d, void _k_movieFinished())
+  Q_PRIVATE_SLOT(d, void _k_timerUpdate())
 
-    Q_DISABLE_COPY(KAnimatedButton)
+  Q_DISABLE_COPY(KAnimatedButton)
 };
 
 #endif //  KANIMATEDBUTTON_H

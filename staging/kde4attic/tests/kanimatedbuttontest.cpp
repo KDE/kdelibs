@@ -42,7 +42,7 @@ AnimationGroup::AnimationGroup(const QString &path, int size, QWidget *parent)
 
     setTitle(QString("%1 (%2)").arg(path).arg(size));
     m_animButton->setIconSize(QSize(size, size));
-    m_animButton->setIcons(path);
+    m_animButton->setAnimationPath(path);
 
     connect(start, SIGNAL(clicked()), m_animButton, SLOT(start()));
     connect(stop, SIGNAL(clicked()), m_animButton, SLOT(stop()));
