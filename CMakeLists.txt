@@ -94,6 +94,11 @@ set(Sonnet_LIBRARIES ${Sonnet_SonnetUi_LIBRARY} ${Sonnet_SonnetCore_LIBRARY} )
 
 # tier1/ already builds standalone, so it should not get any include dirs from here.
 
+if(MSVC)
+  # Only build-tested up to here.
+  return()
+endif()
+
 add_subdirectory( tier2 )
 add_subdirectory( tier3 )
 

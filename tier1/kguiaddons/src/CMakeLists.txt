@@ -1,2 +1,4 @@
 add_subdirectory(lib)
-add_subdirectory(plugins)
+if (NOT MSVC)
+  add_subdirectory(plugins)
+endif()
