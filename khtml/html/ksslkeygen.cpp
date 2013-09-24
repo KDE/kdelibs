@@ -21,7 +21,7 @@
 
 #include "ksslkeygen.h"
 #include "ksslkeygen_p.h"
-#include "kio/ui_keygenwizard.h"
+#include "ui_keygenwizard.h"
 
 #include <klocalizedstring.h>
 #include <kmessagebox.h>

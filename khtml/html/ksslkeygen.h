@@ -22,7 +22,7 @@
 #ifndef _KSSLKEYGEN_H
 #define _KSSLKEYGEN_H
 
-#include <kio/kio_export.h>
+#include <khtml_export.h>
 
 #include <QtCore/QStringList>
 #include <QWizard>
@@ -40,7 +40,7 @@ class KSSLKeyGenPrivate;
  * @see KSSL, KSSLCertificate, KSSLPKCS12
  * @short KDE Key Generation Dialog
  */
-class KIO_EXPORT KSSLKeyGen : public QWizard {
+class KHTML_EXPORT KSSLKeyGen : public QWizard {
     Q_OBJECT
 public:
     /**

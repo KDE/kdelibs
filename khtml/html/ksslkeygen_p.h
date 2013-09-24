@@ -22,7 +22,7 @@
 #define KSSLKEYGEN_P_H
 
 #include <QWizardPage>
-#include "kio/ui_keygenwizard2.h"
+#include "ui_keygenwizard2.h"
 
 class KSSLKeyGenWizardPage2 : public QWizardPage
 {
