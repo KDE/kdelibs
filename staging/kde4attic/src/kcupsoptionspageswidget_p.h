@@ -42,34 +42,6 @@ class KCupsOptionsPagesWidget : public KCupsOptionsWidget
 public:
 
     /**
-     * Enum for valid number of pages per sheet
-     */
-    enum PagesPerSheet
-    {
-        OnePagePerSheet = 0,  //CUPS Default
-        TwoPagesPerSheet,
-        FourPagesPerSheet,
-        SixPagesPerSheet,
-        NinePagesPerSheet,
-        SixteenPagesPerSheet
-    };
-
-    /**
-     * Enum for valid layouts of pages per sheet
-     */
-    enum PagesPerSheetLayout
-    {
-        LeftToRightTopToBottom = 0,  //CUPS Default 'lrtb'
-        LeftToRightBottomToTop,
-        RightToLeftTopToBottom,
-        RightToLeftBottomToTop,
-        BottomToTopLeftToRight,
-        BottomToTopRightToLeft,
-        TopToBottomLeftToRight,
-        TopToBottomRightToLeft
-    };
-
-    /**
      * Enum for valid border styles for pages
      */
     enum PageBorder
@@ -79,20 +51,6 @@ public:
         SingleThickLine,
         DoubleLine,
         DoubleThickLine
-    };
-
-    /**
-     * Enum for valid banner pages
-     */
-    enum BannerPage
-    {
-        NoBanner = 0,  //CUPS Default 'none'
-        Standard,
-        Unclassified,
-        Confidential,
-        Classified,
-        Secret,
-        TopSecret
     };
 
     /**
@@ -106,31 +64,6 @@ public:
     ~KCupsOptionsPagesWidget();
 
     /**
-     * Set the number of pages per sheet
-     */
-    void setPagesPerSheet( PagesPerSheet pagesPerSheet = OnePagePerSheet  );
-
-    /**
-     * Returns the selected number of pages per sheet
-     */
-    PagesPerSheet pagesPerSheet() const;
-
-    /**
-     * Set the layout of pages per sheet
-     */
-    void setPagesPerSheetLayout( PagesPerSheetLayout pagesPerSheetLayout = LeftToRightTopToBottom  );
-
-    /**
-     * Returns the selected layout of pages per sheet
-     */
-    PagesPerSheetLayout pagesPerSheetLayout() const;
-
-    /**
-     * Returns the CUPS value of the selected layout of pages per sheet
-     */
-    QString pagesPerSheetLayoutCups() const;
-
-    /**
      * Set the border style of pages
      */
     void setPageBorder( PageBorder pageBorder = NoBorder  );
@@ -139,36 +72,6 @@ public:
      * Returns the selected page border style
      */
     PageBorder pageBorder() const;
-
-    /**
-     * Set the start banner
-     */
-    void setStartBannerPage( BannerPage bannerPage = NoBanner  );
-
-    /**
-     * Returns the selected start banner
-     */
-    BannerPage startBannerPage() const;
-
-    /**
-     * Returns the CUPS value of the selected start banner
-     */
-    QString startBannerPageCups() const;
-
-    /**
-     * Set the end banner
-     */
-    void setEndBannerPage( BannerPage bannerPage = NoBanner  );
-
-    /**
-     * Returns the selected end banner
-     */
-    BannerPage endBannerPage() const;
-
-    /**
-     * Returns the CUPS value of the selected end banner
-     */
-    QString endBannerPageCups() const;
 
     /**
      * Set Page Label text
@@ -196,11 +99,7 @@ protected:
 
 private:
 
-    void initPagesPerSheet();
-    void initPagesPerSheetLayout();
     void initPageBorder();
-    void initStartBannerPage();
-    void initEndBannerPage();
     void initPageLabel();
     void initMirrorPages();
 

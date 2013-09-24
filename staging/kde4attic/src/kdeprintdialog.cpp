@@ -25,7 +25,6 @@
 
 #if HAVE_X11
 #include "kcupsoptionspageswidget_p.h"
-#include "kcupsoptionsjobwidget_p.h"
 #include "kcupsoptionssettingswidget_p.h"
 #endif
 
@@ -44,29 +43,21 @@ QPrintDialog *KdePrint::createPrintDialog(QPrinter *printer,
 {
     QPrintDialog *dialog = new QPrintDialog( printer, parent );
     // Windows and lpr don't support server side page range so default to not
-    // showing print range in dialog, enable only for CUPS depending on Qt version.
-    // Need to check OSX.
+    // showing print range in dialog, it will be enabled automatically
+    // for systems where CUPS is available
     if ( pageSelectPolicy == SystemSelectsPages ) {
         dialog->setOption( QAbstractPrintDialog::PrintPageRange, false);
     }
 #if HAVE_X11
-// Hopefully Qt 4.9 will have native support for all Cups options, Odd/Even, and page ranges
-#if QT_VERSION < 0x040900
     if ( KCupsOptionsWidget::cupsAvailable() ) {
         KCupsOptionsPagesWidget *cupsOptionsPagesTab = new KCupsOptionsPagesWidget( dialog );
-        KCupsOptionsJobWidget *cupsOptionsJobTab = new KCupsOptionsJobWidget( dialog );
-        dialog->setOptionTabs( QList<QWidget*>() << cupsOptionsPagesTab << cupsOptionsJobTab << customTabs );
-        KCupsOptionsSettingsWidget *cupsOptionsSettingsTab = new KCupsOptionsSettingsWidget( dialog );
+        dialog->setOptionTabs( QList<QWidget*>() << cupsOptionsPagesTab << customTabs );
         if ( pageSelectPolicy == SystemSelectsPages ) {
             dialog->setOption( QAbstractPrintDialog::PrintPageRange, true );
-            cupsOptionsSettingsTab->setSystemSelectsPages( true );
         }
     } else {
         dialog->setOptionTabs( customTabs );
     }
-#else // Qt >= 4.9
-    dialog->setOptionTabs( customTabs );
-#endif  // Qt < 4.9
 #else //Not X11
     foreach( QWidget* w, customTabs ) // reparent to avoid leaks
         w->setParent( dialog );

@@ -11,52 +11,10 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Pages</string>
+   <string>Page Options</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_7">
    <item row="0" column="1">
-    <widget class="QGroupBox" name="bannerPagesGroupBox">
-     <property name="title">
-      <string>Banner Pages</string>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_3">
-      <item row="0" column="0">
-       <widget class="QLabel" name="startBannerLabel">
-        <property name="text">
-         <string comment="Banner page at start">Start</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="KComboBox" name="startBannerPageCombo"/>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="endBannerLabel">
-        <property name="text">
-         <string comment="Banner page at end">End</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="KComboBox" name="endBannerPageCombo"/>
-      </item>
-      <item row="2" column="0" colspan="2">
-       <spacer name="verticalSpacer">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>33</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="1" column="1">
     <widget class="QGroupBox" name="pageLabelGroupBox">
      <property name="title">
       <string>Page Label</string>
@@ -74,31 +32,6 @@
          <size>
           <width>20</width>
           <height>11</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="2" column="0">
-    <widget class="QGroupBox" name="groupBox">
-     <property name="title">
-      <string>Page Border</string>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_5">
-      <item row="0" column="0">
-       <widget class="KComboBox" name="pageBorderCombo"/>
-      </item>
-      <item row="1" column="0">
-       <spacer name="verticalSpacer_4">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>2</height>
          </size>
         </property>
        </spacer>
@@ -135,69 +68,24 @@
      </layout>
     </widget>
    </item>
-   <item row="0" column="0" rowspan="2">
-    <widget class="QGroupBox" name="pagesPerSheetButtonGroup">
+   <item row="1" column="1">
+    <widget class="QGroupBox" name="groupBox">
      <property name="title">
-      <string>Pages Per Sheet</string>
+      <string>Page Border</string>
      </property>
-     <layout class="QGridLayout" name="gridLayout">
+     <layout class="QGridLayout" name="gridLayout_5">
       <item row="0" column="0">
-       <widget class="QRadioButton" name="oneUpRadioButton">
-        <property name="text">
-         <string>&amp;1</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QRadioButton" name="sixUpRadioButton">
-        <property name="text">
-         <string>&amp;6</string>
-        </property>
-       </widget>
+       <widget class="KComboBox" name="pageBorderCombo"/>
       </item>
       <item row="1" column="0">
-       <widget class="QRadioButton" name="twoUpRadioButton">
-        <property name="text">
-         <string>&amp;2</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QRadioButton" name="nineUpRadioButton">
-        <property name="text">
-         <string>&amp;9</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QRadioButton" name="fourUpRadioButton">
-        <property name="text">
-         <string>&amp;4</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QRadioButton" name="sixteenUpRadioButton">
-        <property name="text">
-         <string>16</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0" colspan="2">
-       <widget class="KComboBox" name="pagesPerSheetLayoutCombo"/>
-      </item>
-      <item row="4" column="0" colspan="2">
-       <spacer name="verticalSpacer_2">
+       <spacer name="verticalSpacer_4">
         <property name="orientation">
          <enum>Qt::Vertical</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
           <width>20</width>
-          <height>25</height>
+          <height>2</height>
          </size>
         </property>
        </spacer>

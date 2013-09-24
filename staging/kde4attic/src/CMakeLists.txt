@@ -86,9 +86,7 @@ if (X11_FOUND)
 set(kde4attic_SRCS
   ${kde4attic_SRCS}
   kcupsoptionswidget_p.cpp
-  kcupsoptionsjobwidget_p.cpp
-  kcupsoptionspageswidget_p.cpp
-  kcupsoptionssettingswidget_p.cpp )
+  kcupsoptionspageswidget_p.cpp)
 endif (X11_FOUND)
 
 
@@ -100,7 +98,6 @@ if (X11_FOUND)
 set(kde4attic_UI
   ${kde4attic_UI}
   kcupsoptionspageswidget.ui
-  kcupsoptionsjobwidget.ui
 )
 endif (X11_FOUND)
 
