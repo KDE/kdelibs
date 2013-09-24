@@ -29,6 +29,11 @@
 
 QTEST_MAIN( KMainWindow_UnitTest)
 
+void KMainWindow_UnitTest::initTestCase()
+{
+    QStandardPaths::enableTestMode(true);
+}
+
 void KMainWindow_UnitTest::testDefaultName()
 {
     KMainWindow mw;

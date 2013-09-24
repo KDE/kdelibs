@@ -27,6 +27,7 @@ class KMainWindow_UnitTest : public QObject
     Q_OBJECT
 
 private Q_SLOTS:
+    void initTestCase();
     void testDefaultName();
     void testFixedName();
     void testNameWithSpecialChars();
