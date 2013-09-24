@@ -296,7 +296,7 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
 
     if (!codecOk) {
         // none of requested could be used fallback to UTF-8
-        codec = KGlobal::charsets()->codecForName("UTF-8", codecOk);
+        codec = KCharsets::charsets()->codecForName("UTF-8", codecOk);
     }
 
     if (!codecOk)
