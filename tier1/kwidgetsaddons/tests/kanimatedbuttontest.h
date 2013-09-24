@@ -22,8 +22,6 @@
 
 #include <QGroupBox>
 
-#include "kmainwindow.h"
-
 class QLineEdit;
 class QSpinBox;
 class KAnimatedButton;
@@ -39,7 +37,7 @@ private:
     KAnimatedButton *m_animButton;
 };
 
-class MainWindow : public KMainWindow
+class MainWindow : public QWidget
 {
 Q_OBJECT
 

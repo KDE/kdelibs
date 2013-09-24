@@ -9,7 +9,6 @@ include(localization/ConfigureChecks.cmake)
 configure_file(localization/config-localization.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/localization/config-localization.h)
 
 set(kde4attic_SRCS
-  kanimatedbutton.cpp
   kdatecombobox.cpp
   kdatepicker.cpp
   kdatetable.cpp
@@ -111,7 +110,6 @@ set_target_properties(KDE4Attic PROPERTIES VERSION   ${KDE4ATTIC_VERSION_STRING}
 install(TARGETS KDE4Attic EXPORT KDE4AtticTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
-  kanimatedbutton.h
   kdatecombobox.h
   kdatepicker.h
   kdatetable.h

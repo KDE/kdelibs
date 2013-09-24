@@ -12,6 +12,7 @@ macro(kwidgetsaddons_executable_tests)
 endmacro()
 
 kwidgetsaddons_executable_tests(
+  kanimatedbuttontest
   kledtest
   kmessageboxtest
   kmessageboxwidtest

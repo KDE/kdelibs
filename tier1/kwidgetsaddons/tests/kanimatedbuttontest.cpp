@@ -35,12 +35,12 @@ AnimationGroup::AnimationGroup(const QString &path, int size, QWidget *parent)
     QHBoxLayout *lay = new QHBoxLayout(this);
     m_animButton = new KAnimatedButton(this);
     lay->addWidget(m_animButton);
-    QPushButton *start = new QPushButton("Start", this);
+    QPushButton *start = new QPushButton(QStringLiteral("Start"), this);
     lay->addWidget(start);
-    QPushButton *stop = new QPushButton("Stop", this);
+    QPushButton *stop = new QPushButton(QStringLiteral("Stop"), this);
     lay->addWidget(stop);
 
-    setTitle(QString("%1 (%2)").arg(path).arg(size));
+    setTitle(QStringLiteral("%1 (%2)").arg(path).arg(size));
     m_animButton->setIconSize(QSize(size, size));
     m_animButton->setAnimationPath(path);
 
@@ -50,13 +50,12 @@ AnimationGroup::AnimationGroup(const QString &path, int size, QWidget *parent)
 
 
 MainWindow::MainWindow(QWidget *parent)
-    : KMainWindow(parent)
+    : QWidget(parent)
 {
-    QWidget *central = new QWidget(this);
-    QVBoxLayout *lay = new QVBoxLayout(central);
-    setCentralWidget(central);
+    QVBoxLayout *lay = new QVBoxLayout;
+    setLayout(lay);
 
-    QWidget *top = new QWidget(central);
+    QWidget *top = new QWidget(this);
     lay->addWidget(top);
     QHBoxLayout *lay2 = new QHBoxLayout(top);
     m_path = new QLineEdit(top);
@@ -71,14 +70,14 @@ MainWindow::MainWindow(QWidget *parent)
 
 void MainWindow::slotAddNew()
 {
-    AnimationGroup *group = new AnimationGroup(m_path->text(), m_size->value(), centralWidget());
-    centralWidget()->layout()->addWidget(group);
+    AnimationGroup *group = new AnimationGroup(m_path->text(), m_size->value(), this);
+    layout()->addWidget(group);
 }
 
 
 int main(int argc, char **argv)
 {
-    QApplication::setApplicationName("kanimatedbuttontest");
+    QApplication::setApplicationName(QStringLiteral("kanimatedbuttontest"));
     QApplication app(argc, argv);
 
     MainWindow *window = new MainWindow();

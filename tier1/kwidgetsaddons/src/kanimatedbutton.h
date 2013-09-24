@@ -19,7 +19,7 @@
 #ifndef KANIMATEDBUTTON_H
 #define KANIMATEDBUTTON_H
 
-#include <kde4attic_export.h>
+#include <kwidgetsaddons_export.h>
 #include <QToolButton>
 
 /**
@@ -33,7 +33,7 @@
  *
  * @author Kurt Granroth <granroth@kde.org>
  */
-class KDE4ATTIC_EXPORT KAnimatedButton : public QToolButton
+class KWIDGETSADDONS_EXPORT KAnimatedButton : public QToolButton
 {
   Q_OBJECT
   Q_PROPERTY(QString animationPath READ animationPath WRITE setAnimationPath)

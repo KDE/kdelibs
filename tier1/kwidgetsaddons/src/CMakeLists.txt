@@ -1,6 +1,7 @@
 
 set(kwidgetsaddons_SRCS
   kacceleratormanager.cpp
+  kanimatedbutton.cpp
   kcharselect.cpp
   kcharselectdata.cpp
   kcolorbutton.cpp
@@ -85,6 +86,7 @@ install(TARGETS KWidgetsAddons EXPORT KWidgetsAddonsTargets ${INSTALL_TARGETS_DE
 
 install(FILES
   kacceleratormanager.h
+  kanimatedbutton.h
   kcharselect.h
   kcolorbutton.h
   kdragwidgetdecorator.h

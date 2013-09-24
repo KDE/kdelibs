@@ -12,7 +12,6 @@ macro(kde4attic_executable_tests)
 endmacro()
 
 kde4attic_executable_tests(
-  kanimatedbuttontest
   kcharselecttest
   kdatepicktest
   kdatetabletest
