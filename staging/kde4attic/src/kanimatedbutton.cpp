@@ -127,7 +127,7 @@ void KAnimatedButtonPrivate::updateCurrentIcon()
   QPixmap* frame = framesCache[current_frame];
   if (!frame)
   {
-        const int icon_size = qMin(q->iconSize().width(), q->iconSize().height());
+        const int icon_size = qMin(pixmap.width(), pixmap.height());
         const int row_size = pixmap.width() / icon_size;
         const int row = current_frame / row_size;
         const int column = current_frame % row_size;
@@ -158,7 +158,6 @@ void KAnimatedButtonPrivate::_k_movieFinished()
 
 void KAnimatedButtonPrivate::updateIcons()
 {
-    const int icon_size = qMin(q->iconSize().width(), q->iconSize().height());
     pixmap = QPixmap();
     QMovie *newMovie = 0;
     QImageReader reader(icon_path);
@@ -173,6 +172,7 @@ void KAnimatedButtonPrivate::updateIcons()
         if (pix.isNull())
             return;
 
+        const int icon_size = qMin(pix.width(), pix.height());
         if ((pix.height() % icon_size != 0) || (pix.width() % icon_size != 0))
             return;
 
