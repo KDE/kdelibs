@@ -35,7 +35,7 @@ typedef QMap<QString, QVector<quint16> > Index;
 class KCharSelectData
 {
 public:
-    QString formatCode(ushort code, int length = 4, const QString& prefix = QStringLiteral("U+"), int base = 16);
+    QString formatCode(ushort code, int length = 4, const QString& prefix = QLatin1String("U+"), int base = 16);
 
     QList<QChar> blockContents(int block);
     QList<int> sectionContents(int section);
