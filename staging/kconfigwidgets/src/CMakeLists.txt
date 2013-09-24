@@ -15,15 +15,17 @@ set(kconfigwidgets_SRCS
 add_library(KConfigWidgets ${kconfigwidgets_SRCS})
 generate_export_header(KConfigWidgets)
 
-target_link_libraries(KConfigWidgets LINK_PUBLIC
+target_link_libraries(KConfigWidgets
+  LINK_PUBLIC
     KCodecs
     KWidgetsAddons
     KConfigGui
     KAuth
-)
-
-target_link_libraries(KConfigWidgets LINK_PRIVATE
-    Qt5::DBus KCoreAddons KGuiAddons KI18n
+  LINK_PRIVATE
+    Qt5::DBus
+    KCoreAddons
+    KGuiAddons
+    KI18n
 )
 
 set_target_properties(KConfigWidgets PROPERTIES VERSION   ${KCONFIGWIDGETS_VERSION_STRING}
