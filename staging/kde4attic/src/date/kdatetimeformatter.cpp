@@ -745,8 +745,17 @@ QString KDateTimeFormatter::getUnicodeString(const KDateTime &fromDateTime,
             removed = 5;
         }
     } else if (toFormat.startsWith(QLatin1String("yy"))) {
-        result = QString::number(calendar->year(fromDateTime.date())).right(2).rightJustified(2, QLatin1Char('0'));
-        removed = 2;
+        const int year = calendar->year(fromDateTime.date());
+        result = QString::number(year).right(2).rightJustified(2, QLatin1Char('0'));
+        if (year > 0)
+            removed = 2;
+        else {
+            if (result.startsWith('0')) {
+                result = result.right(1);
+            }
+            result.prepend(QLatin1Char('-'));
+            removed = 3;
+        }
     }
 
     if (removed == 0 || removed >= toFormat.size()) {

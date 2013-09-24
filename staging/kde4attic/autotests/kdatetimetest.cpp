@@ -3594,7 +3594,7 @@ void KDateTimeTest::strings_qttextdate()
 
     KDateTime dtutc(QDate(1999,12,11), QTime(3,45,00), KDateTime::UTC);
     s = dtutc.toString(KDateTime::QtTextDate);
-    QCOMPARE(s, QString("Sat Dec 11 03:45:00.000 1999 +0000"));
+    QCOMPARE(s, QString("Sat Dec 11 03:45:00.000 1999 GMT +0000"));
     KDateTime dtutc1 = KDateTime::fromString(s, KDateTime::QtTextDate, &negZero);
     QCOMPARE(dtutc1.dateTime(), dtutc.dateTime());
     QCOMPARE(dtutc1.timeType(), KDateTime::UTC);
