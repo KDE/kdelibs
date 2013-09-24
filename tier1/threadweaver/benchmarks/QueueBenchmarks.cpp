@@ -39,11 +39,9 @@ public:
 
 protected:
     void run() {
-        quint64 numbers[m_count];
-        for(quint64 i = 0; i < m_count; ++i) {
-            numbers[i] = i;
-        }
-        m_result = std::accumulate(numbers, numbers + m_count, 0);
+        std::vector<quint64> numbers(m_count);
+        std::generate(numbers.begin(), numbers.end(), []() -> quint64 { static quint64 i = 0; return i++; });
+        m_result = std::accumulate(numbers.begin(), numbers.end(), 0);
     }
 
 private:

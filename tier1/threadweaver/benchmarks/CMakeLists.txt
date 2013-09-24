@@ -1,3 +1,8 @@
+
+if(NOT MSVC)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+endif()
+
 include_directories(
      ${CMAKE_CURRENT_SOURCE_DIR}/../src/Weaver/
      ${CMAKE_CURRENT_BINARY_DIR}/../src/Weaver/
