@@ -101,7 +101,7 @@ void PartTest::testOpenUrlArguments()
     QVERIFY(part->closeUrl()); // nothing to do, no error
     QVERIFY(part->arguments().mimeType().isEmpty());
     KParts::OpenUrlArguments args;
-    args.setMimeType("application/xml");
+    args.setMimeType(QStringLiteral("application/xml"));
     args.setXOffset(50);
     args.setYOffset(10);
     args.setReload(true);
@@ -117,7 +117,7 @@ void PartTest::testOpenUrlArguments()
 
     // Calling openUrl with local file: mimetype is determined
     part->openUrl(QUrl::fromLocalFile(QFINDTESTDATA("parttest.cpp")));
-    QCOMPARE(part->arguments().mimeType(), QString("text/x-c++src"));
+    QCOMPARE(part->arguments().mimeType(), QStringLiteral("text/x-c++src"));
     // (for a remote url it would be determined during downloading)
 
     delete part;
@@ -138,7 +138,7 @@ void PartTest::testAutomaticMimeType()
 
     // open a new file, and test again its (autdetected) mimetype
     part->openUrl(QUrl::fromLocalFile(QFINDTESTDATA("parttest.cpp")));
-    QCOMPARE(part->arguments().mimeType(), QString("text/x-c++src"));
+    QCOMPARE(part->arguments().mimeType(), QStringLiteral("text/x-c++src"));
 
     // open a new file, but without explicitly close the first
     part->openUrl(QUrl::fromLocalFile(QFINDTESTDATA("notepad.desktop")));
@@ -147,7 +147,7 @@ void PartTest::testAutomaticMimeType()
 
     // open a new file, but manually forcing a mimetype
     KParts::OpenUrlArguments args;
-    args.setMimeType("application/xml");
+    args.setMimeType(QStringLiteral("application/xml"));
     part->setArguments(args);
     QVERIFY(compareArgs(args, part->arguments()));
     part->openUrl(QUrl::fromLocalFile(QFINDTESTDATA("parttest.cpp")));
@@ -171,7 +171,7 @@ class MyMainWindow : public KParts::MainWindow
 public:
     MyMainWindow() : KParts::MainWindow() {
         tb = new KToolBar(this);
-        tb->setObjectName("testtbvisibility");
+        tb->setObjectName(QStringLiteral("testtbvisibility"));
     }
 
     // createGUI and saveAutoSaveSettings are protected, so the whole test is here:

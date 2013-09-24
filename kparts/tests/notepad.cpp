@@ -44,15 +44,15 @@ NotepadPart::NotepadPart( QWidget* parentWidget,
                           const QVariantList& )
  : KParts::ReadWritePart( parent )
 {
-    KAboutData aboutData("notepadpart", QString(), "Notepad Part", "0.1");
+    KAboutData aboutData(QStringLiteral("notepadpart"), QString(), QStringLiteral("Notepad Part"), QStringLiteral("0.1"));
     setComponentData(aboutData, false);
 
   m_edit = new QTextEdit( parentWidget );
-  m_edit->setPlainText( "NotepadPart's multiline edit" );
+  m_edit->setPlainText( QStringLiteral("NotepadPart's multiline edit") );
   setWidget( m_edit );
 
-  QAction* searchReplace = new QAction( "Search and replace", this );
-  actionCollection()->addAction( "searchreplace", searchReplace );
+  QAction* searchReplace = new QAction( QStringLiteral("Search and replace"), this );
+  actionCollection()->addAction( QStringLiteral("searchreplace"), searchReplace );
   connect(searchReplace, SIGNAL(triggered()), this, SLOT(slotSearchReplace()));
 
   setXMLFile(QFINDTESTDATA("notepadpart.rc"));
@@ -80,7 +80,7 @@ void NotepadPart::setReadWrite( bool rw )
 
 KAboutData* NotepadPart::createAboutData()
 {
-  return new KAboutData( "notepadpart", QString(), i18n( "Notepad" ), "2.0" );
+  return new KAboutData( QStringLiteral("notepadpart"), QString(), i18n( "Notepad" ), QStringLiteral("2.0") );
 }
 
 bool NotepadPart::openFile()

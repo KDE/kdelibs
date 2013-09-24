@@ -1,87 +1,49 @@
 set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 
-remove_definitions(-DQT_NO_CAST_FROM_ASCII)
+set(PARTS_TEST_LIBRARY_DEPENDENCIES Qt5::Test KParts KCoreAddons KI18n XmlGui KIOCore)
 
-########### next target ###############
-
-set(PARTS_TEST_LIBRARY_DEPENDENCIES ${KDE4_KPARTS_LIBS} Qt5::Test ${KCoreAddons_LIBRARIES} KI18n XmlGui)
-
-add_executable(kpartstest testmainwindow.cpp parts.cpp notepad.cpp)
-ecm_mark_as_test(kpartstest)
-
-target_link_libraries(kpartstest ${PARTS_TEST_LIBRARY_DEPENDENCIES})
-
-
-########### next target ###############
-
-set(normalktmtest_SRCS
-normalktm.cpp
-parts.cpp
-notepad.cpp
+set(partstest_SRCS
+    parts.cpp
+    notepad.cpp
 )
 
 
-add_executable(normalktmtest ${normalktmtest_SRCS})
+add_executable(kpartstest testmainwindow.cpp ${partstest_SRCS})
+ecm_mark_as_test(kpartstest)
+target_link_libraries(kpartstest ${PARTS_TEST_LIBRARY_DEPENDENCIES})
+
+add_executable(normalktmtest normalktm.cpp ${partstest_SRCS})
 ecm_mark_as_test(normalktmtest)
 target_link_libraries(normalktmtest ${PARTS_TEST_LIBRARY_DEPENDENCIES})
 
 
 ########### next target ###############
 
-add_executable(partviewer partviewer.cpp)
-ecm_mark_as_test(partviewer)
-target_link_libraries(partviewer ${PARTS_TEST_LIBRARY_DEPENDENCIES})
-
-########### test prog for "open or save question" ###############
-
-add_executable(openorsavequestion openorsavequestion.cpp)
-ecm_mark_as_test(openorsavequestion)
-target_link_libraries(openorsavequestion ${PARTS_TEST_LIBRARY_DEPENDENCIES})
-
-########### next target ###############
-
-set(spellcheckplugin_PART_SRCS plugin_spellcheck.cpp )
-
-add_library(spellcheckplugin MODULE ${spellcheckplugin_PART_SRCS})
-
+add_library(spellcheckplugin MODULE plugin_spellcheck.cpp)
 target_link_libraries(spellcheckplugin ${PARTS_TEST_LIBRARY_DEPENDENCIES} )
-
 install(TARGETS spellcheckplugin  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
-
 ########### next target ###############
 
-set(notepadpart_PART_SRCS notepad.cpp)
-
-
-add_library(notepadpart MODULE ${notepadpart_PART_SRCS})
-
+add_library(notepadpart MODULE notepad.cpp)
 target_link_libraries(notepadpart ${PARTS_TEST_LIBRARY_DEPENDENCIES})
-
 install(TARGETS notepadpart  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 
 ########### unit tests ###############
 
-MACRO(KPARTS_UNIT_TESTS)
-       FOREACH(_testname ${ARGN})
-               kde4_add_unit_test(${_testname} TESTNAME kparts-${_testname} ${_testname}.cpp)
-               target_link_libraries(${_testname} ${PARTS_TEST_LIBRARY_DEPENDENCIES})
-       ENDFOREACH(_testname)
-ENDMACRO(KPARTS_UNIT_TESTS)
 MACRO(KPARTS_EXECUTABLE_TESTS)
        FOREACH(_testname ${ARGN})
                add_executable(${_testname}  ${_testname}.cpp)
                ecm_mark_as_test(${_testname})
-               target_link_libraries(${_testname} ${KDE4_KPARTS_LIBS} Qt5::Test)
+               target_link_libraries(${_testname} ${PARTS_TEST_LIBRARY_DEPENDENCIES})
        ENDFOREACH(_testname)
 ENDMACRO(KPARTS_EXECUTABLE_TESTS)
 
-set(kparts_unittests
-  parttest
-  openorsavequestion_unittest
+KPARTS_EXECUTABLE_TESTS(
+    partviewer
+    openorsavequestion
 )
-KPARTS_UNIT_TESTS(${kparts_unittests})
 
 ########### install files ###############
 

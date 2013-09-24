@@ -58,24 +58,24 @@ TestMainWindow::TestMainWindow()
 
     KActionCollection *coll = actionCollection();
 
-    QAction* paOpen = new QAction( "&View local file", this );
-    coll->addAction( "open_local_file", paOpen );
+    QAction* paOpen = new QAction( QStringLiteral("&View local file"), this );
+    coll->addAction( QStringLiteral("open_local_file"), paOpen );
     connect(paOpen, SIGNAL(triggered()), this, SLOT(slotFileOpen()));
-    QAction* paOpenRemote = new QAction( "&View remote file", this );
-    coll->addAction( "open_remote_file", paOpenRemote );
+    QAction* paOpenRemote = new QAction( QStringLiteral("&View remote file"), this );
+    coll->addAction( QStringLiteral("open_remote_file"), paOpenRemote );
     connect(paOpenRemote, SIGNAL(triggered()), this, SLOT(slotFileOpenRemote()));
 
-    m_paEditFile = new QAction( "&Edit file", this );
-    coll->addAction( "edit_file", m_paEditFile );
+    m_paEditFile = new QAction( QStringLiteral("&Edit file"), this );
+    coll->addAction( QStringLiteral("edit_file"), m_paEditFile );
     connect(m_paEditFile, SIGNAL(triggered()), this, SLOT(slotFileEdit()));
-    m_paCloseEditor = new QAction( "&Close file editor", this );
-    coll->addAction( "close_editor", m_paCloseEditor );
+    m_paCloseEditor = new QAction( QStringLiteral("&Close file editor"), this );
+    coll->addAction( QStringLiteral("close_editor"), m_paCloseEditor );
     connect(m_paCloseEditor, SIGNAL(triggered()), this, SLOT(slotFileCloseEditor()));
     m_paCloseEditor->setEnabled(false);
-    QAction * paQuit = new QAction( "&Quit", this );
-    coll->addAction( "shell_quit", paQuit );
+    QAction * paQuit = new QAction( QStringLiteral("&Quit"), this );
+    coll->addAction( QStringLiteral("shell_quit"), paQuit );
     connect(paQuit, SIGNAL(triggered()), this, SLOT(close()));
-    paQuit->setIcon(QIcon::fromTheme("application-exit"));
+    paQuit->setIcon(QIcon::fromTheme(QStringLiteral("application-exit")));
 
 //  (void)new QAction( "Yet another menu item", coll, "shell_yami" );
 //  (void)new QAction( "Yet another submenu item", coll, "shell_yasmi" );
@@ -100,16 +100,16 @@ TestMainWindow::~TestMainWindow()
 
 void TestMainWindow::slotFileOpen()
 {
-    const QString file = QStandardPaths::locate(QStandardPaths::GenericDataLocation, QCoreApplication::instance()->applicationName()+"/kpartstest_shell.rc" );
+    const QString file = QStandardPaths::locate(QStandardPaths::GenericDataLocation, QCoreApplication::instance()->applicationName()+QStringLiteral("/kpartstest_shell.rc") );
     if (!m_part1->openUrl(QUrl::fromLocalFile(file)))
-        KMessageBox::error(this,"Couldn't open file !");
+        KMessageBox::error(this, QStringLiteral("Couldn't open file!"));
 }
 
 void TestMainWindow::slotFileOpenRemote()
 {
-    QUrl u("http://www.kde.org/index.html");
+    QUrl u(QStringLiteral("http://www.kde.org/index.html"));
     if ( ! m_part1->openUrl( u ) )
-        KMessageBox::error(this,"Couldn't open file !");
+        KMessageBox::error(this, QStringLiteral("Couldn't open file!"));
 }
 
 void TestMainWindow::embedEditor()
@@ -152,14 +152,14 @@ void TestMainWindow::slotFileEdit()
     if ( !m_editorpart )
         embedEditor();
     // TODO use KFileDialog to allow testing remote files
-    const QString file(QDir::current().absolutePath() + "/kpartstest_shell.rc");
+    const QString file(QDir::current().absolutePath() + QStringLiteral("/kpartstest_shell.rc") );
     if (!m_editorpart->openUrl(QUrl::fromLocalFile(file)))
-        KMessageBox::error(this,"Couldn't open file !");
+        KMessageBox::error(this, QStringLiteral("Couldn't open file!"));
 }
 
 int main( int argc, char **argv )
 {
-    QApplication::setApplicationName("kpartstest");
+    QApplication::setApplicationName(QStringLiteral("kpartstest"));
     QApplication app(argc, argv);
 
     TestMainWindow *shell = new TestMainWindow;

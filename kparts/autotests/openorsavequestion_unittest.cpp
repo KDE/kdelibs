@@ -33,10 +33,10 @@
 using namespace KParts;
 
 // SYNC - keep this in sync with browseropenorsavequestion.cpp
-static const QString Save = "saveButton";
-static const QString OpenDefault = "openDefaultButton";
-static const QString OpenWith = "openWithButton";
-static const QString Cancel = "cancelButton";
+static const QString Save = QStringLiteral("saveButton");
+static const QString OpenDefault = QStringLiteral("openDefaultButton");
+static const QString OpenWith = QStringLiteral("openWithButton");
+static const QString Cancel = QStringLiteral("cancelButton");
 
 Q_DECLARE_METATYPE(QDialog*)
 
@@ -47,16 +47,16 @@ private Q_SLOTS:
     void testAutoEmbed()
     {
         // This one should get the fast path, no dialog should show up.
-        BrowserOpenOrSaveQuestion questionEmbedHtml(0, QUrl("http://www.example.com/"),
+        BrowserOpenOrSaveQuestion questionEmbedHtml(0, QUrl(QStringLiteral("http://www.example.com/")),
                                                     QString::fromLatin1("text/html"));
         QCOMPARE(questionEmbedHtml.askEmbedOrSave(), BrowserOpenOrSaveQuestion::Embed);
 
     }
     void testDontAskAgain()
     {
-        KSharedConfig::Ptr cfg = KSharedConfig::openConfig("filetypesrc", KConfig::NoGlobals);
+        KSharedConfig::Ptr cfg = KSharedConfig::openConfig(QStringLiteral("filetypesrc"), KConfig::NoGlobals);
         cfg->group("Notification Messages").writeEntry("askSave" "text/plain", "false");
-        BrowserOpenOrSaveQuestion question(0, QUrl("http://www.example.com/"),
+        BrowserOpenOrSaveQuestion question(0, QUrl(QStringLiteral("http://www.example.com/")),
                                            QString::fromLatin1("text/plain"));
         QCOMPARE((int)question.askOpenOrSave(), (int)BrowserOpenOrSaveQuestion::Open);
         cfg->group("Notification Messages").writeEntry("askSave" "text/plain", "true");
@@ -78,7 +78,7 @@ private Q_SLOTS:
         // 2. there is at least one app associated with text/plain, and
         // 3. there are no apps associated with application/x-zerosize.
 
-        if(KMimeTypeTrader::self()->query("application/zip", "Application").count() > 0) {
+        if(KMimeTypeTrader::self()->query(QStringLiteral("application/zip"), QStringLiteral("Application")).count() > 0) {
             QTest::newRow("(zip) cancel") << "application/zip" << Cancel << (int)BrowserOpenOrSaveQuestion::Cancel << false;
             QTest::newRow("(zip) open default app") << "application/zip" << OpenDefault << (int)BrowserOpenOrSaveQuestion::Open << true;
             QTest::newRow("(zip) open with...") << "application/zip" << OpenWith << (int)BrowserOpenOrSaveQuestion::Open << false;
@@ -88,7 +88,7 @@ private Q_SLOTS:
             qWarning() << "This test relies on the fact that there is at least one app associated with appliation/zip.";
         }
 
-        if(KMimeTypeTrader::self()->query("text/plain", "Application").count() > 0) {
+        if(KMimeTypeTrader::self()->query(QStringLiteral("text/plain"), QStringLiteral("Application")).count() > 0) {
             QTest::newRow("(text) cancel") << "text/plain" << Cancel << (int)BrowserOpenOrSaveQuestion::Cancel << false;
             QTest::newRow("(text) open default app") << "text/plain" << OpenDefault << (int)BrowserOpenOrSaveQuestion::Open << true;
             QTest::newRow("(text) open with...") << "text/plain" << OpenWith << (int)BrowserOpenOrSaveQuestion::Open << false;
@@ -98,7 +98,7 @@ private Q_SLOTS:
             qWarning() << "This test relies on the fact that there is at least one app associated with text/plain.";
         }
 
-        if(KMimeTypeTrader::self()->query("application/x-zerosize", "Application").count() == 0) {
+        if(KMimeTypeTrader::self()->query(QStringLiteral("application/x-zerosize"), QStringLiteral("Application")).count() == 0) {
             QTest::newRow("(zero) cancel") << "application/x-zerosize" << Cancel << (int)BrowserOpenOrSaveQuestion::Cancel << false;
             QTest::newRow("(zero) open with...") << "application/x-zerosize" << OpenDefault /*Yes, not OpenWith*/ << (int)BrowserOpenOrSaveQuestion::Open << false;
             QTest::newRow("(zero) save") << "application/x-zerosize" << Save << (int)BrowserOpenOrSaveQuestion::Save << false;
@@ -118,7 +118,7 @@ private Q_SLOTS:
         QFETCH(bool, expectedService);
 
         QWidget parent;
-        BrowserOpenOrSaveQuestion questionEmbedZip(&parent, QUrl("http://www.example.com/"), mimetype);
+        BrowserOpenOrSaveQuestion questionEmbedZip(&parent, QUrl(QStringLiteral("http://www.example.com/")), mimetype);
         questionEmbedZip.setFeatures(BrowserOpenOrSaveQuestion::ServiceSelection);
         QDialog* theDialog = parent.findChild<QDialog *>();
         QVERIFY(theDialog);

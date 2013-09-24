@@ -19,7 +19,7 @@
 #ifndef kparts_browserrun_h
 #define kparts_browserrun_h
 
-#include <krun.h>
+#include <kio/krun.h>
 #include <kservice.h>
 #include <kparts/browserextension.h>
 

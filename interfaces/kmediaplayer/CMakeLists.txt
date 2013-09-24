@@ -4,6 +4,8 @@ find_package(Phonon4Qt5 4.6.60 REQUIRED NO_MODULE)
 
 ########### next target ###############
 
+include_directories(..)
+
 set(kmediaplayer_LIB_SRCS
 player.cpp
 view.cpp
@@ -15,8 +17,8 @@ add_library(kmediaplayer ${LIBRARY_TYPE} ${kmediaplayer_LIB_SRCS})
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/kmediaplayer)
 generate_export_header(kmediaplayer EXPORT_FILE_NAME kmediaplayer/kmediaplayer_export.h)
 
-target_link_libraries(kmediaplayer  ${KDE4_KPARTS_LIBS} XmlGui)
-target_link_libraries(kmediaplayer  LINK_INTERFACE_LIBRARIES ${KDE4_KPARTS_LIBS} Qt5::Widgets KI18n)
+target_link_libraries(kmediaplayer  KParts XmlGui)
+target_link_libraries(kmediaplayer  LINK_INTERFACE_LIBRARIES KParts Qt5::Widgets KI18n)
 
 set_target_properties(kmediaplayer PROPERTIES
    VERSION ${GENERIC_LIB_VERSION}

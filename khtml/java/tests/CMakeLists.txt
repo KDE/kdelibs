@@ -16,13 +16,14 @@ add_executable(testserver ${testserver_SRCS})
 ecm_mark_as_test(testserver)
 
 target_link_libraries(testserver
-    ${KDE4_KPARTS_LIBS}
+    KParts
     KInterProcessWindowing
     KDE4Support
     KI18n
     XmlGui
     KIconThemes
     KWindowSystem
+    Qt5::Network
 )
 
 

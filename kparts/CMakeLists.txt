@@ -1,15 +1,11 @@
-project(kparts)
+project(KParts)
 
 add_subdirectory( tests )
-
-if(Soprano_FOUND)
-include_directories(${SOPRANO_INCLUDE_DIR})
-endif(Soprano_FOUND)
-
+add_subdirectory( autotests )
 
 ########### next target ###############
 
-set(kparts_LIB_SRCS
+set(KParts_LIB_SRCS
    part.cpp
    plugin.cpp
    partmanager.cpp
@@ -28,22 +24,22 @@ set(kparts_LIB_SRCS
    listingextension.cpp
    )
 
-add_library(kparts ${LIBRARY_TYPE} ${kparts_LIB_SRCS})
-generate_export_header(kparts)
+add_library(KParts SHARED ${KParts_LIB_SRCS})
+generate_export_header(KParts)
 
-target_link_libraries(kparts  kio ${KCoreAddons_LIBRARIES} KI18n XmlGui KWindowSystem KNotifications KIconThemes KTextWidgets)
-target_include_directories(kparts PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>")
-target_link_libraries(kparts  LINK_INTERFACE_LIBRARIES kio Qt5::Widgets XmlGui)
+target_include_directories(KParts PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..;${CMAKE_CURRENT_BINARY_DIR}/..>")
+target_link_libraries(KParts LINK_PUBLIC KIOCore KService XmlGui
+                             LINK_PRIVATE KCoreAddons KIOWidgets KI18n KWindowSystem KNotifications KIconThemes KTextWidgets KJobWidgets)
+
 if(HAVE_NEPOMUK)
-  target_link_libraries(kparts  nepomuk nepomukutils)
-  target_link_libraries(kparts  LINK_INTERFACE_LIBRARIES nepomuk nepomukutils )
+  target_link_libraries(KParts LINK_PRIVATE nepomuk nepomukutils)
 endif(HAVE_NEPOMUK)
 
-set_target_properties(kparts PROPERTIES VERSION ${GENERIC_LIB_VERSION}
+set_target_properties(KParts PROPERTIES VERSION ${GENERIC_LIB_VERSION}
                                         SOVERSION ${GENERIC_LIB_SOVERSION}
                      )
 
-install(TARGETS kparts EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KParts EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 ########### install files ###############
 

@@ -10,7 +10,7 @@ set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 ########### next target ###############
 
 add_executable(tetest main.cc)
-target_link_libraries(tetest ${KDE4_KPARTS_LIBS})
+target_link_libraries(tetest KParts)
 
 set(test_SRCS main.cc )
 add_executable(test ${test_SRCS})

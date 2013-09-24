@@ -598,7 +598,7 @@ kde4_add_ui_files(khtml_LIB_SRCS
 add_library(khtml ${LIBRARY_TYPE} ${khtml_LIB_SRCS})
 
 target_link_libraries(khtml
-  ${KDE4_KPARTS_LIBS}
+  KParts
   ${PHONON_LIBRARIES}
   KJS
   ${KArchive_LIBRARIES}
@@ -620,11 +620,12 @@ target_link_libraries(khtml
   KNotifications
   KDE4Support # KComponentData (TODO port to KAboutData
   KBookmarks
+  KIOWidgets # KUrlRequester
 )
 if (KJS_DEBUGGER)
   target_link_libraries(khtml ktexteditor)
 endif()
-target_link_libraries(khtml LINK_INTERFACE_LIBRARIES kparts KJS kio Qt5::Widgets KI18n KBookmarks)
+target_link_libraries(khtml LINK_INTERFACE_LIBRARIES KJS kio Qt5::Widgets KI18n KBookmarks KParts)
 
 set_target_properties(khtml PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION}
                                        SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION}
@@ -750,7 +751,7 @@ set(khtmlpart_PART_SRCS khtml_factory.cpp )
 add_library(khtmlpart MODULE ${khtmlpart_PART_SRCS})
 set_target_properties(khtmlpart PROPERTIES PREFIX "${CMAKE_SHARED_LIBRARY_PREFIX}")
 
-target_link_libraries(khtmlpart khtml XmlGui KTextWidgets)
+target_link_libraries(khtmlpart khtml XmlGui KTextWidgets KParts)
 
 install(TARGETS khtmlpart  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
@@ -770,7 +771,7 @@ install(TARGETS khtmlimagepart  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 add_library(khtmladaptorpart MODULE khtmladaptorpart.cpp)
 
-target_link_libraries(khtmladaptorpart ${KDE4_KPARTS_LIBS} KJS KI18n XmlGui)
+target_link_libraries(khtmladaptorpart KParts KJS KI18n XmlGui)
 
 install(TARGETS khtmladaptorpart DESTINATION ${PLUGIN_INSTALL_DIR} )
 
@@ -788,7 +789,7 @@ if(NOT MSVC)
 
     add_executable(testkhtml ${testkhtml_SRCS})
 
-    target_link_libraries(testkhtml khtml XmlGui KTextWidgets)
+    target_link_libraries(testkhtml khtml XmlGui KTextWidgets KParts)
 
     ########### next target ###############
 

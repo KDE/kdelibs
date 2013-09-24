@@ -40,7 +40,7 @@
 
 Part1::Part1( QObject *parent, QWidget * parentWidget )
     : KParts::ReadOnlyPart(parent),
-      m_componentData("kpartstestpart", QString(), i18n("KParts test part"), "0.1")
+    m_componentData(QStringLiteral("kpartstestpart"), QString(), i18n("KParts test part"), QStringLiteral("0.1"))
 {
     setComponentData(m_componentData, false);
     m_edit = new QTextEdit( parentWidget );
@@ -50,18 +50,18 @@ Part1::Part1( QObject *parent, QWidget * parentWidget )
 
     // An action and an action menu (test code for #70459)
 
-    QAction* testAction = actionCollection()->addAction("p1_blah");
-    testAction->setText("Part1's action");
+    QAction* testAction = actionCollection()->addAction(QStringLiteral("p1_blah"));
+    testAction->setText(QStringLiteral("Part1's action"));
     testAction->setShortcut(Qt::CTRL + Qt::Key_B);
     connect(testAction, SIGNAL(triggered()), this, SLOT(slotBlah()));
 
-    KActionMenu * menu = new KActionMenu(QIcon::fromTheme("mail_forward"), "Foo", this);
-    actionCollection()->addAction("p1_foo", menu);
+    KActionMenu * menu = new KActionMenu(QIcon::fromTheme(QStringLiteral("mail_forward")), QStringLiteral("Foo"), this);
+    actionCollection()->addAction(QStringLiteral("p1_foo"), menu);
 
-    QAction* mailForward = new QAction(QIcon::fromTheme("mail_forward"), "Bar", this);
+    QAction* mailForward = new QAction(QIcon::fromTheme(QStringLiteral("mail_forward")), QStringLiteral("Bar"), this);
     mailForward->setShortcut(Qt::CTRL + Qt::Key_F);
     connect(mailForward, SIGNAL(triggered()), this, SLOT(slotFooBar()));
-    actionCollection()->addAction("p1_foo_bar", mailForward);
+    actionCollection()->addAction(QStringLiteral("p1_foo_bar"), mailForward);
     menu->addAction(mailForward);
 
     loadPlugins();
@@ -73,12 +73,12 @@ Part1::~Part1()
 
 void Part1::slotBlah()
 {
-  m_edit->setText( "Blah" );
+  m_edit->setText( QStringLiteral("Blah") );
 }
 
 void Part1::slotFooBar()
 {
-  m_edit->setText( "FooBar" );
+  m_edit->setText( QStringLiteral("FooBar") );
 }
 
 bool Part1::openFile()
@@ -90,7 +90,7 @@ bool Part1::openFile()
     if ( f.open(QIODevice::ReadOnly) ) {
         QTextStream t( &f );
         while ( !t.atEnd() ) {
-            s += t.readLine() + "\n";
+            s += t.readLine() + QStringLiteral("\n");
         }
         f.close();
     } else
@@ -104,16 +104,16 @@ bool Part1::openFile()
 
 Part2::Part2( QObject *parent, QWidget * parentWidget )
     : KParts::Part(parent),
-    m_componentData("part2", QString(), "Part 2", "0.2")
+    m_componentData(QStringLiteral("part2"), QString(), QStringLiteral("Part 2"), QStringLiteral("0.2"))
 {
     setComponentData(m_componentData, false);
     QWidget * w = new QWidget( parentWidget );
-    w->setObjectName( "Part2Widget" );
+    w->setObjectName( QStringLiteral("Part2Widget") );
     setWidget( w );
 
     setXMLFile(QFINDTESTDATA("kpartstest_part2.rc"));
 
-    /*QCheckBox * cb =*/ new QCheckBox( "something", w );
+    /*QCheckBox * cb =*/ new QCheckBox( QStringLiteral("something"), w );
 
     //QLineEdit * l = new QLineEdit( "something", widget() );
     //l->move(0,50);
@@ -132,6 +132,6 @@ Part2::~Part2()
 void Part2::guiActivateEvent( KParts::GUIActivateEvent * event )
 {
     if (event->activated())
-        emit setWindowCaption("[part2 activated]");
+        emit setWindowCaption(QStringLiteral("[part2 activated]"));
 }
 

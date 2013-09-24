@@ -32,8 +32,8 @@ PluginSpellCheck::PluginSpellCheck( QObject* parent,
                                     const QVariantList& )
     : Plugin( parent )
 {
-    QAction* act = new QAction( "&Select current line (plugin)", this );
-    actionCollection()->addAction( "spellcheck", act );
+    QAction* act = new QAction( QStringLiteral("&Select current line (plugin)"), this );
+    actionCollection()->addAction( QStringLiteral("spellcheck"), act );
     connect(act, SIGNAL(triggered()), this, SLOT(slotSpellCheck()));
 }
 
@@ -47,7 +47,7 @@ void PluginSpellCheck::slotSpellCheck()
     // The parent is assumed to be a NotepadPart
     // Can't use qobject_cast here, we would need NotepadPart to be in a shared library.
     if ( !parent()->inherits("NotepadPart") )
-       KMessageBox::error(0,"You just called the spell-check action on a wrong part (not NotepadPart)");
+        KMessageBox::error(0, QStringLiteral("You just called the spell-check action on a wrong part (not NotepadPart)"));
     else
     {
          NotepadPart * part = (NotepadPart *) parent();

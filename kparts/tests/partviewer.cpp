@@ -38,12 +38,12 @@ PartViewer::PartViewer()
 {
     setXMLFile(QFINDTESTDATA("partviewer_shell.rc"));
 
-    QAction * paOpen = new QAction( QIcon::fromTheme("document-open"), "&Open file", this );
-    actionCollection()->addAction( "file_open", paOpen );
+    QAction * paOpen = new QAction( QIcon::fromTheme(QStringLiteral("document-open")), QStringLiteral("&Open file"), this );
+    actionCollection()->addAction( QStringLiteral("file_open"), paOpen );
     connect( paOpen, SIGNAL(triggered()), this, SLOT(slotFileOpen()) );
 
-    QAction * paQuit = new QAction( QIcon::fromTheme("application-exit"), "&Quit", this );
-    actionCollection()->addAction( "file_quit", paQuit );
+    QAction * paQuit = new QAction( QIcon::fromTheme(QStringLiteral("application-exit")), QStringLiteral("&Quit"), this );
+    actionCollection()->addAction( QStringLiteral("file_quit"), paQuit );
     connect(paQuit, SIGNAL(triggered()), this, SLOT(close()));
 
     m_part = 0;
@@ -92,7 +92,7 @@ int main( int argc, char **argv )
     QApplication app(argc, argv);
     PartViewer *shell = new PartViewer;
     if (argc > 1) {
-        QUrl url = QUrl::fromUserInput(argv[1]);
+        QUrl url = QUrl::fromUserInput(QLatin1String(argv[1]));
         shell->openUrl( url );
     }
     shell->show();

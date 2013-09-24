@@ -12,7 +12,7 @@ target_link_libraries(KPrintUtils
     Qt5::Widgets
     Qt5::PrintSupport
   LINK_PRIVATE
-    ${KDE4_KPARTS_LIBS} #FIXME when split
+    KParts
     KCoreAddons
     KI18n
 )

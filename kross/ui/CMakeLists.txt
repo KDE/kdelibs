@@ -7,7 +7,7 @@ set(krossui_LIB_SRCS
    )
 
 add_library(krossui ${LIBRARY_TYPE} ${krossui_LIB_SRCS})
-target_link_libraries(krossui krosscore ${KDE4_KPARTS_LIBS} ${KDE4_KIO_LIBS} ${KCoreAddons_LIBRARIES} KI18n XmlGui KIconThemes)
+target_link_libraries(krossui krosscore KParts ${KDE4_KIO_LIBS} ${KCoreAddons_LIBRARIES} KI18n XmlGui KIconThemes)
 set_target_properties(krossui PROPERTIES VERSION ${GENERIC_LIB_VERSION}
                                          SOVERSION ${GENERIC_LIB_SOVERSION}
                      )

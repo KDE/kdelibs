@@ -21,8 +21,8 @@ add_library(kdewebkit ${LIBRARY_TYPE}
 )
 generate_export_header(kdewebkit)
 
-target_link_libraries(kdewebkit ${KDE4_KPARTS_LIBS} Qt5::WebKitWidgets ${KCoreAddons_LIBRARIES} KWallet KI18n KConfigGui)
-target_link_libraries(kdewebkit LINK_INTERFACE_LIBRARIES kparts kio Qt5::WebKitWidgets Qt5::Network Qt5::Widgets)
+target_link_libraries(kdewebkit Qt5::WebKitWidgets ${KCoreAddons_LIBRARIES} KParts KWallet KI18n KConfigGui KIOWidgets)
+target_link_libraries(kdewebkit LINK_INTERFACE_LIBRARIES KParts kio Qt5::WebKitWidgets Qt5::Network Qt5::Widgets)
 
 set_target_properties(kdewebkit PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION})
 

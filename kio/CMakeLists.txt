@@ -104,6 +104,7 @@ add_library(kio ${LIBRARY_TYPE} ${kio_LIB_SRCS})
 generate_export_header(kio)
 
 set(kio_INCLUDES
+   ${CMAKE_CURRENT_SOURCE_DIR}
    ${CMAKE_CURRENT_SOURCE_DIR}/kio
    ${CMAKE_CURRENT_SOURCE_DIR}/kfile
    ${CMAKE_CURRENT_SOURCE_DIR}/httpfilter
