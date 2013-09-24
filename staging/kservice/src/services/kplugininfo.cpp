@@ -163,6 +163,7 @@ KPluginInfo::KPluginInfo( const KService::Ptr service )
     d->metaData.insert(s_dependenciesKey, service->property(s_dependenciesKey));
     QVariant tmp = service->property(s_enabledbyDefaultKey);
     d->metaData.insert(s_enabledbyDefaultKey, tmp.toBool());
+    d->enabledbydefault = d->metaData.value(s_enabledbyDefaultKey).toBool();
 }
 #endif
 
