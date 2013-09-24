@@ -2,17 +2,10 @@
 
 # Any changes in this ".cmake" file will be overwritten by CMake, the source is the ".cmake.in" file.
 
-if(NOT TARGET KF5::KI18n)
-   set(KIO_NOT_FOUND_MESSAGE "Kio depends on the package KI18n, which is missing. Use find_package() to find it before Kio.")
-   set(KIO_FOUND FALSE)
-   return()
-endif()
-
-if(NOT TARGET KF5::KService)
-   set(KIO_NOT_FOUND_MESSAGE "Kio depends on the package KService, which is missing. Use find_package() to find it before Kio.")
-   set(KIO_FOUND FALSE)
-   return()
-endif()
+find_dependency(KJobWidgets "${PACKAGE_VERSION}")
+find_dependency(KService "${PACKAGE_VERSION}")
+find_dependency(KCompletion "${PACKAGE_VERSION}")
+find_dependency(Qt5Network "@QT_REQUIRED_VERSION@")
 
 set(KIO_INSTALL_PREFIX "@PACKAGE_CMAKE_INSTALL_PREFIX@")
 set_and_check(KIO_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")

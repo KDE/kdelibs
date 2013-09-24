@@ -24,7 +24,8 @@ remove_definitions(-DQT_NO_CAST_FROM_BYTEARRAY)
 remove_definitions(-DQT_USE_FAST_CONCATENATION)
 remove_definitions(-DQT_USE_FAST_OPERATOR_PLUS)
 
-find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS DBus Widgets Test)
+set(QT_REQUIRED_VERSION 5.2.0)
+find_package(Qt5 ${QT_REQUIRED_VERSION} REQUIRED NO_MODULE COMPONENTS DBus Widgets Test)
 
 add_subdirectory(src)
 add_subdirectory(autotests)

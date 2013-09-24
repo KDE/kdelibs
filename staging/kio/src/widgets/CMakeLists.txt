@@ -82,7 +82,6 @@ target_link_libraries(KIOWidgets
   LINK_PUBLIC
     KIOCore
     KJobWidgets
-    Qt5::Widgets
     Qt5::Network  # SSL
     KCompletion   # KUrlCompletion uses KCompletion
   LINK_PRIVATE
@@ -90,8 +89,8 @@ target_link_libraries(KIOWidgets
     KI18n
     KIconThemes   # KIconLoader
     KWindowSystem # KStartupInfo
-    KWidgetsAddons # KMessageBox
     KConfigWidgets # KColorScheme
+    #KWidgetsAddons # KMessageBox
 )
 
 if(ACL_FOUND)
