@@ -700,4 +700,4 @@ void KWindowSystem::setBlockingCompositing( WId window, bool active )
     qDebug() << "setBlockingCompositing( WId window, bool active ) isn't yet implemented!";
 }
 
-#include "kwindowsystem.moc"
+#include "moc_kwindowsystem.cpp"
