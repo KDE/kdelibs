@@ -141,10 +141,10 @@ extern "C" {
 #ifdef BUFFER_DEBUG
             qDebug("...returning true!");
 #endif
-            return true;
+            return TRUE;
         }
         else
-            return false;  /* I/O suspension mode */
+            return FALSE;  /* I/O suspension mode */
     }
 
     static
@@ -312,7 +312,7 @@ int JPEGLoader::Private::processData(uchar* buffer, int length)
 
     if(state == Init)
     {
-        if(jpeg_read_header(&cinfo, true) != JPEG_SUSPENDED) {
+        if(jpeg_read_header(&cinfo, TRUE) != JPEG_SUSPENDED) {
             state = startDecompress;
             
             // libJPEG can scale down 2x, 4x, and 8x, 
@@ -336,9 +336,9 @@ int JPEGLoader::Private::processData(uchar* buffer, int length)
     {
         jsrc.do_progressive = jpeg_has_multiple_scans( &cinfo );
         if ( jsrc.do_progressive )
-            cinfo.buffered_image = true;
+            cinfo.buffered_image = TRUE;
         else
-            cinfo.buffered_image = false;
+            cinfo.buffered_image = FALSE;
         // setup image sizes
         jpeg_calc_output_dimensions( &cinfo );
         
@@ -348,9 +348,9 @@ int JPEGLoader::Private::processData(uchar* buffer, int length)
         if ( cinfo.jpeg_color_space == JCS_YCCK )
             cinfo.out_color_space = JCS_CMYK;
 
-        cinfo.do_fancy_upsampling = true;
-        cinfo.do_block_smoothing = false;
-        cinfo.quantize_colors = false;
+        cinfo.do_fancy_upsampling = TRUE;
+        cinfo.do_block_smoothing = FALSE;
+        cinfo.quantize_colors = FALSE;
 
         // false: IO suspension
         if(jpeg_start_decompress(&cinfo)) {

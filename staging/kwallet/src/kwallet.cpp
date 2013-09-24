@@ -472,7 +472,7 @@ Wallet *Wallet::openWallet(const QString& name, WId w, OpenType ot) {
             // will not match. We'll get that handle from the reply - see below
         }
         else if (ot == Asynchronous) {
-            r = walletLauncher->getInterface().openAsync(name, (qlonglong)w, appid(), true);        
+            r = walletLauncher->getInterface().openAsync(name, (qlonglong)w, appid(), true);
         } else if (ot == Path) {
             r = walletLauncher()->getInterface().openPathAsync(name, (qlonglong)w, appid(), true);
         } else {

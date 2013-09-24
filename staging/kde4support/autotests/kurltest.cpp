@@ -105,6 +105,13 @@ void KUrlTest::testSetQuery()
   QCOMPARE( url1.query(), QString("?") );
   url1.setQuery( QString() );
   QCOMPARE( url1.query(), QString() );
+
+  url1.setQuery("4=2+2");
+  QCOMPARE( url1.url(), QString("http://www.kde.org/foo.cgi?4=2+2"));
+  QCOMPARE( url1.query(), QString("?4=2+2"));
+  url1.setQuery("4=2%2B2");
+  QCOMPARE( url1.url(), QString("http://www.kde.org/foo.cgi?4=2%2B2")); // %2B should not be decoded to +
+  QCOMPARE( url1.query(), QString("?4=2%2B2"));
 }
 
 void KUrlTest::testEmptyNullReference()
@@ -269,6 +276,10 @@ void KUrlTest::testSimpleMethods() // to test parsing, mostly
   QCOMPARE( url0.htmlRef(), QString("/?:@-._~!$&'()*+,;=%A") );
   QCOMPARE( url0.url(), QString("http://www.kde.org#/?:@-._~!$&'()*+,;=%25A") );
 
+  url0 = "http://www.kde.org/foo.cgi?4=2+2";
+  QCOMPARE( url0.url(), QString("http://www.kde.org/foo.cgi?4=2+2") );
+  url0 = "http://www.kde.org/foo.cgi?4=2%2B2";
+  QCOMPARE( url0.url(), QString("http://www.kde.org/foo.cgi?4=2%2B2") );  // %2B should not be decoded to +
 
   KUrl fileURL( "file:///home/dfaure/myfile" );
   QCOMPARE( fileURL.url(), QString("file:///home/dfaure/myfile") );

@@ -2084,10 +2084,8 @@ JSValue *WindowFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const Li
   KHTMLView *widget = part->view();
   JSValue *v = args[0];
   UString s;
-  if (!v->isUndefinedOrNull()) {
-    s = v->toString(exec);
-    str = s.qstring();
-  }
+  s = v->toString(exec);
+  str = s.qstring();
 
   QString caption;
   if (part && !part->url().host().isEmpty())

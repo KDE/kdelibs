@@ -54,7 +54,7 @@ if(WIN32)
 endif()
 
 ############### Give the user the option to build the udisks2 solid backend instead of the udisks backend ###############
-option(WITH_SOLID_UDISKS2 "Enable the udisks2 solid backend instead")
+option(WITH_SOLID_UDISKS2 "Enable the udisks2 solid backend instead" "ON")
 
 ############### Give the user the option to build the deprecated WMI solid backend instead of the new win backend ###############
 option(WITH_SOLID_WMI "Enables the deprecated WMI backend on Windows")
