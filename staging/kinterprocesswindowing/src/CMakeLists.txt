@@ -21,7 +21,6 @@ generate_export_header(KInterProcessWindowing)
 
 target_link_libraries(KInterProcessWindowing
 LINK_PUBLIC
-   Qt5::Core
    KWidgetsAddons
 LINK_PRIVATE
    ${KWindowSystem_LIBRARIES}
@@ -37,7 +36,7 @@ set_target_properties(KInterProcessWindowing PROPERTIES VERSION   ${KINTERPROCES
                                                         SOVERSION ${KINTERPROCESSWINDOWING_SOVERSION}
 )
 
-install(TARGETS KInterProcessWindowing EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
+install(TARGETS KInterProcessWindowing EXPORT KInterProcessWindowingTargets ${ECM_TARGET_DEFAULT_ARGS})
 
 install(FILES
     kusertimestamp.h

@@ -462,6 +462,9 @@ get_target_property(KDE4_MAKEKDEWIDGETS_EXECUTABLE    ${KDE4_TARGET_PREFIX}makek
 if(NOT TARGET KF5::SonnetCore)
    include(${KDE4_LIB_INSTALL_DIR}/cmake/Sonnet/SonnetTargets.cmake)
 endif()
+if(NOT TARGET KF5::KInterProcessWindowing)
+   include(${KDE4_LIB_INSTALL_DIR}/cmake/KInterProcessWindowing/KInterProcessWindowingTargets.cmake)
+endif()
 
 # This file contains the exported library target from kdelibs (new with cmake 2.6.x), e.g.
 # the library target "kdeui" is exported as "KDE4__kdeui". The "KDE4__" is used as
