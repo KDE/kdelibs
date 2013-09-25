@@ -9,7 +9,7 @@ set(KDEWebKit_LIB_SRCS
 add_library(KDEWebKit ${KDEWebKit_LIB_SRCS})
 generate_export_header(KDEWebKit)
 
-target_link_libraries(KDEWebKit LINK_PUBLIC Qt5::Core Qt5::Gui Qt5::WebKitWidgets
+target_link_libraries(KDEWebKit LINK_PUBLIC Qt5::WebKitWidgets
                                 LINK_PRIVATE KCoreAddons KWallet KIOWidgets KParts)
 
 set_target_properties(KDEWebKit PROPERTIES VERSION   ${KDEWEBKIT_VERSION_STRING}

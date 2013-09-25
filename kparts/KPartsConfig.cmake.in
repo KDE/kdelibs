@@ -1,6 +1,5 @@
 @PACKAGE_INIT@
 
-find_dependency(Qt5Widgets @REQUIRED_QT_VERSION@)
 find_dependency(XmlGui "${PACKAGE_VERSION}")
 find_dependency(KIOCore "${PACKAGE_VERSION}")
 find_dependency(KTextWidgets "${PACKAGE_VERSION}")

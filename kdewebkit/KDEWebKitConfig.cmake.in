@@ -1,12 +1,6 @@
 @PACKAGE_INIT@
 
-find_dependency(Qt5Core @REQUIRED_QT_VERSION@)
-find_dependency(Qt5Widgets @REQUIRED_QT_VERSION@)
 find_dependency(Qt5WebkitWidgets @REQUIRED_QT_VERSION@)
-find_dependency(KCoreAddons "${PACKAGE_VERSION}")
-find_dependency(KWallet "${PACKAGE_VERSION}")
-find_dependency(KIOWidgets "${PACKAGE_VERSION}")
-find_dependency(KParts "${PACKAGE_VERSION}")
 
 set(KDEWebkit_INSTALL_PREFIX "@PACKAGE_CMAKE_INSTALL_PREFIX@")
 set_and_check(KDEWebkit_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")
