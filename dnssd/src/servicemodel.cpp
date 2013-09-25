@@ -20,7 +20,6 @@
 
 #include "servicemodel.h"
 #include "servicebrowser.h"
-#include <klocalizedstring.h>
 
 namespace DNSSD
 {
@@ -98,9 +97,9 @@ QVariant ServiceModel::headerData(int section, Qt::Orientation orientation, int 
 {
     if (orientation!=Qt::Horizontal || role!=Qt::DisplayRole) return QVariant();
     switch (section) {
-	case ServiceName: return i18n("Name");
-	case Host: return i18n("Host");
-	case Port: return i18n("Port");
+	case ServiceName: return tr("Name");
+	case Host: return tr("Host");
+	case Port: return tr("Port");
     }
     return QVariant();
 }

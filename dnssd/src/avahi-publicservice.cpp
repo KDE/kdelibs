@@ -30,7 +30,6 @@
 #include <sys/types.h>
 #endif
 #include "servicebrowser.h"
-#include "settings.h"
 #include "avahi_server_interface.h"
 #include "avahi_entrygroup_interface.h"
 

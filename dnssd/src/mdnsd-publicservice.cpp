@@ -25,7 +25,6 @@
 #include "servicebase_p.h"
 #include "mdnsd-sdevent.h"
 #include "mdnsd-responder.h"
-#include "settings.h"
 
 #define K_D PublicServicePrivate* d=static_cast<PublicServicePrivate*>(this->d)
 

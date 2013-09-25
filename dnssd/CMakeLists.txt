@@ -32,7 +32,29 @@ set_package_properties(Avahi PROPERTIES DESCRIPTION "Facilities for service disc
                        PURPOSE "Either Avahi or DNSSD is required for KDE applications to make use of multicast DNS/DNS-SD service discovery"
                       )
 
+if(NOT AVAHI_FOUND)
+    find_package(DNSSD)
+    macro_bool_to_01(DNSSD_FOUND HAVE_DNSSD)
+    set_package_properties(DNSSD PROPERTIES DESCRIPTION "Facilities for service discovery on a local network"
+                          URL "http://avahi.org"
+                          TYPE OPTIONAL
+                          PURPOSE "Either Avahi or DNSSD is required for KDE applications to make use of multicast DNS/DNS-SD service discovery"
+                          )
+endif()
+
+
 add_subdirectory(src)
+
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KDNSSD")
+configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/KDNSSDConfig.cmake.in"
+                              "${CMAKE_CURRENT_BINARY_DIR}/KDNSSDConfig.cmake"
+                              INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
+                              PATH_VARS  INCLUDE_INSTALL_DIR CMAKE_INSTALL_PREFIX )
+
+install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/KDNSSDConfig.cmake"
+               "${CMAKE_CURRENT_BINARY_DIR}/KDNSSDConfigVersion.cmake"
+        DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
+        COMPONENT Devel )
 
 if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
   feature_summary(WHAT ALL   FATAL_ON_MISSING_REQUIRED_PACKAGES)
