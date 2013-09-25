@@ -1,5 +1,7 @@
 include(ECMMarkAsTest)
 
+find_package(Qt5 ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE COMPONENTS Test)
+
 macro(ktextwidgets_unit_tests)
    foreach(_testname ${ARGN})
       add_executable(${_testname} ${_testname}.cpp)
