@@ -21,7 +21,7 @@
 #ifndef BROWSEROPENORSAVEQUESTION_H
 #define BROWSEROPENORSAVEQUESTION_H
 
-#include "kparts_export.h"
+#include "kparts/kparts_export.h"
 #include "browserrun.h"
 #include <kservice.h>
 
