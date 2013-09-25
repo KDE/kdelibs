@@ -22,7 +22,6 @@
 #ifndef KIO_RENAMEDIALOG_H
 #define KIO_RENAMEDIALOG_H
 
-#include <ksqueezedtextlabel.h>
 #include <kio/jobuidelegateextension.h>
 #include <QDialog>
 #include <QString>
@@ -35,6 +34,7 @@ class QScrollArea;
 class QLabel;
 class QPixmap;
 class KFileItem;
+class KSqueezedTextLabel;
 
 namespace KIO
 {
