@@ -4,6 +4,7 @@ set(kdeemoticons_SRCS kde_emoticons.cpp)
 
 add_library(emoticonstheme_kde MODULE ${kdeemoticons_SRCS})
 
+find_package(Qt5Xml REQUIRED)
 target_link_libraries(emoticonstheme_kde
 LINK_PRIVATE
     KEmoticons

@@ -4,6 +4,7 @@ set(xmppemoticons_SRCS xmpp_emoticons.cpp)
 
 add_library(emoticonstheme_xmpp MODULE ${xmppemoticons_SRCS})
 
+find_package(Qt5Xml REQUIRED)
 target_link_libraries(emoticonstheme_xmpp
 LINK_PRIVATE
     KEmoticons
