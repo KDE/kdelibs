@@ -40,7 +40,6 @@
 #include <QDebug>
 #include <kshell.h>
 #include <kmimetypetrader.h>
-#include <klocalizedstring.h>
 #include <kio/accessmanager.h>
 #include <kio/job.h>
 #include <kio/copyjob.h>
