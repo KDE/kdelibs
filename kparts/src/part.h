@@ -24,7 +24,6 @@
 #include <QtCore/QSharedDataPointer>
 
 #include <kxmlguiclient.h>
-#include <kaboutdata.h> // for source compat
 
 #include <kparts/kparts_export.h>
 

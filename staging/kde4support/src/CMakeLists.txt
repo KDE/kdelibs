@@ -234,6 +234,7 @@ target_link_libraries(KDE4Support
    KWindowSystem
    KGuiAddons
    KTextWidgets
+   KParts
 )
 
 # This flag is needed in order to be able to support files > 2GB even on

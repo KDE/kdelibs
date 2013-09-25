@@ -1,52 +1,58 @@
+cmake_minimum_required(VERSION 2.8.11)
+
 project(KParts)
+
+find_package(ECM 0.0.8 REQUIRED NO_MODULE)
+
+set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
+
+set(REQUIRED_QT_VERSION "5.2")
+find_package(Qt5 ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE COMPONENTS Core Xml Network Test)
+find_package(KF5 5.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
+
+include(FeatureSummary)
+
+include(ECMSetupVersion)
+
+ecm_setup_version(5 0 0 VARIABLE_PREFIX KUNITCONVERSION
+                        VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kparts_version.h"
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KPartsConfigVersion.cmake")
+
+remove_definitions(-DQT_NO_CAST_TO_ASCII)
+remove_definitions(-DQT_NO_CAST_FROM_ASCII)
+remove_definitions(-DQT_NO_CAST_FROM_BYTEARRAY)
+remove_definitions(-DQT_NO_KEYWORDS)
 
 add_subdirectory( tests )
 add_subdirectory( autotests )
+add_subdirectory( src )
 
-########### next target ###############
+# create a Config.cmake and a ConfigVersion.cmake file and install them
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KParts")
 
-set(KParts_LIB_SRCS
-   part.cpp
-   plugin.cpp
-   partmanager.cpp
-   mainwindow.cpp
-   event.cpp
-   browserextension.cpp
-   historyprovider.cpp
-   browserinterface.cpp
-   browserrun.cpp
-   browseropenorsavequestion.cpp
-   statusbarextension.cpp
-   scriptableextension.cpp
-   textextension.cpp
-   htmlextension.cpp
-   fileinfoextension.cpp
-   listingextension.cpp
-   )
+include(CMakePackageConfigHelpers)
 
-add_library(KParts SHARED ${KParts_LIB_SRCS})
-generate_export_header(KParts)
+configure_package_config_file(
+  "${CMAKE_CURRENT_SOURCE_DIR}/KPartsConfig.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/KPartsConfig.cmake"
+  INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
+  PATH_VARS  INCLUDE_INSTALL_DIR CMAKE_INSTALL_PREFIX
+)
 
-target_include_directories(KParts PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..;${CMAKE_CURRENT_BINARY_DIR}/..>")
-target_link_libraries(KParts LINK_PUBLIC KIOCore KService XmlGui
-                             LINK_PRIVATE KCoreAddons KIOWidgets KI18n KWindowSystem KNotifications KIconThemes KTextWidgets KJobWidgets)
+install(FILES
+  "${CMAKE_CURRENT_BINARY_DIR}/KPartsConfig.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/KPartsConfigVersion.cmake"
+  DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
+  COMPONENT Devel
+)
 
-if(HAVE_NEPOMUK)
-  target_link_libraries(KParts LINK_PRIVATE nepomuk nepomukutils)
-endif(HAVE_NEPOMUK)
+install(EXPORT KPartsTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KPartsTargets.cmake NAMESPACE KF5:: )
 
-set_target_properties(KParts PROPERTIES VERSION ${GENERIC_LIB_VERSION}
-                                        SOVERSION ${GENERIC_LIB_SOVERSION}
-                     )
+install(FILES
+  ${CMAKE_CURRENT_BINARY_DIR}/kparts_version.h
+  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
+)
 
-install(TARGETS KParts EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
-
-########### install files ###############
-
-install( FILES kpart.desktop krop.desktop krwp.desktop browserview.desktop   DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
-install( FILES ${CMAKE_CURRENT_BINARY_DIR}/kparts_export.h part.h plugin.h partmanager.h mainwindow.h event.h
-         browserextension.h historyprovider.h browserinterface.h
-         browserrun.h statusbarextension.h browseropenorsavequestion.h
-         scriptableextension.h textextension.h htmlextension.h fileinfoextension.h
-         listingextension.h
-         DESTINATION  ${INCLUDE_INSTALL_DIR}/kparts COMPONENT Devel )
+if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
+  feature_summary(WHAT ALL   FATAL_ON_MISSING_REQUIRED_PACKAGES)
+endif()
