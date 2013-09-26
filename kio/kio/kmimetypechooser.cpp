@@ -18,7 +18,6 @@
 
 #include "kmimetypechooser.h"
 
-#include <klocalizedstring.h>
 #include <qmimedatabase.h>
 #include <ksharedconfig.h>
 
@@ -30,6 +29,8 @@
 #include <QPushButton>
 #include <QTreeWidget>
 #include <kconfiggroup.h>
+
+static const QString i18n(const char* a) { return QApplication::translate("KMimeTypeChooser", a); }
 
 //BEGIN KMimeTypeChooserPrivate
 class KMimeTypeChooserPrivate

@@ -19,15 +19,15 @@
 
 #include <QApplication>
 #include <kmimetypechooser.h>
-#include <klocalizedstring.h>
 #include <QDebug>
 
 int main( int argc, char** argv ) {
     QApplication app( argc, argv );
 
-    QString text = i18n("Select the MimeTypes you want for this file type.");
-    QStringList list; list << "inode/directory"; list << "text/plain";
-    KMimeTypeChooserDialog dlg( i18n("Select Mime Types"), text, list, "text", QStringList(),
+    QString text = QStringLiteral("Select the MimeTypes you want for this file type.");
+    QStringList list;
+    list << QStringLiteral("inode/directory") << QStringLiteral("text/plain");
+    KMimeTypeChooserDialog dlg( QStringLiteral("Select Mime Types"), text, list, QStringLiteral("text"), QStringList(),
                                 KMimeTypeChooser::Comments|KMimeTypeChooser::Patterns|KMimeTypeChooser::EditButton,
                                 (QWidget*)0 );
     if ( dlg.exec() == QDialog::Accepted ) {
