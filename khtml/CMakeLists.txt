@@ -12,7 +12,7 @@ find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 
 find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS PrintSupport Test Concurrent)
 
-ecm_setup_version(5 0 0 VARIABLE_PREFIX KHTML
+ecm_setup_version(5.0.0 VARIABLE_PREFIX KHTML
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/khtml_version.h"
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KHtmlConfigVersion.cmake")
 

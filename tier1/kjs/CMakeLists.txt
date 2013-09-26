@@ -29,7 +29,7 @@ option(KJS_FORCE_DISABLE_PCRE "Force building of KJS without PCRE. Doing this wi
 
 
 
-ecm_setup_version(5 0 0 VARIABLE_PREFIX KJS
+ecm_setup_version(5.0.0 VARIABLE_PREFIX KJS
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kjs_version.h"
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KJSConfigVersion.cmake")
 

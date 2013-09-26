@@ -12,7 +12,7 @@ find_package(Qt5Gui ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE)
 
 include(FeatureSummary)
 include(ECMSetupVersion)
-ecm_setup_version(5 0 0 VARIABLE_PREFIX KGUIADDONS
+ecm_setup_version(5.0.0 VARIABLE_PREFIX KGUIADDONS
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kguiaddons_version.h"
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KGuiAddonsConfigVersion.cmake")
 

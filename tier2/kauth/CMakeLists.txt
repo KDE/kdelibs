@@ -19,7 +19,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 include(FeatureSummary)
 
 include(ECMSetupVersion)
-ecm_setup_version(5 0 0 VARIABLE_PREFIX KAUTH
+ecm_setup_version(5.0.0 VARIABLE_PREFIX KAUTH
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kauth_version.h"
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KAuthConfigVersion.cmake")
 

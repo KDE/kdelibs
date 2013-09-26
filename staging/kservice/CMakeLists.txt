@@ -11,7 +11,7 @@ find_package(KF5 5.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 
 include(ECMSetupVersion)
 
-ecm_setup_version(5 0 0 VARIABLE_PREFIX KSERVICE
+ecm_setup_version(5.0.0 VARIABLE_PREFIX KSERVICE
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kservice_version.h"
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KServiceConfigVersion.cmake")
 

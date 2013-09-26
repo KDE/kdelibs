@@ -14,7 +14,7 @@ include(FeatureSummary)
 
 # -- Maintained by scripty
 include(ECMSetupVersion)
-ecm_setup_version(5 0 0 VARIABLE_PREFIX KDEQT5STAGING
+ecm_setup_version(5.0.0 VARIABLE_PREFIX KDEQT5STAGING
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/kdeqt5stagingConfigVersion.cmake")
 
 add_subdirectory(src)

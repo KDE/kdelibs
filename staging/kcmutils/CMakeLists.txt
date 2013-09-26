@@ -15,7 +15,7 @@ include(FeatureSummary)
 
 include(ECMSetupVersion)
 
-ecm_setup_version(5 0 0 VARIABLE_PREFIX KCMUTILS
+ecm_setup_version(5.0.0 VARIABLE_PREFIX KCMUTILS
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kcmutils_version.h"
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KCMUtilsConfigVersion.cmake")
 

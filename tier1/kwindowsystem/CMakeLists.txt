@@ -19,7 +19,7 @@ include(FeatureSummary)
 include(CMakePackageConfigHelpers)
 include(ECMSetupVersion)
 
-ecm_setup_version(5 0 0 VARIABLE_PREFIX KWINDOWSYSTEM
+ecm_setup_version(5.0.0 VARIABLE_PREFIX KWINDOWSYSTEM
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kwindowsystem_version.h"
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KWindowSystemConfigVersion.cmake")
 

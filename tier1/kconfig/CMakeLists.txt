@@ -15,7 +15,7 @@ endif()
 include(FeatureSummary)
 
 include(ECMSetupVersion)
-ecm_setup_version(5 0 0 VARIABLE_PREFIX KCONFIG
+ecm_setup_version(5.0.0 VARIABLE_PREFIX KCONFIG
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kconfig_version.h"
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KConfigConfigVersion.cmake")
 

@@ -59,7 +59,7 @@ option(WITH_SOLID_UDISKS2 "Enable the udisks2 solid backend instead" "ON")
 ############### Give the user the option to build the deprecated WMI solid backend instead of the new win backend ###############
 option(WITH_SOLID_WMI "Enables the deprecated WMI backend on Windows")
 
-ecm_setup_version(5 0 0 VARIABLE_PREFIX SOLID
+ecm_setup_version(5.0.0 VARIABLE_PREFIX SOLID
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/solid_version.h"
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/SolidConfigVersion.cmake")
 

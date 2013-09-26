@@ -26,7 +26,7 @@ include(FeatureSummary)
 include(ECMSetupVersion)
 include(ECMMarkNonGuiExecutable)
 
-ecm_setup_version(5 0 0 VARIABLE_PREFIX KDE4SUPPORT
+ecm_setup_version(5.0.0 VARIABLE_PREFIX KDE4SUPPORT
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kde4support_version.h"
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KDE4SupportConfigVersion.cmake")
 
