@@ -27,7 +27,6 @@
 #include <QProcess>
 #include <QPushButton>
 #include <QTreeWidget>
-#include <kconfiggroup.h>
 
 static const QString i18n(const char* a) { return QApplication::translate("KMimeTypeChooser", a); }
 
