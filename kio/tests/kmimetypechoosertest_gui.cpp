@@ -32,7 +32,7 @@ int main( int argc, char** argv ) {
                                 (QWidget*)0 );
     if ( dlg.exec() == QDialog::Accepted ) {
         qDebug() << dlg.chooser()->patterns();
-        qDebug() << dlg.chooser()->mimeTypes().join(";");
+        qDebug() << dlg.chooser()->mimeTypes().join(QLatin1Char(';'));
     }
 
     return 0; // app.exec();

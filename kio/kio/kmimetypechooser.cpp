@@ -148,7 +148,7 @@ void KMimeTypeChooserPrivate::loadMimeTypes( const QStringList &_selectedMimeTyp
   foreach (const QMimeType& mt, mimetypes)
   {
     const QString mimetype = mt.name();
-    const int index = mimetype.indexOf('/');
+    const int index = mimetype.indexOf(QLatin1Char('/'));
     const QString maj = mimetype.left(index);
 
     if ( !groups.isEmpty() && !groups.contains( maj ) )
@@ -179,7 +179,7 @@ void KMimeTypeChooserPrivate::loadMimeTypes( const QStringList &_selectedMimeTyp
     }
 
     if ( visuals & KMimeTypeChooser::Patterns )
-      item->setText(cl, mt.globPatterns().join("; "));
+      item->setText(cl, mt.globPatterns().join(QStringLiteral("; ")));
 
     if ( selMimeTypes.contains(mimetype) ) {
       item->setCheckState( 0, Qt::Checked );
@@ -208,7 +208,7 @@ void KMimeTypeChooserPrivate::_k_editMimeType()
     QTreeWidgetItem* item = mimeTypeTree->currentItem();
     if ( !item || !item->parent() )
         return;
-    QString mt = (item->parent())->text(0) + '/' + item->text(0);
+    QString mt = (item->parent())->text(0) + QLatin1Char('/') + item->text(0);
     // KF5 TODO: use a QFileSystemWatcher on one of the shared-mime-info generated files, instead.
     //q->connect( KSycoca::self(), SIGNAL(databaseChanged(QStringList)),
     //            q, SLOT(_k_slotSycocaDatabaseChanged(QStringList)) );
@@ -218,9 +218,9 @@ void KMimeTypeChooserPrivate::_k_editMimeType()
 
     QStringList args;
 #ifndef Q_OS_WIN
-    args << "--parent" << QString::number((ulong)q->topLevelWidget()->winId());
+    args << QStringLiteral("--parent") << QString::number((ulong)q->topLevelWidget()->winId());
 #endif
-    args << "--caption" << QGuiApplication::applicationDisplayName();
+    args << QStringLiteral("--caption") << QGuiApplication::applicationDisplayName();
     args << mt;
 
     QProcess::startDetached(QStringLiteral("keditfiletype"), args);
@@ -235,7 +235,7 @@ void KMimeTypeChooserPrivate::_k_slotCurrentChanged(QTreeWidgetItem* item)
 // TODO: see _k_editMimeType
 void KMimeTypeChooserPrivate::_k_slotSycocaDatabaseChanged(const QStringList& changedResources)
 {
-    if (changedResources.contains("xdgdata-mime"))
+    if (changedResources.contains(QStringLiteral("xdgdata-mime")))
         loadMimeTypes();
 }
 
@@ -266,7 +266,7 @@ QStringList KMimeTypeChooser::mimeTypes() const
     QList<QTreeWidgetItem *> checkedItems;
     getCheckedItems(checkedItems, d->mimeTypeTree);
     foreach(QTreeWidgetItem* item, checkedItems) {
-        mimeList.append( item->parent()->text(0) + '/' + item->text(0) );
+        mimeList.append( item->parent()->text(0) + QLatin1Char('/') + item->text(0) );
     }
     return mimeList;
 }
@@ -278,7 +278,7 @@ QStringList KMimeTypeChooser::patterns() const
     getCheckedItems(checkedItems, d->mimeTypeTree);
     QMimeDatabase db;
     foreach(QTreeWidgetItem* item, checkedItems) {
-        QMimeType mime = db.mimeTypeForName(item->parent()->text(0) + '/' + item->text(0));
+        QMimeType mime = db.mimeTypeForName(item->parent()->text(0) + QLatin1Char('/') + item->text(0));
         Q_ASSERT(mime.isValid());
         patternList += mime.globPatterns();
     }
