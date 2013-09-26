@@ -224,10 +224,6 @@ endif()
 add_subdirectory( knewstuff )
 add_subdirectory( knotify )
 
-find_package(Qt5WebKitWidgets)
-if(Qt5WebKitWidgets_FOUND)
-  add_subdirectory( kdewebkit )
-endif()
 add_subdirectory( kdewidgets )
 
 ################# write dependency file which will be installed #################
