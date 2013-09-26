@@ -17,7 +17,6 @@ ecm_mark_as_test(testserver)
 
 target_link_libraries(testserver
     KParts
-    KInterProcessWindowing
     KDE4Support
     KI18n
     XmlGui

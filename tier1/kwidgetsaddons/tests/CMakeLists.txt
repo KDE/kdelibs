@@ -14,6 +14,7 @@ endmacro()
 kwidgetsaddons_executable_tests(
   kledtest
   kmessageboxtest
+  kmessageboxwidtest
   kselectactiontest
   kseparatortest
   ksqueezedtextlabeltest

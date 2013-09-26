@@ -43,7 +43,6 @@ target_link_libraries(kded_kcookiejar
    KDBusAddons
    KI18n
    KWidgetsAddons
-   KInterProcessWindowing
 )
 
 install(TARGETS kded_kcookiejar  DESTINATION ${PLUGIN_INSTALL_DIR} )

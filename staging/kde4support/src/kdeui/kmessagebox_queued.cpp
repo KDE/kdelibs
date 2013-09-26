@@ -19,7 +19,7 @@
 
 #include "kmessagebox_queued.h"
 
-#include <kmessagebox_kiw.h>
+#include <kmessagebox.h>
 #include "kdialogqueue_p.h"
 
 namespace KMessageBox {

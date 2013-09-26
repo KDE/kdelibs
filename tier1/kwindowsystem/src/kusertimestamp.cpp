@@ -19,7 +19,7 @@
 
 #include "kusertimestamp.h"
 
-#include "config-kinterprocesswindowing.h"
+#include "config-kwindowsystem.h"
 
 #if HAVE_X11
 #include <netwm.h>

@@ -25,6 +25,7 @@ configure_file(config-kwindowsystem.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-k
 set(kwindowsystem_SRCS
     kkeyserver.cpp
     kstartupinfo.cpp
+    kusertimestamp.cpp
     kxerrorhandler.cpp
     kxutils.cpp
     )
@@ -84,6 +85,7 @@ install( FILES
    fixx11h.h
    kkeyserver.h
    kstartupinfo.h
+   kusertimestamp.h
    kwindoweffects.h
    kwindowinfo.h
    kwindowsystem.h

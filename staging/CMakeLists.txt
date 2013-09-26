@@ -8,7 +8,6 @@ add_subdirectory(kservice)
 add_subdirectory(kio)
 add_subdirectory(frameworkintegration)
 
-add_subdirectory(kinterprocesswindowing)
 add_subdirectory(kde4attic)
 add_subdirectory(kde4support)
 add_subdirectory(kemoticons)

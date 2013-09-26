@@ -854,6 +854,203 @@ namespace KMessageBox
                              const QString &ask, bool *checkboxReturn,
                              Options options, const QString &details=QString(),
                              QMessageBox::Icon notifyType=QMessageBox::Information); //krazy:exclude=qclasses
+
+/**
+ * This function accepts the window id of the parent window, instead
+ * of QWidget*. It should be used only when necessary.
+ */
+KWIDGETSADDONS_EXPORT int questionYesNoWId(WId parent_id,
+                      const QString &text,
+                      const QString &caption = QString(),
+                      const KGuiItem &buttonYes = KStandardGuiItem::yes(),
+                      const KGuiItem &buttonNo =  KStandardGuiItem::no(),
+                      const QString &dontAskAgainName = QString(),
+                      Options options = Notify);
+
+/**
+ * This function accepts the window id of the parent window, instead
+ * of QWidget*. It should be used only when necessary.
+ */
+KWIDGETSADDONS_EXPORT int questionYesNoCancelWId(WId parent_id,
+                      const QString &text,
+                      const QString &caption = QString(),
+                      const KGuiItem &buttonYes = KStandardGuiItem::yes(),
+                      const KGuiItem &buttonNo = KStandardGuiItem::no(),
+                      const KGuiItem &buttonCancel = KStandardGuiItem::cancel(),
+                      const QString &dontAskAgainName = QString(),
+                      Options options = Notify);
+
+/**
+ * This function accepts the window id of the parent window, instead
+ * of QWidget*. It should be used only when necessary.
+ */
+KWIDGETSADDONS_EXPORT int questionYesNoListWId(WId parent_id,
+                      const QString &text,
+                      const QStringList &strlist,
+                      const QString &caption = QString(),
+                      const KGuiItem &buttonYes = KStandardGuiItem::yes(),
+                      const KGuiItem &buttonNo = KStandardGuiItem::no(),
+                      const QString &dontAskAgainName = QString(),
+                      Options options = Notify);
+
+/**
+ * This function accepts the window id of the parent window, instead
+ * of QWidget*. It should be used only when necessary.
+ */
+KWIDGETSADDONS_EXPORT int warningYesNoWId(WId parent_id,
+                     const QString &text,
+                     const QString &caption = QString(),
+                     const KGuiItem &buttonYes = KStandardGuiItem::yes(),
+                     const KGuiItem &buttonNo = KStandardGuiItem::no(),
+                     const QString &dontAskAgainName = QString(),
+                     Options options = Options(Notify | Dangerous));
+
+/**
+ * This function accepts the window id of the parent window, instead
+ * of QWidget*. It should be used only when necessary.
+ */
+KWIDGETSADDONS_EXPORT int warningYesNoListWId(WId parent_id,
+                        const QString &text,
+                        const QStringList &strlist,
+                        const QString &caption = QString(),
+                        const KGuiItem &buttonYes = KStandardGuiItem::yes(),
+                        const KGuiItem &buttonNo = KStandardGuiItem::no(),
+                        const QString &dontAskAgainName = QString(),
+                        Options options = Options(Notify | Dangerous));
+
+/**
+ * This function accepts the window id of the parent window, instead
+ * of QWidget*. It should be used only when necessary.
+ */
+KWIDGETSADDONS_EXPORT int warningContinueCancelWId(WId parent_id,
+                     const QString &text,
+                     const QString &caption = QString(),
+                     const KGuiItem &buttonContinue = KStandardGuiItem::cont(),
+                     const KGuiItem &buttonCancel = KStandardGuiItem::cancel(),
+                     const QString &dontAskAgainName = QString(),
+                     Options options = Notify);
+
+/**
+ * This function accepts the window id of the parent window, instead
+ * of QWidget*. It should be used only when necessary.
+ */
+KWIDGETSADDONS_EXPORT int warningContinueCancelListWId(WId parent_id,
+                     const QString &text,
+                     const QStringList &strlist,
+                     const QString &caption = QString(),
+                     const KGuiItem &buttonContinue = KStandardGuiItem::cont(),
+                     const KGuiItem &buttonCancel = KStandardGuiItem::cancel(),
+                     const QString &dontAskAgainName = QString(),
+                     Options options = Notify);
+
+/**
+ * This function accepts the window id of the parent window, instead
+ * of QWidget*. It should be used only when necessary.
+ */
+KWIDGETSADDONS_EXPORT int warningYesNoCancelWId(WId parent_id,
+                            const QString &text,
+                            const QString &caption = QString(),
+                            const KGuiItem &buttonYes = KStandardGuiItem::yes(),
+                            const KGuiItem &buttonNo = KStandardGuiItem::no(),
+                            const KGuiItem &buttonCancel = KStandardGuiItem::cancel(),
+                            const QString &dontAskAgainName = QString(),
+                            Options options = Notify);
+
+/**
+ * This function accepts the window id of the parent window, instead
+ * of QWidget*. It should be used only when necessary.
+ */
+KWIDGETSADDONS_EXPORT int warningYesNoCancelListWId(WId parent_id,
+                            const QString &text,
+                            const QStringList &strlist,
+                            const QString &caption = QString(),
+                            const KGuiItem &buttonYes = KStandardGuiItem::yes(),
+                            const KGuiItem &buttonNo = KStandardGuiItem::no(),
+                            const KGuiItem &buttonCancel = KStandardGuiItem::cancel(),
+                            const QString &dontAskAgainName = QString(),
+                            Options options = Notify);
+
+/**
+ * This function accepts the window id of the parent window, instead
+ * of QWidget*. It should be used only when necessary.
+ */
+KWIDGETSADDONS_EXPORT void errorWId(WId parent_id,
+                const QString &text,
+                const QString &caption = QString(),
+                Options options = Notify);
+
+/**
+ * This function accepts the window id of the parent window, instead
+ * of QWidget*. It should be used only when necessary.
+ */
+KWIDGETSADDONS_EXPORT void errorListWId(WId parent_id,
+                const QString &text,
+                const QStringList &strlist,
+                const QString &caption = QString(),
+                Options options = Notify);
+
+/**
+ * This function accepts the window id of the parent window, instead
+ * of QWidget*. It should be used only when necessary.
+ */
+KWIDGETSADDONS_EXPORT void detailedErrorWId(WId parent_id,
+                const QString &text,
+                const QString &details,
+                const QString &caption = QString(),
+                Options options = Notify);
+
+/**
+ * This function accepts the window id of the parent window, instead
+ * of QWidget*. It should be used only when necessary.
+ */
+KWIDGETSADDONS_EXPORT void sorryWId(WId parent_id,
+                const QString &text,
+                const QString &caption = QString(),
+                Options options = Notify);
+
+/**
+ * This function accepts the window id of the parent window, instead
+ * of QWidget*. It should be used only when necessary.
+ */
+KWIDGETSADDONS_EXPORT void detailedSorryWId(WId parent_id,
+                const QString &text,
+                const QString &details,
+                const QString &caption = QString(),
+                Options options = Notify);
+
+/**
+ * This function accepts the window id of the parent window, instead
+ * of QWidget*. It should be used only when necessary.
+ */
+KWIDGETSADDONS_EXPORT void informationWId(WId parent_id,
+                      const QString &text,
+                      const QString &caption = QString(),
+                      const QString &dontShowAgainName = QString(),
+                      Options options = Notify);
+
+/**
+ * This function accepts the window id of the parent window, instead
+ * of QWidget*. It should be used only when necessary.
+ */
+KWIDGETSADDONS_EXPORT void informationListWId(WId parent_id,
+              const QString &text,
+              const QStringList & strlist,
+              const QString &caption = QString(),
+              const QString &dontShowAgainName = QString(),
+              Options options = Notify);
+
+/**
+ * This function accepts the window id of the parent window, instead
+ * of QWidget*. It should be used only when necessary.
+ */
+KWIDGETSADDONS_EXPORT int messageBoxWId( WId parent_id, DialogType type, const QString &text,
+                const QString &caption = QString(),
+                const KGuiItem &buttonYes = KStandardGuiItem::yes(),
+                const KGuiItem &buttonNo = KStandardGuiItem::no(),
+                const KGuiItem &buttonCancel = KStandardGuiItem::cancel(),
+                const QString &dontShowAskAgainName = QString(),
+                Options options = Notify);
+
 }
 
 #endif

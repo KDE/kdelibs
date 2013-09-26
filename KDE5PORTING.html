@@ -323,11 +323,10 @@ have to find an alternative</li>
     m_naturalSorting = g.readEntry("NaturalSorting", true);
 </pre>
 </li>
-<li>KMessageBox is no longer a class, but a namespace, as it only had static methods. The KMessageBox namespace spans now in three frameworks:
+<li>KMessageBox is no longer a class, but a namespace, as it only had static methods. The KMessageBox namespace spans now in two frameworks:
     <ul>
-    <li>WId methods are now in kmessagebox_kiw.h from kinterprocesswindowing framework</li>
-    <li>Queued methds are now in kmessagebox_queued.h from kde4support framework</li>
-    <li>The remainder of the methods are now in kmessagebox.h from kwidgets
+    <li>Queued methods are now in kmessagebox_queued.h from kde4support framework</li>
+    <li>The remainder of the methods are now in kmessagebox.h from kwidgetsaddons
         <ul>
             <li>setDontShowAskAgainConfig was renamed to setDontShowAgainConfig</li>
             <li>NOTE1: KMessageBox no longer uses notifications</li>

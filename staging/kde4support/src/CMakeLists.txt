@@ -225,7 +225,6 @@ target_link_libraries(KDE4Support
    kio
    ${KIO_EXTRA_LIBS}
    KI18n
-   KInterProcessWindowing
    ${X11_LIBRARIES}
    KCompletion
    KDE4Attic

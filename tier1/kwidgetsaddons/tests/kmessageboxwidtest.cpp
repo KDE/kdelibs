@@ -16,23 +16,34 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
-#ifndef KMESSAGEBOXWIDTEST_H
-#define KMESSAGEBOXWIDTEST_H
+#include <iostream>
 
-#include <QLabel>
-#include <QWidget>
+#include <kmessagebox.h>
 
-class Window : public QWidget
+#include <QApplication>
+
+int main(int argc, char **argv)
 {
-public:
-    Window();
+    QApplication::setApplicationName(QStringLiteral("kmessageboxwidtest"));
+    QApplication app(argc, argv);
+    if (argc != 2) {
+        std::cerr << "Usage: " << qPrintable(QApplication::applicationName()) << " <window id>\n";
+        std::cerr << '\n';
+        std::cerr << "You can get a window id using a tool like `xwininfo`.\n";
+        return 1;
+    }
 
-private:
-    void showMessageBox();
-    void showMessageBoxExternal();
-    void updateLabel(int ret);
+    bool ok;
+    int winId = QByteArray(argv[1]).toInt(&ok, 0);
+    if (!ok) {
+        std::cerr << '"' << argv[1] << "\" is not a number\n";
+        return 1;
+    }
 
-    QLabel *m_label;
-};
+    int ret = KMessageBox::warningContinueCancelWId(winId,
+        QStringLiteral("Are you sure you want to continue?"),
+        QStringLiteral("Dangerous stuff"));
 
-#endif /* KMESSAGEBOXWIDTEST_H */
+    std::cout << "Returned " << ret << '\n';
+    return ret;
+}
