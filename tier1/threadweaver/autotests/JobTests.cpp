@@ -315,6 +315,14 @@ void JobTests::QueueAndDequeueSequenceTest() {
     QVERIFY(ThreadWeaver::Weaver::instance()->isEmpty());
 }
 
+void JobTests::BlockingExecuteTest()
+{
+    QString sequence;
+    AppendCharacterJob job(QChar('a'), &sequence);
+    job.blockingExecute();
+    QCOMPARE(sequence, QString("a"));
+}
+
 void JobTests::RecursiveSequenceTest()
 {
     QString sequence;

@@ -29,6 +29,7 @@ private Q_SLOTS:
     void CollectionDependenciesTest();
     void QueueAndDequeueCollectionTest();
     void QueueAndDequeueSequenceTest();
+    void BlockingExecuteTest();
     void RecursiveSequenceTest();
     void RecursiveQueueAndDequeueCollectionTest();
     void RecursiveQueueAndDequeueSequenceTest();
