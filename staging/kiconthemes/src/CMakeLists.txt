@@ -17,11 +17,10 @@ target_link_libraries(KIconThemes
   LINK_PRIVATE
     Qt5::DBus
     Qt5::Svg
-    KI18n
+    KI18n          # for i18n in KIconDialog
+    KWidgetsAddons # for KPixmapSequence family
     ItemViews      # for KListWidgetSearchLine
     KConfigWidgets # for KColorScheme
-    #KConfigCore    # for KConfig/KConfigGroup
-    #KWidgetsAddons # for KPixmapSequence family
 )
 
 set_target_properties(KIconThemes PROPERTIES VERSION   ${KICONTHEMES_VERSION_STRING}
