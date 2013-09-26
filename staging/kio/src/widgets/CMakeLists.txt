@@ -84,13 +84,13 @@ target_link_libraries(KIOWidgets
     KJobWidgets
     Qt5::Network  # SSL
     KCompletion   # KUrlCompletion uses KCompletion
+    KWidgetsAddons # keditlistwidget
   LINK_PRIVATE
     Qt5::DBus
     KI18n
     KIconThemes   # KIconLoader
     KWindowSystem # KStartupInfo
     KConfigWidgets # KColorScheme
-    #KWidgetsAddons # KMessageBox
 )
 
 if(ACL_FOUND)
