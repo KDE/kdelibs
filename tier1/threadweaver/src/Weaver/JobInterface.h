@@ -22,6 +22,7 @@ class THREADWEAVER_EXPORT JobInterface {
 public:
     virtual ~JobInterface() {}
     virtual void execute(JobPointer job, Thread*) = 0;
+    virtual void blockingExecute() = 0;
     virtual Executor* setExecutor(Executor* executor) = 0;
     virtual Executor* executor() const = 0;
     virtual int priority() const = 0;

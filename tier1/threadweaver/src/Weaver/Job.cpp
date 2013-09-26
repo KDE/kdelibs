@@ -38,6 +38,7 @@ $Id: Job.cpp 20 2005-08-08 21:02:51Z mirko $
 #include "DependencyPolicy.h"
 #include "Executor.h"
 #include "ExecuteWrapper.h"
+#include "ManagedJobPointer.h"
 
 namespace {
 
@@ -128,10 +129,9 @@ void Job::execute(JobPointer job, Thread *th)
     executor->cleanup(job, th);
 }
 
-void Job::operator ()()
+void Job::blockingExecute()
 {
-    Q_ASSERT(false); //TODO NI
-    //execute(0);
+    execute(ManagedJobPointer(this), 0);
 }
 
 Executor *Job::setExecutor(Executor *executor)
@@ -229,4 +229,5 @@ QMutex* Job::mutex() const
 
 }
 
+#include "ManagedJobPointer.h"
 #include "moc_Job.cpp"

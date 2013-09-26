@@ -137,7 +137,7 @@ void QueueBenchmarksTest::BaselineAsJobsBenchmark()
 
     QBENCHMARK {
         for(int i = 0; i < n; ++i) {
-            jobs[i]();
+            jobs[i].blockingExecute();
         }
     }
 }

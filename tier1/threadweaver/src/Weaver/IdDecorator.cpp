@@ -138,6 +138,12 @@ void IdDecorator::execute(ThreadWeaver::JobPointer self, ThreadWeaver::Thread* t
     job()->execute(self, thread);
 }
 
+void IdDecorator::blockingExecute()
+{
+    Q_ASSERT(d);
+    job()->blockingExecute();
+}
+
 const ThreadWeaver::JobInterface* IdDecorator::job() const
 {
     return reinterpret_cast<JobInterface*>(d);

@@ -77,7 +77,7 @@ public:
     virtual void execute(JobPointer job, Thread*) Q_DECL_OVERRIDE;
 
     /** Perform the job synchroneously in the current thread. */
-    void operator()();
+    void blockingExecute() Q_DECL_OVERRIDE;
 
     /** Set the Executor object that is supposed to run the job.
      *
