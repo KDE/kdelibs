@@ -203,7 +203,6 @@ add_subdirectory( kio )
 add_subdirectory( kded       )
 add_subdirectory( kfile )
 add_subdirectory( kioslave   )
-add_subdirectory( kparts     )
 
 find_package(Phonon4Qt5 4.6.60 NO_MODULE)
 if (Phonon4Qt5_FOUND)
