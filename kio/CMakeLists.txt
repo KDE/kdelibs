@@ -41,7 +41,6 @@ set(kiocore_STAT_SRCS
   kio/defaultviewadapter.cpp
   kio/kdbusservicestarter.cpp
   kio/kimageio.cpp
-  kio/kmimetypechooser.cpp
 )
 
 if(NOT KDE_NO_DEPRECATED)
@@ -165,7 +164,6 @@ install(  FILES
 install( FILES
   kio/kdbusservicestarter.h
   kio/kimageio.h
-  kio/kmimetypechooser.h
   kfile/kabstractfilemodule.h
   kfile/kabstractfilewidget.h
   kfile/kencodingfiledialog.h

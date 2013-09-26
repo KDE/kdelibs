@@ -28,7 +28,6 @@ KIO_EXECUTABLE_TESTS(
   kionetrctest
   kpropsdlgtest
   ksycocaupdatetest
-  kmimetypechoosertest_gui
   kdbusservicestartertest
   kfiledialogtest
 )
