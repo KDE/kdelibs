@@ -20,7 +20,6 @@
 
 #include <unistd.h>
 
-#include <klocalizedstring.h>
 #include <kjobuidelegate.h>
 #include <kio/job.h>
 #include <kio/copyjob.h>
