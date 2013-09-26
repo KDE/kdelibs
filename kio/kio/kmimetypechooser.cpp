@@ -19,7 +19,6 @@
 #include "kmimetypechooser.h"
 
 #include <qmimedatabase.h>
-#include <ksharedconfig.h>
 
 #include <QApplication>
 #include <QDialogButtonBox>
@@ -357,16 +356,10 @@ void KMimeTypeChooserDialog::Private::init()
     QObject::connect(buttonBox, SIGNAL(accepted()), q, SLOT(accept()));
     QObject::connect(buttonBox, SIGNAL(rejected()), q, SLOT(reject()));
     layout->addWidget(buttonBox);
-
-  KConfigGroup group( KSharedConfig::openConfig(), "KMimeTypeChooserDialog");
-  q->resize(group.readEntry("size", QSize(600,500)));
 }
 
 KMimeTypeChooserDialog::~KMimeTypeChooserDialog()
 {
-  KConfigGroup group( KSharedConfig::openConfig(), "KMimeTypeChooserDialog");
-  group.writeEntry("size", size());
-
   delete d;
 }
 
