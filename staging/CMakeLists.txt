@@ -1,7 +1,6 @@
 find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 
 add_subdirectory(kconfigwidgets)
-add_subdirectory(kiconthemes)
 add_subdirectory(kjobwidgets)
 add_subdirectory(xmlgui)
 

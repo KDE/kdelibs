@@ -8,7 +8,7 @@ set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
 find_package(Qt5Svg 5.2.0 REQUIRED NO_MODULE)
 find_package(Qt5DBus 5.2.0 REQUIRED NO_MODULE)
-find_package(KF5 5.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs KIconThemes)
+find_package(KF5 5.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 
 set(QT_REQUIRED_VERSION 5.2.0)
 find_package(Qt5Widgets ${QT_REQUIRED_VERSION} REQUIRED NO_MODULE)
