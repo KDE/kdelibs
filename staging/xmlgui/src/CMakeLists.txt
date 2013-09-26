@@ -94,19 +94,21 @@ generate_export_header(XmlGui)
 
 target_link_libraries(XmlGui
 LINK_PUBLIC
-    Qt5::DBus
-    Qt5::Xml
-    KCoreAddons
-    KConfigWidgets
+    Qt5::DBus           #QDBus connect to signal in KToolBar
+    Qt5::Xml            #To parse the configuration (QDomDocument etc)
+    Qt5::Widgets        #QWidget is used everywhere
+    KConfigCore         #Reading config for ToolbarIcons, Shortcut Schemes...
+    KConfigWidgets      #KStandardAction, KToggleAction...
 LINK_PRIVATE
-    Qt5::Network
-    Qt5::PrintSupport
-    Qt5::X11Extras
-    ItemViews
-    KI18n
-    KIconThemes
-    KTextWidgets
-    KWindowSystem
+    Qt5::Network        #QNetworkAccessManager in kaboutapplicationpersonmodel_p
+    Qt5::PrintSupport   #QPrinter in kshortcutseditor
+    Qt5::X11Extras      #QX11Info in kglobalaccel, QX11Info::appTime, appUserTime, setAppUserTime
+    KWidgetsAddons
+    ItemViews           #KWidgetItemDelegate in KAboutApplicationPersonListDelegate
+    KI18n               #i18n and i18nc in many places
+    KIconThemes         #KIconLoader and KIconThemes in KToolBar
+    KTextWidgets        #KTextEdit in kbugreport
+    KWindowSystem       #KKeyServer in kkeysequencewidget
     ${XMLGUI_EXTRA_LIBS}
 )
 
