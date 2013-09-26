@@ -621,6 +621,7 @@ bool KGlobalAccel::setDefaultShortcut(QAction *action, const QList<QKeySequence>
     if (!d->doRegister(action))
         return false;
 
+    d->actionDefaultShortcuts.insert(action, shortcut);
     d->updateGlobalShortcut(action, KGlobalAccelPrivate::DefaultShortcut, loadFlag);
     return true;
 }
@@ -633,6 +634,7 @@ bool KGlobalAccel::setShortcut(QAction *action, const QList<QKeySequence> &short
     if (!d->doRegister(action))
         return false;
 
+    d->actionShortcuts.insert(action, shortcut);
     d->updateGlobalShortcut(action, KGlobalAccelPrivate::ActiveShortcut, loadFlag);
     return true;
 }
