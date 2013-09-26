@@ -465,7 +465,9 @@ endif()
 if(NOT TARGET KF5::KInterProcessWindowing)
    include(${KDE4_LIB_INSTALL_DIR}/cmake/KInterProcessWindowing/KInterProcessWindowingTargets.cmake)
 endif()
-
+if(NOT TARGET KF5::KParts)
+   include(${KDE4_LIB_INSTALL_DIR}/cmake/KParts/KPartsTargets.cmake)
+endif()
 # This file contains the exported library target from kdelibs (new with cmake 2.6.x), e.g.
 # the library target "kdeui" is exported as "KDE4__kdeui". The "KDE4__" is used as
 # "namespace" to separate the imported targets from "normal" targets, it is stored in
