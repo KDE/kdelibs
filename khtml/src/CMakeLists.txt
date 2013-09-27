@@ -538,7 +538,7 @@ qt5_generate_dbus_interface(khtml_iface.h org.kde.KHTMLPart.xml)
 
 set(kcookiejar_XML ${CMAKE_CURRENT_BINARY_DIR}/org.kde.KCookieServer.xml)
 qt5_generate_dbus_interface(${CMAKE_SOURCE_DIR}/kioslave/http/kcookiejar/kcookieserver.h org.kde.KCookieServer.xml)
-set_source_files_properties(${kcookiejar_XML} PROPERTIES INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/../kioslave/http/kcookiejar/kcookiejar_include.h")
+set_source_files_properties(${kcookiejar_XML} PROPERTIES INCLUDE "${CMAKE_SOURCE_DIR}/kioslave/http/kcookiejar/kcookiejar_include.h")
 qt5_add_dbus_interface(khtml_LIB_SRCS ${kcookiejar_XML} kcookiejar_interface)
 
 kde4_add_ui_files(khtml_LIB_SRCS
@@ -554,16 +554,16 @@ target_link_libraries(KHTML
   KParts
   ${PHONON_LIBRARIES}
   KJS
-  ${KArchive_LIBRARIES}
+  KArchive
   ${Sonnet_SonnetCore_LIBRARY}
   ${JPEG_LIBRARIES}
   ${GIF_LIBRARIES}
   ${PNG_LIBRARIES}
   ${X11_LIBRARIES}
   KGuiAddons
-  ${KWidgetsAddons_LIBRARIES}
+  ${KWidgetAddons_LIBRARIES}
   KI18n
-  ${KWindowSystem_LIBRARIES}
+  KWindowSystem
   KWallet
   Qt5::X11Extras
   Qt5::PrintSupport
@@ -622,7 +622,7 @@ macro(create_js_binding _in_FILE)
    get_filename_component(_in_filename ${_in_FILE} NAME_WE)
    set(_out_h_FILE "${CMAKE_CURRENT_BINARY_DIR}/JS${_in_filename}.h")
    set(_out_cpp_FILE "${CMAKE_CURRENT_BINARY_DIR}/JS${_in_filename}.cpp")
-   set(_scripts_dir bindings/scripts)
+   set(_scripts_dir "${CMAKE_CURRENT_SOURCE_DIR}/bindings/scripts")
    add_custom_command(OUTPUT ${_out_h_FILE} ${_out_cpp_FILE}
       COMMAND ${PERL_EXECUTABLE} -I${_scripts_dir}
               ${_scripts_dir}/generate-bindings.pl
@@ -704,7 +704,7 @@ set(khtmlpart_PART_SRCS khtml_factory.cpp )
 add_library(khtmlpart MODULE ${khtmlpart_PART_SRCS})
 set_target_properties(khtmlpart PROPERTIES PREFIX "${CMAKE_SHARED_LIBRARY_PREFIX}")
 
-target_link_libraries(khtmlpart KHTML XmlGui KTextWidgets KParts)
+target_link_libraries(khtmlpart KHTML XmlGui KTextWidgets KParts KI18n)
 
 install(TARGETS khtmlpart  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
@@ -716,7 +716,7 @@ install(TARGETS khtmlpart  DESTINATION ${PLUGIN_INSTALL_DIR} )
 add_library(khtmlimagepart MODULE khtmlimage_init.cpp)
 
 
-target_link_libraries(khtmlimagepart khtml ${KWidgetsAddons_LIBRARIES} XmlGui KTextWidgets)
+target_link_libraries(khtmlimagepart KHTML ${KWidgetsAddons_LIBRARIES} XmlGui KTextWidgets KParts KI18n)
 
 install(TARGETS khtmlimagepart  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
@@ -742,7 +742,7 @@ if(NOT MSVC)
 
     add_executable(testkhtml ${testkhtml_SRCS})
 
-    target_link_libraries(testkhtml khtml XmlGui KTextWidgets KParts)
+    target_link_libraries(testkhtml KHTML XmlGui KTextWidgets KParts)
 
     ########### next target ###############
 
@@ -753,7 +753,7 @@ if(NOT MSVC)
 
     add_executable(testkhtml_static ${testkhtml_static_SRCS} )
 
-    target_link_libraries(testkhtml_static khtml XmlGui KTextWidgets)
+    target_link_libraries(testkhtml_static KHTML XmlGui KTextWidgets KParts)
 
     ########### next target ###############
 endif(NOT MSVC)

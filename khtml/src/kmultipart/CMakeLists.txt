@@ -1,6 +1,6 @@
 
-include_directories( ${CMAKE_SOURCE_DIR}/khtml
-                     ${CMAKE_BINARY_DIR}/khtml
+include_directories( ${CMAKE_SOURCE_DIR}/khtml/src
+                     ${CMAKE_BINARY_DIR}/khtml/src
                      ${CMAKE_SOURCE_DIR}/kio
                      ${CMAKE_SOURCE_DIR}/kio/httpfilter
                      ${KArchive_INCLUDE_DIRS}
