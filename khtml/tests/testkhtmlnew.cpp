@@ -18,7 +18,6 @@
 #include <kxmlguifactory.h>
 #include <kxmlguiwindow.h>
 #include <ktoggleaction.h>
-#include <kcombobox.h>
 #include <kstandardaction.h>
 #include <kactioncollection.h>
 
@@ -55,7 +54,7 @@ TestKHTML::TestKHTML()
     connect( m_part->browserExtension(), SIGNAL(openUrlRequest(QUrl,KParts::OpenUrlArguments,KParts::BrowserArguments)),
              this, SLOT(openUrl(QUrl,KParts::OpenUrlArguments,KParts::BrowserArguments)));
 
-    m_combo = new KComboBox;
+    m_combo = new QComboBox;
     m_combo->setEditable(true);
     connect(m_combo, SIGNAL(returnPressed(QString)), this, SLOT(openUrl(QString)));
 

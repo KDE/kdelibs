@@ -4,7 +4,7 @@
 #include <kxmlguiwindow.h>
 
 class KHTMLPart;
-class KComboBox;
+class QComboBox;
 class QToolButton;
 class QLineEdit;
 class QUrl;
@@ -48,7 +48,7 @@ private:
     void setupActions();
 
     KHTMLPart *m_part;
-    KComboBox *m_combo;
+    QComboBox *m_combo;
     QToolButton *m_goButton;
     QToolButton *m_reloadButton;
     QLineEdit *m_comboEdit;
