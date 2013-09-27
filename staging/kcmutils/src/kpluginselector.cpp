@@ -55,14 +55,13 @@ KPluginSelector::Private::Private(KPluginSelector *parent)
     : QObject(parent)
     , parent(parent)
     , listView(0)
-    , categoryDrawer(new KCategoryDrawer)
+    , categoryDrawer(0)
     , showIcons(false)
 {
 }
 
 KPluginSelector::Private::~Private()
 {
-    delete categoryDrawer;
 }
 
 void KPluginSelector::Private::updateDependencies(PluginEntry *pluginEntry, bool added)
@@ -260,6 +259,7 @@ KPluginSelector::KPluginSelector(QWidget *parent)
     d->lineEdit->setClearButtonEnabled(true);
     d->lineEdit->setPlaceholderText(i18n("Search Plugins"));
     d->listView = new KCategorizedView(this);
+    d->categoryDrawer = new KCategoryDrawerV3(d->listView);
     d->listView->setVerticalScrollMode(QListView::ScrollPerPixel);
     d->listView->setAlternatingRowColors(true);
     d->listView->setCategoryDrawer(d->categoryDrawer);
