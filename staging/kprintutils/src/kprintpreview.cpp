@@ -25,7 +25,8 @@
 #include <QPrinter>
 #include <QShowEvent>
 #include <QVBoxLayout>
-#include <qtemporarydir.h>
+#include <QTemporaryDir>
+#include <QDebug>
 
 #include <klocalizedstring.h>
 #include <kmimetypetrader.h>
@@ -33,7 +34,6 @@
 #include <kpluginfactory.h>
 #include <kpluginloader.h>
 #include <kservice.h>
-#include <QDebug>
 
 
 class KPrintPreviewPrivate
@@ -51,7 +51,6 @@ public:
         if ( tempdir.isValid() ) {
             filename = tempdir.path() + '/' + "print_preview.pdf";
         } else {
-            // XXX: not portable!
             qWarning() << "Failed to create temporary directory";
             filename = "/dev/null";
         }
@@ -77,10 +76,8 @@ public:
 void KPrintPreviewPrivate::getPart()
 {
     if (previewPart) {
-        // qDebug() << "already got a part";
         return;
     }
-    // qDebug() << "querying trader for application/pdf service";
 
     KPluginFactory *factory(0);
     const KService::List offers =
@@ -90,17 +87,10 @@ void KPrintPreviewPrivate::getPart()
     while (!factory && it != offers.end()) {
         KPluginLoader loader(**it);
         factory = loader.factory();
-        if (!factory) {
-            // qDebug() << "Loading failed:" << loader.errorString();
-        }
         ++it;
     }
     if (factory) {
-        // qDebug() << "Trying to create a part";
         previewPart = factory->create<KParts::ReadOnlyPart>(q, (QVariantList() << "Print/Preview"));
-        if (!previewPart) {
-            // qDebug() << "Part creation failed";
-        }
     }
 }
 
@@ -142,15 +132,12 @@ KPrintPreview::KPrintPreview(QPrinter *printer, QWidget *parent)
     : QDialog(parent)
     , d(new KPrintPreviewPrivate(this, printer))
 {
-    // qDebug() << "kdeprint: creating preview dialog";
-
     //There is no printing on wince
 #ifndef _WIN32_WCE
     // Set up the dialog
     setWindowTitle(i18n("Print Preview"));
 
     // Set up the printer
-    // qDebug() << "Will print to" << d->filename;
     printer->setOutputFileName(d->filename);
 
     QVBoxLayout *layout = new QVBoxLayout;
