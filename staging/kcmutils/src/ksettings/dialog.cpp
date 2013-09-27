@@ -173,11 +173,11 @@ QSet<KCModuleInfo> DialogPrivate::instanceServices()
 QSet<KCModuleInfo> DialogPrivate::parentComponentsServices(const QStringList &kcdparents)
 {
     registeredComponents += kcdparents;
-    QString constraint = kcdparents.join("' in [X-KDE-ParentComponents]) or ('");
-	constraint = "('" + constraint + "' in [X-KDE-ParentComponents])";
+    QString constraint = kcdparents.join(QStringLiteral("' in [X-KDE-ParentComponents]) or ('"));
+	constraint = QStringLiteral("('") + constraint + QStringLiteral("' in [X-KDE-ParentComponents])");
 
     //qDebug() << "constraint = " << constraint;
-    const QList<KService::Ptr> services = KServiceTypeTrader::self()->query("KCModule", constraint);
+    const QList<KService::Ptr> services = KServiceTypeTrader::self()->query(QStringLiteral("KCModule"), constraint);
     QSet<KCModuleInfo> ret;
     foreach (const KService::Ptr &service, services) {
         ret << KCModuleInfo(service);
@@ -193,7 +193,7 @@ bool DialogPrivate::isPluginForKCMEnabled(const KCModuleInfo *moduleinfo, KPlugi
     //qDebug() << "check whether the '" << moduleinfo->moduleName() << "' KCM should be shown";
 	// for all parent components
 	const QStringList parentComponents = moduleinfo->service()->property(
-			"X-KDE-ParentComponents" ).toStringList();
+			QStringLiteral("X-KDE-ParentComponents")).toStringList();
 	for( QStringList::ConstIterator pcit = parentComponents.begin();
 			pcit != parentComponents.end(); ++pcit )
 	{
@@ -221,7 +221,7 @@ bool DialogPrivate::isPluginForKCMEnabled(const KCModuleInfo *moduleinfo, KPlugi
 
 bool DialogPrivate::isPluginImmutable(const KPluginInfo &pinfo) const
 {
-    return pinfo.property("X-KDE-PluginInfo-Immutable").toBool();
+    return pinfo.property(QStringLiteral("X-KDE-PluginInfo-Immutable")).toBool();
 }
 
 KPageWidgetItem *DialogPrivate::createPageItem(KPageWidgetItem *parentItem,
@@ -310,21 +310,21 @@ void DialogPrivate::createDialogFromServices()
     Q_Q(Dialog);
     // read .setdlg files   (eg: share/kapp/kapp.setdlg)
     QString setdlgpath = QStandardPaths::locate(QStandardPaths::DataLocation /*includes appname, too*/,
-                                                QCoreApplication::instance()->applicationName() + ".setdlg");
+                                                QCoreApplication::instance()->applicationName() + QStringLiteral(".setdlg"));
     if (!setdlgpath.isEmpty()) {
         parseGroupFile(setdlgpath);
     }
 
-    const QStringList dirs = QStandardPaths::locateAll(QStandardPaths::DataLocation, "ksettingsdialog",  QStandardPaths::LocateDirectory);
+    const QStringList dirs = QStandardPaths::locateAll(QStandardPaths::DataLocation, QStringLiteral("ksettingsdialog"),  QStandardPaths::LocateDirectory);
     Q_FOREACH(const QString& dir, dirs) {
         Q_FOREACH(const QString& file, QDir(dir).entryList(QStringList() << QStringLiteral("*.setdlg"))) {
-            parseGroupFile(dir + '/' + file);
+            parseGroupFile(dir + QLatin1Char('/') + file);
         }
     }
 
     //qDebug() << kcmInfos.count();
     foreach (const KCModuleInfo &info, kcmInfos) {
-        const QStringList parentComponents = info.service()->property("X-KDE-ParentComponents").toStringList();
+        const QStringList parentComponents = info.service()->property(QStringLiteral("X-KDE-ParentComponents")).toStringList();
         bool blacklisted = false;
         foreach (const QString &parentComponent, parentComponents) {
             if (componentBlacklist.contains(parentComponent)) {
@@ -335,7 +335,7 @@ void DialogPrivate::createDialogFromServices()
         if (blacklisted) {
             continue;
         }
-        const QString parentId = info.service()->property("X-KDE-CfgDlgHierarchy", QVariant::String).toString();
+        const QString parentId = info.service()->property(QStringLiteral("X-KDE-CfgDlgHierarchy"), QVariant::String).toString();
         KPageWidgetItem *parent = pageItemForGroupId.value(parentId);
         if (!parent) {
             // dummy kcm
@@ -407,7 +407,7 @@ void DialogPrivate::createDialogFromServices()
             }
             bool allowEmpty = false;
             if (pinfo.isValid()) {
-                allowEmpty = pinfo.property("X-KDE-PluginInfo-AllowEmptySettings").toBool();
+                allowEmpty = pinfo.property(QStringLiteral("X-KDE-PluginInfo-AllowEmptySettings")).toBool();
             }
 
             if (!index.child(0, 0).isValid()) {
@@ -474,7 +474,7 @@ void DialogPrivate::_k_syncConfiguration()
 
 void DialogPrivate::_k_reparseConfiguration(const QByteArray &a)
 {
-    Dispatcher::reparseConfiguration(a);
+    Dispatcher::reparseConfiguration(QString::fromLatin1(a));
 }
 
 /*

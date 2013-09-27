@@ -91,7 +91,7 @@ void KCModuleProxyPrivate::loadModule()
 		topLayout->setMargin( 0 );
 
 		QString name = modInfo.handle();
-		name.replace("-", "_"); //hyphen is not allowed in dbus, only [A-Z][a-z][0-9]_
+		name.replace(QLatin1Char('-'),QLatin1Char('_')); //hyphen is not allowed in dbus, only [A-Z][a-z][0-9]_
 		dbusPath = QLatin1String("/internal/KSettingsWidget/") + name;
 		dbusService = QLatin1String("org.kde.internal.KSettingsWidget_") + name;
 	}
@@ -152,8 +152,8 @@ void KCModuleProxyPrivate::loadModule()
 		// qDebug() << "Module already loaded, loading KCMError";
 
 		/* Figure out the name of where the module is already loaded */
-		QDBusInterface proxy( dbusService, dbusPath, "org.kde.internal.KSettingsWidget" );
-		QDBusReply<QString> reply = proxy.call("applicationName");
+		QDBusInterface proxy( dbusService, dbusPath, QStringLiteral("org.kde.internal.KSettingsWidget"));
+		QDBusReply<QString> reply = proxy.call(QStringLiteral("applicationName"));
 
 		if( reply.isValid() )
 		{
@@ -161,7 +161,7 @@ void KCModuleProxyPrivate::loadModule()
                     parent, SLOT(_k_ownerChanged(QString,QString,QString)));
 			kcm = KCModuleLoader::reportError( KCModuleLoader::Inline,
 					i18nc( "Argument is application name", "This configuration section is "
-						"already opened in %1" ,  reply.value() ), " ", parent );
+						"already opened in %1" ,  reply.value() ), QStringLiteral(" "), parent );
 			topLayout->addWidget( kcm );
 		}
 		else

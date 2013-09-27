@@ -44,7 +44,7 @@ void registerComponent(const QString &componentName, QObject *recv, const char *
 KSharedConfig::Ptr configForComponentName(const QString &componentName)
 {
     // qDebug() ;
-    return KSharedConfig::openConfig(componentName + "rc");
+    return KSharedConfig::openConfig(componentName + QStringLiteral("rc"));
 }
 
 QList<QString> componentNames()
