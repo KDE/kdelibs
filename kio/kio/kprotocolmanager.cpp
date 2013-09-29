@@ -470,8 +470,7 @@ QStringList KProtocolManager::proxiesForUrl( const KUrl &url )
         const QString protocol = adjustProtocol(u.protocol());
         u.setProtocol(protocol);
 
-        if (protocol.startsWith(QL1S("http"), Qt::CaseInsensitive) ||
-            protocol.startsWith(QL1S("ftp"), Qt::CaseInsensitive)) {
+        if (protocol.startsWith(QL1S("http")) || protocol.startsWith(QL1S("ftp"))) {
           QDBusReply<QStringList> reply = QDBusInterface(QL1S("org.kde.kded"),
                                                          QL1S("/modules/proxyscout"),
                                                          QL1S("org.kde.KPAC.ProxyScout"))
