@@ -34,7 +34,7 @@
 #include "kbookmarkimporter_ie.h"
 #include "kbookmarkmenu_p.h"
 
-KonqBookmarkContextMenu::KonqBookmarkContextMenu(const KBookmark & bm, KBookmarkManager * mgr, KonqBookmarkOwner * owner)
+KonqBookmarkContextMenu::KonqBookmarkContextMenu(const KBookmark & bm, KBookmarkManager * mgr, KBookmarkOwner * owner)
     : KBookmarkContextMenu(bm, mgr, owner)
 {
 }
@@ -231,10 +231,6 @@ void KonqBookmarkMenu::setDynamicBookmarks(const QString &id, const DynMenuInfo 
     }
 
     config.sync();
-}
-
-KonqBookmarkOwner::~KonqBookmarkOwner()
-{
 }
 
 QMenu * KonqBookmarkMenu::contextMenu(QAction * action)

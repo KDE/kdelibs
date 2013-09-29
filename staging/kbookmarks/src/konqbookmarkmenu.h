@@ -22,13 +22,7 @@
 #define __konqbookmarkmenu_h__
 #include "kbookmarkmenu.h"
 
-class KBOOKMARKS_EXPORT KonqBookmarkOwner : public KBookmarkOwner // KDE5 TODO: merge with KBookmarkOwner
-{
-public:
-  virtual ~KonqBookmarkOwner();
-  virtual void openInNewTab(const KBookmark &bm) = 0;
-  virtual void openInNewWindow(const KBookmark &bm) = 0;
-};
+typedef KBookmarkOwner KonqBookmarkOwner; // KF5: KonqBookmarkOwner is deprecated, use KBookmarkOwner
 
 class KBOOKMARKS_EXPORT KonqBookmarkMenu : public KBookmarkMenu
 {
@@ -41,13 +35,13 @@ public:
    *  but also one per submenu).
    *
    * @param mgr The bookmark manager to use (i.e. for reading and writing)
-   * @param owner implementation of the KonqBookmarkOwner callback interface.
-   * Note: If you pass a null KonqBookmarkOwner to the constructor, the
+   * @param owner implementation of the KBookmarkOwner callback interface.
+   * Note: If you pass a null KBookmarkOwner to the constructor, the
    * URLs are openend by KRun and "Add Bookmark" is disabled.
    * @param parentMenu menu to be filled
    * @param collec parent collection for the KActions.
    */
-  KonqBookmarkMenu( KBookmarkManager* mgr, KonqBookmarkOwner * owner, KBookmarkActionMenu * parentMenu, KActionCollection *collec)
+  KonqBookmarkMenu( KBookmarkManager* mgr, KBookmarkOwner * owner, KBookmarkActionMenu * parentMenu, KActionCollection *collec)
     : KBookmarkMenu( mgr, owner, parentMenu->menu(), collec)
   {
   }
@@ -58,7 +52,7 @@ public:
    * Creates a bookmark submenu.
    * Only used internally and for bookmark toolbar.
    */
-  KonqBookmarkMenu( KBookmarkManager* mgr, KonqBookmarkOwner * owner, KBookmarkActionMenu * parentMenu, QString parentAddress)
+  KonqBookmarkMenu( KBookmarkManager* mgr, KBookmarkOwner * owner, KBookmarkActionMenu * parentMenu, QString parentAddress)
     : KBookmarkMenu( mgr, owner, parentMenu->menu(), parentAddress)
   {
   }
@@ -100,15 +94,15 @@ protected:
   QMenu* contextMenu(QAction* action);
   void fillDynamicBookmarks();
 private:
-  KonqBookmarkOwner * owner()
-    { return static_cast<KonqBookmarkOwner *>(KBookmarkMenu::owner());}
+  KBookmarkOwner * owner()
+    { return static_cast<KBookmarkOwner *>(KBookmarkMenu::owner());}
 };
 
 class KBOOKMARKS_EXPORT KonqBookmarkContextMenu : public KBookmarkContextMenu
 {
   Q_OBJECT
 public:
-  KonqBookmarkContextMenu(const KBookmark & bm, KBookmarkManager * mgr, KonqBookmarkOwner * owner );
+  KonqBookmarkContextMenu(const KBookmark & bm, KBookmarkManager * mgr, KBookmarkOwner * owner );
   virtual ~KonqBookmarkContextMenu();
   virtual void addActions();
 
@@ -117,8 +111,8 @@ public Q_SLOTS:
   void openInNewWindow();
   void toggleShowInToolbar();
 private:
-  KonqBookmarkOwner * owner()
-    { return static_cast<KonqBookmarkOwner *>(KBookmarkContextMenu::owner());}
+  KBookmarkOwner * owner()
+    { return static_cast<KBookmarkOwner *>(KBookmarkContextMenu::owner());}
 };
 #endif
 

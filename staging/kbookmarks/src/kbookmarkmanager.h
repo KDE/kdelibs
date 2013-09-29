@@ -437,6 +437,20 @@ public:
 
   virtual KBookmarkDialog * bookmarkDialog(KBookmarkManager * mgr, QWidget *parent);
 
+  /**
+   * Called when a bookmark should be opened in a new tab.
+   * The default implementation calls openBookmark.
+   * @since 5.0
+   */
+  virtual void openInNewTab(const KBookmark &bm);
+
+  /**
+   * Called when a bookmark should be opened in a new window.
+   * The default implementation calls openBookmark.
+   * @since 5.0
+   */
+  virtual void openInNewWindow(const KBookmark &bm);
+
 private:
   class KBookmarkOwnerPrivate;
   KBookmarkOwnerPrivate *d;
