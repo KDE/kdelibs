@@ -208,10 +208,6 @@ Notes:
     <glob pattern="*.fonts.zip"/>
   </mime-type>
 
-  <mime-type type="application/x-konsole">
-    <comment>file to open a shell</comment>
-    <glob pattern="*.shell"/>
-  </mime-type>
   <mime-type type="application/x-smb-server"> <!-- KDE-specific -->
     <sub-class-of type="inode/directory"/>
     <comment>Windows server</comment>

@@ -25,6 +25,7 @@
 #include <sys/socket.h>
 #include <sys/ioctl.h>
 #include <sys/stat.h>
+#include <unistd.h>
 #include <linux/if_arp.h>
 #include <linux/wireless.h>
 
@@ -67,8 +68,10 @@ bool NetworkInterface::isWireless() const
         QFileInfo phyDir(m_device->deviceName() + "/phy80211");
         
         if ((ioctl (ioctl_fd, SIOCGIWNAME, &iwr) == 0) || phyDir.isDir()) {
+            close(ioctl_fd);
             return true;
         }
+        close(ioctl_fd);
     }
     return false;
 }

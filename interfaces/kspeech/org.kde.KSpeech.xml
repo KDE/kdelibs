@@ -111,6 +111,10 @@
             <arg type="as" direction="out"/>
         </method>
         
+        <method name="getPossibleTalkers">
+            <arg type="as" direction="out"/>
+        </method>
+
         <method name="stop">
             <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
         </method>

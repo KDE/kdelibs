@@ -37,6 +37,7 @@
 
 #include <QtCore/QFile>
 #include <QUrl>
+#include <qplatformdefs.h>
 
 #include <kconfig.h>
 #include <QDebug>
@@ -164,6 +165,22 @@ int IdleSlave::age(const QDateTime &now) const
 
 static KLauncher* g_klauncher_self;
 
+
+// From qcore_unix_p.h. We could also port to QLocalSocket :)
+#define K_EINTR_LOOP(var, cmd)                    \
+    do {                                        \
+        var = cmd;                              \
+    } while (var == -1 && errno == EINTR)
+
+ssize_t kde_safe_write(int fd, const void *buf, size_t count)
+{
+    ssize_t ret = 0;
+    K_EINTR_LOOP(ret, QT_WRITE(fd, buf, count));
+    if (ret < 0)
+        qWarning() << "write failed:" << strerror(errno);
+    return ret;
+}
+
 #ifndef USE_KPROCESS_FOR_KIOSLAVES
 KLauncher::KLauncher(int _kdeinitSocket)
   : QObject(0),
@@ -225,7 +242,7 @@ KLauncher::KLauncher()
    klauncher_header request_header;
    request_header.cmd = LAUNCHER_OK;
    request_header.arg_length = 0;
-   write(kdeinitSocket, &request_header, sizeof(request_header));
+   kde_safe_write(kdeinitSocket, &request_header, sizeof(request_header));
 #endif
 }
 
@@ -263,8 +280,8 @@ void KLauncher::setLaunchEnv(const QString &name, const QString &value)
    requestData.append(name.toLocal8Bit()).append('\0').append(value.toLocal8Bit()).append('\0');
    request_header.cmd = LAUNCHER_SETENV;
    request_header.arg_length = requestData.size();
-   write(kdeinitSocket, &request_header, sizeof(request_header));
-   write(kdeinitSocket, requestData.data(), request_header.arg_length);
+   kde_safe_write(kdeinitSocket, &request_header, sizeof(request_header));
+   kde_safe_write(kdeinitSocket, requestData.data(), request_header.arg_length);
 #else
    Q_UNUSED(name);
    Q_UNUSED(value);
@@ -683,8 +700,8 @@ KLauncher::requestStart(KLaunchRequest *request)
                 << "cmd=" << commandToString(request_header.cmd);
 #endif
 
-   write(kdeinitSocket, &request_header, sizeof(request_header));
-   write(kdeinitSocket, requestData.data(), requestData.length());
+   kde_safe_write(kdeinitSocket, &request_header, sizeof(request_header));
+   kde_safe_write(kdeinitSocket, requestData.data(), requestData.length());
 
    // Wait for pid to return.
    lastRequest = request;
@@ -1152,7 +1169,7 @@ KLauncher::requestSlave(const QString &protocol,
        klauncher_header request_header;
        request_header.cmd = LAUNCHER_DEBUG_WAIT;
        request_header.arg_length = 0;
-       write(kdeinitSocket, &request_header, sizeof(request_header));
+       kde_safe_write(kdeinitSocket, &request_header, sizeof(request_header));
 #else
       name = QString::fromLatin1("gdb");
 #endif
@@ -1335,7 +1352,7 @@ void KLauncher::terminate_kdeinit()
     klauncher_header request_header;
     request_header.cmd = LAUNCHER_TERMINATE_KDEINIT;
     request_header.arg_length = 0;
-    write(kdeinitSocket, &request_header, sizeof(request_header));
+    kde_safe_write(kdeinitSocket, &request_header, sizeof(request_header));
 #endif
 }
 

@@ -84,6 +84,14 @@ void KLinkItemSelectionModelTest::testMainSetCurrent()
     QModelIndex subIndex = m_subSelectionModel->currentIndex();
     QVERIFY(subIndex.isValid());
     QCOMPARE(subIndex, m_subModel->index(m_subModel->rowCount() - 1, 0));
+
+    // Set first index of mainModel as current. First index of mainModel does
+    // not exist in subModel, so its current index should remain the same.
+    subIndex = m_subSelectionModel->currentIndex();
+    QVERIFY(subIndex.isValid());
+    mainIndex = m_mainModel->index(0, 0);
+    m_mainSelectionModel->setCurrentIndex(mainIndex, QItemSelectionModel::Current);
+    QCOMPARE(subIndex, m_subSelectionModel->currentIndex());
 }
 
 void KLinkItemSelectionModelTest::testSubSetCurrent()
