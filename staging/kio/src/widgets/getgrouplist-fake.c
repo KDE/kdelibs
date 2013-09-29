@@ -50,7 +50,7 @@ static char sccsid[] = "@(#)getgrouplist.c	8.2 (Berkeley) 12/8/94";
 __FBSDID("$FreeBSD: src/lib/libc/gen/getgrouplist.c,v 1.14 2005/05/03 16:20:03 delphij Exp $");
 #endif
 
-#include "config-kfile.h"
+#include "config-getgrouplist.h"
 
 /*
  * get credential

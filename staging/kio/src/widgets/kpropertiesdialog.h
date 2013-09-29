@@ -27,7 +27,7 @@
 #include <QtCore/QString>
 #include <QUrl>
 
-#include <kio_export.h>
+#include <kio/kiowidgets_export.h>
 #include <kfileitem.h>
 #include <kpagedialog.h>
 
@@ -54,7 +54,7 @@ namespace KIO { class Job; }
  * If you are looking for more flexibility, see KFileMetaInfo and
  * KFileMetaInfoWidget.
  */
-class KIO_EXPORT KPropertiesDialog : public KPageDialog
+class KIOWIDGETS_EXPORT KPropertiesDialog : public KPageDialog
 {
   Q_OBJECT
 
@@ -205,7 +205,7 @@ public:
     /**
      * @deprecated since 5.0, use url()
      */
-    KIO_DEPRECATED QUrl kurl() const { return url(); }
+    KIOWIDGETS_DEPRECATED QUrl kurl() const { return url(); }
 #endif
 
     /**
@@ -354,7 +354,7 @@ private:
  * You can also include X-KDE-Protocol=file if you want that plugin
  * to be loaded only for local files, for instance.
  */
-class KIO_EXPORT KPropertiesDialogPlugin : public QObject
+class KIOWIDGETS_EXPORT KPropertiesDialogPlugin : public QObject
 {
   Q_OBJECT
 public:
@@ -379,7 +379,7 @@ public:
    * @deprecated use KFileItem::isDesktopFile
    */
 #ifndef KDE_NO_DEPRECATED
-  static KIO_DEPRECATED bool isDesktopFile( const KFileItem& _item );
+  static KIOWIDGETS_DEPRECATED bool isDesktopFile( const KFileItem& _item );
 #endif
 
   void setDirty( bool b );

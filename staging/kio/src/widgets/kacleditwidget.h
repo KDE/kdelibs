@@ -20,7 +20,7 @@
 #ifndef KACLEDITWIDGET_H
 #define KACLEDITWIDGET_H
 
-#include <config-kio.h>
+#include <config-kiowidgets.h>
 
 #if HAVE_POSIX_ACL || defined(Q_MOC_RUN)
 
@@ -28,6 +28,7 @@
 
 #include <kacl.h>
 
+/// @internal
 class KACLEditWidget : public QWidget
 {
   Q_OBJECT

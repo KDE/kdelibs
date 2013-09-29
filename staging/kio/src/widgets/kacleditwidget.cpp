@@ -21,7 +21,6 @@
 #include "kacleditwidget.h"
 #include "kacleditwidget_p.h"
 
-#include <config-kio.h>
 #if HAVE_POSIX_ACL
 
 #include <QDialog>

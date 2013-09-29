@@ -20,7 +20,7 @@
 #ifndef KACLEDITWIDGET_P_H
 #define KACLEDITWIDGET_P_H
 
-#include <config-kio.h>
+#include <config-kiowidgets.h>
 
 #if HAVE_POSIX_ACL || defined(Q_MOC_RUN)
 #include <sys/acl.h>

@@ -13,12 +13,23 @@ endif ()
 # Device desktop files aren't really used anymore
 set(KIO_NO_SOLID TRUE)
 
-configure_file(config-kiowidgets.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kiowidgets.h )
+
+find_package(ACL)
+macro_bool_to_01(ACL_FOUND HAVE_LIBACL HAVE_POSIX_ACL)
+set_package_properties(ACL PROPERTIES DESCRIPTION "LibACL" URL "ftp://oss.sgi.com/projects/xfs/cmd_tars"
+                       TYPE RECOMMENDED PURPOSE "Support for manipulating access control lists")
+check_symbol_exists(getgrouplist    "unistd.h;grp.h"           HAVE_GETGROUPLIST)
+configure_file(config-kiowidgets.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kiowidgets.h)
+configure_file(config-getgrouplist.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-getgrouplist.h)
+
 
 set(kiowidgets_SRCS
   accessmanager.cpp
   accessmanagerreply_p.cpp
   fileundomanager.cpp
+  kacleditwidget.cpp
+  kpropertiesdialog.cpp
+  getgrouplist-fake.c
   kurlrequesterdialog.cpp
   kurlcombobox.cpp
   kfileitemactions.cpp
@@ -68,7 +79,11 @@ qt5_add_dbus_interface(kiowidgets_SRCS org.kde.kuiserver.xml kuiserver_interface
 qt5_wrap_ui(kiowidgets_SRCS
   certificateparty.ui
   sslinfo.ui
+  kpropertiesdesktopadvbase.ui
+  kpropertiesdesktopbase.ui
 )
+
+qt5_add_resources(kiowidgets_SRCS kacleditwidget.qrc)
 
 add_library(KIOWidgets ${kiowidgets_SRCS})
 generate_export_header(KIOWidgets)
@@ -125,6 +140,7 @@ install( FILES
    DESTINATION ${INCLUDE_INSTALL_DIR}/kio COMPONENT Devel)
 
 install( FILES
+  kpropertiesdialog.h
   kurlrequesterdialog.h
   kurlcombobox.h
   kfileitemactions.h
@@ -148,6 +164,8 @@ install( FILES
    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
 
 install( FILES
+  kacleditwidget.h
+  kpropertiesdialog.h
   kfileitemactionplugin.desktop
    DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
 

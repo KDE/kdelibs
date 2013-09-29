@@ -45,7 +45,7 @@
 #include "kpropertiesdialog_p.h"
 
 
-#include <config-kio.h>
+#include <config-kiowidgets.h>
 
 extern "C" {
 #include <pwd.h>

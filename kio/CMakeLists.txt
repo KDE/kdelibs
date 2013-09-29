@@ -35,8 +35,6 @@ include(ConfigureChecks.cmake)
 
 configure_file(kio/config-kio.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kio/config-kio.h )
 
-configure_file(kfile/config-kfile.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kfile/config-kfile.h )
-
 set(kiocore_STAT_SRCS
   kio/defaultviewadapter.cpp
   kio/kdbusservicestarter.cpp
@@ -63,14 +61,11 @@ endif(UNIX)
 
 set(kfile_STAT_SRCS
   kfile/kabstractfilemodule.cpp
-  kfile/kacleditwidget.cpp
   kfile/kencodingfiledialog.cpp
   kfile/kfiledialog.cpp
   kfile/kimagefilepreview.cpp
   kfile/kpreviewwidgetbase.cpp
-  kfile/kpropertiesdialog.cpp
   kfile/krecentdirs.cpp
-  kfile/getgrouplist-fake.c
   kfile/kfilemetapreview.cpp
 )
 
@@ -82,8 +77,6 @@ if(NOT KIO_NO_SOLID)
     )
 endif(NOT KIO_NO_SOLID)
 
-qt5_add_resources(kfile_STAT_SRCS kfile/kacleditwidget.qrc)
-
 
 ########### next target ###############
 
@@ -92,11 +85,6 @@ qt5_add_resources(kfile_STAT_SRCS kfile/kacleditwidget.qrc)
 set(kio_LIB_SRCS
    ${kiocore_STAT_SRCS}
    ${kfile_STAT_SRCS}
-)
-
-kde4_add_ui_files(kio_LIB_SRCS
-   kfile/kpropertiesdesktopadvbase.ui
-   kfile/kpropertiesdesktopbase.ui
 )
 
 add_library(kio ${LIBRARY_TYPE} ${kio_LIB_SRCS})
@@ -170,7 +158,6 @@ install( FILES
   kfile/kfiledialog.h
   kfile/kimagefilepreview.h
   kfile/kpreviewwidgetbase.h
-  kfile/kpropertiesdialog.h
   kfile/kpropsdialog.h
   kfile/krecentdirs.h
 
