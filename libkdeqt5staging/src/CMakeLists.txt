@@ -1,8 +1,8 @@
 remove_definitions(-DQT_NO_KEYWORDS)
 
 set(libkdeqt5staging_SRCS
-    qcommandlineparser.cpp
-    qcommandlineoption.cpp
+
+
 )
 
 add_library(kdeqt5staging ${libkdeqt5staging_SRCS})
@@ -28,8 +28,8 @@ set_target_properties(kdeqt5staging PROPERTIES
 
 # Install into a kdeqt5staging subdir to prevent clashes with real Qt header files
 install(FILES
-    qcommandlineparser.h
-    qcommandlineoption.h
+
+
     ${CMAKE_CURRENT_BINARY_DIR}/kdeqt5staging_export.h
     DESTINATION ${INCLUDE_INSTALL_DIR}/kdeqt5staging COMPONENT Devel
 )
