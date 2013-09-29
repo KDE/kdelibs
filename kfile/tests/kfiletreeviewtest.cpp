@@ -28,7 +28,7 @@
 
 #include <QUrl>
 
-#include <kfiletreeview.h>
+#include <kfiletreeview_p.h>
 
 Window::Window()
   : KMainWindow(0)

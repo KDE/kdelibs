@@ -39,7 +39,7 @@
 #include <kauthorized.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
-#include <kfiletreeview.h>
+#include <kfiletreeview_p.h>
 #include <kfileitemdelegate.h>
 #include <khistorycombobox.h>
 #include <kio/job.h>

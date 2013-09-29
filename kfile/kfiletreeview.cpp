@@ -19,7 +19,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "kfiletreeview.h"
+#include "kfiletreeview_p.h"
 
 #include <QtCore/QDir>
 #include <QContextMenuEvent>
@@ -203,4 +203,5 @@ QSize KFileTreeView::sizeHint() const
     return QSize(680, 500);
 }
 
-#include "moc_kfiletreeview.cpp"
+#include "moc_kfiletreeview_p.cpp"
+

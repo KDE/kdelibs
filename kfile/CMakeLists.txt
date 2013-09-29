@@ -75,7 +75,6 @@ install( FILES
   kfileplacesmodel.h
   kfileplacesview.h
   kfilepreviewgenerator.h
-  kfiletreeview.h
   kfilewidget.h
   kurlnavigator.h
   knewfilemenu.h
