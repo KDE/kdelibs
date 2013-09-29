@@ -25,7 +25,7 @@
 #include "kdiroperatordetailview_p.h"
 #include "kdirsortfilterproxymodel.h"
 #include "kfileitem.h"
-#include "kfilemetapreview.h"
+#include "kfilemetapreview_p.h"
 #include "kpreviewwidgetbase.h"
 #include "knewfilemenu.h"
 

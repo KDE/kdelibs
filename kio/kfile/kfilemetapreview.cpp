@@ -6,7 +6,7 @@
  * License. See the file "COPYING" for the exact licensing terms.
  */
 
-#include "kfilemetapreview.h"
+#include "kfilemetapreview_p.h"
 
 #include <QLayout>
 #include <qmimedatabase.h>
@@ -199,5 +199,3 @@ KPreviewWidgetBase * KFileMetaPreview::createAudioPreview( QWidget *parent )
         w->setObjectName( "kfileaudiopreview" );
     return w;
 }
-
-#include "moc_kfilemetapreview.cpp"

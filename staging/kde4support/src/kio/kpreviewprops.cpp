@@ -23,7 +23,7 @@
 
 #include <QLayout>
 
-#include <kfilemetapreview.h>
+#include <kfilemetapreview_p.h>
 #include <klocalizedstring.h>
 
 class KPreviewPropsPlugin::KPreviewPropsPluginPrivate
