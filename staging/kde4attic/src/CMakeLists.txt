@@ -75,32 +75,9 @@ if (UNIX)
    )
 endif (UNIX)
 
-if(NOT WINCE)
-set(kde4attic_SRCS
-  ${kde4attic_SRCS}
-  kdeprintdialog.cpp
-)
-endif(NOT WINCE)
-
-if (X11_FOUND)
-set(kde4attic_SRCS
-  ${kde4attic_SRCS}
-  kcupsoptionswidget_p.cpp
-  kcupsoptionspageswidget_p.cpp)
-endif (X11_FOUND)
-
-
 set(kde4attic_UI
   kdatetimeedit.ui
 )
-
-if (X11_FOUND)
-set(kde4attic_UI
-  ${kde4attic_UI}
-  kcupsoptionspageswidget.ui
-)
-endif (X11_FOUND)
-
 
 qt5_wrap_ui(kde4attic_SRCS ${kde4attic_UI} )
 
@@ -139,13 +116,6 @@ set_target_properties(KDE4Attic PROPERTIES VERSION   ${KDE4ATTIC_VERSION_STRING}
 
 install(TARGETS KDE4Attic EXPORT KDE4AtticTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
-install( FILES
- kdeprint_nup1.png
- kdeprint_nup2.png
- kdeprint_nup4.png
- kdeprint_nupother.png
- DESTINATION  ${DATA_INSTALL_DIR}/kdeui/pics )
-
 install(FILES
   kanimatedbutton.h
   kdatecombobox.h
@@ -154,7 +124,6 @@ install(FILES
   kdatetimeedit.h
   kdatetimewidget.h
   kdatewidget.h
-  kdeprintdialog.h
   kgesture.h
   ktimecombobox.h
   ktimezonewidget.h

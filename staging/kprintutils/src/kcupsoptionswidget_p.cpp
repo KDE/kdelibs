@@ -20,7 +20,7 @@
 
 #include "kcupsoptionswidget_p.h"
 
-#include <config-kde4attic.h>
+#include <config-kprintutils.h>
 
 #if HAVE_X11
 #include <fixx11h.h>

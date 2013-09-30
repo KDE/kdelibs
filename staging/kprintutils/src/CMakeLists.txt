@@ -1,8 +1,37 @@
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
+if(X11_FOUND)
+  set(HAVE_X11 1)
+else()
+  set(HAVE_X11 0)
+endif()
+configure_file(config-kprintutils.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kprintutils.h)
+
 set(kprintutils_LIB_SRCS
     kprintpreview.cpp
 )
+
+if(NOT WINCE)
+set(kprintutils_LIB_SRCS
+  ${kprintutils_LIB_SRCS}
+  kdeprintdialog.cpp
+)
+endif(NOT WINCE)
+
+if (X11_FOUND)
+set(kprintutils_LIB_SRCS
+  ${kprintutils_LIB_SRCS}
+  kcupsoptionswidget_p.cpp
+  kcupsoptionspageswidget_p.cpp
+)
+
+set(kprintutils_UI
+  ${kprintutils_UI}
+  kcupsoptionspageswidget.ui
+)
+endif (X11_FOUND)
+
+qt5_wrap_ui(kprintutils_LIB_SRCS ${kprintutils_UI})
 
 add_library(KPrintUtils ${LIBRARY_TYPE} ${kprintutils_LIB_SRCS})
 generate_export_header(KPrintUtils)
@@ -22,6 +51,7 @@ set_target_properties(KPrintUtils PROPERTIES
 
 install( FILES
  ${CMAKE_CURRENT_BINARY_DIR}/kprintutils_export.h
+ kdeprintdialog.h
  kprintpreview.h
  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
 

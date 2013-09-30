@@ -21,7 +21,7 @@
 #ifndef KDEPRINTDIALOG_H
 #define KDEPRINTDIALOG_H
 
-#include <kde4attic_export.h>
+#include <kprintutils_export.h>
 
 #include <QtCore/QList>
 
@@ -81,10 +81,10 @@ namespace KdePrint
      * @see QWidget::setWindowTitle()
      * @see QAbstractPrintDialog::setOptionTabs()
      */
-    KDE4ATTIC_EXPORT QPrintDialog *createPrintDialog(QPrinter *printer,
-                                                 PageSelectPolicy pageSelectPolicy,
-                                                 const QList<QWidget*> &customTabs,
-                                                 QWidget *parent = 0);
+    KPRINTUTILS_EXPORT QPrintDialog *createPrintDialog(QPrinter *printer,
+                                                       PageSelectPolicy pageSelectPolicy,
+                                                       const QList<QWidget*> &customTabs,
+                                                       QWidget *parent = 0);
 
     /**
      * Creates a printer dialog for a QPrinter with the given custom widgets.
@@ -100,9 +100,9 @@ namespace KdePrint
      * @param customTabs a list of custom widgets to show as tabs, the name printed on the tab will
      *      be taken from the widgets windowTitle().
      */
-    KDE4ATTIC_EXPORT QPrintDialog *createPrintDialog(QPrinter *printer,
-                                                const QList<QWidget*> &customTabs,
-                                                QWidget *parent = 0);
+    KPRINTUTILS_EXPORT QPrintDialog *createPrintDialog(QPrinter *printer,
+                                                       const QList<QWidget*> &customTabs,
+                                                       QWidget *parent = 0);
 
     /**
      * @since 4.4
@@ -118,9 +118,9 @@ namespace KdePrint
      * @param pageSelectPolicy whether the Application or the System does the page selection
      * @param parent the parent for the dialog
      */
-    KDE4ATTIC_EXPORT QPrintDialog *createPrintDialog(QPrinter *printer,
-                                                 PageSelectPolicy pageSelectPolicy,
-                                                 QWidget *parent = 0);
+    KPRINTUTILS_EXPORT QPrintDialog *createPrintDialog(QPrinter *printer,
+                                                       PageSelectPolicy pageSelectPolicy,
+                                                       QWidget *parent = 0);
 
     /**
      * Creates a printer dialog for a QPrinter
@@ -134,8 +134,8 @@ namespace KdePrint
      * @param printer the QPrinter to apply settings to
      * @param parent the parent for the dialog
      */
-    KDE4ATTIC_EXPORT QPrintDialog *createPrintDialog(QPrinter *printer,
-                                                 QWidget *parent = 0);
+    KPRINTUTILS_EXPORT QPrintDialog *createPrintDialog(QPrinter *printer,
+                                                       QWidget *parent = 0);
 }
 
 
