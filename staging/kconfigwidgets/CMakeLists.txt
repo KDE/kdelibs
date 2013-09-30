@@ -2,20 +2,23 @@ cmake_minimum_required(VERSION 2.8.11)
 
 project(KConfigWidgets)
 
+find_package(ECM 0.0.8 REQUIRED NO_MODULE)
+set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
+
+set(REQUIRED_QT_VERSION "5.2.0")
+find_package(Qt5 ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE COMPONENTS Widgets DBus Xml)
 if(NOT kdelibs_SOURCE_DIR)
-
-  find_package(ECM 0.0.8 REQUIRED NO_MODULE)
-
-  set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
-
-  find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS Widgets)
-
-  find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs KWidgetsAddons KConfig)
-
+  find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
+  find_package(KAuth 5.0.0 REQUIRED)
+  find_package(KCoreAddons 5.0.0 REQUIRED)
+  find_package(KCodecs 5.0.0 REQUIRED)
+  find_package(KConfig 5.0.0 REQUIRED)
+  find_package(KGuiAddons 5.0.0 REQUIRED)
+  find_package(KI18n 5.0.0 REQUIRED)
+  find_package(KWidgetsAddons 5.0.0 REQUIRED)
 endif()
 
 include(FeatureSummary)
-
 include(ECMSetupVersion)
 
 ecm_setup_version(5.0.0 VARIABLE_PREFIX KCONFIGWIDGETS
