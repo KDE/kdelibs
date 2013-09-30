@@ -448,8 +448,6 @@ add_subdirectory( pics )
 
 include_directories(
    ${PHONON_INCLUDE_DIR}
-   ${CMAKE_BINARY_DIR}/kio/kssl
-   ${CMAKE_SOURCE_DIR}/kio/kssl
    ${KWindowSystem_INCLUDE_DIRS}
 )
 
