@@ -1,12 +1,7 @@
 @PACKAGE_INIT@
 
-find_dependency(KCoreAddons     "${PACKAGE_VERSION}")
 find_dependency(KConfigWidgets  "${PACKAGE_VERSION}")
 find_dependency(KService        "${PACKAGE_VERSION}")
-find_dependency(KI18n           "${PACKAGE_VERSION}")
-find_dependency(KIconThemes     "${PACKAGE_VERSION}")
-find_dependency(ItemViews       "${PACKAGE_VERSION}")
-find_dependency(XmlGui          "${PACKAGE_VERSION}")
 
 set(KCMUtils_INSTALL_PREFIX "@PACKAGE_CMAKE_INSTALL_PREFIX@")
 set_and_check(KCMUtils_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")
