@@ -17,8 +17,10 @@ if(NOT kdelibs_SOURCE_DIR)
   find_package(KParts 5.0.0 REQUIRED)
 endif()
 
-include(FeatureSummary)
+find_package(X11)
+macro_bool_to_01(X11_FOUND HAVE_X11)
 
+include(FeatureSummary)
 include(ECMSetupVersion)
 
 ecm_setup_version(5.0.0 VARIABLE_PREFIX KPRINTUTILS

@@ -1,11 +1,3 @@
-find_package(X11)
-
-if (X11_FOUND)
-   set (HAVE_X11 1)
-else ()
-   set (HAVE_X11 0)
-endif ()
-
 if(NOT HAVE_NEPOMUK)
    set(KIO_NO_NEPOMUK TRUE)
 endif(NOT HAVE_NEPOMUK)

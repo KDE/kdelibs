@@ -1,10 +1,5 @@
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
-if(X11_FOUND)
-  set(HAVE_X11 1)
-else()
-  set(HAVE_X11 0)
-endif()
 configure_file(config-kprintutils.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kprintutils.h)
 
 set(kprintutils_LIB_SRCS

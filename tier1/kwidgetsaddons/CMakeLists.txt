@@ -10,6 +10,9 @@ find_package(KF5 5.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 set(REQUIRED_QT_VERSION 5.2.0)
 find_package(Qt5Widgets ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE)
 
+find_package(X11)
+macro_bool_to_01(X11_FOUND HAVE_X11)
+
 include(FeatureSummary)
 include(CMakePackageConfigHelpers)
 include(ECMSetupVersion)

@@ -1,20 +1,5 @@
 ######## kidletime ####################
-find_package(X11)
 
-if (X11_XTest_FOUND)
-   set (HAVE_XTEST 1)
-else ()
-   set (HAVE_XTEST 0)
-endif ()
-
-if (X11_Xscreensaver_FOUND)
-   set (HAVE_XSCREENSAVER 1)
-else ()
-   set (HAVE_XSCREENSAVER 0)
-endif ()
-
-find_package(XCB COMPONENTS XCB SYNC)
-find_package(X11_XCB)
 if (X11_XSync_FOUND AND XCB_XCB_FOUND AND X11_XCB_FOUND AND XCB_SYNC_FOUND)
    set (HAVE_XSYNC 1)
    include_directories( ${XCB_XCB_INCLUDE_DIR} ${XCB_SYNC_INCLUDE_DIR})

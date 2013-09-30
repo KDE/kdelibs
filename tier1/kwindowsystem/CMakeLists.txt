@@ -15,6 +15,21 @@ if(NOT WIN32)
     find_package(Qt5 ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE COMPONENTS X11Extras)
 endif(NOT WIN32)
 
+if (APPLE)
+   find_package(Carbon REQUIRED)
+endif (APPLE)
+
+find_package(X11)
+macro_bool_to_01(X11_FOUND HAVE_X11)
+find_package(XCB COMPONENTS XCB KEYSYMS)
+if(X11_FOUND)
+    set_package_properties(X11_Xrender PROPERTIES DESCRIPTION "X Rendering Extension (libXrender)"
+                           URL "http://www.x.org" TYPE RECOMMENDED
+                           PURPOSE "Support for compositing, rendering operations, and alpha-blending")
+    macro_bool_to_01(X11_Xrender_FOUND HAVE_XRENDER)
+    macro_bool_to_01(X11_Xfixes_FOUND HAVE_XFIXES)
+endif()
+
 include(FeatureSummary)
 include(CMakePackageConfigHelpers)
 include(ECMSetupVersion)

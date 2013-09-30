@@ -21,15 +21,25 @@ set_package_properties(Strigi PROPERTIES DESCRIPTION "Desktop indexing and searc
                        PURPOSE ""
                       )
 
-include(FeatureSummary)
+find_package(X11)
+macro_bool_to_01(X11_FOUND HAVE_X11)
+if(X11_FOUND)
+    set_package_properties(X11_Xrender PROPERTIES DESCRIPTION "X Rendering Extension (libXrender)"
+                           URL "http://www.x.org" TYPE RECOMMENDED
+                           PURPOSE "Support for compositing, rendering operations, and alpha-blending")
+    macro_bool_to_01(X11_Xrender_FOUND HAVE_XRENDER)
+endif()
+if (APPLE)
+   find_package(Carbon REQUIRED)
+endif (APPLE)
 
+include(FeatureSummary)
 include(ECMSetupVersion)
 include(ECMMarkNonGuiExecutable)
 
 ecm_setup_version(5.0.0 VARIABLE_PREFIX KDE4SUPPORT
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kde4support_version.h"
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KDE4SupportConfigVersion.cmake")
-
 
 # QUrl
 add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0)

@@ -20,10 +20,10 @@ endif(NOT KIO_NO_SOLID)
 find_package(X11)
 if(X11_FOUND)
 	macro_bool_to_01(X11_FOUND HAVE_X11)
-    set_package_properties(X11_Xrender PROPERTIES DESCRIPTION "X Rendering Extension (libXrender)"
+	set_package_properties(X11_Xrender PROPERTIES DESCRIPTION "X Rendering Extension (libXrender)"
                            URL "http://www.x.org" TYPE RECOMMENDED
                            PURPOSE "Support for compositing, rendering operations, and alpha-blending")
-	macro_bool_to_01(X11_Xrender_FOUND HAVE_XRENDER)
+    macro_bool_to_01(X11_Xrender_FOUND HAVE_XRENDER)
 endif(X11_FOUND)
 
 find_package(ACL)

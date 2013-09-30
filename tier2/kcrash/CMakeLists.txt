@@ -13,6 +13,9 @@ if(NOT kdelibs_SOURCE_DIR)
   find_package(KWindowSystem 5.0.0 REQUIRED)
 endif()
 
+find_package(X11)
+macro_bool_to_01(X11_FOUND HAVE_X11)
+
 include(FeatureSummary)
 include(ECMSetupVersion)
 

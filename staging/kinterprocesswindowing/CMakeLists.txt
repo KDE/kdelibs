@@ -21,6 +21,9 @@ find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS Test)
 
 if(NOT WIN32)
     find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS X11Extras)
+
+    find_package(X11)
+    macro_bool_to_01(X11_FOUND HAVE_X11)
 endif(NOT WIN32)
 
 add_subdirectory(src)

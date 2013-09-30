@@ -123,37 +123,6 @@ include(KDE4Defaults)
 include(MacroLibrary)
 include(ECMOptionalAddSubdirectory)
 
-if (APPLE)
-   find_package(Carbon REQUIRED)
-endif (APPLE)
-
-#required features:
-# Perl is used e.g. in khtml, kjs, kjsembed and others
-find_package(Perl)
-set_package_properties(Perl PROPERTIES URL "http://www.perl.org" TYPE REQUIRED PURPOSE "Needed for building kdelibs")
-
-#optional features
-find_package(X11)
-if(X11_FOUND)
-  macro_bool_to_01(X11_FOUND HAVE_X11)
-  #X11_Xrender discovery is done by FindX11
-  add_feature_info("X Rendering Extension (libXrender)" X11_Xrender_FOUND "Support for compositing, rendering operations, and alpha-blending. STRONGLY RECOMMENDED")
-  macro_bool_to_01(X11_Xscreensaver_FOUND HAVE_XSCREENSAVER)
-  macro_bool_to_01(X11_XSync_FOUND HAVE_XSYNC)
-  add_feature_info("X Screensaver Extension (libXss)" HAVE_XSCREENSAVER "Support for KIdleTime (fallback mode)")
-  add_feature_info("X Sync Extension (libXext)" HAVE_XSYNC "Efficient operation of KIdleTime. STRONGLY RECOMMENDED")
-
-  if(NOT HAVE_XSYNC AND NOT HAVE_XSCREENSAVER)
-    message(FATAL_ERROR "\nNeither the XSync (libXext) nor XScreensaver (libXss) development package was found.\nPlease install one of them (XSync is recommended)\n")
-  endif(NOT HAVE_XSYNC AND NOT HAVE_XSCREENSAVER)
-
-  #X11 Session Management (SM) is required
-  #X11_SM_FOUND is set in FindX11, which is required by KDE4Internal
-  if(UNIX AND NOT X11_SM_FOUND)
-    message(FATAL_ERROR "\nThe X11 Session Management (SM) development package could not be found.\nPlease install libSM.\n")
-  endif(UNIX AND NOT X11_SM_FOUND)
-endif(X11_FOUND)
-
 ################# Disallow in-source build #################
 
 macro_ensure_out_of_source_build("kdelibs requires an out of source build. Please create a separate build directory and run 'cmake path_to_kdelibs [options]' there.")

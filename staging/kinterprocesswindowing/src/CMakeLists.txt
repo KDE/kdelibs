@@ -1,11 +1,3 @@
-find_package(X11)
-
-if (X11_FOUND)
-   set (HAVE_X11 1)
-else ()
-   set (HAVE_X11 0)
-endif ()
-
 configure_file(config-kinterprocesswindowing.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kinterprocesswindowing.h)
 
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)

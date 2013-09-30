@@ -10,6 +10,8 @@ set_package_properties(GSSAPI PROPERTIES DESCRIPTION "Allows KIO to make use of 
                        TYPE OPTIONAL
                        PURPOSE "A MIT or HEIMDAL flavor of GSSAPI can be used"
                       )
+find_package(X11)
+macro_bool_to_01(X11_FOUND HAVE_X11)
 
 if(GSSAPI_FOUND)
     set(HAVE_LIBGSSAPI 1)

@@ -3,7 +3,15 @@ project(kfile)
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
 configure_file(config-kfile.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kfile.h )
-macro_bool_to_01(X11_Xrender_FOUND HAVE_XRENDER)
+
+find_package(X11)
+macro_bool_to_01(X11_FOUND HAVE_X11)
+if(X11_FOUND)
+    set_package_properties(X11_Xrender PROPERTIES DESCRIPTION "X Rendering Extension (libXrender)"
+                           URL "http://www.x.org" TYPE RECOMMENDED
+                           PURPOSE "Support for compositing, rendering operations, and alpha-blending")
+    macro_bool_to_01(X11_Xrender_FOUND HAVE_XRENDER)
+endif()
 
 if(Soprano_FOUND)
 include_directories(${SOPRANO_INCLUDE_DIR})

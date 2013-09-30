@@ -11,8 +11,10 @@ find_package(KF5 5.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 set(QT_REQUIRED_VERSION 5.2.0)
 find_package(Qt5 ${QT_REQUIRED_VERSION} NO_MODULE REQUIRED PrintSupport Network)
 
-include(FeatureSummary)
+find_package(X11)
+macro_bool_to_01(X11_FOUND HAVE_X11)
 
+include(FeatureSummary)
 include(ECMSetupVersion)
 
 # This framework uses a different numbering because it will break BC
@@ -20,6 +22,11 @@ include(ECMSetupVersion)
 ecm_setup_version(1 0 0 VARIABLE_PREFIX KDE4ATTIC
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kde4attic_version.h"
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KDE4AtticConfigVersion.cmake")
+
+if (APPLE)
+   find_package(Carbon REQUIRED)
+endif (APPLE)
+
 
 remove_definitions(-DQT_NO_CAST_TO_ASCII)
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)

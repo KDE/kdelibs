@@ -18,6 +18,10 @@ ecm_setup_version(5.0.0 VARIABLE_PREFIX KWALLET
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kwallet_version.h"
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KWalletConfigVersion.cmake")
 
+if (APPLE)
+   find_package(Carbon REQUIRED)
+endif (APPLE)
+
 remove_definitions(-DQT_NO_CAST_TO_ASCII)
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 remove_definitions(-DQT_NO_CAST_FROM_BYTEARRAY)
