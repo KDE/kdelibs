@@ -181,7 +181,6 @@ find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS Widgets Test Network Xml Co
 add_subdirectory( staging )
 if (UNIX)
    add_subdirectory( kpty )
-   add_subdirectory( kdesu )
 endif (UNIX)
 
 find_package(Qt5UiTools)
