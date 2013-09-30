@@ -109,7 +109,7 @@ static KService::List mimeTypeSycocaServiceOffers(const QString& mimeType)
 #define CHECK_SERVICETYPE(genericServiceTypePtr) \
     if (!genericServiceTypePtr) { \
         qWarning() << "KMimeTypeTrader: couldn't find service type" << genericServiceType << \
-            "\nPlease ensure that the .desktop file for it is installed; then run kbuildsycoca4."; \
+            "\nPlease ensure that the .desktop file for it is installed; then run kbuildsycoca5."; \
         return; \
     }
 
