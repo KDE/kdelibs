@@ -22,14 +22,9 @@
 
 #include <config-kprintutils.h>
 
-#if HAVE_X11
-#include <fixx11h.h>
-#endif
 #include <QPrinter>
 #include <QPrintEngine>
 #include <QPrintDialog>
-#include <QFile>
-#include <QtNetwork/QTcpSocket>
 
 /** @internal */
 KCupsOptionsWidget::KCupsOptionsWidget( QPrintDialog *parent ) : QWidget( parent )
