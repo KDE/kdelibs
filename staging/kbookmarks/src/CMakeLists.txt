@@ -2,17 +2,17 @@
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
 set(kbookmarks_SRCS
-  kbookmark.cc
-  kbookmarkimporter.cc
-  kbookmarkmanager.cc
-  kbookmarkmanageradaptor.cc
-  kbookmarkmenu.cc
-  konqbookmarkmenu.cc
-  kbookmarkimporter_opera.cc
-  kbookmarkimporter_ie.cc
-  kbookmarkimporter_ns.cc
-  kbookmarkdombuilder.cc
-  kbookmarkdialog.cc
+  kbookmark.cpp
+  kbookmarkimporter.cpp
+  kbookmarkmanager.cpp
+  kbookmarkmanageradaptor.cpp
+  kbookmarkmenu.cpp
+  konqbookmarkmenu.cpp
+  kbookmarkimporter_opera.cpp
+  kbookmarkimporter_ie.cpp
+  kbookmarkimporter_ns.cpp
+  kbookmarkdombuilder.cpp
+  kbookmarkdialog.cpp
 )
 
 add_library(KBookmarks ${kbookmarks_SRCS})
