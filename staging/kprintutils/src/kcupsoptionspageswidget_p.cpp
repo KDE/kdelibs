@@ -21,7 +21,9 @@
 #include "kcupsoptionspageswidget_p.h"
 
 #include <QCheckBox>
+#include <QComboBox>
 #include <QLabel>
+#include <QLineEdit>
 #include <QIcon>
 #include <QLayout>
 #include <QTimer>
@@ -29,8 +31,6 @@
 #include <QPrintEngine>
 #include <qstandardpaths.h>
 
-#include <kcombobox.h>
-#include <klineedit.h>
 #include <klocalizedstring.h>
 
 /** @internal */
