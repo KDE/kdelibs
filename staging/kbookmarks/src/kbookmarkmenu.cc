@@ -26,7 +26,6 @@
 #include <kauthorized.h>
 #include <kstandardaction.h>
 #include <kstringhandler.h>
-#include <krun.h>
 #include <kactioncollection.h>
 
 #include <qclipboard.h>
@@ -36,8 +35,8 @@
 #include <QtCore/QDebug>
 #include <QtCore/QStack>
 #include <QMessageBox>
-#include <QHeaderView>
 #include <QApplication>
+#include <QDesktopServices>
 
 /********************************************************************/
 /********************************************************************/
@@ -746,7 +745,7 @@ KBookmarkAction::~KBookmarkAction()
 void KBookmarkAction::slotSelected(Qt::MouseButtons mb, Qt::KeyboardModifiers km)
 {
   if( !m_pOwner )
-    new KRun( bookmark().url() ,(QWidget*)0);
+    QDesktopServices::openUrl(bookmark().url());
   else
     m_pOwner->openBookmark( bookmark(), mb, km );
 }

@@ -26,6 +26,7 @@
 
 #include <kactionmenu.h>
 #include <QTreeWidget>
+#include <QStack>
 
 #include "kbookmark.h"
 #include "kbookmarkimporter.h"

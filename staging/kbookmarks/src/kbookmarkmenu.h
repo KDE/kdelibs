@@ -26,11 +26,9 @@
 #include <sys/types.h>
 
 #include <QtCore/QObject>
-#include <QtCore/QStack>
 #include <QMenu>
 
 #include <kactionmenu.h>
-#include <krun.h>
 
 #include "kbookmark.h"
 #include "kbookmarkmanager.h"
@@ -77,7 +75,7 @@ public:
    * @param mgr The bookmark manager to use (i.e. for reading and writing)
    * @param owner implementation of the KBookmarkOwner callback interface.
    * Note: If you pass a null KBookmarkOwner to the constructor, the
-   * openBookmark signal is not emitted, instead KRun is used to open the bookmark.
+   * openBookmark signal is not emitted, instead QDesktopServices::openUrl is used to open the bookmark.
    * @param parentMenu menu to be filled
    * @param collec parent collection for the KActions.
    *

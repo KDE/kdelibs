@@ -23,7 +23,6 @@ target_link_libraries(KBookmarks LINK_PRIVATE
                                         ${KCoreAddons_LIBRARIES}
                                         ${KWidgetsAddons_LIBRARIES}
                                         KIOCore # for KIO::iconNameForUrl
-                                        KIOWidgets # for KRun
                                         KConfigWidgets # for KStandardAction
                                         XmlGui # for KActionCollection
                                         KIconThemes # for SmallIcon

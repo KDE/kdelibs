@@ -37,7 +37,7 @@ public:
    * @param mgr The bookmark manager to use (i.e. for reading and writing)
    * @param owner implementation of the KBookmarkOwner callback interface.
    * Note: If you pass a null KBookmarkOwner to the constructor, the
-   * URLs are openend by KRun and "Add Bookmark" is disabled.
+   * URLs are openend by QDesktopServices::openUrl and "Add Bookmark" is disabled.
    * @param parentMenu menu to be filled
    * @param collec parent collection for the KActions.
    */
