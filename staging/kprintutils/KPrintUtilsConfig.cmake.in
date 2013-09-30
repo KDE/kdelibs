@@ -1,9 +1,7 @@
 @PACKAGE_INIT@
 
-find_dependency(KCoreAddons "${PACKAGE_VERSION}")
-find_dependency(KI18n       "${PACKAGE_VERSION}")
-find_dependency(KParts      "${PACKAGE_VERSION}")
-
+find_dependency(Qt5Widgets @REQUIRED_QT_VERSION@)
+find_dependency(Qt5PrintSupport @REQUIRED_QT_VERSION@)
 
 set(KPrintUtils_INSTALL_PREFIX "@PACKAGE_CMAKE_INSTALL_PREFIX@")
 set_and_check(KPrintUtils_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")
@@ -12,4 +10,3 @@ include("${CMAKE_CURRENT_LIST_DIR}/KPrintUtilsTargets.cmake")
 
 set(KPrintUtils_LIBRARIES KF5::KPrintUtils)
 set(KPrintUtils_INCLUDE_DIRS ${KPrintUtils_INCLUDE_DIR})
-
