@@ -26,7 +26,7 @@ sb_add_project(tier1/threadweaver )
 sb_add_project(tier2/kauth DEPENDS kcoreaddons)
 sb_add_project(tier2/kcrash DEPENDS kcoreaddons kwindowsystem)
 
-# sb_add_project(staging/kconfigwidgets DEPENDS kauth kcoreaddons kcodecs kconfig kguiaddons ki18n kwidgetsaddons)
+# sb_add_project(tier3/kconfigwidgets DEPENDS kauth kcoreaddons kcodecs kconfig kguiaddons ki18n kwidgetsaddons)
 
 if(SB_EVERYTHING_DISABLED)
   message(STATUS "All projects are disabled. You may consider running make edit_cache or cmake-gui to enable some.")

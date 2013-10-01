@@ -1,5 +1,6 @@
 project(tier3)
 
+add_subdirectory(kconfigwidgets)
 add_subdirectory(ktextwidgets)
 add_subdirectory(kunitconversion)
 add_subdirectory(kparts)
