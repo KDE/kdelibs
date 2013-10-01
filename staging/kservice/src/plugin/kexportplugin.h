@@ -21,36 +21,7 @@
 #include <QtCore/QPluginLoader>
 #include <QtCore/QtPlugin>
 #include <kservice_export.h>
-#include <kservice_version.h>
-
-/**
- * \internal
- * Stores KDE version information in a plugin library.
- * \see K_PLUGIN_VERIFICATION_DATA
- */
-struct KDEPluginVerificationData
-{
-    enum { PluginVerificationDataVersion = 1 };
-
-    /**
-     * \internal
-     * The version of this structure. Do not ever delete or change a field.
-     * Increase it in the K_EXPORT_PLUGIN_VERSION macro whenever you
-     * append a field to this structure.
-     */
-    quint8 dataVersion;
-    quint32 KDEVersion;
-    const char *KDEVersionString;
-};
-
-/**
- * \internal
- * Used to export the KDE version a plugin was compiled against.
- * \see KDEPluginVerificationData
- */
-#define K_PLUGIN_VERIFICATION_DATA \
-Q_EXTERN_C KSERVICE_EXPORT const KDEPluginVerificationData kde_plugin_verification_data = \
-{ KDEPluginVerificationData::PluginVerificationDataVersion, KSERVICE_VERSION, KSERVICE_VERSION_STRING };
+//#include <kservice_version.h>
 
 /**
  * \relates KPluginLoader
@@ -79,8 +50,7 @@ class KSERVICE_DEPRECATED_EXPORT K_EXPORT_PLUGIN_is_deprecated_see_KDE5PORTING
 };
 
 #define K_EXPORT_PLUGIN(factory) \
-            K_EXPORT_PLUGIN_is_deprecated_see_KDE5PORTING dummy; \
-            K_PLUGIN_VERIFICATION_DATA
+            K_EXPORT_PLUGIN_is_deprecated_see_KDE5PORTING dummy;
 #endif
 
 #endif

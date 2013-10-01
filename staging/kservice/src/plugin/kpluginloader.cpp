@@ -40,7 +40,7 @@ class KPluginLoaderPrivate
     Q_DECLARE_PUBLIC(KPluginLoader)
 protected:
     KPluginLoaderPrivate(const QString &libname)
-        : name(libname), pluginVersion(~0U), verificationData(0), lib(0)
+        : name(libname), pluginVersion(~0U), lib(0)
     {}
     ~KPluginLoaderPrivate()
     {
@@ -50,7 +50,6 @@ protected:
     KPluginLoader *q_ptr;
     const QString name;
     quint32 pluginVersion;
-    KDEPluginVerificationData *verificationData;
     QString errorString;
 
     KLibrary *lib;
@@ -258,20 +257,6 @@ bool KPluginLoader::load()
     Q_ASSERT(!fileName().isEmpty());
     QLibrary lib(fileName());
     Q_ASSERT(lib.isLoaded()); // already loaded by QPluginLoader::load()
-
-    d->verificationData = (KDEPluginVerificationData *) lib.resolve("kde_plugin_verification_data");
-    if (d->verificationData) {
-        if (d->verificationData->dataVersion < KDEPluginVerificationData::PluginVerificationDataVersion
-            || (d->verificationData->KDEVersion > KSERVICE_VERSION)
-            || (KSERVICE_VERSION_MAJOR << 16 != (d->verificationData->KDEVersion & 0xFF0000)))
-        {
-            d->errorString = i18n("The plugin '%1' uses an incompatible KDE library (%2).", d->name, QString::fromLatin1(d->verificationData->KDEVersionString));
-            unload();
-            return false;
-        }
-    } else {
-        qDebug() << "The plugin" << d->name << "doesn't contain a kde_plugin_verification_data structure";
-    }
 
     quint32 *version = (quint32 *) lib.resolve("kde_plugin_version");
     if (version)
