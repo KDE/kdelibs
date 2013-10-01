@@ -17,7 +17,7 @@ include(ECMSetupVersion)
 
 # This framework uses a different numbering because it will break BC
 # Change this to 2 for KF 5.1
-ecm_setup_version(1 0 0 VARIABLE_PREFIX KDE4ATTIC
+ecm_setup_version(1.0.0 VARIABLE_PREFIX KDE4ATTIC
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kde4attic_version.h"
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KDE4AtticConfigVersion.cmake")
 
