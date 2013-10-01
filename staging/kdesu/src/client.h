@@ -13,16 +13,11 @@
 #ifndef __KDE_su_Client_h_Included__
 #define __KDE_su_Client_h_Included__
 
-
-#include <QtCore/QList>
 #include <kdesu_export.h>
 
 #ifdef Q_OS_UNIX
 
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <sys/un.h>
-
+#include <QtCore/QList>
 #include <QtCore/QByteArray>
 
 namespace KDESu {

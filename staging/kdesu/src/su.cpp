@@ -16,27 +16,14 @@
 #include "su.h"
 #include "kcookie.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <errno.h>
-#include <string.h>
-#include <ctype.h>
-#include <signal.h>
-
-#include <sys/types.h>
-#include <sys/stat.h>
-
 #include <QtCore/QFile>
+#include <QDebug>
+#include <QStandardPaths>
+#include <qplatformdefs.h>
 
 #include <kconfig.h>
 #include <kconfiggroup.h>
-#include <QDebug>
 #include <ksharedconfig.h>
-#include <klocalizedstring.h>
-#include <qstandardpaths.h>
-#include <qplatformdefs.h>
 #include <kuser.h>
 
 #ifndef __PATH_SU

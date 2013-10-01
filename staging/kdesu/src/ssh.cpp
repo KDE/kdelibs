@@ -13,24 +13,10 @@
 #include "ssh.h"
 #include "kcookie.h"
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <unistd.h>
-#include <fcntl.h>
 #include <signal.h>
-#include <errno.h>
-#include <string.h>
-#include <ctype.h>
-#include <time.h>
-
-#include <sys/types.h>
-#include <sys/stat.h>
-
-
 
 #include <QDebug>
-#include <klocalizedstring.h>
-
 
 extern int kdesuDebugArea();
 

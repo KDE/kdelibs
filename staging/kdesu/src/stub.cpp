@@ -11,15 +11,11 @@
  */
 
 #include "stub.h"
+#include "kcookie.h"
 
 #include <config-kdesu.h>
 
-#include "kcookie.h"
-
-#include <stdlib.h>
 #include <unistd.h>
-
-
 
 #include <QDebug>
 

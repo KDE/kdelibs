@@ -12,8 +12,6 @@
 
 #include "kcookie.h"
 
-#include <stdlib.h>
-
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 

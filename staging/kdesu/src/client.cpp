@@ -14,23 +14,15 @@
 
 #include <config-kdesu.h>
 
-#include <stdio.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <pwd.h>
 #include <errno.h>
-#include <string.h>
 
-#include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/un.h>
 
-
 #include <QtCore/QFile>
 #include <QtCore/QRegExp>
+#include <QStandardPaths>
 #include <qplatformdefs.h>
-#include <qstandardpaths.h>
-
 #include <QDebug>
 
 #include <ktoolinvocation.h>

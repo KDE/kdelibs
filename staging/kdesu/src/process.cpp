@@ -19,13 +19,11 @@
 
 #include <config-kdesu.h>
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <signal.h>
 #include <errno.h>
-#include <string.h>
 #include <termios.h>
 
 #include <sys/types.h>
@@ -38,13 +36,12 @@
 #include <sys/select.h>                // Needed on some systems.
 #endif
 
-
 #include <QtCore/QFile>
+#include <QStandardPaths>
+#include <QDebug>
 
 #include <ksharedconfig.h>
 #include <kconfiggroup.h>
-#include <QDebug>
-#include <qstandardpaths.h>
 
 extern int kdesuDebugArea();
 
