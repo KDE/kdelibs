@@ -6,15 +6,15 @@ set(krossui_LIB_SRCS
 #   guiclient.cpp
    )
 
-add_library(krossui ${krossui_LIB_SRCS})
-target_link_libraries(krossui krosscore KParts ${KDE4_KIO_LIBS} ${KCoreAddons_LIBRARIES} KI18n XmlGui KIconThemes)
-set_target_properties(krossui PROPERTIES VERSION ${GENERIC_LIB_VERSION}
+add_library(KrossUi ${krossui_LIB_SRCS})
+target_link_libraries(KrossUi KrossCore KParts ${KDE4_KIO_LIBS} ${KCoreAddons_LIBRARIES} KI18n XmlGui KIconThemes)
+set_target_properties(KrossUi PROPERTIES VERSION ${GENERIC_LIB_VERSION}
                                          SOVERSION ${GENERIC_LIB_SOVERSION}
                      )
 
-generate_export_header(krossui)
+generate_export_header(KrossUi)
 
-install(TARGETS krossui EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KrossUi EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 ########### install files ###############
 

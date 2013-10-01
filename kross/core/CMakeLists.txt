@@ -9,20 +9,20 @@ set(krosscore_LIB_SRCS
    object.cpp
 )
 
-add_library(krosscore ${krosscore_LIB_SRCS})
-target_link_libraries(krosscore KI18n Qt5::Script Qt5::Xml Qt5::Widgets KConfigCore)
-target_link_libraries(krosscore LINK_INTERFACE_LIBRARIES Qt5::Script Qt5::Xml)
+add_library(KrossCore ${krosscore_LIB_SRCS})
+target_link_libraries(KrossCore KI18n Qt5::Script Qt5::Xml Qt5::Widgets KConfigCore)
+target_link_libraries(KrossCore LINK_INTERFACE_LIBRARIES Qt5::Script Qt5::Xml)
 
-target_include_directories(krosscore PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/../..;${CMAKE_CURRENT_SOURCE_DIR}/../..>")
+target_include_directories(KrossCore PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/../..;${CMAKE_CURRENT_SOURCE_DIR}/../..>")
 
-set_target_properties(krosscore PROPERTIES VERSION ${GENERIC_LIB_VERSION}
+set_target_properties(KrossCore PROPERTIES VERSION ${GENERIC_LIB_VERSION}
                                 SOVERSION ${GENERIC_LIB_SOVERSION}
                      )
 
 
-install(TARGETS krosscore EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KrossCore EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
-generate_export_header(krosscore)
+generate_export_header(KrossCore)
 
 install(FILES
     ${CMAKE_CURRENT_BINARY_DIR}/krosscore_export.h

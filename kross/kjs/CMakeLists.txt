@@ -7,5 +7,5 @@ set(krosskjs_PART_SRCS
 )
 
 add_library(krosskjs MODULE ${krosskjs_PART_SRCS})
-target_link_libraries(krosskjs krosscore KJS kjsembed KI18n Qt5::Widgets)
+target_link_libraries(krosskjs KrossCore KJS kjsembed KI18n Qt5::Widgets)
 install(TARGETS krosskjs DESTINATION ${PLUGIN_INSTALL_DIR})

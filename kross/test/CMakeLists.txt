@@ -9,5 +9,5 @@ set(krosstest_SRCS
 
 add_executable(krosstest ${krosstest_SRCS})
 ecm_mark_as_test(${krosstest})
-target_link_libraries(krosstest krosscore ${KCoreAddons_LIBRARIES} KConfigCore Qt5::Widgets)
+target_link_libraries(krosstest KrossCore ${KCoreAddons_LIBRARIES} KConfigCore Qt5::Widgets)
 
