@@ -21,6 +21,7 @@ set(cmakeFiles
                CheckPointerMember.cmake
                CheckPrototypeExists.cmake
                CheckStructMember.cmake
+               ECMQt4To5Porting.cmake
                FindACL.cmake
                FindAGG.cmake
                FindAkode.cmake
@@ -72,6 +73,7 @@ set(cmakeFiles
                FindPulseAudio.cmake
                FindPythonLibrary.cmake
                FindQImageBlitz.cmake
+               FindQt5Transitional.cmake
                FindSIP.cmake
                FindSamba.cmake
                FindSane.cmake
