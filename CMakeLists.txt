@@ -44,15 +44,11 @@ if (KHTML_BUILD_TESTREGRESSION)
    set (__KDE_HAVE_GCC_VISIBILITY 0)
 endif (KHTML_BUILD_TESTREGRESSION)
 
-find_package(ECM 0.0.8 REQUIRED NO_MODULE)
-
 # where to look first for cmake modules, before ${CMAKE_ROOT}/Modules/ is checked
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules" ${ECM_MODULE_PATH})
 
 # this gives us the KDE install dir variables (instead of defining them in FindKDE4Internal.cmake),
 # RPATH handling and test settings.
-find_package(KF5 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
-
 
 add_subdirectory( tier1 )
 
@@ -121,7 +117,6 @@ include(FindKDE4Internal)
 include(KDE4Macros)
 include(KDE4Defaults)
 include(MacroLibrary)
-include(ECMOptionalAddSubdirectory)
 
 ################# Disallow in-source build #################
 
@@ -148,20 +143,13 @@ set(KDE4Support_LIBRARIES KDE4Support)
 
 add_subdirectory( cmake )
 # For convenience only. Move down/remove and find dependencies with more locality instead.
-find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS Widgets Test Network Xml Concurrent DBus Svg)
 add_subdirectory( staging )
 if (UNIX)
    add_subdirectory( kpty )
    add_subdirectory( kdesu )
 endif (UNIX)
 
-find_package(Qt5UiTools)
-
-if(NOT WINCE)
-  if (Qt5UiTools_FOUND)
-      add_subdirectory( kjsembed )
-  endif()
-endif(NOT WINCE)
+add_subdirectory( kjsembed )
 add_subdirectory( licenses   )
 add_subdirectory( dnssd )
 add_subdirectory( kio )
@@ -169,23 +157,15 @@ add_subdirectory( kded       )
 add_subdirectory( kfile )
 add_subdirectory( kioslave   )
 
-find_package(Phonon4Qt5 4.6.60 NO_MODULE)
-if (Phonon4Qt5_FOUND)
-    add_subdirectory( khtml  )
-endif(Phonon4Qt5_FOUND)
+add_subdirectory( khtml )
 
 add_subdirectory( interfaces  )
-if (Qt5UiTools_FOUND)
-    add_subdirectory( kross )
-endif()
+add_subdirectory( kross )
 add_subdirectory( kinit  )
 add_subdirectory( includes )
-ecm_optional_add_subdirectory( doc )
+add_subdirectory( doc )
 
-find_package(Qt5Quick)
-if(Qt5Quick_FOUND)
-  add_subdirectory( experimental )
-endif()
+add_subdirectory( experimental )
 add_subdirectory( knewstuff )
 add_subdirectory( knotify )
 

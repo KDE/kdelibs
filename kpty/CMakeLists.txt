@@ -1,5 +1,10 @@
 project(kpty)
 
+find_package(ECM 0.0.8 REQUIRED NO_MODULE)
+set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
+
+find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
+
 set(kpty_LIB_SRCS
    kpty.cpp
    kptydevice.cpp

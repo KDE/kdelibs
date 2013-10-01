@@ -1,25 +1,11 @@
 project( KDELIBS_EXPERIMENTAL )
-
+find_package(Qt5Quick)
 find_package(X11)
 macro_bool_to_01(X11_FOUND HAVE_X11)
 
 # where to look first for cmake modules, before ${CMAKE_ROOT}/Modules/ is checked
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules ${CMAKE_MODULE_PATH} )
 
-if(CMAKE_SOURCE_DIR STREQUAL "${CMAKE_CURRENT_SOURCE_DIR}")
-  set(BUILDING_EXPERIMENTAL_SEPARATELY TRUE)
-endif(CMAKE_SOURCE_DIR STREQUAL "${CMAKE_CURRENT_SOURCE_DIR}")
-
-if(BUILDING_EXPERIMENTAL_SEPARATELY)
-   find_package(KDE4 4.2.85 REQUIRED)
-   include(MacroLibrary)
-   include(KDE4Defaults)
-endif(BUILDING_EXPERIMENTAL_SEPARATELY)
-
-
-if(BUILDING_EXPERIMENTAL_SEPARATELY)
-   feature_summary(WHAT ALL INCLUDE_QUIET_PACKAGES FATAL_ON_MISSING_REQUIRED_PACKAGE)
-endif(BUILDING_EXPERIMENTAL_SEPARATELY)
-
-
-add_subdirectory(kdeclarative)
+if(Qt5Quick_FOUND)
+    add_subdirectory(kdeclarative)
+endif()

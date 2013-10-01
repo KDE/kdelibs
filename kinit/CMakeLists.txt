@@ -1,14 +1,23 @@
 project(kdeinit)
 
+find_package(ECM 0.0.8 REQUIRED NO_MODULE)
+set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
+
+set(REQUIRED_QT_VERSION "5.2")
+find_package(Qt5 "${REQUIRED_QT_VERSION}" REQUIRED NO_MODULE COMPONENTS Gui Widgets DBus)
+find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
+
+include(FeatureSummary)
+include(CMakePackageConfigHelpers)
+include(ECMSetupVersion)
+
 ########### Configuring (mainly for proctitle) ###########
 
 include(ConfigureChecks.cmake)
 
 #optional features
 find_package(X11)
-if(X11_FOUND)
-	macro_bool_to_01(X11_FOUND HAVE_X11)
-endif(X11_FOUND)
+macro_bool_to_01(X11_FOUND HAVE_X11)
 
 # used by 4 executables in this file
 if(HAVE_SOCKET_LIBRARY)

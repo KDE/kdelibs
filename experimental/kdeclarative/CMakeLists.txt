@@ -1,7 +1,12 @@
 project(kdeclarative)
 
-find_package(Qt5Quick 5.2.0 REQUIRED)
-find_package(Qt5Qml 5.2.0 REQUIRED)
+find_package(ECM 0.0.8 REQUIRED NO_MODULE)
+
+set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
+
+set(REQUIRED_QT_VERSION "5.2")
+find_package(Qt5 "${REQUIRED_QT_VERSION}" REQUIRED NO_MODULE COMPONENTS Quick Qml)
+find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/..
 		    ${CMAKE_CURRENT_BINARY_DIR}/..

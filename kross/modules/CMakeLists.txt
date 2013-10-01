@@ -1,4 +1,3 @@
-find_package(Qt5UiTools)
 if( Qt5UiTools_FOUND )
 	############################################
 	# the forms module
