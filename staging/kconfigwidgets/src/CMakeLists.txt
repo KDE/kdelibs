@@ -17,15 +17,15 @@ generate_export_header(KConfigWidgets)
 
 target_link_libraries(KConfigWidgets
   LINK_PUBLIC
-    KCodecs
-    KWidgetsAddons
-    KConfigGui
-    KAuth
+    KCodecs # KCodecActions uses KCharsets, KEncodingProber
+    KWidgetsAddons # For K*Action, KPage*, KViewStateSerializer, KAcceleratorManager, K*GuiItem
+    KConfigGui # KStandardAction uses KStandardShortcut
+    KAuth # KCModule uses KAuth::Action
   LINK_PRIVATE
-    Qt5::DBus
-    KCoreAddons
-    KGuiAddons
-    KI18n
+    Qt5::DBus # KPasteTextAction talks to Klipper via DBus
+    KCoreAddons # KCModule uses KAboutData, KTip uses KRandom
+    KGuiAddons # KColorScheme uses KColorUtils
+    KI18n # For action and widget texts
 )
 
 set_target_properties(KConfigWidgets PROPERTIES VERSION   ${KCONFIGWIDGETS_VERSION_STRING}
