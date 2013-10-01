@@ -8,7 +8,7 @@ set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
 find_package(KF5 5.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 
-find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS Network)
+find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS Network Widgets DBus Test Svg Concurrent)
 
 if(NOT WIN32)
     find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS X11Extras)

@@ -1,8 +1,8 @@
 include(ECMMarkAsTest)
 
-include_directories(
-   ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
-)
+find_package(Qt5Test)
+
+include_directories( ${Qt5Gui_PRIVATE_INCLUDE_DIRS} )
 
 set(CONFIGFILE "${CMAKE_CURRENT_SOURCE_DIR}/kdeplatformtheme_kdeglobals")
 set(CHANGED_CONFIGFILE "${CMAKE_CURRENT_SOURCE_DIR}/kdeplatformtheme_changed_kdeglobals")

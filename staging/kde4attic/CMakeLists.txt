@@ -9,7 +9,7 @@ set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake )
 find_package(KF5 5.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 
 set(QT_REQUIRED_VERSION 5.2.0)
-find_package(Qt5 ${QT_REQUIRED_VERSION} NO_MODULE REQUIRED PrintSupport Network)
+find_package(Qt5 ${QT_REQUIRED_VERSION} NO_MODULE REQUIRED Concurrent PrintSupport Network)
 
 find_package(X11)
 macro_bool_to_01(X11_FOUND HAVE_X11)

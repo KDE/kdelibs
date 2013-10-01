@@ -17,7 +17,7 @@ find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 
 include(ECMQtFramework)
 
-find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS Test)
+find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS Widgets)
 
 if(NOT WIN32)
     find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS X11Extras)
