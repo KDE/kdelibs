@@ -2,18 +2,13 @@ cmake_minimum_required(VERSION 2.8.11)
 
 project(KConfig)
 
-if(NOT kdelibs_SOURCE_DIR)
+find_package(ECM 0.0.8 REQUIRED NO_MODULE)
+set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
-  find_package(ECM 0.0.8 REQUIRED NO_MODULE)
-  set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} cmake/)
-
-  find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS Widgets Xml Test Concurrent)
-
-  find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
-endif()
+find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS Widgets Xml Test Concurrent)
+find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 
 include(FeatureSummary)
-
 include(ECMSetupVersion)
 ecm_setup_version(5.0.0 VARIABLE_PREFIX KCONFIG
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kconfig_version.h"
