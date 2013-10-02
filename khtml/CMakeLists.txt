@@ -3,18 +3,25 @@ cmake_minimum_required(VERSION 2.8.11)
 project(KHtml)
 
 find_package(ECM 0.0.8 REQUIRED NO_MODULE)
+set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
 include(FeatureSummary)
 include(CMakePackageConfigHelpers)
 include(ECMSetupVersion)
 
+set(REQUIRED_QT_VERSION "5.2")
 find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
-
-find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS PrintSupport Test Concurrent)
+find_package(Qt5 "${REQUIRED_QT_VERSION}" REQUIRED NO_MODULE COMPONENTS Widgets Network DBus PrintSupport Xml Test)
 
 ecm_setup_version(5.0.0 VARIABLE_PREFIX KHTML
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/khtml_version.h"
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KHtmlConfigVersion.cmake")
+
+find_package(Perl)
+set_package_properties(Perl PROPERTIES URL "http://www.perl.org" TYPE REQUIRED PURPOSE "Needed for building kdelibs")
+
+find_package(X11)
+set(HAVE_X11 ${X11_FOUND})
 
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 remove_definitions(-DQT_NO_CAST_FROM_BYTEARRAY)
@@ -53,9 +60,6 @@ set_package_properties(PNG PROPERTIES DESCRIPTION "PNG image format support"
                        TYPE REQUIRED
                        PURPOSE "Required by khtml"
                       )
-
-find_package(X11)
-set(HAVE_X11 ${X11_FOUND})
 
 if(NOT WIN32)
     find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS X11Extras)

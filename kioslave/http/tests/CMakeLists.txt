@@ -1,5 +1,8 @@
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
 
+find_package(Qt5Test REQUIRED)
+find_package(Qt5Widgets REQUIRED)
+
 include_directories("${CMAKE_CURRENT_BINARY_DIR}/.." "${CMAKE_CURRENT_SOURCE_DIR}/.." )
 
 kde4_add_unit_test(httpheadertokenizetest httpheadertokenizetest.cpp)

@@ -1,5 +1,16 @@
 project(kio)
 
+find_package(ECM 0.0.8 REQUIRED NO_MODULE)
+set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
+
+set(REQUIRED_QT_VERSION "5.2")
+find_package(Qt5 "${REQUIRED_QT_VERSION}" REQUIRED NO_MODULE COMPONENTS Widgets Network Svg Xml Test)
+find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
+
+include(FeatureSummary)
+include(CMakePackageConfigHelpers)
+include(ECMSetupVersion)
+
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
 add_definitions(-DQT_NO_URL_CAST_FROM_STRING)
@@ -23,12 +34,12 @@ if(X11_FOUND)
     set_package_properties(X11_Xrender PROPERTIES DESCRIPTION "X Rendering Extension (libXrender)"
                            URL "http://www.x.org" TYPE RECOMMENDED
                            PURPOSE "Support for compositing, rendering operations, and alpha-blending")
-	set(HAVE_XRENDER ${X11_Xrender_FOUND})
+    set(HAVE_XRENDER ${X11_Xrender_FOUND})
 endif(X11_FOUND)
 
 find_package(ACL)
-set(HAVE_LIBACL ${ACL_FOUND})
 set(HAVE_POSIX_ACL ${ACL_FOUND})
+set(HAVE_LIBACL ${ACL_FOUND})
 
 set_package_properties(ACL PROPERTIES DESCRIPTION "LibACL" URL "ftp://oss.sgi.com/projects/xfs/cmd_tars"
                        TYPE RECOMMENDED PURPOSE "Support for manipulating access control lists")

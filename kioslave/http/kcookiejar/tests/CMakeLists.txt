@@ -1,5 +1,7 @@
 set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 
+find_package(Qt5Test REQUIRED)
+
 ########### next target ###############
 
 set(kcookiejartest_SRCS kcookiejartest.cpp )

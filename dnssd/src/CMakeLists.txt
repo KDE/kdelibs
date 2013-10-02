@@ -53,8 +53,7 @@ else ()
         dummy-servicetypebrowser.cpp
     )
 
-endif (AVAHI_FOUND)
-
+endif ()
 
 add_library(KDNSSD SHARED ${kdnssd_LIB_SRCS})
 generate_export_header(KDNSSD
