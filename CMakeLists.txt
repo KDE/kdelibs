@@ -44,15 +44,11 @@ if (KHTML_BUILD_TESTREGRESSION)
    set (__KDE_HAVE_GCC_VISIBILITY 0)
 endif (KHTML_BUILD_TESTREGRESSION)
 
-find_package(ECM 0.0.8 REQUIRED NO_MODULE)
-
 # where to look first for cmake modules, before ${CMAKE_ROOT}/Modules/ is checked
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules" ${ECM_MODULE_PATH})
 
 # this gives us the KDE install dir variables (instead of defining them in FindKDE4Internal.cmake),
 # RPATH handling and test settings.
-find_package(KF5 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
-
 
 add_subdirectory( tier1 )
 
@@ -119,38 +115,6 @@ include(FindKDE4Internal)
 include(KDE4Macros)
 include(KDE4Defaults)
 include(MacroLibrary)
-include(ECMOptionalAddSubdirectory)
-
-if (APPLE)
-   find_package(Carbon REQUIRED)
-endif (APPLE)
-
-#required features:
-# Perl is used e.g. in khtml, kjs, kjsembed and others
-find_package(Perl)
-set_package_properties(Perl PROPERTIES URL "http://www.perl.org" TYPE REQUIRED PURPOSE "Needed for building kdelibs")
-
-#optional features
-find_package(X11)
-set(HAVE_X11 ${X11_FOUND})
-if(X11_FOUND)
-  #X11_Xrender discovery is done by FindX11
-  add_feature_info("X Rendering Extension (libXrender)" X11_Xrender_FOUND "Support for compositing, rendering operations, and alpha-blending. STRONGLY RECOMMENDED")
-  set(HAVE_XSCREENSAVER ${X11_Xscreensaver_FOUND})
-  set(HAVE_XSYNC ${X11_XSync_FOUND})
-  add_feature_info("X Screensaver Extension (libXss)" HAVE_XSCREENSAVER "Support for KIdleTime (fallback mode)")
-  add_feature_info("X Sync Extension (libXext)" HAVE_XSYNC "Efficient operation of KIdleTime. STRONGLY RECOMMENDED")
-
-  if(NOT HAVE_XSYNC AND NOT HAVE_XSCREENSAVER)
-    message(FATAL_ERROR "\nNeither the XSync (libXext) nor XScreensaver (libXss) development package was found.\nPlease install one of them (XSync is recommended)\n")
-  endif(NOT HAVE_XSYNC AND NOT HAVE_XSCREENSAVER)
-
-  #X11 Session Management (SM) is required
-  #X11_SM_FOUND is set in FindX11, which is required by KDE4Internal
-  if(UNIX AND NOT X11_SM_FOUND)
-    message(FATAL_ERROR "\nThe X11 Session Management (SM) development package could not be found.\nPlease install libSM.\n")
-  endif(UNIX AND NOT X11_SM_FOUND)
-endif(X11_FOUND)
 
 ################# Disallow in-source build #################
 
@@ -177,19 +141,12 @@ set(KDE4Support_LIBRARIES KDE4Support)
 
 add_subdirectory( cmake )
 # For convenience only. Move down/remove and find dependencies with more locality instead.
-find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS Widgets Test Network Xml Concurrent DBus Svg)
 add_subdirectory( staging )
 if (UNIX)
    add_subdirectory( kpty )
 endif (UNIX)
 
-find_package(Qt5UiTools)
-
-if(NOT WINCE)
-  if (Qt5UiTools_FOUND)
-      add_subdirectory( kjsembed )
-  endif()
-endif(NOT WINCE)
+add_subdirectory( kjsembed )
 add_subdirectory( licenses   )
 add_subdirectory( dnssd )
 add_subdirectory( kio )
@@ -197,23 +154,15 @@ add_subdirectory( kded       )
 add_subdirectory( kfile )
 add_subdirectory( kioslave   )
 
-find_package(Phonon4Qt5 4.6.60 NO_MODULE)
-if (Phonon4Qt5_FOUND)
-    add_subdirectory( khtml  )
-endif(Phonon4Qt5_FOUND)
+add_subdirectory( khtml )
 
 add_subdirectory( interfaces  )
-if (Qt5UiTools_FOUND)
-    add_subdirectory( kross )
-endif()
+add_subdirectory( kross )
 add_subdirectory( kinit  )
 add_subdirectory( includes )
-ecm_optional_add_subdirectory( doc )
+add_subdirectory( doc )
 
-find_package(Qt5Quick)
-if(Qt5Quick_FOUND)
-  add_subdirectory( experimental )
-endif()
+add_subdirectory( experimental )
 add_subdirectory( knewstuff )
 add_subdirectory( knotify )
 
