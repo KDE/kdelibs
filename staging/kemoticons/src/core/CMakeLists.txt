@@ -32,4 +32,4 @@ install(FILES
     COMPONENT Devel
 )
 
-install(TARGETS KEmoticons EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KEmoticons EXPORT KEmoticonsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
