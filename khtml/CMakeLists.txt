@@ -55,9 +55,7 @@ set_package_properties(PNG PROPERTIES DESCRIPTION "PNG image format support"
                       )
 
 find_package(X11)
-if(X11_FOUND)
-	macro_bool_to_01(X11_FOUND HAVE_X11)
-endif(X11_FOUND)
+set(HAVE_X11 ${X11_FOUND})
 
 if(NOT WIN32)
     find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS X11Extras)

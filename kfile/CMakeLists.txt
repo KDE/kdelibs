@@ -3,7 +3,7 @@ project(kfile)
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
 configure_file(config-kfile.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kfile.h )
-macro_bool_to_01(X11_Xrender_FOUND HAVE_XRENDER)
+set(HAVE_XRENDER ${X11_Xrender_FOUND})
 
 if(Soprano_FOUND)
 include_directories(${SOPRANO_INCLUDE_DIR})

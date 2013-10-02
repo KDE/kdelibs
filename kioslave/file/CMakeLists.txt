@@ -14,7 +14,9 @@ else(WIN32)
 endif(WIN32)
 
 find_package(ACL)
-macro_bool_to_01(ACL_FOUND HAVE_LIBACL HAVE_POSIX_ACL)
+set(HAVE_LIBACL ${ACL_FOUND})
+set(HAVE_POSIX_ACL ${ACL_FOUND})
+
 set_package_properties(ACL PROPERTIES DESCRIPTION "LibACL" URL "ftp://oss.sgi.com/projects/xfs/cmd_tars"
                        TYPE RECOMMENDED PURPOSE "Support for manipulating access control lists")
 

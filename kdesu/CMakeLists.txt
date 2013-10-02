@@ -12,9 +12,7 @@ check_include_files(sys/select.h  HAVE_SYS_SELECT_H)
 
 #optional features
 find_package(X11)
-if(X11_FOUND)
-	macro_bool_to_01(X11_FOUND HAVE_X11)
-endif(X11_FOUND)
+set(HAVE_X11 ${X11_FOUND})
 
 
 set(CMAKE_EXTRA_INCLUDE_FILES sys/socket.h)

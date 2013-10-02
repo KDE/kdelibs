@@ -6,9 +6,7 @@ include(ConfigureChecks.cmake)
 
 #optional features
 find_package(X11)
-if(X11_FOUND)
-	macro_bool_to_01(X11_FOUND HAVE_X11)
-endif(X11_FOUND)
+set(HAVE_X11 ${X11_FOUND})
 
 # used by 4 executables in this file
 if(HAVE_SOCKET_LIBRARY)

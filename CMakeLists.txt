@@ -132,12 +132,12 @@ set_package_properties(Perl PROPERTIES URL "http://www.perl.org" TYPE REQUIRED P
 
 #optional features
 find_package(X11)
+set(HAVE_X11 ${X11_FOUND})
 if(X11_FOUND)
-  macro_bool_to_01(X11_FOUND HAVE_X11)
   #X11_Xrender discovery is done by FindX11
   add_feature_info("X Rendering Extension (libXrender)" X11_Xrender_FOUND "Support for compositing, rendering operations, and alpha-blending. STRONGLY RECOMMENDED")
-  macro_bool_to_01(X11_Xscreensaver_FOUND HAVE_XSCREENSAVER)
-  macro_bool_to_01(X11_XSync_FOUND HAVE_XSYNC)
+  set(HAVE_XSCREENSAVER ${X11_Xscreensaver_FOUND})
+  set(HAVE_XSYNC ${X11_XSync_FOUND})
   add_feature_info("X Screensaver Extension (libXss)" HAVE_XSCREENSAVER "Support for KIdleTime (fallback mode)")
   add_feature_info("X Sync Extension (libXext)" HAVE_XSYNC "Efficient operation of KIdleTime. STRONGLY RECOMMENDED")
 
