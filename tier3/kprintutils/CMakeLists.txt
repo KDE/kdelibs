@@ -3,22 +3,23 @@ cmake_minimum_required(VERSION 2.8.11)
 project(KPrintUtils)
 
 find_package(ECM 0.0.8 REQUIRED NO_MODULE)
-
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
 set(REQUIRED_QT_VERSION "5.2.0")
 find_package(Qt5Widgets ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE)
 find_package(Qt5PrintSupport ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE)
+find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 
 if(NOT kdelibs_SOURCE_DIR)
-  find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
   find_package(KCoreAddons 5.0.0 REQUIRED)
   find_package(KI18n 5.0.0 REQUIRED)
   find_package(KParts 5.0.0 REQUIRED)
 endif()
 
-include(FeatureSummary)
+find_package(X11)
+set(HAVE_X11 ${X11_FOUND})
 
+include(FeatureSummary)
 include(ECMSetupVersion)
 
 ecm_setup_version(5.0.0 VARIABLE_PREFIX KPRINTUTILS

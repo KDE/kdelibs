@@ -1,6 +1,3 @@
-find_package(X11)
-set_package_properties(X11 PROPERTIES TYPE OPTIONAL)
-
 set(LibAttica_MIN_VERSION "1.0.0" CACHE STRING "The LibAttica Minimum version")
 find_package(LibAttica ${LibAttica_MIN_VERSION} NO_MODULE)
 set_package_properties(LibAttica PROPERTIES DESCRIPTION "A Qt library that implements the Open Collaboration Services API"
@@ -10,10 +7,7 @@ set_package_properties(LibAttica PROPERTIES DESCRIPTION "A Qt library that imple
                       )
 
 if (X11_FOUND)
-   set (HAVE_X11 1)
    set (XMLGUI_EXTRA_LIBS ${XMLGUI_EXTRA_LIBS} ${X11_LIBRARIES})
-else ()
-   set (HAVE_X11 0)
 endif ()
 
 if (LibAttica_FOUND)

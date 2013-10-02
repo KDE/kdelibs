@@ -13,10 +13,13 @@ find_package(Qt5 ${QT_REQUIRED_VERSION} REQUIRED NO_MODULE COMPONENTS Widgets DB
 
 if(NOT WIN32)
     find_package(Qt5 ${QT_REQUIRED_VERSION} REQUIRED NO_MODULE COMPONENTS X11Extras)
+
+    find_package(X11)
+    set_package_properties(X11 PROPERTIES TYPE OPTIONAL)
+    set(HAVE_X11 ${X11_FOUND})
 endif(NOT WIN32)
 
 include(FeatureSummary)
-
 include(ECMSetupVersion)
 
 ecm_setup_version(5.0.0 VARIABLE_PREFIX XMLGUI
