@@ -11,7 +11,7 @@
 #ifndef __SU_h_Included__
 #define __SU_h_Included__
 
-#include <kdesu/kdesu_export.h>
+#include <kdesu_export.h>
 
 #include "stub.h"
 

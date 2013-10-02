@@ -15,7 +15,7 @@
 
 
 #include <QtCore/QList>
-#include <kdesu/kdesu_export.h>
+#include <kdesu_export.h>
 
 #ifdef Q_OS_UNIX
 

@@ -16,7 +16,7 @@
 
 #include "process.h"
 
-#include <kdesu/kdesu_export.h>
+#include <kdesu_export.h>
 
 namespace KDESu {
     

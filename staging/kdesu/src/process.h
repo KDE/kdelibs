@@ -20,7 +20,7 @@
 #include <QtCore/QStringList>
 #include <QtCore/QList>
 
-#include <kdesu/kdesu_export.h>
+#include <kdesu_export.h>
 
 #include <kpty.h>
 
