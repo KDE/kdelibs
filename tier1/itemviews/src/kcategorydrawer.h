@@ -67,37 +67,19 @@ public:
       */
     virtual int categoryHeight(const QModelIndex &index, const QStyleOption &option) const;
 
-    //TODO KDE5: make virtual as leftMargin
     /**
       * @note 0 by default
       *
       * @since 4.4
       */
-    int leftMargin() const;
+    virtual int leftMargin() const;
 
-    /**
-      * @note call to this method on the KCategoryDrawer constructor to set the left margin
-      *
-      * @since 4.4
-      */
-    void setLeftMargin(int leftMargin);
-
-    //TODO KDE5: make virtual as rightMargin
     /**
       * @note 0 by default
       *
       * @since 4.4
       */
-    int rightMargin() const;
-
-    /**
-      * @note call to this method on the KCategoryDrawer constructor to set the right margin
-      *
-      * @since 4.4
-      */
-    void setRightMargin(int rightMargin);
-
-    KCategoryDrawer &operator=(const KCategoryDrawer &cd);
+    virtual int rightMargin() const;
 
 private:
     class Private;

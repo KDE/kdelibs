@@ -33,25 +33,18 @@ class KCategoryDrawer::Private
 {
 public:
     Private()
-        : leftMargin(0)
-        , rightMargin(0)
     {
     }
 
     ~Private()
     {
     }
-
-    int leftMargin;
-    int rightMargin;
 };
 
 #ifndef KDE_NO_DEPRECATED
 KCategoryDrawer::KCategoryDrawer()
     : d(new Private)
 {
-    setLeftMargin(2);
-    setRightMargin(2);
 }
 #endif
 
@@ -172,29 +165,12 @@ int KCategoryDrawer::categoryHeight(const QModelIndex &index, const QStyleOption
 
 int KCategoryDrawer::leftMargin() const
 {
-    return d->leftMargin;
-}
-
-void KCategoryDrawer::setLeftMargin(int leftMargin)
-{
-    d->leftMargin = leftMargin;
+    return 0;
 }
 
 int KCategoryDrawer::rightMargin() const
 {
-    return d->rightMargin;
-}
-
-void KCategoryDrawer::setRightMargin(int rightMargin)
-{
-    d->rightMargin = rightMargin;
-}
-
-KCategoryDrawer &KCategoryDrawer::operator=(const KCategoryDrawer &cd)
-{
-    d->leftMargin = cd.d->leftMargin;
-    d->rightMargin = cd.d->rightMargin;
-    return *this;
+    return 0;
 }
 
 #ifndef KDE_NO_DEPRECATED
