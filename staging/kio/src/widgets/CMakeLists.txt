@@ -2,14 +2,6 @@ project(KIOWidgets)
 
 #include (ConfigureChecks.cmake)
 
-find_package(X11)
-
-if (X11_FOUND)
-  set (HAVE_X11 1)
-else ()
-  set (HAVE_X11 0)
-endif ()
-
 # Device desktop files aren't really used anymore
 set(KIO_NO_SOLID TRUE)
 

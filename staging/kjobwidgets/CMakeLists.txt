@@ -9,10 +9,12 @@ set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 find_package(KF5 5.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 
 set(QT_REQUIRED_VERSION 5.2.0)
-find_package(Qt5Widgets ${QT_REQUIRED_VERSION} REQUIRED NO_MODULE)
+find_package(Qt5 ${QT_REQUIRED_VERSION} REQUIRED NO_MODULE COMPONENTS Widgets DBus)
+
+find_package(X11)
+set(HAVE_X11 ${X11_FOUND})
 
 include(FeatureSummary)
-
 include(ECMSetupVersion)
 
 ecm_setup_version(5.0.0 VARIABLE_PREFIX KJOBWIDGETS

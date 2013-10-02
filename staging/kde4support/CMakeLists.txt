@@ -8,7 +8,7 @@ set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
 find_package(KF5 5.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 
-find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS Network)
+find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS Network Widgets DBus Test Svg Concurrent)
 
 if(NOT WIN32)
     find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS X11Extras)
@@ -21,15 +21,25 @@ set_package_properties(Strigi PROPERTIES DESCRIPTION "Desktop indexing and searc
                        PURPOSE ""
                       )
 
-include(FeatureSummary)
+find_package(X11)
+set(HAVE_X11 ${X11_FOUND})
+if(X11_FOUND)
+    set_package_properties(X11_Xrender PROPERTIES DESCRIPTION "X Rendering Extension (libXrender)"
+                           URL "http://www.x.org" TYPE RECOMMENDED
+                           PURPOSE "Support for compositing, rendering operations, and alpha-blending")
+    set(HAVE_XRENDER ${X11_Xrender_FOUND})
+endif()
+if (APPLE)
+   find_package(Carbon REQUIRED)
+endif (APPLE)
 
+include(FeatureSummary)
 include(ECMSetupVersion)
 include(ECMMarkNonGuiExecutable)
 
 ecm_setup_version(5.0.0 VARIABLE_PREFIX KDE4SUPPORT
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kde4support_version.h"
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KDE4SupportConfigVersion.cmake")
-
 
 # QUrl
 add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0)
