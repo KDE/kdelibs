@@ -534,10 +534,13 @@ set(khtml_LIB_SRCS
 
 qt5_generate_dbus_interface(khtml_iface.h org.kde.KHTMLPart.xml)
 
-set(kcookiejar_XML ${CMAKE_CURRENT_BINARY_DIR}/org.kde.KCookieServer.xml)
-qt5_generate_dbus_interface(${CMAKE_SOURCE_DIR}/kioslave/http/kcookiejar/kcookieserver.h org.kde.KCookieServer.xml)
-set_source_files_properties(${kcookiejar_XML} PROPERTIES INCLUDE "${CMAKE_SOURCE_DIR}/kioslave/http/kcookiejar/kcookiejar_include.h")
-qt5_add_dbus_interface(khtml_LIB_SRCS ${kcookiejar_XML} kcookiejar_interface)
+if(kdelibs_SOURCE_DIR)
+    set(kcookiejar_XML ${CMAKE_CURRENT_BINARY_DIR}/org.kde.KCookieServer.xml)
+    qt5_generate_dbus_interface(${CMAKE_SOURCE_DIR}/kioslave/http/kcookiejar/kcookieserver.h org.kde.KCookieServer.xml)
+    set_source_files_properties(${kcookiejar_XML} PROPERTIES INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/../kioslave/http/kcookiejar/kcookiejar_include.h")
+else (kdelibs_SOURCE_DIR)
+    set(kcookiejar_XML ${DBUS_INTERFACES_INSTALL_DIR}/org.kde.KCookieServer.xml)
+endif(kdelibs_SOURCE_DIR)
 
 kde4_add_ui_files(khtml_LIB_SRCS
    kjserrordlgbase.ui
