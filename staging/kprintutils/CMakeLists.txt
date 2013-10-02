@@ -26,7 +26,7 @@ ecm_setup_version(5.0.0 VARIABLE_PREFIX KPRINTUTILS
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KPrintUtilsConfigVersion.cmake")
 
 add_subdirectory(src)
-# add_subdirectory(tests)
+add_subdirectory(tests)
 # add_subdirectory(autotests)
 
 
