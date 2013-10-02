@@ -2,22 +2,19 @@ cmake_minimum_required(VERSION 2.8.11)
 
 project(KAuth)
 
+find_package(ECM 0.0.8 REQUIRED NO_MODULE)
+set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
+
+find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS Widgets DBus Concurrent Test)
+find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
+
 if(NOT kdelibs_SOURCE_DIR)
-
-  find_package(ECM 0.0.8 REQUIRED NO_MODULE)
-
-  set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
-
-  find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS Widgets DBus Concurrent Test)
-
-  find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs KCoreAddons)
-
+    find_package(KCoreAddons REQUIRED)
 endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 include(FeatureSummary)
-
 include(ECMSetupVersion)
 ecm_setup_version(5.0.0 VARIABLE_PREFIX KAUTH
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kauth_version.h"

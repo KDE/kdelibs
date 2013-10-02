@@ -11,8 +11,11 @@ find_package(KF5 5.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 set(REQUIRED_QT_VERSION "5.2.0")
 find_package(Qt5 ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE COMPONENTS Widgets DBus)
 
-include(FeatureSummary)
+find_package(X11)
+set(HAVE_X11 ${X11_FOUND})
+set(HAVE_XTEST ${X11_XTest_FOUND})
 
+include(FeatureSummary)
 include(ECMSetupVersion)
 
 ecm_setup_version(5.0.0 VARIABLE_PREFIX KNOTIFICATIONS

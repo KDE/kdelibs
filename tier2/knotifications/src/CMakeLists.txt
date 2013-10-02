@@ -30,14 +30,6 @@ qt5_add_dbus_interface(knotifications_SRCS ${statusnotifierwatcher_xml} statusno
 set(notifications_xml org.freedesktop.Notifications.xml)
 qt5_add_dbus_interface(knotifications_SRCS ${notifications_xml} notifications_interface)
 
-find_package(X11)
-
-if (X11_XTest_FOUND)
-   set (HAVE_XTEST 1)
-else ()
-   set (HAVE_XTEST 0)
-endif ()
-
 configure_file(config-knotifications.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-knotifications.h )
 
 add_library(KNotifications ${knotifications_SRCS})
