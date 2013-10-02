@@ -175,6 +175,9 @@ set(KDE4_TARGET_PREFIX KDE4__)
 include(CreateKDELibsDependenciesFile.cmake)
 
 ################# install files #################
+find_package(ECM 0.0.8 REQUIRED NO_MODULE)
+set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
+find_package(KF5 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 
 install( FILES ${CMAKE_CURRENT_SOURCE_DIR}/KDELibs4Config.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake
