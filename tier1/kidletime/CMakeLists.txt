@@ -15,6 +15,30 @@ if(NOT WIN32)
     find_package(Qt5 ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE COMPONENTS X11Extras)
 endif(NOT WIN32)
 
+if (APPLE)
+   find_package(Carbon REQUIRED)
+endif (APPLE)
+
+find_package(X11)
+find_package(XCB COMPONENTS XCB SYNC)
+find_package(X11_XCB)
+
+set(HAVE_X11 ${X11_FOUND})
+if(X11_FOUND)
+    add_feature_info("X Screensaver Extension (libXss)" X11_Xscreensaver_FOUND "Support for KIdleTime (fallback mode)")
+    add_feature_info("X Sync Extension (libXext)" X11_XSync_FOUND "Efficient operation of KIdleTime. STRONGLY RECOMMENDED")
+
+    add_feature_info("X Screensaver Extension (libXss)" X11_Xscreensaver_FOUND "Support for KIdleTime (fallback mode)")
+    add_feature_info("X Sync Extension (libXext)" X11_XSync_FOUND "Efficient operation of KIdleTime. STRONGLY RECOMMENDED")
+
+    if(NOT X11_XSync_FOUND AND NOT X11_Xscreensaver_FOUND)
+        message(FATAL_ERROR "\nNeither the XSync (libXext) nor XScreensaver (libXss) development package was found.\nPlease install one of them (XSync is recommended)\n")
+    endif(NOT X11_XSync_FOUND AND NOT X11_Xscreensaver_FOUND)
+
+    set(HAVE_XSCREENSAVER ${X11_Xscreensaver_FOUND})
+    set(HAVE_XTEST ${X11_XTest_FOUND})
+endif()
+
 include(FeatureSummary)
 include(CMakePackageConfigHelpers)
 include(ECMSetupVersion)

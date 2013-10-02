@@ -8,11 +8,15 @@ set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
 find_package(KF5 5.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 set(REQUIRED_QT_VERSION 5.2.0)
-find_package(Qt5Widgets ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE)
+find_package(Qt5Widgets ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE COMPONENTS Widgets)
 
+include(MacroBoolTo01)
 include(FeatureSummary)
 include(CMakePackageConfigHelpers)
 include(ECMSetupVersion)
+
+find_package(X11)
+set(HAVE_X11 ${X11_FOUND})
 
 ecm_setup_version(5.0.0 VARIABLE_PREFIX KWIDGETSADDONS
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kwidgetsaddons_version.h"

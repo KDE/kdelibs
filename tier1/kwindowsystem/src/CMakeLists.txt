@@ -1,24 +1,4 @@
 
-find_package(X11)
-find_package(XCB COMPONENTS XCB KEYSYMS)
-
-if (X11_FOUND)
-   set (HAVE_X11 1)
-else ()
-   set (HAVE_X11 0)
-endif ()
-
-if (X11_Xfixes_FOUND)
-   set (HAVE_XFIXES 1)
-else ()
-   set (HAVE_XFIXES 0)
-endif ()
-
-if (X11_Xrender_FOUND)
-   set (HAVE_XRENDER 1)
-else ()
-   set (HAVE_XRENDER 0)
-endif ()
 
 configure_file(config-kwindowsystem.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kwindowsystem.h )
 
