@@ -4,6 +4,18 @@ project(KHtml)
 
 find_package(ECM 0.0.8 REQUIRED NO_MODULE)
 
+include(FeatureSummary)
+include(CMakePackageConfigHelpers)
+include(ECMSetupVersion)
+
+find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
+
+find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS PrintSupport Test Concurrent)
+
+ecm_setup_version(5.0.0 VARIABLE_PREFIX KHTML
+                        VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/khtml_version.h"
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KHtmlConfigVersion.cmake")
+
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 remove_definitions(-DQT_NO_CAST_FROM_BYTEARRAY)
 
@@ -16,6 +28,39 @@ add_definitions(-DWTF_PLATFORM_QT)
 ########svg#########
 
 include(ConfigureChecks.cmake)
+
+find_package(Phonon4Qt5 4.6.60 REQUIRED NO_MODULE)
+
+find_package(JPEG)
+set_package_properties(JPEG PROPERTIES DESCRIPTION "JPEG image format support"
+                       URL "http://www.ijg.org"
+                       TYPE REQUIRED
+                       PURPOSE "Required by khtml"
+                      )
+
+find_package(GIF)
+set_package_properties(GIF PROPERTIES DESCRIPTION "GIF image format support"
+                       URL "http://sourceforge.net/projects/giflib"
+                       TYPE REQUIRED
+                       PURPOSE "Required by khtml"
+                      )
+
+find_package(PNG)
+set_package_properties(PNG PROPERTIES DESCRIPTION "PNG image format support"
+                       URL "http://www.libpng.org/pub/png"
+                       TYPE REQUIRED
+                       PURPOSE "Required by khtml"
+                      )
+
+find_package(X11)
+if(X11_FOUND)
+	macro_bool_to_01(X11_FOUND HAVE_X11)
+endif(X11_FOUND)
+
+if(NOT WIN32)
+    find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS X11Extras)
+endif(NOT WIN32)
+
 
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  ${KDE4_ENABLE_EXCEPTIONS}")
 
@@ -537,10 +582,13 @@ qt5_generate_dbus_interface(khtml_iface.h org.kde.KHTMLPart.xml)
 if(kdelibs_SOURCE_DIR)
     set(kcookiejar_XML ${CMAKE_CURRENT_BINARY_DIR}/org.kde.KCookieServer.xml)
     qt5_generate_dbus_interface(${CMAKE_SOURCE_DIR}/kioslave/http/kcookiejar/kcookieserver.h org.kde.KCookieServer.xml)
-    set_source_files_properties(${kcookiejar_XML} PROPERTIES INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/../kioslave/http/kcookiejar/kcookiejar_include.h")
+#     set_source_files_properties(${kcookiejar_XML} PROPERTIES INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/../kioslave/http/kcookiejar/kcookiejar_include.h")
 else (kdelibs_SOURCE_DIR)
     set(kcookiejar_XML ${DBUS_INTERFACES_INSTALL_DIR}/org.kde.KCookieServer.xml)
 endif(kdelibs_SOURCE_DIR)
+
+qt5_add_dbus_interface(khtml_LIB_SRCS ${kcookiejar_XML} kcookiejar_interface)
+
 
 kde4_add_ui_files(khtml_LIB_SRCS
    kjserrordlgbase.ui

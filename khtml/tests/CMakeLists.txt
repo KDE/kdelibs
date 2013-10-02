@@ -3,34 +3,34 @@ set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 include(ECMMarkAsTest)
 
 include_directories(${KDE4_KPARTS_INCLUDES}
-  ${CMAKE_CURRENT_SOURCE_DIR}/..
-  ${CMAKE_CURRENT_BINARY_DIR}/..
+  ${KHTML_SOURCE_DIR}
+  ${KHTML_BINARY_DIR}/..
 )
 include_directories(
   ${KAuth_INCLUDE_DIRS}
-  ${CMAKE_SOURCE_DIR}/khtml/src/
-  ${CMAKE_SOURCE_DIR}/khtml/src/misc
-  ${CMAKE_SOURCE_DIR}/khtml/src/dom
-  ${CMAKE_SOURCE_DIR}/khtml/src/xml
-  ${CMAKE_SOURCE_DIR}/khtml/src/html
-  ${CMAKE_SOURCE_DIR}/khtml/src/rendering
-  ${CMAKE_SOURCE_DIR}/khtml/src/ecma
-  ${CMAKE_SOURCE_DIR}/khtml/src/imload
-  ${CMAKE_SOURCE_DIR}/khtml/src/imload/decoders
-  ${CMAKE_SOURCE_DIR}/khtml/src/java
-  ${CMAKE_SOURCE_DIR}/khtml/src/svg
-  ${CMAKE_SOURCE_DIR}/khtml/src/svg/graphics
-  ${CMAKE_SOURCE_DIR}/khtml/src/platform/graphics
-  ${CMAKE_SOURCE_DIR}/khtml/src/platform/text
-  ${CMAKE_SOURCE_DIR}/khtml/src/platform
-  ${CMAKE_SOURCE_DIR}/khtml/src/compat
-  ${CMAKE_SOURCE_DIR}/khtml/src/css
+  ${KHTML_SOURCE_DIR}/
+  ${KHTML_SOURCE_DIR}/misc
+  ${KHTML_SOURCE_DIR}/dom
+  ${KHTML_SOURCE_DIR}/xml
+  ${KHTML_SOURCE_DIR}/html
+  ${KHTML_SOURCE_DIR}/rendering
+  ${KHTML_SOURCE_DIR}/ecma
+  ${KHTML_SOURCE_DIR}/imload
+  ${KHTML_SOURCE_DIR}/imload/decoders
+  ${KHTML_SOURCE_DIR}/java
+  ${KHTML_SOURCE_DIR}/svg
+  ${KHTML_SOURCE_DIR}/svg/graphics
+  ${KHTML_SOURCE_DIR}/platform/graphics
+  ${KHTML_SOURCE_DIR}/platform/text
+  ${KHTML_SOURCE_DIR}/platform
+  ${KHTML_SOURCE_DIR}/compat
+  ${KHTML_SOURCE_DIR}/css
 
 
 )
 include_directories(
-  ${CMAKE_CURRENT_BINARY_DIR}/../java
-  ${CMAKE_CURRENT_BINARY_DIR}/../css
+  ${KHTML_BINARY_DIR}/java
+  ${KHTML_BINARY_DIR}/css
 )
 kde4_add_unit_test( khtmlparttest khtmlparttest.cpp )
 target_link_libraries( khtmlparttest Qt5::Test KHTML Qt5::Widgets XmlGui KTextWidgets KParts)
@@ -53,8 +53,8 @@ if(NOT MSVC)
 endif(NOT MSVC)
 #
 # set(kencodingdetector_SRCS
-#     ${CMAKE_SOURCE_DIR}/khtml/src/misc/kencodingdetector.cpp
-#     ${CMAKE_SOURCE_DIR}/khtml/src/misc/guess_ja.cpp
+#     ${KHTML_SOURCE_DIR}/misc/kencodingdetector.cpp
+#     ${KHTML_SOURCE_DIR}/misc/guess_ja.cpp
 # )
 # kde4_add_unit_test(kencodingdetectortest kencodingdetectortest.cpp ${kencodingdetector_SRCS})
 # target_link_libraries(kencodingdetectortest KCodecs KI18n KHtml Qt5::Test)
