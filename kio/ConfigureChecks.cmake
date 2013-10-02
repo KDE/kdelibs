@@ -1,3 +1,5 @@
+set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake/modules) #TODO: remove cmake/modules when extra-cmake-modules is done
+
 include(CheckIncludeFile)
 include(CheckIncludeFiles)
 include(CheckStructMember)
