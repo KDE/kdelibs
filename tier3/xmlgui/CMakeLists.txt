@@ -16,7 +16,7 @@ if(NOT WIN32)
 
     find_package(X11)
     set_package_properties(X11 PROPERTIES TYPE OPTIONAL)
-    macro_bool_to_01(X11_FOUND HAVE_X11)
+    set(HAVE_X11 ${X11_FOUND})
 endif(NOT WIN32)
 
 include(FeatureSummary)

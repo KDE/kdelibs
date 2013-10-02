@@ -18,7 +18,7 @@ foreach(_KDNSSD_HEADER ${kdnssd_HEADERS})
     endif()
 endforeach()
 
-if (HAVE_AVAHI)
+if (AVAHI_FOUND)
     include_directories( ${AVAHI_INCLUDE_DIR} )
     set(kdnssd_LIB_SRCS ${kdnssd_LIB_SRCS}
         avahi-domainbrowser.cpp
@@ -33,7 +33,7 @@ if (HAVE_AVAHI)
     qt5_add_dbus_interface (kdnssd_LIB_SRCS org.freedesktop.Avahi.DomainBrowser.xml avahi_domainbrowser_interface )
     qt5_add_dbus_interface (kdnssd_LIB_SRCS org.freedesktop.Avahi.ServiceBrowser.xml avahi_servicebrowser_interface )
     qt5_add_dbus_interface (kdnssd_LIB_SRCS org.freedesktop.Avahi.ServiceTypeBrowser.xml avahi_servicetypebrowser_interface )
-elseif (HAVE_DNSSD)
+elseif (DNSSD_FOUND)
     kconfig_add_kcfg_files(kdnssd_LIB_SRCS settings.kcfgc)
     include_directories( ${DNSSD_INCLUDE_DIR} )
     set(kdnssd_LIB_SRCS ${kdnssd_LIB_SRCS}
@@ -53,7 +53,7 @@ else ()
         dummy-servicetypebrowser.cpp
     )
 
-endif (HAVE_AVAHI)
+endif ()
 
 
 add_library(KDNSSD SHARED ${kdnssd_LIB_SRCS})
@@ -62,9 +62,9 @@ generate_export_header(KDNSSD
 )
 
 target_link_libraries(KDNSSD LINK_PUBLIC Qt5::Network)
-if(HAVE_AVAHI)
+if(AVAHI_FOUND)
   target_link_libraries(KDNSSD LINK_PRIVATE Qt5::DBus)
-elseif (HAVE_DNSSD)
+elseif (DNSSD_FOUND)
   target_link_libraries(KDNSSD LINK_PRIVATE ${DNSSD_LIBRARIES}
                                             KConfigCore # settings.kcfgc
                        )
@@ -83,7 +83,7 @@ install( FILES  ${KDNSSD_BINARY_DIR}/dnssd/dnssd_export.h
                 ${kdnssd_HEADERS}
          DESTINATION  ${INCLUDE_INSTALL_DIR}/dnssd COMPONENT Devel)
 
-if (HAVE_DNSSD)
+if (DNSSD_FOUND)
     install( FILES ${CMAKE_CURRENT_BINARY_DIR}/settings.h
              DESTINATION  ${INCLUDE_INSTALL_DIR}/dnssd COMPONENT Devel)
 endif ()

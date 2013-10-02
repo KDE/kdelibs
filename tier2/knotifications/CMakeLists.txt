@@ -12,8 +12,8 @@ set(REQUIRED_QT_VERSION "5.2.0")
 find_package(Qt5 ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE COMPONENTS Widgets DBus)
 
 find_package(X11)
-macro_bool_to_01(X11_FOUND HAVE_X11)
-macro_bool_to_01(X11_XTest_FOUND HAVE_XTEST)
+set(HAVE_X11 ${X11_FOUND})
+set(HAVE_XTEST ${X11_XTest_FOUND})
 
 include(FeatureSummary)
 include(ECMSetupVersion)

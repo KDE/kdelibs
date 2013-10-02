@@ -17,7 +17,7 @@ if(NOT kdelibs_SOURCE_DIR)
 endif()
 
 find_package(X11)
-macro_bool_to_01(X11_FOUND HAVE_X11)
+set(HAVE_X11 ${X11_FOUND})
 
 include(FeatureSummary)
 include(ECMSetupVersion)

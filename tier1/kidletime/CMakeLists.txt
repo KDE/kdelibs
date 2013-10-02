@@ -23,23 +23,20 @@ find_package(X11)
 find_package(XCB COMPONENTS XCB SYNC)
 find_package(X11_XCB)
 
-macro_bool_to_01(X11_FOUND HAVE_X11)
+set(HAVE_X11 ${X11_FOUND})
 if(X11_FOUND)
-    add_feature_info("X Screensaver Extension (libXss)" HAVE_XSCREENSAVER "Support for KIdleTime (fallback mode)")
-    add_feature_info("X Sync Extension (libXext)" HAVE_XSYNC "Efficient operation of KIdleTime. STRONGLY RECOMMENDED")
+    add_feature_info("X Screensaver Extension (libXss)" X11_Xscreensaver_FOUND "Support for KIdleTime (fallback mode)")
+    add_feature_info("X Sync Extension (libXext)" X11_XSync_FOUND "Efficient operation of KIdleTime. STRONGLY RECOMMENDED")
 
-    macro_bool_to_01(X11_Xscreensaver_FOUND HAVE_XSCREENSAVER)
-    macro_bool_to_01(X11_XSync_FOUND HAVE_XSYNC)
-    add_feature_info("X Screensaver Extension (libXss)" HAVE_XSCREENSAVER "Support for KIdleTime (fallback mode)")
-    add_feature_info("X Sync Extension (libXext)" HAVE_XSYNC "Efficient operation of KIdleTime. STRONGLY RECOMMENDED")
+    add_feature_info("X Screensaver Extension (libXss)" X11_Xscreensaver_FOUND "Support for KIdleTime (fallback mode)")
+    add_feature_info("X Sync Extension (libXext)" X11_XSync_FOUND "Efficient operation of KIdleTime. STRONGLY RECOMMENDED")
 
-    if(NOT HAVE_XSYNC AND NOT HAVE_XSCREENSAVER)
+    if(NOT X11_XSync_FOUND AND NOT X11_Xscreensaver_FOUND)
         message(FATAL_ERROR "\nNeither the XSync (libXext) nor XScreensaver (libXss) development package was found.\nPlease install one of them (XSync is recommended)\n")
-    endif(NOT HAVE_XSYNC AND NOT HAVE_XSCREENSAVER)
-    
-    macro_bool_to_01(X11_Xscreensaver_FOUND HAVE_XSCREENSAVER)
-    macro_bool_to_01(X11_XTest_FOUND HAVE_XTEST)
+    endif(NOT X11_XSync_FOUND AND NOT X11_Xscreensaver_FOUND)
 
+    set(HAVE_XSCREENSAVER ${X11_Xscreensaver_FOUND})
+    set(HAVE_XTEST ${X11_XTest_FOUND})
 endif()
 
 include(FeatureSummary)

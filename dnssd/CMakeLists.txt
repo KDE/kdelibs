@@ -25,7 +25,6 @@ remove_definitions(-DQT_NO_CAST_TO_ASCII)
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
 find_package(Avahi)
-macro_bool_to_01(AVAHI_FOUND HAVE_AVAHI)
 set_package_properties(Avahi PROPERTIES DESCRIPTION "Facilities for service discovery on a local network (DNSSD)"
                        URL "http://avahi.org"
                        TYPE OPTIONAL
@@ -34,7 +33,6 @@ set_package_properties(Avahi PROPERTIES DESCRIPTION "Facilities for service disc
 
 if(NOT AVAHI_FOUND)
     find_package(DNSSD)
-    macro_bool_to_01(DNSSD_FOUND HAVE_DNSSD)
     set_package_properties(DNSSD PROPERTIES DESCRIPTION "Facilities for service discovery on a local network"
                           URL "http://avahi.org"
                           TYPE OPTIONAL

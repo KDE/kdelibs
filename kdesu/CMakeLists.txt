@@ -17,7 +17,7 @@ check_include_files(sys/select.h  HAVE_SYS_SELECT_H)
 
 #optional features
 find_package(X11)
-macro_bool_to_01(X11_FOUND HAVE_X11)
+set(HAVE_X11 ${X11_FOUND})
 
 set(CMAKE_EXTRA_INCLUDE_FILES sys/socket.h)
 check_type_size("struct ucred" STRUCT_UCRED) #defines HAVE_STRUCT_UCRED (bool) and STRUCT_UCRED (size, unused)

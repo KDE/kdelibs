@@ -26,7 +26,7 @@ endif(KDE_PLATFORM_FEATURE_BINARY_COMPATIBLE_FEATURE_REDUCTION)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config-kded.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kded.h)
 
 find_package(X11)
-macro_bool_to_01(X11_FOUND HAVE_X11)
+set(HAVE_X11 ${X11_FOUND})
 
 ########### next target ###############
 

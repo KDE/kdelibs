@@ -30,15 +30,17 @@ endif(NOT KIO_NO_SOLID)
 
 find_package(X11)
 if(X11_FOUND)
-	macro_bool_to_01(X11_FOUND HAVE_X11)
+	set(HAVE_X11 ${X11_FOUND})
 	set_package_properties(X11_Xrender PROPERTIES DESCRIPTION "X Rendering Extension (libXrender)"
                            URL "http://www.x.org" TYPE RECOMMENDED
                            PURPOSE "Support for compositing, rendering operations, and alpha-blending")
-    macro_bool_to_01(X11_Xrender_FOUND HAVE_XRENDER)
+    set(HAVE_XRENDER ${X11_Xrender_FOUND})
 endif(X11_FOUND)
 
 find_package(ACL)
-macro_bool_to_01(ACL_FOUND HAVE_LIBACL HAVE_POSIX_ACL)
+set(HAVE_POSIX_ACL ${ACL_FOUND})
+set(HAVE_LIBACL ${ACL_FOUND})
+
 set_package_properties(ACL PROPERTIES DESCRIPTION "LibACL" URL "ftp://oss.sgi.com/projects/xfs/cmd_tars"
                        TYPE RECOMMENDED PURPOSE "Support for manipulating access control lists")
 
