@@ -13,7 +13,7 @@ set(kpty_LIB_SRCS
    kptyprocess.cpp
 )
 
-add_library(kpty ${LIBRARY_TYPE} ${kpty_LIB_SRCS})
+add_library(kpty ${kpty_LIB_SRCS})
 generate_export_header(kpty)
 
 include(ConfigureChecks.cmake)

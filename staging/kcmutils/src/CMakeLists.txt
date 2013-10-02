@@ -15,7 +15,7 @@ set(kcmutils_LIB_SRCS
     ksettings/componentsdialog.cpp
 )
 
-add_library(KCMUtils ${LIBRARY_TYPE} ${kcmutils_LIB_SRCS})
+add_library(KCMUtils ${kcmutils_LIB_SRCS})
 generate_export_header(KCMUtils)
 
 target_link_libraries(KCMUtils

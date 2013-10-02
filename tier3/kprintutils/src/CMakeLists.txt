@@ -28,7 +28,7 @@ endif (X11_FOUND)
 
 qt5_wrap_ui(kprintutils_LIB_SRCS ${kprintutils_UI})
 
-add_library(KPrintUtils ${LIBRARY_TYPE} ${kprintutils_LIB_SRCS})
+add_library(KPrintUtils ${kprintutils_LIB_SRCS})
 generate_export_header(KPrintUtils)
 
 target_link_libraries(KPrintUtils

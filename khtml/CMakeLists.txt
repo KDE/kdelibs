@@ -597,7 +597,7 @@ kde4_add_ui_files(khtml_LIB_SRCS
    html/keygenwizard2.ui
 )
 
-add_library(khtml ${LIBRARY_TYPE} ${khtml_LIB_SRCS})
+add_library(khtml ${khtml_LIB_SRCS})
 
 target_link_libraries(khtml
   KParts

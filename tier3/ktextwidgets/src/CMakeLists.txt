@@ -10,7 +10,7 @@ set(ktextwidgets_LIB_SRCS
   widgets/nestedlisthelper.cpp
 )
 
-add_library(KTextWidgets ${LIBRARY_TYPE} ${ktextwidgets_LIB_SRCS})
+add_library(KTextWidgets ${ktextwidgets_LIB_SRCS})
 generate_export_header(KTextWidgets)
 
 set(ktextwidgets_INCLUDES

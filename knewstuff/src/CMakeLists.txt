@@ -66,7 +66,7 @@ kde4_add_ui_files(knewstuff3_SRCS
     uploaddialog.ui
 )
 
-add_library(knewstuff3 ${LIBRARY_TYPE} ${knewstuff3_SRCS} )
+add_library(knewstuff3 ${knewstuff3_SRCS} )
 
 target_include_directories(knewstuff3 PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>")
 target_link_libraries(knewstuff3

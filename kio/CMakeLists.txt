@@ -100,7 +100,7 @@ set(kio_LIB_SRCS
    ${kfile_STAT_SRCS}
 )
 
-add_library(kio ${LIBRARY_TYPE} ${kio_LIB_SRCS})
+add_library(kio ${kio_LIB_SRCS})
 generate_export_header(kio)
 
 set(kio_INCLUDES

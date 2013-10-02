@@ -26,7 +26,7 @@ set(kdesu_LIB_SRCS
    )
 
 
-add_library(KDESu ${LIBRARY_TYPE} ${kdesu_LIB_SRCS})
+add_library(KDESu ${kdesu_LIB_SRCS})
 generate_export_header(KDESu)
 
 target_include_directories(KDESu PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/..)

@@ -6,7 +6,7 @@ set(kemoticons_LIB_SRCS
     kemoticonsprovider.cpp
 )
 
-add_library(KEmoticons ${LIBRARY_TYPE} ${kemoticons_LIB_SRCS})
+add_library(KEmoticons ${kemoticons_LIB_SRCS})
 generate_export_header(KEmoticons)
 
 target_link_libraries(KEmoticons

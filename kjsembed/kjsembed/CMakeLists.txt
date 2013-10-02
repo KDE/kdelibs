@@ -49,7 +49,7 @@ else (NOT DEFINED QT_ONLY)
    endif (NOT QTONLY_WEBKIT)
 endif (NOT DEFINED QT_ONLY)
 
-add_library(${KJSEMBEDLIBNAME} ${LIBRARY_TYPE} ${kjsembed_LIB_SRCS})
+add_library(${KJSEMBEDLIBNAME} ${kjsembed_LIB_SRCS})
 target_include_directories(${KJSEMBEDLIBNAME} PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..;${CMAKE_CURRENT_BINARY_DIR}/..>")
 
 generate_export_header(${KJSEMBEDLIBNAME})
