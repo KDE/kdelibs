@@ -1,11 +1,63 @@
-find_package(ECM 0.0.9 REQUIRED NO_MODULE)
+cmake_minimum_required(VERSION 2.8.11)
 
+project(KNewStuff)
+
+find_package(ECM 0.0.9 REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
 set(REQUIRED_QT_VERSION "5.2")
-find_package(Qt5 "${REQUIRED_QT_VERSION}" REQUIRED NO_MODULE COMPONENTS Widgets)
-find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
+find_package(Qt5 ${REQUIRED_QT_VERSION} NO_MODULE REQUIRED COMPONENTS DBus Network Widgets Xml)
+
+# Not part of kdelibs
+if (${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR})
+find_package(KF5 REQUIRED MODULE COMPONENTS
+  CMake Compiler InstallDirs KCoreAddons KConfig KI18n KGuiAddons KCodecs 
+  KWidgetsAddons KAuth ItemViews KConfigWidgets KArchive KCompletion
+  KIconThemes KWindowSystem KDBusAddons KService KJobWidgets KIO Sonnet 
+  KTextWidgets XmlGui KCrash KNotifications KUnitConversion KDE4Attic 
+  Solid KWallet KBookmarks)
+
+# Part of kdelibs
+else()
+find_package(KF5 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
+endif()
+
+include(FeatureSummary)
+include(ECMSetupVersion)
+
+ecm_setup_version(5.0.0 VARIABLE_PREFIX KNEWSTUFF
+                        VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/knewstuff_version.h"
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KNewStuffConfigVersion.cmake")
 
 add_subdirectory(data)
 add_subdirectory(src)
 add_subdirectory(tests)
+
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KNewStuff")
+
+include(CMakePackageConfigHelpers)
+
+configure_package_config_file(
+  "${CMAKE_CURRENT_SOURCE_DIR}/KNewStuffConfig.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/KNewStuffConfig.cmake"
+  INSTALL_DESTINATION ${CMAKECONFIG_INSTALL_DIR}
+  PATH_VARS INCLUDE_INSTALL_DIR CMAKE_INSTALL_PREFIX
+)
+
+install(FILES
+  "${CMAKE_CURRENT_BINARY_DIR}/KNewStuffConfig.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/KNewStuffConfigVersion.cmake"
+  DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
+  COMPONENT Devel
+)
+
+install(EXPORT KNewStuffTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KNewStuffTargets.cmake NAMESPACE KF5:: )
+
+install(FILES
+  ${CMAKE_CURRENT_BINARY_DIR}/knewstuff_version.h
+  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
+)
+
+if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
+  feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)
+endif()

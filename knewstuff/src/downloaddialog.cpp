@@ -32,6 +32,7 @@
 #include <kwindowconfig.h>
 #include <QCoreApplication>
 #include <kstandardguiitem.h>
+#include <klocalizedstring.h>
 
 #include "downloadwidget.h"
 #include "downloadwidget_p.h"

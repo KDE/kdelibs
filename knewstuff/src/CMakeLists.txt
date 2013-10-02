@@ -61,29 +61,29 @@ set(knewstuff3_SRCS
     uploaddialog.cpp
 )
 
-kde4_add_ui_files(knewstuff3_SRCS
+qt5_wrap_ui(knewstuff3_SRCS
     downloadwidget.ui
     uploaddialog.ui
 )
 
 add_library(knewstuff3 ${knewstuff3_SRCS} )
 
-target_include_directories(knewstuff3 PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>")
+target_include_directories(knewstuff3 PUBLIC "$<BUILD_INTERFACE:${KNewStuff_BINARY_DIR}>")
 target_link_libraries(knewstuff3
+  LINK_PUBLIC
+    Qt5::Widgets
+    ${LibAttica_LIBRARIES}     # For interacting with ocs providers, public for uploaddialog slots
+    XmlGui                     # For KActionCollection in knewstuffaction.h
   LINK_PRIVATE
-    ${KDE4_KIO_LIBS}
-    KF5::KCoreAddons
-    ${LibAttica_LIBRARIES}
-    KF5::KArchive
-    KF5::KI18n
-    ItemViews
-    KF5::KIconThemes
-    KF5::KWindowSystem
-    KTextWidgets
-    XmlGui
+    KIOCore                    # For network fetching operations
+    KIOWidgets                 # For KUrlRequester
+    kio                        # For KImageIO
+    KF5::KArchive              # For decompressing archives
+    KF5::KI18n                 # For translations
+    ItemViews                  # For buttons on download dialog
+    KF5::KIconThemes           # For KIcon
+    KTextWidgets               # For KTextEdit in upload dialog
 )
-
-target_link_libraries(knewstuff3 LINK_PUBLIC KCompletion Qt5::Widgets)
 
 generate_export_header(knewstuff3)
 
@@ -92,7 +92,7 @@ set_target_properties(knewstuff3 PROPERTIES
    SOVERSION ${GENERIC_LIB_SOVERSION}
 )
 
-install(TARGETS knewstuff3 EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS knewstuff3 EXPORT KNewStuffTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
   downloaddialog.h

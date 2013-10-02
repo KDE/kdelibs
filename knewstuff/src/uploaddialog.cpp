@@ -31,6 +31,7 @@
 #include <QCoreApplication>
 
 #include <kmessagebox.h>
+#include <klocalizedstring.h>
 
 #include <kpixmapsequence.h>
 #include <kpixmapsequencewidget.h>

@@ -19,6 +19,7 @@
 
 #include <QMenu>
 #include <QDebug>
+#include <klocalizedstring.h>
 
 #include "core/engine.h"
 #include "ui/imageloader.h"

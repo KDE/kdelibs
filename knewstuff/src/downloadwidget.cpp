@@ -30,6 +30,7 @@
 #include <QCoreApplication>
 
 #include <kmessagebox.h>
+#include <klocalizedstring.h>
 #include <QDebug>
 
 #include "ui/itemsmodel.h"
