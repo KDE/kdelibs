@@ -1,0 +1,22 @@
+@PACKAGE_INIT@
+
+find_dependency(Qt5Core @REQUIRED_QT_VERSION@)
+find_dependency(Qt5Test @REQUIRED_QT_VERSION@)
+find_dependency(Qt5Widgets @REQUIRED_QT_VERSION@)
+find_dependency(Qt5Xml @REQUIRED_QT_VERSION@)
+find_dependency(Qt5Script @REQUIRED_QT_VERSION@)
+find_dependency(Qt5UiTools @REQUIRED_QT_VERSION@)
+find_dependency(KConfigCore "${PACKAGE_VERSION}")
+find_dependency(KCoreAddons "${PACKAGE_VERSION}")
+find_dependency(KIOWidgets "${PACKAGE_VERSION}")
+find_dependency(KJS "${PACKAGE_VERSION}")
+
+set(Kross_INSTALL_PREFIX "@PACKAGE_CMAKE_INSTALL_PREFIX@")
+set_and_check(Kross_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")
+
+include("${CMAKE_CURRENT_LIST_DIR}/KrossTargets.cmake")
+
+# Fixme: Add all the necessary variables over here?
+set(Kross_CORE_LIBRARY KF5::KrossCore)
+set(Kross_LIBRARIES KF5::KrossCore)
+set(Kross_INCLUDE_DIRS ${Kross_INCLUDE_DIR})

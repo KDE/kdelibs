@@ -20,7 +20,7 @@ set_target_properties(KrossCore PROPERTIES VERSION ${GENERIC_LIB_VERSION}
                      )
 
 
-install(TARGETS KrossCore EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KrossCore EXPORT KrossLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 generate_export_header(KrossCore)
 
@@ -39,3 +39,5 @@ install(FILES
     manager.h
     object.h
     DESTINATION ${INCLUDE_INSTALL_DIR}/kross/core COMPONENT Devel)
+
+install(TARGETS KrossCore EXPORT KrossTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
