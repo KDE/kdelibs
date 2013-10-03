@@ -152,7 +152,7 @@ void KBookmarkDialog::accept()
         KBookmarkGroup parent = d->parentBookmark();
         if (d->title->text().isEmpty())
             d->title->setText("New Bookmark");
-        d->bm = parent.addBookmark(d->title->text(), QUrl(d->url->text()));
+        d->bm = parent.addBookmark(d->title->text(), QUrl(d->url->text()), d->icon);
         d->bm.setDescription(d->comment->text());
         d->mgr->emitChanged(parent);
     } else if (d->mode == KBookmarkDialogPrivate::NewMultipleBookmarks) {
@@ -161,10 +161,8 @@ void KBookmarkDialog::accept()
             d->title->setText("New Folder");
         d->bm = parent.createNewFolder(d->title->text());
         d->bm.setDescription(d->comment->text());
-        QList< QPair<QString, QString> >::iterator  it, end;
-        end = d->list.end();
-        for (it = d->list.begin(); it!= d->list.end(); ++it) {
-            d->bm.toGroup().addBookmark( (*it).first, QUrl((*it).second));
+        foreach (const KBookmarkOwner::FutureBookmark &fb, d->list) {
+            d->bm.toGroup().addBookmark(fb.title(), fb.url(), fb.icon());
         }
         d->mgr->emitChanged(parent);
     } else if (d->mode == KBookmarkDialogPrivate::EditBookmark) {
@@ -204,7 +202,7 @@ KBookmark KBookmarkDialog::editBookmark(const KBookmark & bm)
 
 }
 
-KBookmark KBookmarkDialog::addBookmark(const QString & title, const QUrl & url, KBookmark parent)
+KBookmark KBookmarkDialog::addBookmark(const QString &title, const QUrl &url, const QString &icon, KBookmark parent)
 {
     if (!d->layout)
         d->initLayoutPrivate();
@@ -227,6 +225,7 @@ KBookmark KBookmarkDialog::addBookmark(const QString & title, const QUrl & url, 
     d->commentLabel->setVisible(true);
     d->setParentBookmark(parent);
     d->folderTree->setVisible(true);
+    d->icon = icon;
 
     d->mode = KBookmarkDialogPrivate::NewBookmark;
 
@@ -236,7 +235,7 @@ KBookmark KBookmarkDialog::addBookmark(const QString & title, const QUrl & url, 
         return KBookmark();
 }
 
-KBookmarkGroup KBookmarkDialog::addBookmarks(const QList<QPair<QString, QString> > & list, const QString & name, KBookmarkGroup parent)
+KBookmarkGroup KBookmarkDialog::addBookmarks(const QList<KBookmarkOwner::FutureBookmark> &list, const QString &name, KBookmarkGroup parent)
 {
     if (!d->layout)
         d->initLayoutPrivate();

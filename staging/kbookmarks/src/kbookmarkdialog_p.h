@@ -55,10 +55,11 @@ public:
   QLabel *titleLabel;
   QLabel *urlLabel;
   QLabel *commentLabel;
+  QString icon;
   QTreeWidget *folderTree;
   KBookmarkManager *mgr;
   KBookmark bm;
-  QList<QPair<QString, QString> > list;
+  QList<KBookmarkOwner::FutureBookmark> list;
   bool layout;
 };
 

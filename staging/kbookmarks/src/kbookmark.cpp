@@ -28,7 +28,6 @@
 #include <kstringhandler.h>
 #include <kurlmimedata.h>
 #include <kbookmarkmanager.h>
-#include <kio/global.h>
 
 #include <qdatetime.h>
 #include <qmimedata.h>
@@ -220,7 +219,7 @@ KBookmark KBookmarkGroup::addBookmark( const QString & text, const QUrl & url, c
     KBookmark newBookmark =  addBookmark( KBookmark( elem ) );
 
     // as icons are moved to metadata, we have to use the KBookmark API for this
-    newBookmark.setIcon(icon.isEmpty() ? KIO::iconNameForUrl( url ) : icon );
+    newBookmark.setIcon(icon);
     return newBookmark;
 }
 
@@ -372,16 +371,17 @@ QString KBookmark::icon() const
                 icon = "edit-clear"; // whatever
             } else {
                 // get icon from mimeType
+                QMimeDatabase db;
+                QMimeType mime;
                 QString _mimeType = mimeType();
                 if (!_mimeType.isEmpty()) {
-                    QMimeDatabase db;
-                    QMimeType mime = db.mimeTypeForName(_mimeType);
-                    if (mime.isValid()) {
-                        return mime.iconName();
-                    }
+                    mime = db.mimeTypeForName(_mimeType);
+                } else {
+                    mime = db.mimeTypeForUrl(url());
                 }
-                // get icon from URL
-                icon = KIO::iconNameForUrl(url());
+                if (mime.isValid()) {
+                    icon = mime.iconName();
+                }
             }
         }
     }
@@ -392,7 +392,7 @@ void KBookmark::setIcon(const QString &icon)
 {
     QDomNode metaDataNode = metaData(METADATA_FREEDESKTOP_OWNER, true);
     QDomElement iconElement = cd_or_create(metaDataNode, "bookmark:icon").toElement();
-    iconElement.setAttribute ( "name", icon );
+    iconElement.setAttribute("name", icon);
 
     // migration code
     if(!element.attribute("icon").isEmpty())
@@ -548,7 +548,7 @@ void KBookmark::updateAccessMetadata()
     currentCount++;
     setMetaDataItem( "visit_count", QString::number( currentCount ) );
 
-    // TODO - for 4.0 - time_modified
+    // TODO - time_modified
 }
 
 QString KBookmark::parentAddress( const QString & address )
@@ -713,7 +713,7 @@ KBookmark::List KBookmark::List::fromMimeData( const QMimeData *mimeData, QDomDo
     const QList<QUrl> urls = KUrlMimeData::urlsFromMimeData(mimeData);
     for (int i = 0; i < urls.size(); ++i) {
         const QUrl url = urls.at(i);
-        bookmarks.append(KBookmark::standaloneBookmark(url.toString(), url)); // Qt5 TODO: toDisplayString()
+        bookmarks.append(KBookmark::standaloneBookmark(url.toDisplayString(), url, QString()/*TODO icon*/));
     }
     return bookmarks;
 }

@@ -39,8 +39,9 @@ public:
     QMenu * popupMenu();
 
     // KBookmarkOwner interface:
-    virtual QString currentUrl() const;
     virtual QString currentTitle() const;
+    virtual QUrl currentUrl() const;
+    virtual QString currentIcon() const;
 
     QMenu *menu() const { return m_menu; }
 

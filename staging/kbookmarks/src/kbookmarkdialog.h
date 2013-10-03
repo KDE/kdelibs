@@ -21,6 +21,7 @@
 #define __kbookmarkdialog_h
 
 #include "kbookmark.h"
+#include "kbookmarkowner.h"
 #include <QDialog>
 
 class KBookmarkManager;
@@ -53,12 +54,12 @@ public:
    * shows a add Bookmark dialog
    * Note: That this  updates the bookmark and calls KBookmarkManager::emitChanged   
    */
-  KBookmark addBookmark(const QString & title, const QUrl & url, KBookmark parent = KBookmark());
+  KBookmark addBookmark(const QString &title, const QUrl &url, const QString &icon, KBookmark parent = KBookmark());
   /**
    * Creates a folder from a list of bookmarks
    * Note: That this  updates the bookmark and calls KBookmarkManager::emitChanged
    */
-  KBookmarkGroup addBookmarks(const QList< QPair<QString, QString> > & list, const QString & name = QString(),  KBookmarkGroup parent = KBookmarkGroup());
+  KBookmarkGroup addBookmarks(const QList<KBookmarkOwner::FutureBookmark>& list, const QString & name = QString(), KBookmarkGroup parent = KBookmarkGroup());
   /**
    * A dialog to create a new folder.
    */

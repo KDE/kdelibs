@@ -7,6 +7,7 @@ set(kbookmarks_SRCS
   kbookmarkmanager.cpp
   kbookmarkmanageradaptor.cpp
   kbookmarkmenu.cpp
+  kbookmarkowner.cpp
   konqbookmarkmenu.cpp
   kbookmarkimporter_opera.cpp
   kbookmarkimporter_ie.cpp
@@ -22,7 +23,6 @@ target_link_libraries(KBookmarks LINK_PUBLIC Qt5::Widgets Qt5::Xml)
 target_link_libraries(KBookmarks LINK_PRIVATE
                                         ${KCoreAddons_LIBRARIES}
                                         ${KWidgetsAddons_LIBRARIES}
-                                        KIOCore # for KIO::iconNameForUrl
                                         KConfigWidgets # for KStandardAction
                                         XmlGui # for KActionCollection
                                         KIconThemes # for SmallIcon
@@ -40,6 +40,7 @@ install( FILES
   kbookmarkimporter.h
   kbookmarkmanager.h
   kbookmarkmenu.h
+  kbookmarkowner.h
   kbookmarkimporter_opera.h
   kbookmarkimporter_ie.h
   kbookmarkimporter_ns.h

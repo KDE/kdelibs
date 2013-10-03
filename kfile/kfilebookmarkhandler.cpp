@@ -25,8 +25,8 @@
 
 #include <kbookmarkimporter.h>
 #include <kbookmarkdombuilder.h>
+#include <kio/global.h>
 #include <qstandardpaths.h>
-
 
 #include "kfilewidget.h"
 
@@ -60,14 +60,19 @@ void KFileBookmarkHandler::openBookmark( const KBookmark & bm, Qt::MouseButtons,
     emit openUrl(bm.url().toString());
 }
 
-QString KFileBookmarkHandler::currentUrl() const
+QUrl KFileBookmarkHandler::currentUrl() const
 {
-    return m_widget->baseUrl().toString();
+    return m_widget->baseUrl();
 }
 
 QString KFileBookmarkHandler::currentTitle() const
 {
     return m_widget->baseUrl().toDisplayString();
+}
+
+QString KFileBookmarkHandler::currentIcon() const
+{
+    return KIO::iconNameForUrl(currentUrl());
 }
 
 #include "moc_kfilebookmarkhandler_p.cpp"

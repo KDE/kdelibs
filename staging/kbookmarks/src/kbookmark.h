@@ -99,7 +99,7 @@ public:
     /**
      * Creates a stand alone bookmark. This is fairly expensive since a new QDom Tree is build.
      */
-    static KBookmark standaloneBookmark( const QString & text, const QUrl & url, const QString & icon = QString() );
+    static KBookmark standaloneBookmark(const QString &text, const QUrl &url, const QString &icon /*= QString()*/);
 
     /**
      * Whether the bookmark is a group or a normal bookmark
@@ -401,7 +401,7 @@ public:
      * @param icon the name of the icon to associate with the bookmark. A suitable default
      * will be determined from the URL if not specified.
      */
-    KBookmark addBookmark( const QString & text, const QUrl & url, const QString & icon = QString() );
+    KBookmark addBookmark(const QString &text, const QUrl &url, const QString &icon);
 
     /**
      * Moves @p bookmark after @p after (which should be a child of ours).

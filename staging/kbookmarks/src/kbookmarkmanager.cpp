@@ -696,38 +696,4 @@ KBookmarkSettings *KBookmarkSettings::self()
    return s_self;
 }
 
-/////////// KBookmarkOwner
-
-bool KBookmarkOwner::enableOption(BookmarkOption action) const
-{
-    if(action == ShowAddBookmark)
-        return true;
-    if(action == ShowEditBookmark)
-        return true;
-    return false;
-}
-
-KBookmarkDialog * KBookmarkOwner::bookmarkDialog(KBookmarkManager * mgr, QWidget * parent)
-{
-    return new KBookmarkDialog(mgr, parent);
-}
-
-void KBookmarkOwner::openFolderinTabs(const KBookmarkGroup &)
-{
-
-}
-
-void KBookmarkOwner::openInNewTab(const KBookmark &bm)
-{
-    // fallback
-    openBookmark(bm, Qt::LeftButton, Qt::NoModifier);
-}
-
-void KBookmarkOwner::openInNewWindow(const KBookmark &bm)
-{
-    // fallback
-    openBookmark(bm, Qt::LeftButton, Qt::NoModifier);
-}
-
-
 #include "moc_kbookmarkmanager.cpp"

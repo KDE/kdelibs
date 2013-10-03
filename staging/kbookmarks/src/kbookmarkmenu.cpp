@@ -22,6 +22,7 @@
 #include "kbookmarkmenu_p.h"
 
 #include "kbookmarkdialog.h"
+#include "kbookmarkowner.h"
 
 #include <kauthorized.h>
 #include <kstandardaction.h>
@@ -311,29 +312,28 @@ void KBookmarkContextMenu::slotInsert()
 {
   // qDebug() << "KBookmarkMenu::slotInsert" << m_highlightedAddress;
 
-  QString url = m_pOwner->currentUrl();
-  if (url.isEmpty())
-  {
+  QUrl url = m_pOwner->currentUrl();
+  if (url.isEmpty()) {
     QMessageBox::critical( QApplication::activeWindow(), QApplication::applicationName(), 
                            tr("Cannot add bookmark with empty URL."));
     return;
   }
   QString title = m_pOwner->currentTitle();
   if (title.isEmpty())
-    title = url;
+    title = url.toDisplayString();
 
   if (bm.isGroup())
   {
     KBookmarkGroup parentBookmark = bm.toGroup();
     Q_ASSERT(!parentBookmark.isNull());
-    parentBookmark.addBookmark(title, QUrl(url));
+    parentBookmark.addBookmark(title, url, m_pOwner->currentIcon());
     m_pManager->emitChanged( parentBookmark );
   }
   else
   {
     KBookmarkGroup parentBookmark = bm.parentGroup();
     Q_ASSERT(!parentBookmark.isNull());
-    KBookmark newBookmark = parentBookmark.addBookmark(title, QUrl(m_pOwner->currentUrl()));
+    KBookmark newBookmark = parentBookmark.addBookmark(title, m_pOwner->currentUrl(), m_pOwner->currentIcon());
     parentBookmark.moveBookmark( newBookmark, parentBookmark.previous(bm) );
     m_pManager->emitChanged( parentBookmark );
   }
@@ -590,12 +590,12 @@ void KBookmarkMenu::slotAddBookmark()
   if(KBookmarkSettings::self()->m_advancedaddbookmark)
   {
       KBookmarkDialog * dlg = m_pOwner->bookmarkDialog(m_pManager, QApplication::activeWindow() );
-      dlg->addBookmark(m_pOwner->currentTitle(), QUrl(m_pOwner->currentUrl()), parentBookmark);
+      dlg->addBookmark(m_pOwner->currentTitle(), m_pOwner->currentUrl(), m_pOwner->currentIcon(), parentBookmark);
       delete dlg;
   }
   else
   {
-      parentBookmark.addBookmark(m_pOwner->currentTitle(), QUrl(m_pOwner->currentUrl()));
+      parentBookmark.addBookmark(m_pOwner->currentTitle(), m_pOwner->currentUrl(), m_pOwner->currentIcon());
       m_pManager->emitChanged( parentBookmark );
   }
 
