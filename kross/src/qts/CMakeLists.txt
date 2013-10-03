@@ -13,7 +13,6 @@ install(TARGETS krossqtsplugin DESTINATION ${QT_PLUGIN_INSTALL_DIR}/script)
 
 ########### next target ###############
 
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
 set(krossqtstest_SRCS main.cpp)
 add_executable(krossqtstest ${krossqtstest_SRCS})
 ecm_mark_as_test(krossqtstest)
