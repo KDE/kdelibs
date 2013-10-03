@@ -1,5 +1,4 @@
-/* vi: ts=8 sts=4 sw=4
- *
+/*
  * This file is part of the KDE project, module kdesu
  * Copyright (C) 1999,2000 Geert Jansen <jansen@kde.org>
  *
@@ -8,8 +7,8 @@
  * exact licensing terms.
  */
 
-#ifndef __KCookie_h_Included__
-#define __KCookie_h_Included__
+#ifndef KDESUKCOOKIE_H
+#define KDESUKCOOKIE_H
 
 #include <QtCore/QByteRef>
 
@@ -52,4 +51,4 @@ private:
 
 }}
 
-#endif // __KCookie_h_Included__
+#endif // KDESUKCOOKIE_H

@@ -1,17 +1,16 @@
 ///////// XXX migrate it to kprocess /////////////////
 
-/* vi: ts=8 sts=4 sw=4
- *
+/*
  * This file is part of the KDE project, module kdesu.
  * Copyright (C) 1999,2000 Geert Jansen <jansen@kde.org>
- * 
- * This is free software; you can use this library under the GNU Library 
- * General Public License, version 2. See the file "COPYING.LIB" for the 
+ *
+ * This is free software; you can use this library under the GNU Library
+ * General Public License, version 2. See the file "COPYING.LIB" for the
  * exact licensing terms.
  */
 
-#ifndef __Process_h_Included__
-#define __Process_h_Included__
+#ifndef KDESUPROCESS_H
+#define KDESUPROCESS_H
 
 #include <sys/types.h>
 
@@ -37,6 +36,14 @@ namespace KDESu {
 class KDESU_EXPORT PtyProcess
 {
 public:
+
+    /** Error return values for checkPidExited() */
+    enum checkPidStatus {
+        Error = -1,     /**< No child */
+        NotExited = -2, /**< Child hasn't exited */
+        Killed = -3     /**< Child terminated by signal */
+    } ;
+
     PtyProcess();
     virtual ~PtyProcess();
 
@@ -58,7 +65,7 @@ public:
      * @param block Block until a full line is read?
      * @return The output string.
      */
-    QByteArray readLine(bool block=true);
+    QByteArray readLine(bool block = true);
 
     /**
      * Read all available output from the program's standard out.
@@ -66,21 +73,21 @@ public:
      * (else it will return an empty QByteArray)?
      * @return The output.
      */
-    QByteArray readAll(bool block=true);
+    QByteArray readAll(bool block = true);
 
     /**
      * Writes a line of text to the program's standard in.
      * @param line The text to write.
      * @param addNewline Adds a '\n' to the line.
      */
-    void writeLine(const QByteArray &line, bool addNewline=true);
+    void writeLine(const QByteArray &line, bool addNewline = true);
 
     /**
      * Puts back a line of input.
      * @param line The line to put back.
      * @param addNewline Adds a '\n' to the line.
      */
-    void unreadLine(const QByteArray &line, bool addNewline=true);
+    void unreadLine(const QByteArray &line, bool addNewline = true);
 
     /**
      * Sets the exit string. If a line of program output matches this,
@@ -98,12 +105,12 @@ public:
      * when programs write a password prompt before they disable ECHO.
      * Disabling it might flush any input that was written.
      */
-    int WaitSlave();
+    int waitSlave();
 
     /**
      * Enables/disables local echo on the pseudo tty.
      */
-    int enableLocalEcho(bool enable=true);
+    int enableLocalEcho(bool enable = true);
 
     /**
      * Enables/disables terminal output. Relevant only to some subclasses.
@@ -119,7 +126,7 @@ public:
     /**
      * Set additinal environment variables.
      */
-    void setEnvironment( const QList<QByteArray> &env );
+    void setEnvironment(const QList<QByteArray> &env);
 
     /**
      * Returns the filedescriptor of the process.
@@ -131,7 +138,6 @@ public:
      */
     int pid() const;
 
-public /* static */:
     /*
     ** This is a collection of static functions that can be
     ** used for process control inside kdesu. I'd suggest
@@ -148,8 +154,7 @@ public /* static */:
     ** @p ms must be in the range 0..999 (i.e. the maximum wait
     ** duration is 999ms, almost one second).
     */
-    static int waitMS(int fd,int ms);
-
+    static int waitMS(int fd, int ms);
 
     /**
     ** Basic check for the existence of @p pid.
@@ -157,13 +162,6 @@ public /* static */:
     ** (one you could kill - see man kill(2) for signal 0).
     */
     static bool checkPid(pid_t pid);
-
-
-    /** Error return values for checkPidExited() */
-    enum checkPidStatus { Error=-1,  /**< No child */
-        NotExited=-2,                /**< Child hasn't exited */
-        Killed=-3                    /**< Child terminated by signal */
-    } ;
 
     /**
     ** Check process exit status for process @p pid.
@@ -176,29 +174,26 @@ public /* static */:
 
 
 protected:
+    /** Standard hack to add virtual methods in a BC way. Unused. */
+    virtual void virtual_hook(int id, void *data);
     QList<QByteArray> environment() const;
 
-    bool m_bErase,   /**< @see setErase() */
-	m_bTerminal; /**< Indicates running in a terminal, causes additional
-                          newlines to be printed after output. Set to @c false
-                          in constructor. @see setTerminal()  */
-    int m_Pid; /**< PID of child process */
-    QByteArray m_Command,  /**< Unused */
-        m_Exit;            /**< String to scan for in output that indicates
-                                child has exited. */
+    bool m_erase;           /**< @see setErase() */
+    bool m_terminal;        /**< Indicates running in a terminal, causes additional
+                                  newlines to be printed after output. Set to @c false
+                                  in constructor. @see setTerminal()  */
+    int m_pid;               /**< PID of child process */
+    QByteArray m_command;    /**< Unused */
+    QByteArray m_exitString; /**< String to scan for in output that indicates child has exited. */
 
 private:
     int init();
     int setupTTY();
 
-protected:
-    /** Standard hack to add virtual methods in a BC way. Unused. */
-    virtual void virtual_hook( int id, void* data );
-private:
     class PtyProcessPrivate;
-    PtyProcessPrivate* const d;
+    PtyProcessPrivate *const d;
 };
 
 }
 
-#endif
+#endif //KDESUPROCESS_H

@@ -1,5 +1,4 @@
-/* vi: ts=8 sts=4 sw=4
- *
+/*
  * This file is part of the KDE project, module kdesu.
  * Copyright (C) 1999,2000 Geert Jansen <jansen@kde.org>
  *
@@ -55,16 +54,16 @@ using namespace KDESuPrivate;
 ** @param ms time to wait in miliseconds
 ** @return
 */
-int PtyProcess::waitMS(int fd,int ms)
+int PtyProcess::waitMS(int fd, int ms)
 {
-	struct timeval tv;
-	tv.tv_sec = 0;
-	tv.tv_usec = 1000*ms;
+    struct timeval tv;
+    tv.tv_sec = 0;
+    tv.tv_usec = 1000 * ms;
 
-	fd_set fds;
-	FD_ZERO(&fds);
-	FD_SET(fd,&fds);
-	return select(fd+1, &fds, 0L, 0L, &tv);
+    fd_set fds;
+    FD_ZERO(&fds);
+    FD_SET(fd, &fds);
+    return select(fd + 1, &fds, 0L, 0L, &tv);
 }
 
 // XXX this function is nonsense:
@@ -94,83 +93,78 @@ bool PtyProcess::checkPid(pid_t pid)
 ** (which may be zero).
 ** If child @p has not exited, return NotExited (-2).
 */
-
 int PtyProcess::checkPidExited(pid_t pid)
 {
-	int state, ret;
-	ret = waitpid(pid, &state, WNOHANG);
+    int state, ret;
+    ret = waitpid(pid, &state, WNOHANG);
 
-	if (ret < 0)
-	{
-		qCritical() << "[" << __FILE__ << ":" << __LINE__ << "] " << "waitpid():" << strerror(errno);
-		return Error;
-	}
-	if (ret == pid)
-	{
-		if (WIFEXITED(state))
-			return WEXITSTATUS(state);
-		return Killed;
-	}
+    if (ret < 0) {
+        qCritical() << "[" << __FILE__ << ":" << __LINE__ << "] " << "waitpid():" << strerror(errno);
+        return Error;
+    }
+    if (ret == pid) {
+        if (WIFEXITED(state)) {
+            return WEXITSTATUS(state);
+        }
 
-	return NotExited;
+        return Killed;
+    }
+
+    return NotExited;
 }
-
 
 class PtyProcess::PtyProcessPrivate
 {
 public:
-    PtyProcessPrivate() : m_pPTY(0L) {}
+    PtyProcessPrivate() : pty(0L) {}
     ~PtyProcessPrivate()
     {
-        delete m_pPTY;
+        delete pty;
     }
     QList<QByteArray> env;
-    KPty *m_pPTY;
-    QByteArray m_Inbuf;
+    KPty *pty;
+    QByteArray inputBuffer;
 };
 
 
 PtyProcess::PtyProcess()
-    :d(new PtyProcessPrivate)
+    : d(new PtyProcessPrivate)
 {
-    m_bTerminal = false;
-    m_bErase = false;
+    m_terminal = false;
+    m_erase = false;
 }
-
-
-int PtyProcess::init()
-{
-    delete d->m_pPTY;
-    d->m_pPTY = new KPty();
-    if (!d->m_pPTY->open())
-    {
-        qCritical() << "[" << __FILE__ << ":" << __LINE__ << "] " << "Failed to open PTY.";
-        return -1;
-    }
-    d->m_Inbuf.resize(0);
-    return 0;
-}
-
 
 PtyProcess::~PtyProcess()
 {
     delete d;
 }
 
+int PtyProcess::init()
+{
+    delete d->pty;
+    d->pty = new KPty();
+    if (!d->pty->open()) {
+        qCritical() << "[" << __FILE__ << ":" << __LINE__ << "] " << "Failed to open PTY.";
+        return -1;
+    }
+    d->inputBuffer.resize(0);
+    return 0;
+}
+
 /** Set additional environment variables. */
-void PtyProcess::setEnvironment( const QList<QByteArray> &env )
+void PtyProcess::setEnvironment(const QList<QByteArray> &env)
 {
     d->env = env;
 }
 
 int PtyProcess::fd() const
 {
-    return d->m_pPTY ? d->m_pPTY->masterFd() : -1;
+    return d->pty ? d->pty->masterFd() : -1;
 }
 
 int PtyProcess::pid() const
 {
-    return m_Pid;
+    return m_pid;
 }
 
 /** Returns the additional environment variables set by setEnvironment() */
@@ -179,50 +173,48 @@ QList<QByteArray> PtyProcess::environment() const
     return d->env;
 }
 
-
 QByteArray PtyProcess::readAll(bool block)
 {
     QByteArray ret;
-    if (!d->m_Inbuf.isEmpty())
-    {
+    if (!d->inputBuffer.isEmpty()) {
         // if there is still something in the buffer, we need not block.
         // we should still try to read any further output, from the fd, though.
         block = false;
-        ret = d->m_Inbuf;
-        d->m_Inbuf.resize(0);
+        ret = d->inputBuffer;
+        d->inputBuffer.resize(0);
     }
 
     int flags = fcntl(fd(), F_GETFL);
-    if (flags < 0)
-    {
+    if (flags < 0) {
         qCritical() << "[" << __FILE__ << ":" << __LINE__ << "] " << "fcntl(F_GETFL):" << strerror(errno);
         return ret;
     }
     int oflags = flags;
-    if (block)
+    if (block) {
         flags &= ~O_NONBLOCK;
-    else
+    } else {
         flags |= O_NONBLOCK;
+    }
 
-    if ((flags != oflags) && (fcntl(fd(), F_SETFL, flags) < 0))
-    {
+    if ((flags != oflags) && (fcntl(fd(), F_SETFL, flags) < 0)) {
        // We get an error here when the child process has closed
        // the file descriptor already.
        return ret;
     }
 
-    while (1)
-    {
+    while (1) {
         ret.reserve(ret.size() + 0x8000);
         int nbytes = read(fd(), ret.data() + ret.size(), 0x8000);
-        if (nbytes == -1)
-        {
-            if (errno == EINTR)
+        if (nbytes == -1) {
+            if (errno == EINTR) {
                 continue;
-            else break;
+            } else {
+                break;
+            }
         }
-        if (nbytes == 0)
-            break;        // nothing available / eof
+        if (nbytes == 0) {
+            break; // nothing available / eof
+        }
 
         ret.resize(ret.size() + nbytes);
         break;
@@ -231,86 +223,81 @@ QByteArray PtyProcess::readAll(bool block)
     return ret;
 }
 
-
 QByteArray PtyProcess::readLine(bool block)
 {
-    d->m_Inbuf = readAll(block);
+    d->inputBuffer = readAll(block);
 
     int pos;
     QByteArray ret;
-    if (!d->m_Inbuf.isEmpty())
-    {
-        pos = d->m_Inbuf.indexOf('\n');
-        if (pos == -1)
-        {
+    if (!d->inputBuffer.isEmpty()) {
+        pos = d->inputBuffer.indexOf('\n');
+        if (pos == -1) {
             // NOTE: this means we return something even if there in no full line!
-            ret = d->m_Inbuf;
-            d->m_Inbuf.resize(0);
-        } else
-        {
-            ret = d->m_Inbuf.left(pos);
-            d->m_Inbuf.remove(0, pos+1);
+            ret = d->inputBuffer;
+            d->inputBuffer.resize(0);
+        } else {
+            ret = d->inputBuffer.left(pos);
+            d->inputBuffer.remove(0, pos + 1);
         }
     }
 
     return ret;
 }
 
-
 void PtyProcess::writeLine(const QByteArray &line, bool addnl)
 {
-    if (!line.isEmpty())
+    if (!line.isEmpty()) {
         write(fd(), line.constData(), line.length());
-    if (addnl)
+    }
+    if (addnl) {
         write(fd(), "\n", 1);
+    }
 }
-
 
 void PtyProcess::unreadLine(const QByteArray &line, bool addnl)
 {
     QByteArray tmp = line;
-    if (addnl)
+    if (addnl) {
         tmp += '\n';
-    if (!tmp.isEmpty())
-        d->m_Inbuf.prepend(tmp);
+    }
+    if (!tmp.isEmpty()) {
+        d->inputBuffer.prepend(tmp);
+    }
 }
 
 void PtyProcess::setExitString(const QByteArray &exit)
 {
-    m_Exit = exit;
+    m_exitString = exit;
 }
 
 /*
  * Fork and execute the command. This returns in the parent.
  */
-
 int PtyProcess::exec(const QByteArray &command, const QList<QByteArray> &args)
 {
-    // qDebug() << "[" << __FILE__ << ":" << __LINE__ << "] " << "Running" << command;
     int i;
 
-    if (init() < 0)
+    if (init() < 0) {
         return -1;
+    }
 
-    if ((m_Pid = fork()) == -1)
-    {
+    if ((m_pid = fork()) == -1) {
         qCritical() << "[" << __FILE__ << ":" << __LINE__ << "] " << "fork():" << strerror(errno);
         return -1;
     }
 
     // Parent
-    if (m_Pid)
-    {
-        d->m_pPTY->closeSlave();
+    if (m_pid) {
+        d->pty->closeSlave();
         return 0;
     }
 
     // Child
-    if (setupTTY() < 0)
+    if (setupTTY() < 0) {
         _exit(1);
+    }
 
-    for (i = 0; i < d->env.count(); ++i)
-    {
+    for (i = 0; i < d->env.count(); ++i) {
         putenv(const_cast<char *>(d->env.at(i).constData()));
     }
     unsetenv("KDE_FULL_SESSION");
@@ -321,35 +308,35 @@ int PtyProcess::exec(const QByteArray &command, const QList<QByteArray> &args)
     unsetenv("DBUS_SESSION_BUS_ADDRESS");
 
     // set temporarily LC_ALL to C, for su (to be able to parse "Password:")
-    const QByteArray old_lc_all = qgetenv( "LC_ALL" );
-    if( !old_lc_all.isEmpty() )
-        qputenv( "KDESU_LC_ALL", old_lc_all );
-    else
-        unsetenv( "KDESU_LC_ALL" );
+    const QByteArray old_lc_all = qgetenv("LC_ALL");
+    if (!old_lc_all.isEmpty()) {
+        qputenv("KDESU_LC_ALL", old_lc_all);
+    } else {
+        unsetenv("KDESU_LC_ALL");
+    }
     qputenv("LC_ALL", "C");
 
     // From now on, terminal output goes through the tty.
 
     QByteArray path;
-    if (command.contains('/'))
+    if (command.contains('/')) {
         path = command;
-    else
-    {
+    } else {
         QString file = QStandardPaths::findExecutable(QFile::decodeName(command));
-        if (file.isEmpty())
-        {
+        if (file.isEmpty()) {
             qCritical() << "[" << __FILE__ << ":" << __LINE__ << "] " << command << "not found.";
             _exit(1);
         }
         path = QFile::encodeName(file);
     }
 
-    const char **argp = (const char **)malloc((args.count()+2)*sizeof(char *));
+    const char **argp = (const char **)malloc((args.count() + 2) * sizeof(char *));
 
     i = 0;
     argp[i++] = path.constData();
-    for (QList<QByteArray>::ConstIterator it=args.begin(); it!=args.end(); ++it, ++i)
+    for (QList<QByteArray>::ConstIterator it = args.begin(); it != args.end(); ++it, ++i) {
         argp[i] = (*it).constData();
+    }
 
     argp[i] = NULL;
 
@@ -358,7 +345,6 @@ int PtyProcess::exec(const QByteArray &command, const QList<QByteArray> &args)
     _exit(1);
     return -1; // Shut up compiler. Never reached.
 }
-
 
 /*
  * Wait until the terminal is set into no echo mode. At least one su
@@ -369,26 +355,19 @@ int PtyProcess::exec(const QByteArray &command, const QList<QByteArray> &args)
  * Note that this is done on the slave fd. While Linux allows tcgetattr() on
  * the master side, Solaris doesn't.
  */
-
-int PtyProcess::WaitSlave()
+int PtyProcess::waitSlave()
 {
-    // qDebug() << "[" << __FILE__ << ":" << __LINE__ << "] " << "Child pid" << m_Pid;
-
     struct termios tio;
-    while (1)
-    {
-        if (!checkPid(m_Pid))
-        {
+    while (1) {
+        if (!checkPid(m_pid)) {
             qCritical() << "process has exited while waiting for password.";
             return -1;
         }
-        if (!d->m_pPTY->tcGetAttr(&tio))
-        {
+        if (!d->pty->tcGetAttr(&tio)) {
             qCritical() << "[" << __FILE__ << ":" << __LINE__ << "] " << "tcgetattr():" << strerror(errno);
             return -1;
         }
-        if (tio.c_lflag & ECHO)
-        {
+        if (tio.c_lflag & ECHO) {
             // qDebug() << "[" << __FILE__ << ":" << __LINE__ << "] " << "Echo mode still on.";
             usleep(10000);
             continue;
@@ -398,39 +377,35 @@ int PtyProcess::WaitSlave()
     return 0;
 }
 
-
 int PtyProcess::enableLocalEcho(bool enable)
 {
-    return d->m_pPTY->setEcho(enable) ? 0 : -1;
+    return d->pty->setEcho(enable) ? 0 : -1;
 }
-
 
 void PtyProcess::setTerminal(bool terminal)
 {
-    m_bTerminal = terminal;
+    m_terminal = terminal;
 }
 
 void PtyProcess::setErase(bool erase)
 {
-    m_bErase = erase;
+    m_erase = erase;
 }
 
 /*
  * Copy output to stdout until the child process exits, or a line of output
- * matches `m_Exit'.
+ * matches `m_exitString'.
  * We have to use waitpid() to test for exit. Merely waiting for EOF on the
  * pty does not work, because the target process may have children still
  * attached to the terminal.
  */
-
 int PtyProcess::waitForChild()
 {
     fd_set fds;
     FD_ZERO(&fds);
     QByteArray remainder;
 
-    while (1)
-    {
+    while (1) {
         FD_SET(fd(), &fds);
 
         // specify timeout to make sure select() does not block, even if the
@@ -440,62 +415,55 @@ int PtyProcess::waitForChild()
         timeval timeout;
         timeout.tv_sec = 0;
         timeout.tv_usec = 100000;
-        int ret = select(fd()+1, &fds, 0L, 0L, &timeout);
-        if (ret == -1)
-        {
-            if (errno != EINTR)
-            {
+        int ret = select(fd() + 1, &fds, 0L, 0L, &timeout);
+        if (ret == -1) {
+            if (errno != EINTR) {
                 qCritical() << "[" << __FILE__ << ":" << __LINE__ << "] " << "select():" << strerror(errno);
                 return -1;
             }
             ret = 0;
         }
 
-        if (ret)
-        {
+        if (ret) {
             forever {
                 QByteArray output = readAll(false);
-                if (output.isEmpty())
+                if (output.isEmpty()) {
                     break;
-                if (m_bTerminal)
-                {
+                }
+                if (m_terminal) {
                     fwrite(output.constData(), output.size(), 1, stdout);
                     fflush(stdout);
                 }
-                if (!m_Exit.isEmpty())
-                {
+                if (!m_exitString.isEmpty()) {
                     // match exit string only at line starts
                     remainder += output;
-                    while (remainder.length() >= m_Exit.length()) {
-                        if (remainder.startsWith(m_Exit)) {
-                            kill(m_Pid, SIGTERM);
-                            remainder.remove(0, m_Exit.length());
+                    while (remainder.length() >= m_exitString.length()) {
+                        if (remainder.startsWith(m_exitString)) {
+                            kill(m_pid, SIGTERM);
+                            remainder.remove(0, m_exitString.length());
                         }
                         int off = remainder.indexOf('\n');
-                        if (off < 0)
+                        if (off < 0) {
                             break;
+                        }
                         remainder.remove(0, off + 1);
                     }
                 }
             }
         }
 
-        ret = checkPidExited(m_Pid);
-        if (ret == Error)
-        {
-            if (errno == ECHILD) return 0;
-            else return 1;
-        }
-        else if (ret == Killed)
-        {
+        ret = checkPidExited(m_pid);
+        if (ret == Error) {
+            if (errno == ECHILD) {
+                return 0;
+            } else {
+                return 1;
+            }
+        } else if (ret == Killed) {
             return 0;
-        }
-        else if (ret == NotExited)
-        {
-            // keep checking
-        }
-        else
-        {
+        } else if (ret == NotExited) {
+            continue; // keep checking
+        } else {
             return ret;
         }
     }
@@ -507,39 +475,40 @@ int PtyProcess::waitForChild()
  * our controlling terminal. This way the tty is always opened at least once
  * so we'll never get EIO when reading from it.
  */
-
 int PtyProcess::setupTTY()
 {
     // Reset signal handlers
-    for (int sig = 1; sig < NSIG; sig++)
+    for (int sig = 1; sig < NSIG; sig++) {
         signal(sig, SIG_DFL);
+    }
     signal(SIGHUP, SIG_IGN);
 
-    d->m_pPTY->setCTty();
+    d->pty->setCTty();
 
     // Connect stdin, stdout and stderr
-    int slave = d->m_pPTY->slaveFd();
-    dup2(slave, 0); dup2(slave, 1); dup2(slave, 2);
+    int slave = d->pty->slaveFd();
+    dup2(slave, 0);
+    dup2(slave, 1);
+    dup2(slave, 2);
 
     // Close all file handles
     // XXX this caused problems in KProcess - not sure why anymore. -- ???
     // Because it will close the start notification pipe. -- ossi
     struct rlimit rlp;
     getrlimit(RLIMIT_NOFILE, &rlp);
-    for (int i = 3; i < (int)rlp.rlim_cur; i++)
+    for (int i = 3; i < (int)rlp.rlim_cur; i++) {
         close(i);
+    }
 
     // Disable OPOST processing. Otherwise, '\n' are (on Linux at least)
     // translated to '\r\n'.
     struct ::termios tio;
-    if (tcgetattr(0, &tio) < 0)
-    {
+    if (tcgetattr(0, &tio) < 0) {
         qCritical() << "[" << __FILE__ << ":" << __LINE__ << "] " << "tcgetattr():" << strerror(errno);
         return -1;
     }
     tio.c_oflag &= ~OPOST;
-    if (tcsetattr(0, TCSANOW, &tio) < 0)
-    {
+    if (tcsetattr(0, TCSANOW, &tio) < 0) {
         qCritical() << "[" << __FILE__ << ":" << __LINE__ << "] " << "tcsetattr():" << strerror(errno);
         return -1;
     }
@@ -547,7 +516,11 @@ int PtyProcess::setupTTY()
     return 0;
 }
 
-void PtyProcess::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
-
+void PtyProcess::virtual_hook(int id, void *data)
+{
+    Q_UNUSED(id);
+    Q_UNUSED(data);
+    /*BASE::virtual_hook( id, data );*/
 }
+
+} // namespace KDESu

@@ -1,5 +1,4 @@
-/* vi: ts=8 sts=4 sw=4
- *
+/*
  * This file is part of the KDE project, module kdesu.
  * Copyright (C) 1999,2000 Geert Jansen <jansen@kde.org>
  *
@@ -15,7 +14,6 @@
 #include <config-kdesu.h>
 
 #include <errno.h>
-
 #include <sys/socket.h>
 #include <sys/un.h>
 
@@ -45,12 +43,11 @@ public:
 #endif
 
 KDEsuClient::KDEsuClient()
-    :d(new KDEsuClientPrivate)
+    : d(new KDEsuClientPrivate)
 {
 #if HAVE_X11
     QString display = QString::fromLocal8Bit(qgetenv("DISPLAY"));
-    if (display.isEmpty())
-    {
+    if (display.isEmpty()) {
         qWarning() << "[" << __FILE__ << ":" << __LINE__ << "] " << "$DISPLAY is not set.";
         return;
     }
@@ -61,31 +58,33 @@ KDEsuClient::KDEsuClient()
     QString display = QStringLiteral("NODISPLAY");
 #endif
 
-    d->sock = QFile::encodeName( QStandardPaths::writableLocation(QStandardPaths::RuntimeLocation) + QStringLiteral("/kdesud_") + display);
+    d->sock = QFile::encodeName(QStandardPaths::writableLocation(QStandardPaths::RuntimeLocation) +
+                                                                 QStringLiteral("/kdesud_") +
+                                                                 display);
     connect();
 }
 
 
 KDEsuClient::~KDEsuClient()
 {
-    if (d->sockfd >= 0)
+    if (d->sockfd >= 0) {
         close(d->sockfd);
+    }
     delete d;
 }
 
 int KDEsuClient::connect()
 {
-    if (d->sockfd >= 0)
+    if (d->sockfd >= 0) {
         close(d->sockfd);
-    if (access(d->sock.constData(), R_OK|W_OK))
-    {
+    }
+    if (access(d->sock.constData(), R_OK|W_OK)) {
         d->sockfd = -1;
         return -1;
     }
 
     d->sockfd = socket(PF_UNIX, SOCK_STREAM, 0);
-    if (d->sockfd < 0)
-    {
+    if (d->sockfd < 0) {
         qWarning() << "[" << __FILE__ << ":" << __LINE__ << "] " << "socket():" << strerror(errno);
         return -1;
     }
@@ -93,8 +92,7 @@ int KDEsuClient::connect()
     addr.sun_family = AF_UNIX;
     strcpy(addr.sun_path, d->sock.constData());
 
-    if (QT_SOCKET_CONNECT(d->sockfd, (struct sockaddr *) &addr, SUN_LEN(&addr)) < 0)
-    {
+    if (QT_SOCKET_CONNECT(d->sockfd, (struct sockaddr *) &addr, SUN_LEN(&addr)) < 0) {
         qWarning() << "[" << __FILE__ << ":" << __LINE__ << "] " << "connect():" << strerror(errno);
         close(d->sockfd); d->sockfd = -1;
         return -1;
@@ -105,14 +103,11 @@ int KDEsuClient::connect()
     uid_t euid;
     gid_t egid;
     // Security: if socket exists, we must own it
-    if (getpeereid(d->sockfd, &euid, &egid) == 0)
-    {
-       if (euid != getuid())
-       {
-            qWarning() << "socket not owned by me! socket uid =" << euid;
-            close(d->sockfd); d->sockfd = -1;
-            return -1;
-       }
+    if (getpeereid(d->sockfd, &euid, &egid) == 0 && euid != getuid()) {
+        qWarning() << "socket not owned by me! socket uid =" << euid;
+        close(d->sockfd);
+        d->sockfd = -1;
+        return -1;
     }
 # else
 #  ifdef __GNUC__
@@ -123,20 +118,17 @@ int KDEsuClient::connect()
     // to delete it after we connect but shouldn't be able to
     // create a socket that is owned by us.
     QT_STATBUF s;
-    if (QT_LSTAT(d->sock.constData(), &s)!=0)
-    {
+    if (QT_LSTAT(d->sock.constData(), &s) != 0) {
         qWarning() << "stat failed (" << d->sock << ")";
         close(d->sockfd); d->sockfd = -1;
         return -1;
     }
-    if (s.st_uid != getuid())
-    {
+    if (s.st_uid != getuid()) {
         qWarning() << "socket not owned by me! socket uid =" << s.st_uid;
         close(d->sockfd); d->sockfd = -1;
         return -1;
     }
-    if (!S_ISSOCK(s.st_mode))
-    {
+    if (!S_ISSOCK(s.st_mode)) {
         qWarning() << "socket is not a socket (" << d->sock << ")";
         close(d->sockfd); d->sockfd = -1;
         return -1;
@@ -147,14 +139,10 @@ int KDEsuClient::connect()
     QT_SOCKLEN_T siz = sizeof(cred);
 
     // Security: if socket exists, we must own it
-    if (getsockopt(d->sockfd, SOL_SOCKET, SO_PEERCRED, &cred, &siz) == 0)
-    {
-        if (cred.uid != getuid())
-        {
-            qWarning() << "socket not owned by me! socket uid =" << cred.uid;
-            close(d->sockfd); d->sockfd = -1;
-            return -1;
-        }
+    if (getsockopt(d->sockfd, SOL_SOCKET, SO_PEERCRED, &cred, &siz) == 0 && cred.uid != getuid()) {
+        qWarning() << "socket not owned by me! socket uid =" << cred.uid;
+        close(d->sockfd); d->sockfd = -1;
+        return -1;
     }
 #endif
 
@@ -173,8 +161,9 @@ QByteArray KDEsuClient::escape(const QByteArray &str)
             copy.append('^');
             copy.append(c + '@');
         } else {
-            if (c == '\\' || c == '"')
+            if (c == '\\' || c == '"') {
                 copy.append('\\');
+            }
             copy.append(c);
         }
     }
@@ -184,27 +173,30 @@ QByteArray KDEsuClient::escape(const QByteArray &str)
 
 int KDEsuClient::command(const QByteArray &cmd, QByteArray *result)
 {
-    if (d->sockfd < 0)
+    if (d->sockfd < 0) {
         return -1;
+    }
 
-    if (send(d->sockfd, cmd.constData(), cmd.length(), 0) != (int) cmd.length())
+    if (send(d->sockfd, cmd.constData(), cmd.length(), 0) != (int)cmd.length()) {
         return -1;
+    }
 
     char buf[1024];
     int nbytes = recv(d->sockfd, buf, 1023, 0);
-    if (nbytes <= 0)
-    {
+    if (nbytes <= 0) {
         qWarning() << "[" << __FILE__ << ":" << __LINE__ << "] " << "no reply from daemon.";
         return -1;
     }
     buf[nbytes] = '\000';
 
     QByteArray reply = buf;
-    if (reply.left(2) != "OK")
+    if (reply.left(2) != "OK") {
         return -1;
+    }
 
-    if (result)
-        *result = reply.mid(3, reply.length()-4);
+    if (result) {
+        *result = reply.mid(3, reply.length() - 4);
+    }
     return 0;
 }
 
@@ -225,12 +217,10 @@ int KDEsuClient::exec(const QByteArray &prog, const QByteArray &user, const QByt
     cmd += escape(prog);
     cmd += ' ';
     cmd += escape(user);
-    if (!options.isEmpty() || !env.isEmpty())
-    {
+    if (!options.isEmpty() || !env.isEmpty()) {
        cmd += ' ';
        cmd += escape(options);
-       for (int i = 0; i < env.count(); ++i)
-       {
+       for (int i = 0; i < env.count(); ++i) {
           cmd += ' ';
           cmd += escape(env.at(i));
        }
@@ -274,8 +264,7 @@ int KDEsuClient::delCommand(const QByteArray &key, const QByteArray &user)
     cmd += '\n';
     return command(cmd);
 }
-int KDEsuClient::setVar(const QByteArray &key, const QByteArray &value, int timeout,
-                        const QByteArray &group)
+int KDEsuClient::setVar(const QByteArray &key, const QByteArray &value, int timeout, const QByteArray &group)
 {
     QByteArray cmd = "SET ";
     cmd += escape(key);
@@ -308,25 +297,20 @@ QList<QByteArray> KDEsuClient::getKeys(const QByteArray &group)
     command(cmd, &reply);
     int index=0, pos;
     QList<QByteArray> list;
-    if( !reply.isEmpty() )
-    {
-        // qDebug() << "Found a matching entry:" << reply;
-        while (1)
-        {
-            pos = reply.indexOf( '\007', index );
-            if( pos == -1 )
-            {
-                if( index == 0 )
-                    list.append( reply );
-                else
-                    list.append( reply.mid(index) );
+    if (!reply.isEmpty()) {
+        while (1) {
+            pos = reply.indexOf('\007', index);
+            if (pos == -1) {
+                if (index == 0) {
+                    list.append(reply);
+                } else {
+                    list.append(reply.mid(index));
+                }
                 break;
+            } else {
+                list.append(reply.mid(index, pos-index));
             }
-            else
-            {
-                list.append( reply.mid(index, pos-index) );
-            }
-            index = pos+1;
+            index = pos + 1;
         }
     }
     return list;
@@ -337,8 +321,9 @@ bool KDEsuClient::findGroup(const QByteArray &group)
     QByteArray cmd = "CHKG ";
     cmd += escape(group);
     cmd += '\n';
-    if( command(cmd) == -1 )
+    if (command(cmd) == -1) {
         return false;
+    }
     return true;
 }
 
@@ -374,8 +359,9 @@ int KDEsuClient::ping()
 int KDEsuClient::exitCode()
 {
     QByteArray result;
-    if (command("EXIT\n", &result) != 0)
+    if (command("EXIT\n", &result) != 0) {
        return -1;
+    }
 
     return result.toInt();
 }
@@ -399,14 +385,15 @@ static QString findDaemon()
 
 bool KDEsuClient::isServerSGID()
 {
-    if (d->daemon.isEmpty())
+    if (d->daemon.isEmpty()) {
        d->daemon = findDaemon();
-    if (d->daemon.isEmpty())
+    }
+    if (d->daemon.isEmpty()) {
        return false;
+    }
 
     QT_STATBUF sbuf;
-    if (QT_STAT(QFile::encodeName(d->daemon).constData(), &sbuf) < 0)
-    {
+    if (QT_STAT(QFile::encodeName(d->daemon).constData(), &sbuf) < 0) {
         qWarning() << "[" << __FILE__ << ":" << __LINE__ << "] " << "stat():" << strerror(errno);
         return false;
     }
@@ -415,10 +402,12 @@ bool KDEsuClient::isServerSGID()
 
 int KDEsuClient::startServer()
 {
-    if (d->daemon.isEmpty())
+    if (d->daemon.isEmpty()) {
         d->daemon = findDaemon();
-    if (d->daemon.isEmpty())
+    }
+    if (d->daemon.isEmpty()) {
         return -1;
+    }
 
     if (!isServerSGID()) {
         qWarning() << "[" << __FILE__ << ":" << __LINE__ << "] " << "kdesud not setgid!";
@@ -433,4 +422,4 @@ int KDEsuClient::startServer()
     return ret;
 }
 
-}
+} // namespace KDESu

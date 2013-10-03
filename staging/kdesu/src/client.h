@@ -1,5 +1,4 @@
-/* vi: ts=8 sts=4 sw=4
- *
+/*
  * This file is part of the KDE project, module kdesu.
  * Copyright (C) 1999,2000 Geert Jansen <jansen@kde.org>
  *
@@ -10,8 +9,8 @@
  * client.h: client to access kdesud.
  */
 
-#ifndef __KDE_su_Client_h_Included__
-#define __KDE_su_Client_h_Included__
+#ifndef KDESUCLIENT_H
+#define KDESUCLIENT_H
 
 #include <kdesu_export.h>
 
@@ -55,7 +54,10 @@ public:
      * @param env Extra environment variables.
      * @return Zero on success, -1 on failure.
      */
-    int exec(const QByteArray &command, const QByteArray &user, const QByteArray &options=0, const QList<QByteArray> &env=QList<QByteArray>());
+    int exec(const QByteArray &command,
+             const QByteArray &user,
+             const QByteArray &options = 0,
+             const QList<QByteArray> &env = QList<QByteArray>());
 
     /**
      * Wait for the last command to exit and return the exit code.
@@ -104,7 +106,7 @@ public:
      * @param group Make the key part of a group. See delGroup.
      * @return zero on success, -1 on failure.
      */
-    int setVar(const QByteArray &key, const QByteArray &value, int timeout=0, const QByteArray &group=0);
+    int setVar(const QByteArray &key, const QByteArray &value, int timeout = 0, const QByteArray &group = 0);
 
     /**
      * Get a persistent variable.
@@ -185,15 +187,15 @@ public:
 private:
     int connect();
 
-    int command(const QByteArray &cmd, QByteArray *result=0L);
+    int command(const QByteArray &cmd, QByteArray *result = 0L);
     QByteArray escape(const QByteArray &str);
 
     class KDEsuClientPrivate;
-    KDEsuClientPrivate* const d;
+    KDEsuClientPrivate *const d;
 };
 
 } //END namespace KDESu
 
 #endif //Q_OS_UNIX
 
-#endif //__KDE_su_Client_h_Included__
+#endif //KDESUCLIENT_H

@@ -1,5 +1,4 @@
-/* vi: ts=8 sts=4 sw=4
- *
+/*
  * This file is part of the KDE project, module kdesu.
  * Copyright (C) 2000 Geert Jansen <jansen@kde.org>
  *
@@ -8,8 +7,8 @@
  * exact licensing terms.
  */
 
-#ifndef __SSH_h_Included__
-#define __SSH_h_Included__
+#ifndef KDESUSSH_H
+#define KDESUSSH_H
 
 #include "stub.h"
 
@@ -24,12 +23,16 @@ namespace KDESu {
 class KDESU_EXPORT SshProcess: public StubProcess
 {
 public:
+    enum Errors {
+        SshNotFound = 1,
+        SshNeedsPassword,
+        SshIncorrectPassword
+    };
+
     explicit SshProcess(const QByteArray &host = QByteArray(),
                         const QByteArray &user = QByteArray(),
                         const QByteArray &command = QByteArray());
     ~SshProcess();
-
-    enum Errors { SshNotFound=1, SshNeedsPassword, SshIncorrectPassword };
 
     /**
      * Sets the target host.
@@ -59,25 +62,23 @@ public:
     /**
      * Executes the command.
      */
-    int exec(const char *password, int check=0);
+    int exec(const char *password, int check = 0);
 
     QByteArray prompt() const;
     QByteArray error() const;
 
 protected:
+    virtual void virtual_hook(int id, void *data);
     virtual QByteArray display();
     virtual QByteArray displayAuth();
 
 private:
-    int ConverseSsh(const char *password, int check);
+    int converseSsh(const char *password, int check);
 
-protected:
-    virtual void virtual_hook( int id, void* data );
-private:
     class SshProcessPrivate;
-    SshProcessPrivate * const d;
+    SshProcessPrivate *const d;
 };
 
 }
 
-#endif
+#endif //KDESUSSH_H

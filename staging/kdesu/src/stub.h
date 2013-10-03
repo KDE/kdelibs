@@ -1,27 +1,25 @@
-/* vi: ts=8 sts=4 sw=4
- *
+/*
  * This file is part of the KDE project, module kdesu.
  * Copyright (C) 1999,2000 Geert Jansen <jansen@kde.org>
- * 
- * This is free software; you can use this library under the GNU Library 
- * General Public License, version 2. See the file "COPYING.LIB" for the 
+ *
+ * This is free software; you can use this library under the GNU Library
+ * General Public License, version 2. See the file "COPYING.LIB" for the
  * exact licensing terms.
  */
 
-#ifndef __Stub_h_Included__
-#define __Stub_h_Included__
-
-#include <QtCore/QByteRef>
-#include <QtCore/QList>
+#ifndef KDESUSTUB_H
+#define KDESUSTUB_H
 
 #include "process.h"
 
 #include <kdesu_export.h>
 
-namespace KDESu {
-    
-namespace KDESuPrivate { class KCookie; }
+#include <QtCore/QByteRef>
+#include <QtCore/QList>
 
+namespace KDESu {
+
+namespace KDESuPrivate { class KCookie; }
 
 /** \class StubProcess stub.h kdesu/stub.h
  * Chat with kdesu_stub.
@@ -32,6 +30,15 @@ namespace KDESuPrivate { class KCookie; }
 class KDESU_EXPORT StubProcess: public PtyProcess
 {
 public:
+    /**
+     * Different schedulers. SchedNormal is the normal Unix timesharing
+     * scheduler, while SchedRealtime is a POSIX.1b realtime scheduler.
+     */
+    enum Scheduler {
+        SchedNormal,
+        SchedRealtime
+    };
+
     StubProcess();
     ~StubProcess();
 
@@ -58,22 +65,17 @@ public:
     void setPriority(int prio);
 
     /**
-     * Different schedulers. SchedNormal is the normal Unix timesharing
-     * scheduler, while SchedRealtime is a POSIX.1b realtime scheduler.
-     */
-    enum Scheduler { SchedNormal, SchedRealtime };
-
-    /**
      * Set the scheduler type.
      */
     void setScheduler(int sched);
 
 protected:
+    virtual void virtual_hook(int id, void *data);
 
     /**
      * Exchange all parameters with kdesu_stub.
      */
-    int ConverseStub(int check);
+    int converseStub(int check);
 
     /**
      * This virtual function can be overloaded when special behavior is
@@ -86,24 +88,21 @@ protected:
      */
     virtual QByteArray displayAuth();
 
-    bool m_bXOnly;
-    int m_Priority;
-    int  m_Scheduler;
-    QByteArray m_Command;
-    QByteArray m_User;
-    KDESuPrivate::KCookie *m_pCookie;
+    bool m_XOnly;
+    int m_priority;
+    int m_scheduler;
+    QByteArray m_command;
+    QByteArray m_user;
+    KDESuPrivate::KCookie *m_cookie;
 
 private:
-    QByteArray commaSeparatedList(const QList<QByteArray> &);
+    QByteArray commaSeparatedList(const QList<QByteArray> &lst);
     void writeString(const QByteArray &str);
 
-protected:
-    virtual void virtual_hook( int id, void* data );
-private:
     class StubProcessPrivate;
     StubProcessPrivate * const d;
 };
 
 }
 
-#endif // __Stub_h_Included__
+#endif // KDESUSTUB_H

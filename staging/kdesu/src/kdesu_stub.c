@@ -1,5 +1,4 @@
-/* vi: ts=8 sts=4 sw=4
- *
+/*
  * kdesu_stub.c: KDE su executes this stub through su or ssh. This stub in turn
  *               executes the target program. Before that, startup parameters
  *               are sent through stdin.
@@ -107,7 +106,9 @@ struct param_struct params[] =
 char *xmalloc(size_t size)
 {
     char *ptr = malloc(size);
-    if (ptr) return ptr;
+    if (ptr) {
+        return ptr;
+    }
     perror("malloc()");
     exit(1);
 }
@@ -116,7 +117,9 @@ char *xmalloc(size_t size)
 char **xrealloc(char **ptr, int size)
 {
     ptr = realloc(ptr, size);
-    if (ptr) return ptr;
+    if (ptr) {
+        return ptr;
+    }
     perror("realloc()");
     exit(1);
 }
@@ -127,8 +130,10 @@ char **xrealloc(char **ptr, int size)
  */
 int xsetenv(const char *name, const char *value)
 {
-    char *s = malloc(strlen(name)+strlen(value)+2);
-    if (!s) return -1;
+    char *s = malloc(strlen(name) + strlen(value) + 2);
+    if (!s) {
+        return -1;
+    }
     strcpy(s, name);
     strcat(s, "=");
     strcat(s, value);
@@ -141,10 +146,11 @@ int xsetenv(const char *name, const char *value)
 char *xstrdup(char *src)
 {
     int len = strlen(src);
-    char *dst = xmalloc(len+1);
+    char *dst = xmalloc(len + 1);
     strcpy(dst, src);
-    if (dst[len-1] == '\n')
-	dst[len-1] = '\000';
+    if (dst[len - 1] == '\n') {
+        dst[len - 1] = '\000';
+    }
     return dst;
 }
 
@@ -153,19 +159,21 @@ char *xstrdup(char *src)
  */
 char **xstrsep(char *str)
 {
-    int i = 0, size = 10;
-    char **list = (char **) xmalloc(size * sizeof(char *));
+    int i = 0;
+    int size = 10;
+    char **list = (char **)xmalloc(size * sizeof(char *));
     char *ptr = str, *nptr;
-    while ((nptr = strchr(ptr, ',')) != 0L) 
-    {
-	if (i > size-2)
-	    list = xrealloc(list, (size *= 2) * sizeof(char *));
-	*nptr = '\000';
-	list[i++] = ptr;
-	ptr = nptr+1;
+    while ((nptr = strchr(ptr, ',')) != 0L) {
+        if (i > size - 2) {
+            list = xrealloc(list, (size *= 2) * sizeof(char *));
+        }
+        *nptr = '\000';
+        list[i++] = ptr;
+        ptr = nptr+1;
     }
-    if (*ptr != '\000')
-	list[i++] = ptr;
+    if (*ptr != '\000') {
+        list[i++] = ptr;
+    }
     list[i] = 0L;
     return list;
 }
@@ -179,10 +187,11 @@ static void dequote(char *buf)
         char c = *in;
         if (c == '\\') {
             c = *++in;
-            if (c == '/')
+            if (c == '/') {
                 *out = '\\';
-            else
+            } else {
                 *out = c - '@';
+            }
         } else {
             *out = c;
         }
@@ -198,7 +207,7 @@ int main()
 {
     char buf[BUFSIZE+1];
     char xauthority[200];
-    int i/*, res, sycoca*/, prio;
+    int i, prio;
     pid_t pid;
     FILE *fout;
     struct passwd *pw;
@@ -208,40 +217,36 @@ int main()
 
     /* Get startup parameters. */
 
-    for (i=0; i<P_LAST; i++) 
-    {
-	printf("%s\n", params[i].name);
-	fflush(stdout);
-	if (fgets(buf, BUFSIZE, stdin) == 0L) 
-	{
-	    printf("end\n"); fflush(stdout);
-	    perror("kdesu_stub: fgets()");
-	    exit(1);
-	}
-	params[i].value = xstrdup(buf);
-	/* Installation check? */
-	if ((i == 0) && !strcmp(params[i].value, "stop")) 
-	{
-	    printf("end\n");
-	    exit(0);
-	}
+    for (i = 0; i < P_LAST; i++) {
+        printf("%s\n", params[i].name);
+        fflush(stdout);
+        if (fgets(buf, BUFSIZE, stdin) == 0L) {
+            printf("end\n"); fflush(stdout);
+            perror("kdesu_stub: fgets()");
+            exit(1);
+        }
+        params[i].value = xstrdup(buf);
+        /* Installation check? */
+        if (i == 0 && !strcmp(params[i].value, "stop")) {
+            printf("end\n");
+            exit(0);
+        }
     }
     printf("environment\n");
     fflush(stdout);
-    for(;;)
-    {
-	char* tmp;
-	if (fgets(buf, BUFSIZE, stdin) == 0L) 
-	{
-	    printf("end\n"); fflush(stdout);
-	    perror("kdesu_stub: fgets()");
-	    exit(1);
-	}
-	dequote(buf);
-	tmp = xstrdup( buf );
-	if( tmp[ 0 ] == '\0' ) /* terminator */
-	    break;
-	putenv(tmp);
+    for(;;) {
+        char* tmp;
+        if (fgets(buf, BUFSIZE, stdin) == 0L) {
+            printf("end\n"); fflush(stdout);
+            perror("kdesu_stub: fgets()");
+            exit(1);
+        }
+        dequote(buf);
+        tmp = xstrdup( buf );
+        if (tmp[0] == '\0') { /* terminator */
+            break;
+        }
+        putenv(tmp);
     }
 
     printf("end\n");
@@ -250,19 +255,19 @@ int main()
     xsetenv("PATH", params[P_PATH].value);
     xsetenv("DESKTOP_STARTUP_ID", params[P_APP_STARTUP_ID].value);
 
-    kdesu_lc_all = getenv( "KDESU_LC_ALL" );
-    if( kdesu_lc_all != NULL )
+    kdesu_lc_all = getenv("KDESU_LC_ALL");
+    if (kdesu_lc_all != NULL) {
         xsetenv("LC_ALL",kdesu_lc_all);
-    else
+    } else {
         unsetenv("LC_ALL");
+    }
 
     /* Do we need to change uid? */
 
     pw = getpwnam(params[P_USER].value);
-    if (pw == 0L) 
-    {
-	printf("kdesu_stub: user %s does not exist!\n", params[P_USER].value);
-	exit(1);
+    if (pw == 0L) {
+        printf("kdesu_stub: user %s does not exist!\n", params[P_USER].value);
+        exit(1);
     }
     xsetenv("HOME", pw->pw_dir);
 
@@ -272,135 +277,125 @@ int main()
     /* Set scheduling/priority */
 
     prio = atoi(params[P_PRIORITY].value);
-    if (!strcmp(params[P_SCHEDULER].value, "realtime")) 
-    {
+    if (!strcmp(params[P_SCHEDULER].value, "realtime")) {
 #ifdef POSIX1B_SCHEDULING
-	struct sched_param sched;
-	int min = sched_get_priority_min(SCHED_FIFO);
-	int max = sched_get_priority_max(SCHED_FIFO);
-	sched.sched_priority = min + (int) (((double) prio) * (max - min) / 100 + 0.5);
-	sched_setscheduler(0, SCHED_FIFO, &sched);
+        struct sched_param sched;
+        int min = sched_get_priority_min(SCHED_FIFO);
+        int max = sched_get_priority_max(SCHED_FIFO);
+        sched.sched_priority = min + (int) (((double) prio) * (max - min) / 100 + 0.5);
+        sched_setscheduler(0, SCHED_FIFO, &sched);
 #else
-	printf("kdesu_stub: realtime scheduling not supported\n");
+        printf("kdesu_stub: realtime scheduling not supported\n");
 #endif
-    } else 
-    {
+    } else {
 #if HAVE_SETPRIORITY
-	int val = 20 - (int) (((double) prio) * 40 / 100 + 0.5);
-	setpriority(PRIO_PROCESS, getpid(), val);
-#endif 
+        int val = 20 - (int) (((double) prio) * 40 / 100 + 0.5);
+        setpriority(PRIO_PROCESS, getpid(), val);
+#endif
     }
 
     /* Drop privileges (this is permanent) */
 
-    if (getuid() != pw->pw_uid) 
-    {
-	if (setgid(pw->pw_gid) == -1) 
-	{
-	    perror("kdesu_stub: setgid()");
-	    exit(1);
-	}
+    if (getuid() != pw->pw_uid) {
+        if (setgid(pw->pw_gid) == -1) {
+            perror("kdesu_stub: setgid()");
+            exit(1);
+        }
 #if HAVE_INITGROUPS
-	if (initgroups(pw->pw_name, pw->pw_gid) == -1) 
-	{
-	    perror("kdesu_stub: initgroups()");
-	    exit(1);
-	}
+        if (initgroups(pw->pw_name, pw->pw_gid) == -1) {
+            perror("kdesu_stub: initgroups()");
+            exit(1);
+        }
 #endif
-	if (setuid(pw->pw_uid) == -1) 
-	{
-	    perror("kdesu_stub: setuid()");
-	    exit(1);
-	}
-	xsetenv("HOME", pw->pw_dir);
+        if (setuid(pw->pw_uid) == -1) {
+            perror("kdesu_stub: setuid()");
+            exit(1);
+        }
+        xsetenv("HOME", pw->pw_dir);
     }
 
     /* Handle display */
 
-    if (strcmp(params[P_DISPLAY].value, "no")) 
-    {
-	xsetenv("DISPLAY", params[P_DISPLAY].value);
-	if (params[P_DISPLAY_AUTH].value[0]) 
-	{
-           int	fd2;
-           /*
-           ** save umask and set to 077, so we create those files only
-	   ** readable for root. (if someone else could read them, we
-	   ** are in deep shit).
-           */
-	   int oldumask = umask(077);
-	   const char *disp = params[P_DISPLAY].value;
-	   if (strncmp(disp, "localhost:", 10) == 0)
-	      disp += 9;
+    if (strcmp(params[P_DISPLAY].value, "no")) {
+        xsetenv("DISPLAY", params[P_DISPLAY].value);
+        if (params[P_DISPLAY_AUTH].value[0]) {
+            int fd2;
+            /*
+             ** save umask and set to 077, so we create those files only
+             ** readable for root. (if someone else could read them, we
+             ** are in deep shit).
+             */
+            int oldumask = umask(077);
+            const char *disp = params[P_DISPLAY].value;
+            if (strncmp(disp, "localhost:", 10) == 0) {
+                disp += 9;
+            }
 
-           strcpy(xauthority, "/tmp/xauth.XXXXXXXXXX");
-	   fd2 = mkstemp(xauthority);
-	   umask(oldumask);
+            strcpy(xauthority, "/tmp/xauth.XXXXXXXXXX");
+            fd2 = mkstemp(xauthority);
+            umask(oldumask);
 
-           if (fd2 == -1) {
+            if (fd2 == -1) {
                 perror("kdesu_stub: mkstemp()");
                 exit(1);
-           } else
+            } else {
                 close(fd2);
-           xsetenv("XAUTHORITY", xauthority);
+            }
+            xsetenv("XAUTHORITY", xauthority);
 
-	   fout = popen("xauth >/dev/null 2>&1","w");
-           if (fout == NULL)
-	   {
-		perror("kdesu_stub: popen(xauth)");
-		exit(1);
-	   }
-	   fprintf(fout, "add %s %s\n", disp,
-		    params[P_DISPLAY_AUTH].value);
-	   pclose(fout);
-	}
+            fout = popen("xauth >/dev/null 2>&1","w");
+            if (fout == NULL) {
+                perror("kdesu_stub: popen(xauth)");
+                exit(1);
+            }
+            fprintf(fout, "add %s %s\n", disp, params[P_DISPLAY_AUTH].value);
+            pclose(fout);
+        }
     }
 
     /* Rebuild the sycoca and start kdeinit? */
 
-    if (strcmp(params[P_XWIN_ONLY].value, "no"))
-    {
-	system("kdeinit5 --suicide");
+    if (strcmp(params[P_XWIN_ONLY].value, "no")) {
+        system("kdeinit5 --suicide");
     }
 
     /* Execute the command */
 
     pid = fork();
-    if (pid == -1) 
-    {
-	perror("kdesu_stub: fork()");
-	exit(1);
+    if (pid == -1) {
+        perror("kdesu_stub: fork()");
+        exit(1);
     }
-    if (pid) 
-    {
-	/* Parent: wait for child, delete tempfiles and return. */
-	int ret, state, xit = 1;
-	while (1) 
-	{
-	    ret = waitpid(pid, &state, 0);
-	    if (ret == -1) 
-	    {
-		if (errno == EINTR)
-		    continue;
-		if (errno != ECHILD)
-		    perror("kdesu_stub: waitpid()");
-		break;
-	    }
-	    if (WIFEXITED(state))
-		xit = WEXITSTATUS(state);
-	}
+    if (pid) {
+        /* Parent: wait for child, delete tempfiles and return. */
+        int ret, state, xit = 1;
+        while (1) {
+            ret = waitpid(pid, &state, 0);
+            if (ret == -1) {
+                if (errno == EINTR) {
+                    continue;
+                }
+                if (errno != ECHILD) {
+                    perror("kdesu_stub: waitpid()");
+                }
+                break;
+            }
+            if (WIFEXITED(state)) {
+                xit = WEXITSTATUS(state);
+            }
+        }
 
-        if (*xauthority)
+        if (*xauthority) {
             unlink(xauthority);
-	exit(xit);
-    } else 
-    {
+        }
+        exit(xit);
+    } else {
         setsid();
-	/* Child: exec command. */
-	sprintf(buf, "%s", params[P_COMMAND].value);
-	dequote(buf);
-	execl("/bin/sh", "sh", "-c", buf, (void *)0);
-	perror("kdesu_stub: exec()");
-	_exit(1);
+        /* Child: exec command. */
+        sprintf(buf, "%s", params[P_COMMAND].value);
+        dequote(buf);
+        execl("/bin/sh", "sh", "-c", buf, (void *)0);
+        perror("kdesu_stub: exec()");
+        _exit(1);
     }
 }

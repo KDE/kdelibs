@@ -1,5 +1,4 @@
-/* vi: ts=8 sts=4 sw=4
- *
+/*
  * This file is part of the KDE project, module kdesu.
  * Copyright (C) 1999,2000 Geert Jansen <jansen@kde.org>
  *
@@ -28,54 +27,48 @@ using namespace KDESuPrivate;
 StubProcess::StubProcess()
     : d(0)
 {
-    m_User = "root";
-    m_Scheduler = SchedNormal;
-    m_Priority = 50;
-    m_pCookie = new KCookie;
-    m_bXOnly = true;
+    m_user = "root";
+    m_scheduler = SchedNormal;
+    m_priority = 50;
+    m_cookie = new KCookie;
+    m_XOnly = true;
 }
-
 
 StubProcess::~StubProcess()
 {
-    delete m_pCookie;
+    delete m_cookie;
 }
-
 
 void StubProcess::setCommand(const QByteArray &command)
 {
-    m_Command = command;
+    m_command = command;
 }
-
 
 void StubProcess::setUser(const QByteArray &user)
 {
-    m_User = user;
+    m_user = user;
 }
-
 
 void StubProcess::setXOnly(bool xonly)
 {
-    m_bXOnly = xonly;
+    m_XOnly = xonly;
 }
-
 
 void StubProcess::setPriority(int prio)
 {
-    if (prio > 100)
-	m_Priority = 100;
-    else if (prio < 0)
-	m_Priority = 0;
-    else
-	m_Priority = prio;
+    if (prio > 100) {
+        m_priority = 100;
+    } else if (prio < 0) {
+        m_priority = 0;
+    } else {
+        m_priority = prio;
+    }
 }
-
 
 void StubProcess::setScheduler(int sched)
 {
-    m_Scheduler = sched;
+    m_scheduler = sched;
 }
-
 
 QByteArray StubProcess::commaSeparatedList(const QList<QByteArray> &lst)
 {
@@ -120,117 +113,125 @@ template<> struct PIDType<4> { typedef qint32 PID_t; } ;
  * return values: -1 = error, 0 = ok, 1 = kill me
  */
 
-int StubProcess::ConverseStub(int check)
+int StubProcess::converseStub(int check)
 {
     QByteArray line, tmp;
 
-    while (1)
-    {
-	line = readLine();
-	if (line.isNull())
-	    return -1;
+    while (1) {
+        line = readLine();
+        if (line.isNull()) {
+            return -1;
+        }
 
-	if (line == "kdesu_stub")
-	{
-	    // This makes parsing a lot easier.
-	    enableLocalEcho(false);
-	    if (check) writeLine("stop");
-	    else writeLine("ok");
-	    break;
-	} 
+        if (line == "kdesu_stub") {
+            // This makes parsing a lot easier.
+            enableLocalEcho(false);
+            if (check) {
+                writeLine("stop");
+            } else {
+                writeLine("ok");
+            }
+            break;
+        }
     }
 
-    while (1)
-    {
-	line = readLine();
-	if (line.isNull())
-	    return -1;
+    while (1) {
+        line = readLine();
+        if (line.isNull()) {
+            return -1;
+        }
 
         if (line == "display") {
-	    writeLine(display());
-	} else if (line == "display_auth") {
+            writeLine(display());
+        } else if (line == "display_auth") {
 #if HAVE_X11
-	    writeLine(displayAuth());
+            writeLine(displayAuth());
 #else
-	    writeLine("");
+            writeLine("");
 #endif
-	} else if (line == "command") {
-	    writeString(m_Command);
-	} else if (line == "path") {
-	    QByteArray path = qgetenv("PATH");
+        } else if (line == "command") {
+            writeString(m_command);
+        } else if (line == "path") {
+            QByteArray path = qgetenv("PATH");
             if (!path.isEmpty() && path[0] == ':')
                 path = path.mid(1);
-	    if (m_User == "root") {
-		if (!path.isEmpty())
-		    path = "/sbin:/bin:/usr/sbin:/usr/bin:" + path;
-		else
-		    path = "/sbin:/bin:/usr/sbin:/usr/bin";
+            if (m_user == "root") {
+                if (!path.isEmpty())
+                    path = "/sbin:/bin:/usr/sbin:/usr/bin:" + path;
+                else
+                    path = "/sbin:/bin:/usr/sbin:/usr/bin";
             }
-	    writeLine(path);
-	} else if (line == "user") {
-	    writeLine(m_User);
-	} else if (line == "priority") {
-	    tmp.setNum(m_Priority);
-	    writeLine(tmp);
-	} else if (line == "scheduler") {
-	    if (m_Scheduler == SchedRealtime) writeLine("realtime");
-	    else writeLine("normal");
-	} else if (line == "xwindows_only") {
-	    if (m_bXOnly) writeLine("no");
-	    else writeLine("yes");
-	} else if (line == "app_startup_id") {
-	    QList<QByteArray> env = environment();
-	    QByteArray tmp;
-	    for(int i = 0; i < env.count(); ++i)
-	    {
+            writeLine(path);
+        } else if (line == "user") {
+            writeLine(m_user);
+        } else if (line == "priority") {
+            tmp.setNum(m_priority);
+            writeLine(tmp);
+        } else if (line == "scheduler") {
+            if (m_scheduler == SchedRealtime) {
+                writeLine("realtime");
+            } else {
+                writeLine("normal");
+            }
+        } else if (line == "xwindows_only") {
+            if (m_XOnly) {
+                writeLine("no");
+            } else {
+                writeLine("yes");
+            }
+        } else if (line == "app_startup_id") {
+            QList<QByteArray> env = environment();
+            QByteArray tmp;
+            for (int i = 0; i < env.count(); ++i) {
                 const char startup_env[] = "DESKTOP_STARTUP_ID=";
-                if (env.at(i).startsWith(startup_env))
+                if (env.at(i).startsWith(startup_env)) {
                     tmp = env.at(i).mid(sizeof(startup_env) - 1);
-	    }
-	    if( tmp.isEmpty())
-		tmp = "0"; // krazy:exclude=doublequote_chars
-	    writeLine(tmp);
-	} else if (line == "app_start_pid") { // obsolete
-	    // Force the pid_t returned from getpid() into
-	    // something QByteArray understands; avoids ambiguity
-	    // between short and unsigned short in particular.
-	    tmp.setNum((PIDType<sizeof(pid_t)>::PID_t)(getpid()));
-	    writeLine(tmp);
-	} else if (line == "environment") { // additional env vars
-	    QList<QByteArray> env = environment();
-            for (int i = 0; i < env.count(); ++i)
+                }
+            }
+            if (tmp.isEmpty()) {
+                tmp = "0"; // krazy:exclude=doublequote_chars
+            }
+            writeLine(tmp);
+        } else if (line == "app_start_pid") { // obsolete
+            // Force the pid_t returned from getpid() into
+            // something QByteArray understands; avoids ambiguity
+            // between short and unsigned short in particular.
+            tmp.setNum((PIDType<sizeof(pid_t)>::PID_t)(getpid()));
+            writeLine(tmp);
+        } else if (line == "environment") { // additional env vars
+            QList<QByteArray> env = environment();
+            for (int i = 0; i < env.count(); ++i) {
                 writeString(env.at(i));
-	    writeLine( "" );
-	} else if (line == "end") {
-	    return 0;
-	} else
-	{
-	    qWarning() << "[" << __FILE__ << ":" << __LINE__ << "] " << "Unknown request:" << line;
-	    return 1;
-	}
+            }
+            writeLine( "" );
+        } else if (line == "end") {
+            return 0;
+        } else {
+            qWarning() << "[" << __FILE__ << ":" << __LINE__ << "] " << "Unknown request:" << line;
+            return 1;
+        }
     }
 
     return 0;
 }
 
-
 QByteArray StubProcess::display()
 {
-    return m_pCookie->display();
+    return m_cookie->display();
 }
-
 
 QByteArray StubProcess::displayAuth()
 {
 #if HAVE_X11
-    return m_pCookie->displayAuth();
+    return m_cookie->displayAuth();
 #else
     return QByteArray();
 #endif
 }
 
-
-void StubProcess::virtual_hook( int id, void* data )
-{ PtyProcess::virtual_hook( id, data ); }
-
+void StubProcess::virtual_hook(int id, void *data)
+{
+    PtyProcess::virtual_hook(id, data);
 }
+
+} // namespace KDESu
