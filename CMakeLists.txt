@@ -133,11 +133,15 @@ add_definitions(${KDE4_DEFINITIONS})
 ################# configure checks and create the configured files #################
 
 # Needed for the calls to kconfig_add_kcfg_files in some modules
-set(CMAKECONFIG_INSTALL_DIR ${LIB_INSTALL_DIR}/cmake/KDELibs4)
 
 set(KDE4Support_LIBRARIES KDE4Support)
 
 ################# list the subdirectories #################
+find_package(ECM 0.0.8 REQUIRED NO_MODULE)
+set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
+find_package(KF5 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
+include(CreateKDELibsDependenciesFile.cmake)
+set(CMAKECONFIG_INSTALL_DIR ${LIB_INSTALL_DIR}/cmake/KDELibs4)
 
 add_subdirectory( cmake )
 # For convenience only. Move down/remove and find dependencies with more locality instead.
@@ -172,12 +176,8 @@ add_subdirectory( kdewidgets )
 
 # Used in configure_file() and install(EXPORT)
 set(KDE4_TARGET_PREFIX KDE4__)
-include(CreateKDELibsDependenciesFile.cmake)
 
 ################# install files #################
-find_package(ECM 0.0.8 REQUIRED NO_MODULE)
-set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
-find_package(KF5 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 
 install( FILES ${CMAKE_CURRENT_SOURCE_DIR}/KDELibs4Config.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake
