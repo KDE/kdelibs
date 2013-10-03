@@ -10,7 +10,7 @@
  */
 
 #include "ssh.h"
-#include "kcookie.h"
+#include "kcookie_p.h"
 
 #include <unistd.h>
 #include <signal.h>

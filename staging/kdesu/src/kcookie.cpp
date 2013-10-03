@@ -9,7 +9,7 @@
  * kcookie.cpp: KDE authentication cookies.
  */
 
-#include "kcookie.h"
+#include "kcookie_p.h"
 
 #include <QtCore/QString>
 #include <QtCore/QStringList>

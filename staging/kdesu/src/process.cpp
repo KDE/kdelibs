@@ -14,7 +14,7 @@
  */
 
 #include "process.h"
-#include "kcookie.h"
+#include "kcookie_p.h"
 
 #include <config-kdesu.h>
 

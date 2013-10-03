@@ -13,7 +13,7 @@
  */
 
 #include "su.h"
-#include "kcookie.h"
+#include "kcookie_p.h"
 
 #include <QtCore/QFile>
 #include <QDebug>
