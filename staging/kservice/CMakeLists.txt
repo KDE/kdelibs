@@ -23,7 +23,7 @@ remove_definitions(-DQT_NO_CAST_FROM_BYTEARRAY)
 remove_definitions(-DQT_USE_FAST_CONCATENATION)
 remove_definitions(-DQT_USE_FAST_OPERATOR_PLUS)
 
-find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS DBus Test)
+find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS DBus Test Xml)
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
 set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KService")
@@ -48,6 +48,7 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/KServiceConfig.cmake"
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/kservice_version.h
         DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
 
+add_subdirectory(kbuildsycoca)
 add_subdirectory(src)
 add_subdirectory(autotests)
 add_subdirectory(tests)

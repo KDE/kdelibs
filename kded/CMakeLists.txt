@@ -17,8 +17,6 @@ endif(NOT WIN32)
 
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
-add_subdirectory( tests )
-
 if(KDE_PLATFORM_FEATURE_BINARY_COMPATIBLE_FEATURE_REDUCTION)
     set(KBUILDSYCOCA_NO_KCRASH TRUE)
 endif(KDE_PLATFORM_FEATURE_BINARY_COMPATIBLE_FEATURE_REDUCTION)
@@ -67,46 +65,6 @@ macro(dbus_add_activation_service _sources)
 endmacro(dbus_add_activation_service _sources)
 dbus_add_activation_service(org.kde.kded5.service.in)
 
-########### next target ###############
-
-set(kbuildsycoca_KDEINIT_SRCS
-   kbuildsycoca.cpp
-   kbuildmimetypefactory.cpp
-   kmimeassociations.cpp
-   kbuildservicetypefactory.cpp
-   kbuildservicefactory.cpp
-   kbuildservicegroupfactory.cpp
-   kctimefactory.cpp
-   vfolder_menu.cpp
-   )
-
-
-
-# We need to add a '4' so that kde3 apps running kbuildsycoca don't run the kde4 one.
-kf5_add_kdeinit_executable( kbuildsycoca5 NOGUI ${kbuildsycoca_KDEINIT_SRCS})
-
-target_link_libraries(kdeinit_kbuildsycoca5
-   KF5::KCoreAddons
-   KF5::KService
-   KF5::KI18n
-   Qt5::Xml
-   Qt5::DBus
-)
-if(NOT KBUILDSYCOCA_NO_KCRASH)
-   target_link_libraries(kdeinit_kbuildsycoca5 KCrash)
-endif()
-
-install(TARGETS kdeinit_kbuildsycoca5 ${INSTALL_TARGETS_DEFAULT_ARGS})
-
-target_link_libraries( kbuildsycoca5 kdeinit_kbuildsycoca5 )
-install(TARGETS kbuildsycoca5 ${INSTALL_TARGETS_DEFAULT_ARGS} )
-
-########### install files ###############
-if (WIN32)
-install( FILES applications.menu  DESTINATION  ${SHARE_INSTALL_PREFIX}/xdg/menus )
-else (WIN32)
-install( FILES applications.menu  DESTINATION  ${SYSCONF_INSTALL_DIR}/xdg/menus )
-endif (WIN32)
 install( FILES kdedmodule.desktop DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
 
 
