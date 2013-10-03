@@ -19,11 +19,11 @@
 
 #include "testobject.h"
 
-#include <QtCore/QSize>
-#include <QtCore/QPoint>
-#include <QtCore/QRect>
-#include <QtCore/QDate>
-#include <QtCore/QTimer>
+#include <QSize>
+#include <QPoint>
+#include <QRect>
+#include <QDate>
+#include <QTimer>
 #include <QColor>
 #include <QFont>
 #include <QBrush>

@@ -20,12 +20,12 @@
 #include "form.h"
 #include <QDomDocument>
 
-#include <QtCore/QByteRef>
-#include <QtCore/QBuffer>
-#include <QtCore/QRegExp>
-#include <QtCore/QFile>
-#include <QtCore/QArgument>
-#include <QtCore/QMetaEnum>
+#include <QByteRef>
+#include <QBuffer>
+#include <QRegExp>
+#include <QFile>
+#include <QArgument>
+#include <QMetaEnum>
 #include <QAction>
 #include <QDialogButtonBox>
 #include <QKeyEvent>

@@ -27,9 +27,9 @@
 
 // Qt
 
-#include <QtCore/QFile>
-#include <QtCore/QArgument>
-#include <QtCore/QMetaEnum>
+#include <QFile>
+#include <QArgument>
+#include <QMetaEnum>
 #include <QApplication>
 #include <QUrl>
 

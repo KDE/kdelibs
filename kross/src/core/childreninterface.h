@@ -21,8 +21,8 @@
 #define KROSS_CHILDRENINTERFACE_H
 
 
-#include <QtCore/QHash>
-#include <QtCore/QObject>
+#include <QHash>
+#include <QObject>
 
 #include "krossconfig.h"
 

@@ -22,8 +22,8 @@
 
 #include <kross/core/krosscore_export.h>
 
-#include <QtCore/QString>
-#include <QtCore/QMetaType>
+#include <QString>
+#include <QMetaType>
 
 namespace Kross {
 

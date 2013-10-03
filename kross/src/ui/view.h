@@ -23,9 +23,9 @@
 
 #include <kross/ui/krossui_export.h>
 
-#include <QtCore/QObject>
+#include <QObject>
 #include <QWidget>
-#include <QtCore/QModelIndex>
+#include <QModelIndex>
 #include <QItemSelection>
 #include <QTreeView>
 

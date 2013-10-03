@@ -23,8 +23,8 @@
 #include "krossconfig.h"
 #include "action.h"
 
-#include <QtCore/QObject>
-#include <QtCore/QDir>
+#include <QObject>
+#include <QDir>
 
 class QDomElement;
 class QIODevice;

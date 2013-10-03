@@ -20,11 +20,11 @@
 #ifndef KROSS_MANAGER_H
 #define KROSS_MANAGER_H
 
-#include <QtCore/QStringList>
-#include <QtCore/QMap>
-#include <QtCore/QObject>
-#include <QtCore/QUrl>
-#include <QtScript/QScriptable>
+#include <QStringList>
+#include <QMap>
+#include <QObject>
+#include <QUrl>
+#include <QScriptable>
 
 #include "krossconfig.h"
 #include "childreninterface.h"

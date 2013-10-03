@@ -20,11 +20,11 @@
 #ifndef KROSS_OBJECT_H
 #define KROSS_OBJECT_H
 
-#include <QtCore/QString>
-#include <QtCore/QStringList>
-#include <QtCore/QMap>
-#include <QtCore/QVariant>
-#include <QtCore/QSharedData>
+#include <QString>
+#include <QStringList>
+#include <QMap>
+#include <QVariant>
+#include <QSharedData>
 #include <QExplicitlySharedDataPointer>
 
 #include "krossconfig.h"

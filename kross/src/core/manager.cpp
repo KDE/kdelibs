@@ -22,14 +22,14 @@
 #include "action.h"
 #include "actioncollection.h"
 
-#include <QtCore/QObject>
-#include <QtCore/QArgument>
-#include <QtCore/QFile>
-#include <QtCore/QRegExp>
-#include <QtCore/QFileInfo>
-#include <QtCore/QPointer>
-#include <QtCore/QLibrary>
-#include <QtCore/QCoreApplication>
+#include <QObject>
+#include <QArgument>
+#include <QFile>
+#include <QRegExp>
+#include <QFileInfo>
+#include <QPointer>
+#include <QLibrary>
+#include <QCoreApplication>
 
 #include <klocalizedstring.h>
 

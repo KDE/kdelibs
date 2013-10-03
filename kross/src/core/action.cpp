@@ -24,8 +24,8 @@
 #include "manager.h"
 #include "wrapperinterface.h"
 
-#include <QtCore/QFile>
-#include <QtCore/QFileInfo>
+#include <QFile>
+#include <QFileInfo>
 
 #include <klocalizedstring.h>
 #include <qmimedatabase.h>

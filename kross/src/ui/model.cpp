@@ -26,9 +26,9 @@
 #include <klocalizedstring.h>
 #include <QDebug>
 
-#include <QtCore/QEvent>
-#include <QtCore/QMimeData>
-#include <QtCore/QPointer>
+#include <QEvent>
+#include <QMimeData>
+#include <QPointer>
 
 using namespace Kross;
 

@@ -20,13 +20,13 @@
 #ifndef KROSS_ACTION_H
 #define KROSS_ACTION_H
 
-#include <QtCore/QVariant>
-#include <QtCore/QObject>
-#include <QtCore/QDir>
-#include <QtCore/QUrl>
+#include <QVariant>
+#include <QObject>
+#include <QDir>
+#include <QUrl>
 #include <QAction>
-#include <QtXml/QDomAttr>
-#include <QtScript/QScriptable>
+#include <QDomAttr>
+#include <QScriptable>
 
 #include "errorinterface.h"
 #include "childreninterface.h"
