@@ -15,10 +15,10 @@
 
 #include <kdesu_export.h>
 
-#ifdef Q_OS_UNIX
-
 #include <QtCore/QList>
 #include <QtCore/QByteArray>
+
+#ifdef Q_OS_UNIX
 
 namespace KDESu {
 
