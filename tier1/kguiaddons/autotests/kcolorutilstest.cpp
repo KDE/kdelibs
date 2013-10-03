@@ -3,7 +3,7 @@
 #include <QtTest/QtTestGui>
 
 #include <kcolorutils.h>
-#include "../colors/kcolorspaces.h" // private header
+#include "../colors/kcolorspaces_p.h" // private header
 #include "../colors/kcolorspaces.cpp" // private implementation
 
 void tst_KColorUtils::testOverlay()

@@ -19,7 +19,7 @@
  * Boston, MA 02110-1301, USA.
  */
 #include <kcolorutils.h>
-#include "kcolorspaces.h"
+#include "kcolorspaces_p.h"
 #include "kguiaddons_colorhelpers_p.h"
 
 #include <QColor>
