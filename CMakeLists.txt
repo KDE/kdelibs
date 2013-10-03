@@ -158,6 +158,8 @@ add_subdirectory( kded       )
 add_subdirectory( kfile )
 add_subdirectory( kioslave   )
 
+add_subdirectory( khtml  )
+
 add_subdirectory( interfaces  )
 add_subdirectory( includes )
 add_subdirectory( doc )
@@ -165,11 +167,6 @@ add_subdirectory( doc )
 add_subdirectory( knewstuff )
 
 add_subdirectory( kdewidgets )
-
-find_package(Phonon4Qt5 4.6.60 NO_MODULE)
-if (Phonon4Qt5_FOUND)
-    add_subdirectory( khtml  )
-endif(Phonon4Qt5_FOUND)
 
 ################# write dependency file which will be installed #################
 

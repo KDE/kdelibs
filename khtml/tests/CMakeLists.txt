@@ -33,7 +33,7 @@ include_directories(
   ${KHTML_BINARY_DIR}/css
 )
 kde4_add_unit_test( khtmlparttest khtmlparttest.cpp )
-target_link_libraries( khtmlparttest Qt5::Test KHTML Qt5::Widgets XmlGui KTextWidgets KParts)
+target_link_libraries( khtmlparttest Qt5::Test KHtml Qt5::Widgets XmlGui KTextWidgets KParts)
 
 # msvc linker doesn't like "#define protected public"
 if(NOT MSVC)
@@ -46,7 +46,7 @@ if(NOT MSVC)
     qt5_add_resources( khtmltest_SRCS testkhtml.qrc )
     add_executable(khtmltest ${khtmltest_SRCS} )
     ecm_mark_as_test(khtmltest)
-    target_link_libraries( khtmltest KHTML XmlGui KTextWidgets KParts )
+    target_link_libraries( khtmltest KHtml XmlGui KTextWidgets KParts )
     #KJS KI18n
 
     ########### next target ###############
