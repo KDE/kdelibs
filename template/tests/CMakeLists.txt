@@ -10,6 +10,6 @@ macro(foobar_executable_tests)
   endforeach(_testname)
 endmacro()
 
-#foo_executable_tests(
+#foobar_executable_tests(
 #  anothertest
 #)
