@@ -28,6 +28,7 @@
 #include <math.h>
 
 #ifdef Q_CC_MSVC
+#include <float.h>
 #define isnan(n) _isnan(n)
 #endif
 
