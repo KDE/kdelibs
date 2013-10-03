@@ -82,8 +82,8 @@ static JSValue* cloneInternal(ExecState* exec, Interpreter* ctx, JSValue* in, QS
             }
 
             path.remove(obj);
-            
-            break;
+
+            return clone;
         }
 
         default: // shouldn't happen!
