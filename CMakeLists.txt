@@ -152,7 +152,6 @@ endif (UNIX)
 
 add_subdirectory( kjsembed )
 add_subdirectory( licenses   )
-add_subdirectory( dnssd )
 add_subdirectory( kio )
 add_subdirectory( kded       )
 add_subdirectory( kfile )

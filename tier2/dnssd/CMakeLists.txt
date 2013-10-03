@@ -11,7 +11,6 @@ set(REQUIRED_QT_VERSION "5.2.0")
 find_package(Qt5 ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE COMPONENTS Widgets Network DBus)
 
 include(FeatureSummary)
-
 include(ECMSetupVersion)
 
 ecm_setup_version(5.0.0 VARIABLE_PREFIX KDNSSD

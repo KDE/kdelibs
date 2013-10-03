@@ -6,4 +6,4 @@ add_subdirectory(knotifications)
 add_subdirectory(kcompletion)
 add_subdirectory(ki18n)
 add_subdirectory(kdoctools)
-
+add_subdirectory(dnssd)
