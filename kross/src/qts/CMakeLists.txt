@@ -29,4 +29,4 @@ set(krossqts_PART_SRCS interpreter.cpp script.cpp)
 add_library(krossqts MODULE ${krossqts_PART_SRCS})
 target_link_libraries(krossqts ${KCoreAddons_LIBRARIES} KConfigCore KI18n KrossCore Qt5::Script Qt5::Widgets Qt5::Gui)
 
-install(TARGETS krossqts DESTINATION ${PLUGIN_INSTALL_DIR})
+install(TARGETS krossqts DESTINATION ${QT_PLUGIN_INSTALL_DIR})
