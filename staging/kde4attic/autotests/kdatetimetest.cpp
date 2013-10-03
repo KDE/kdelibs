@@ -3537,7 +3537,7 @@ void KDateTimeTest::strings_qttextdate()
     bool negZero = true;
     KDateTime dtlocal(QDate(1999,12,11), QTime(3,45,06), KDateTime::LocalZone);
     QString s = dtlocal.toString(KDateTime::QtTextDate);
-    QCOMPARE(s, QString("Sat Dec 11 03:45:06.000 1999 -0800"));
+    QCOMPARE(s, QString("Sat Dec 11 03:45:06 1999 -0800"));
     KDateTime dtlocal1 = KDateTime::fromString(s, KDateTime::QtTextDate, &negZero);
     QCOMPARE(dtlocal1.dateTime().toUTC(), dtlocal.dateTime().toUTC());
     QCOMPARE(dtlocal1.timeType(), KDateTime::OffsetFromUTC);
@@ -3556,7 +3556,7 @@ void KDateTimeTest::strings_qttextdate()
 
     KDateTime dtzone(QDate(1999,6,11), QTime(3,45,06), london);
     s = dtzone.toString(KDateTime::QtTextDate);
-    QCOMPARE(s, QString("Fri Jun 11 03:45:06.000 1999 +0100"));
+    QCOMPARE(s, QString("Fri Jun 11 03:45:06 1999 +0100"));
     KDateTime dtzone1 = KDateTime::fromString(s, KDateTime::QtTextDate);
     QCOMPARE(dtzone1.dateTime().toUTC(), dtzone.dateTime().toUTC());
     QCOMPARE(dtzone1.timeType(), KDateTime::OffsetFromUTC);
@@ -3577,7 +3577,7 @@ void KDateTimeTest::strings_qttextdate()
 
     KDateTime dtclock(QDate(1999,12,11), QTime(3,45,06), KDateTime::ClockTime);
     s = dtclock.toString(KDateTime::QtTextDate);
-    QCOMPARE(s, QString("Sat Dec 11 03:45:06.000 1999"));
+    QCOMPARE(s, QString("Sat Dec 11 03:45:06 1999"));
     KDateTime dtclock1 = KDateTime::fromString(s, KDateTime::QtTextDate, &negZero);
     QCOMPARE(dtclock1.dateTime(), dtclock.dateTime());
     QCOMPARE(dtclock1.timeType(), KDateTime::ClockTime);
@@ -3594,7 +3594,7 @@ void KDateTimeTest::strings_qttextdate()
 
     KDateTime dtutc(QDate(1999,12,11), QTime(3,45,00), KDateTime::UTC);
     s = dtutc.toString(KDateTime::QtTextDate);
-    QCOMPARE(s, QString("Sat Dec 11 03:45:00.000 1999 GMT +0000"));
+    QCOMPARE(s, QString("Sat Dec 11 03:45:00 1999 GMT +0000"));
     KDateTime dtutc1 = KDateTime::fromString(s, KDateTime::QtTextDate, &negZero);
     QCOMPARE(dtutc1.dateTime(), dtutc.dateTime());
     QCOMPARE(dtutc1.timeType(), KDateTime::UTC);
@@ -3610,18 +3610,18 @@ void KDateTimeTest::strings_qttextdate()
     QCOMPARE(dtutc1.timeType(), KDateTime::UTC);
 
     // Check '-0000'
-    KDateTime dtutc2 = KDateTime::fromString(QString("Sat Dec 11 03:45:00.000 1999 -0000"), KDateTime::QtTextDate, &negZero);
+    KDateTime dtutc2 = KDateTime::fromString(QString("Sat Dec 11 03:45:00 1999 -0000"), KDateTime::QtTextDate, &negZero);
     QVERIFY(dtutc1 != dtutc2);
     QVERIFY(negZero);
 
     // Check erroneous strings
-    dtutc2 = KDateTime::fromString(QString("Sat Dec 11 03:45:00.000 1999 GMT"), KDateTime::QtTextDate, &negZero);
+    dtutc2 = KDateTime::fromString(QString("Sat Dec 11 03:45:00 1999 GMT"), KDateTime::QtTextDate, &negZero);
     QVERIFY(!dtutc2.isValid());
-    dtutc2 = KDateTime::fromString(QString("Sun Dec 11 03:45:00.000 1999 +0000"), KDateTime::QtTextDate);
+    dtutc2 = KDateTime::fromString(QString("Sun Dec 11 03:45:00 1999 +0000"), KDateTime::QtTextDate);
     QVERIFY(dtutc2.isValid());     // wrong weekday: accepted by Qt!!
-    dtutc2 = KDateTime::fromString(QString("Satu, Dec 11 03:45:00.000 1999 +0000"), KDateTime::QtTextDate);
+    dtutc2 = KDateTime::fromString(QString("Satu, Dec 11 03:45:00 1999 +0000"), KDateTime::QtTextDate);
     QVERIFY(dtutc2.isValid());     // bad weekday, accepted by Qt (since 4.3)
-    dtutc2 = KDateTime::fromString(QString("Sat Dece 11 03:45:00.000 1999 +0000"), KDateTime::QtTextDate);
+    dtutc2 = KDateTime::fromString(QString("Sat Dece 11 03:45:00 1999 +0000"), KDateTime::QtTextDate);
     QVERIFY(!dtutc2.isValid());     // bad month, not accepted by Qt anymore (since 4.3)
 
     // Restore the original local time zone
