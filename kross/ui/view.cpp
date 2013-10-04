@@ -33,8 +33,6 @@
 #include <QHeaderView>
 #include <QLabel>
 #include <QLineEdit>
-#include <QMimeDatabase>
-#include <QMimeType>
 #include <QPushButton>
 #include <QTreeView>
 
@@ -217,17 +215,7 @@ void ActionCollectionEditor::initGui()
         //InterpreterInfo* info = Manager::self().interpreterInfo( Manager::self().interpreternameForFile( d->action->file() ) );
         //const QString defaultmime = info ? info->mimeTypes().join(" ").trimmed() : QString();
 
-        QMimeDatabase db;
-        QStringList myFilter;
-        foreach ( const QString &mimeType, mimetypes ) {
-            QMimeType mime(db.mimeTypeForName(mimeType));
-            if (mime.isValid()) {
-                myFilter.append(QString("%1 (%2)").arg(mime.comment())
-                                .arg(mime.globPatterns().join(QLatin1String(" "))));
-            }
-        }
-
-        d->fileedit->fileDialog()->setNameFilters(myFilter);
+        d->fileedit->fileDialog()->setMimeTypeFilters(mimetypes);
         d->fileedit->setMode( KFile::File | KFile::ExistingOnly | KFile::LocalOnly );
         d->fileedit->setUrl(QUrl::fromLocalFile(d->action->file()) );
         gridlayout->addWidget(d->fileedit, 5, 1);
