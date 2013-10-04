@@ -4,14 +4,16 @@ project(knotifytest)
 
 ########### knotifytest ###############
 
+remove_definitions(-DQT_NO_CAST_FROM_ASCII)
+
 set(knotifytest_SRCS main.cpp knotifytestwindow.cpp )
 
-kde4_add_ui_files(knotifytest_SRCS knotifytestview.ui)
+qt5_wrap_ui(knotifytest_SRCS knotifytestview.ui)
 
 add_executable(knotifytest ${knotifytest_SRCS})
 ecm_mark_as_test(knotifytest)
 
-target_link_libraries(knotifytest ${KDE4_KIO_LIBS} Qt5::Test knotifyconfig KNotifications ${KCoreAddons_LIBRARIES} KI18n XmlGui)
+target_link_libraries(knotifytest ${KDE4_KIO_LIBS} Qt5::Core Qt5::Test KNotifyConfig KNotifications KCoreAddons KI18n XmlGui)
 
 #the binary file doesn't need to be installed
 #install(TARGETS knotifytest DESTINATION ${BIN_INSTALL_DIR} )

@@ -27,6 +27,8 @@
 #include <QDBusInterface>
 #include <QDBusConnectionInterface>
 
+#include <klocalizedstring.h>
+
 struct KNotifyConfigWidget::Private
 {
 	KNotifyEventList *eventList;
