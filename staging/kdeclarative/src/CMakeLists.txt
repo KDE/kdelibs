@@ -53,7 +53,7 @@ install(TARGETS KDeclarative
 )
 
 install(FILES
-  ${CMAKE_CURRENT_BINARY_DIR}/kdeclarative/kdeclarative_export.h
+  ${KDeclarative_BINARY_DIR}/kdeclarative/kdeclarative_export.h
   ${KDeclarative_LIB_HEADERS}
   DESTINATION ${INCLUDE_INSTALL_DIR}
   COMPONENT Devel
