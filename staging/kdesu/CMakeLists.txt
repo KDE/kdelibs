@@ -6,10 +6,14 @@ find_package(ECM 0.0.8 REQUIRED NO_MODULE)
 
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
-find_package(KF5 5.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
-
 set(REQUIRED_QT_VERSION "5.2.0")
 find_package(Qt5Widgets ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE)
+find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
+if(NOT kdelibs_SOURCE_DIR)
+  find_package(KCoreAddons 5.0.0 REQUIRED)
+  find_package(KService 5.0.0 REQUIRED)
+  find_package(KPty 5.0.0 REQUIRED)
+endif()
 
 #optional features
 find_package(X11)
@@ -44,7 +48,6 @@ install(FILES
 )
 
 install(EXPORT KDESuTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KDESuTargets.cmake NAMESPACE KF5:: )
-
 
 install(FILES
    ${CMAKE_CURRENT_BINARY_DIR}/kdesu_version.h
