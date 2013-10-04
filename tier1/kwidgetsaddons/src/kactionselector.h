@@ -46,7 +46,7 @@ class KActionSelectorPrivate;
     The user control the widget using the keyboard if enabled (default),
     see keyboardEnabled.
 
-    Note that this may conflist with keyboard selection in the selected list box,
+    Note that this may conflict with keyboard selection in the selected list box,
     if you set that to anything else than QListWidget::Single (which is the default).
 
     To use it, simply construct an instance and then add items to the two listboxes,
@@ -103,7 +103,7 @@ public:
   QListWidget *selectedListWidget() const;
 
   /**
-    This enum indentifies the moving buttons
+    This enum identifies the moving buttons
   */
   enum MoveButton {
     ButtonAdd,
@@ -116,7 +116,7 @@ public:
     This enum defines policies for where to insert moved items in a listbox.
     The following policies are currently defined:
     @li BelowCurrent - The item is inserted below the listbox'
-        currentItem() or at the end if there is no curent item.
+        currentItem() or at the end if there is no current item.
     @li Sorted - The listbox is sort()ed after one or more items are inserted.
     @li AtTop - The item is inserted at index 0 in the listbox.
     @li AtBottom - The item is inserted at the end of the listbox.
@@ -135,7 +135,7 @@ public:
     @return Whether moveOnDoubleClcik is enabled.
 
     If enabled, an item in any listbox will be moved to the other one whenever
-    doubleclicked.
+    double-clicked.
     This feature is enabled by default.
     @sa setMoveOnDoubleClick()
   */
@@ -148,7 +148,7 @@ public:
   void setMoveOnDoubleClick( bool enable );
 
   /**
-    @return Weather keyboard control is enabled.
+    @return Whether keyboard control is enabled.
 
     When Keyboard control is enabled, the widget will react to
     the following keyboard actions:
@@ -182,7 +182,7 @@ public:
     Sets the label for the available items listbox to @p text.
     Note that this label has the listbox as its @e buddy, so that
     if you have a single ampersand in the text, the following character
-    will become the accellerator to focus te listbox.
+    will become the accelerator to focus the listbox.
   */
   void setAvailableLabel( const QString & text );
 
@@ -195,7 +195,7 @@ public:
     Sets the label for the selected items listbox to @p text.
     Note that this label has the listbox as its @e buddy, so that
     if you have a single ampersand in the text, the following character
-    will become the accellerator to focus te listbox.
+    will become the accelerator to focus the listbox.
   */
   void setSelectedLabel( const QString & text );
 
@@ -244,7 +244,7 @@ public:
 
   /**
     Sets the iconset for button @p button to @p iconset.
-    You can use this method to et a costum icon set. Either
+    You can use this method to set a custom icon set. Either
     created by QIconSet, or use the application instance of
     KIconLoader (recommended).
   */
@@ -298,7 +298,7 @@ public Q_SLOTS:
 
 protected:
   /**
-    Reimplamented for internal reasons.
+    Reimplemented for internal reasons.
   */
   void keyPressEvent( QKeyEvent * );
 
