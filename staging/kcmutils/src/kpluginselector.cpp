@@ -55,14 +55,13 @@ KPluginSelector::Private::Private(KPluginSelector *parent)
     : QObject(parent)
     , parent(parent)
     , listView(0)
-    , categoryDrawer(new KCategoryDrawer)
+    , categoryDrawer(0)
     , showIcons(false)
 {
 }
 
 KPluginSelector::Private::~Private()
 {
-    delete categoryDrawer;
 }
 
 void KPluginSelector::Private::updateDependencies(PluginEntry *pluginEntry, bool added)
@@ -125,7 +124,7 @@ KPluginSelector::Private::DependenciesWidget::DependenciesWidget(QWidget *parent
     layout->setAlignment(Qt::AlignLeft);
     QLabel *label = new QLabel();
     label->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-    label->setPixmap(QIcon::fromTheme("dialog-information").pixmap(style()->pixelMetric(QStyle::PM_MessageBoxIconSize)));
+    label->setPixmap(QIcon::fromTheme(QStringLiteral("dialog-information")).pixmap(style()->pixelMetric(QStyle::PM_MessageBoxIconSize)));
     label->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     layout->addWidget(label);
     KUrlLabel *link = new KUrlLabel();
@@ -260,6 +259,7 @@ KPluginSelector::KPluginSelector(QWidget *parent)
     d->lineEdit->setClearButtonEnabled(true);
     d->lineEdit->setPlaceholderText(i18n("Search Plugins"));
     d->listView = new KCategorizedView(this);
+    d->categoryDrawer = new KCategoryDrawerV3(d->listView);
     d->listView->setVerticalScrollMode(QListView::ScrollPerPixel);
     d->listView->setAlternatingRowColors(true);
     d->listView->setCategoryDrawer(d->categoryDrawer);
@@ -300,7 +300,7 @@ void KPluginSelector::addPlugins(const QString &componentName,
                                  KSharedConfig::Ptr config)
 {
     QStringList desktopFileNames;
-    const QStringList dirs = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, componentName + "/kpartplugins", QStandardPaths::LocateDirectory);
+    const QStringList dirs = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, componentName + QStringLiteral("/kpartplugins"), QStandardPaths::LocateDirectory);
     Q_FOREACH(const QString& dir, dirs) {
         QDirIterator it(dir, QStringList() << QStringLiteral("*.desktop"), QDir::NoFilter, QDirIterator::Subdirectories);
         while (it.hasNext()) {
@@ -433,8 +433,8 @@ void KPluginSelector::Private::PluginModel::addPlugins(const QList<KPluginInfo> 
         pluginEntry.isCheckable = !pluginInfo.isValid() || !pluginEntry.cfgGroup.isEntryImmutable(pluginInfo.pluginName() + QLatin1String("Enabled"));
 
         if (!pluginEntryList.contains(pluginEntry) && !listToAdd.contains(pluginEntry) &&
-             (!pluginInfo.property("X-KDE-PluginInfo-Category").isValid() ||
-              !pluginInfo.property("X-KDE-PluginInfo-Category").toString().compare(categoryKey, Qt::CaseInsensitive)) &&
+             (!pluginInfo.property(QStringLiteral("X-KDE-PluginInfo-Category")).isValid() ||
+              !pluginInfo.property(QStringLiteral("X-KDE-PluginInfo-Category")).toString().compare(categoryKey, Qt::CaseInsensitive)) &&
             (!pluginInfo.service() || !pluginInfo.service()->noDisplay())) {
             listToAdd << pluginEntry;
 
@@ -574,7 +574,7 @@ KPluginSelector::Private::PluginDelegate::PluginDelegate(KPluginSelector::Privat
     , pushButton(new QPushButton)
     , pluginSelector_d(pluginSelector_d)
 {
-    pushButton->setIcon(QIcon::fromTheme("configure")); // only for getting size matters
+    pushButton->setIcon(QIcon::fromTheme(QStringLiteral("configure"))); // only for getting size matters
 }
 
 KPluginSelector::Private::PluginDelegate::~PluginDelegate()
@@ -674,11 +674,11 @@ QList<QWidget*> KPluginSelector::Private::PluginDelegate::createItemWidgets() co
     connect(enabledCheckBox, SIGNAL(clicked(bool)), this, SLOT(emitChanged()));
 
     QPushButton *aboutPushButton = new QPushButton;
-    aboutPushButton->setIcon(QIcon::fromTheme("dialog-information"));
+    aboutPushButton->setIcon(QIcon::fromTheme(QStringLiteral("dialog-information")));
     connect(aboutPushButton, SIGNAL(clicked(bool)), this, SLOT(slotAboutClicked()));
 
     QPushButton *configurePushButton = new QPushButton;
-    configurePushButton->setIcon(QIcon::fromTheme("configure"));
+    configurePushButton->setIcon(QIcon::fromTheme(QStringLiteral("configure")));
     connect(configurePushButton, SIGNAL(clicked(bool)), this, SLOT(slotConfigureClicked()));
 
     setBlockedEventTypes(enabledCheckBox, QList<QEvent::Type>() << QEvent::MouseButtonPress
@@ -783,8 +783,8 @@ void KPluginSelector::Private::PluginDelegate::slotAboutClicked()
 
     KAboutData aboutData(name, name, name, version, comment, KAboutLicense::byKeyword(license).key(), QString(), QString(), website);
     aboutData.setProgramIconName(index.model()->data(index, Qt::DecorationRole).toString());
-    const QStringList authors = author.split(',');
-    const QStringList emails = email.split(',');
+    const QStringList authors = author.split(QLatin1Char(','));
+    const QStringList emails = email.split(QLatin1Char(','));
     if (authors.count() == emails.count()) {
 	int i = 0;
         foreach (const QString &author, authors) {
@@ -872,7 +872,7 @@ void KPluginSelector::Private::PluginDelegate::slotConfigureClicked()
 
         if (configDialog.exec() == QDialog::Accepted) {
             foreach (KCModuleProxy *moduleProxy, moduleProxyList) {
-                QStringList parentComponents = moduleProxy->moduleInfo().service()->property("X-KDE-ParentComponents").toStringList();
+                QStringList parentComponents = moduleProxy->moduleInfo().service()->property(QStringLiteral("X-KDE-ParentComponents")).toStringList();
                 moduleProxy->save();
                 foreach (const QString &parentComponent, parentComponents) {
                     emit configCommitted(parentComponent.toLatin1());

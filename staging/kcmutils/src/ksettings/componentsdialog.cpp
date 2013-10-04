@@ -50,7 +50,7 @@ class ComponentsDialog::ComponentsDialogPrivate
 ComponentsDialog::ComponentsDialog( QWidget * parent, const char * name )
     : QDialog( parent ), d( new ComponentsDialogPrivate )
 {
-    setObjectName( name );
+    setObjectName(QString::fromLatin1(name));
     setModal( false );
     setWindowTitle( i18n( "Select Components" ) );
 

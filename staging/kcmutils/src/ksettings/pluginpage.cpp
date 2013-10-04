@@ -53,7 +53,7 @@ PluginPage::PluginPage(const KAboutData *aboutData, QWidget *parent, const QVari
 
 void PluginPagePrivate::_k_reparseConfiguration(const QByteArray &a)
 {
-    Dispatcher::reparseConfiguration(a);
+    Dispatcher::reparseConfiguration(QString::fromLatin1(a));
 }
 
 PluginPage::~PluginPage()

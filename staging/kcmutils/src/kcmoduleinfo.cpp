@@ -123,16 +123,16 @@ void KCModuleInfo::Private::loadAll()
     return;
 
   // get the documentation path
-  doc = service->property( "X-DocPath", QVariant::String ).toString();
+  doc = service->property( QStringLiteral("X-DocPath"), QVariant::String ).toString();
   if (doc.isEmpty())
-    doc = service->property( "DocPath", QVariant::String ).toString();
+    doc = service->property( QStringLiteral("DocPath"), QVariant::String ).toString();
 
   // read weight
-  QVariant tmp = service->property( "X-KDE-Weight", QVariant::Int );
+  QVariant tmp = service->property( QStringLiteral("X-KDE-Weight"), QVariant::Int );
   weight = tmp.isValid() ? tmp.toInt() : 100;
 
   // factory handle
-  tmp = service->property("X-KDE-FactoryName", QVariant::String);
+  tmp = service->property(QStringLiteral("X-KDE-FactoryName"), QVariant::String);
   handle = tmp.isValid() ? tmp.toString() : lib;
 
 }

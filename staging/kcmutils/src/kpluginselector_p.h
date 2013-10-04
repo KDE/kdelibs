@@ -37,7 +37,7 @@ class QAbstractItemView;
 
 class KCategorizedView;
 class KCModuleProxy;
-class KCategoryDrawer;
+class KCategoryDrawerV3;
 
 class PluginEntry;
 
@@ -76,7 +76,7 @@ public:
     KPluginSelector *parent;
     QLineEdit *lineEdit;
     KCategorizedView *listView;
-    KCategoryDrawer *categoryDrawer;
+    KCategoryDrawerV3 *categoryDrawer;
     PluginModel *pluginModel;
     ProxyModel *proxyModel;
     PluginDelegate *pluginDelegate;

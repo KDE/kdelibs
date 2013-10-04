@@ -190,9 +190,9 @@ void KCMultiDialogPrivate::_k_updateHeader(bool use, const QString &message)
     KCModuleProxy *kcm = qobject_cast<KCModuleProxy*>(item->widget());
 
     if (use) {
-        item->setHeader( "<b>"+kcm->moduleInfo().comment() + "</b><br><i>" +
-                         message + "</i>" );
-        item->setIcon( KDE::icon( kcm->moduleInfo().icon(), QStringList() << "dialog-warning" ) );
+        item->setHeader( QStringLiteral("<b>")+kcm->moduleInfo().comment() + QStringLiteral("</b><br><i>") +
+                         message + QStringLiteral("</i>") );
+        item->setIcon( KDE::icon( kcm->moduleInfo().icon(), QStringList() << QStringLiteral("dialog-warning") ) );
     } else {
         item->setHeader( kcm->moduleInfo().comment() );
         item->setIcon( QIcon::fromTheme( kcm->moduleInfo().icon() ) );
@@ -373,9 +373,9 @@ void KCMultiDialog::slotHelpClicked()
     }
   }
 
-  QUrl docUrl = QUrl("help:/").resolved(QUrl::fromUserInput(docPath)); // same code as in KHelpClient::invokeHelp
-  if ( docUrl.scheme() == "help" || docUrl.scheme() == "man" || docUrl.scheme() == "info" ) {
-    QProcess::startDetached("khelpcenter", QStringList() << docUrl.toString());
+  QUrl docUrl = QUrl(QStringLiteral("help:/")).resolved(QUrl::fromUserInput(docPath)); // same code as in KHelpClient::invokeHelp
+  if ( docUrl.scheme() == QLatin1String("help") || docUrl.scheme() == QLatin1String("man") || docUrl.scheme() == QLatin1String("info") ) {
+    QProcess::startDetached(QStringLiteral("khelpcenter"), QStringList() << docUrl.toString());
   } else {
       QDesktopServices::openUrl(docUrl);
   }
@@ -387,7 +387,7 @@ KPageWidgetItem* KCMultiDialog::addModule( const QString& path, const QStringLis
   QString complete = path;
 
   if ( !path.endsWith( QLatin1String(".desktop") ) )
-    complete += ".desktop";
+    complete += QStringLiteral(".desktop");
 
   KService::Ptr service = KService::serviceByStorageId( complete );
 
@@ -411,8 +411,8 @@ KPageWidgetItem* KCMultiDialog::addModule( const KCModuleInfo& moduleInfo,
     KPageWidgetItem *item = new KPageWidgetItem(kcm, moduleInfo.moduleName());
 
     if (kcm->useRootOnlyMessage()) {
-        item->setHeader( "<b>"+moduleInfo.comment() + "</b><br><i>" + kcm->rootOnlyMessage() + "</i>" );
-        item->setIcon( KDE::icon( moduleInfo.icon(), QStringList() << "dialog-warning" ) );
+        item->setHeader( QStringLiteral("<b>")+moduleInfo.comment() + QStringLiteral("</b><br><i>") + kcm->rootOnlyMessage() + QStringLiteral("</i>") );
+        item->setIcon( KDE::icon( moduleInfo.icon(), QStringList() << QStringLiteral("dialog-warning") ) );
     } else {
         item->setHeader( moduleInfo.comment() );
         item->setIcon( QIcon::fromTheme( moduleInfo.icon() ) );
@@ -469,7 +469,7 @@ KPageWidgetItem* KCMultiDialog::addModule( const KCModuleInfo& moduleInfo,
   KCMultiDialogPrivate::CreatedModule cm;
   cm.kcm = kcm;
   cm.item = item;
-  cm.componentNames = moduleInfo.service()->property( "X-KDE-ParentComponents" ).toStringList();
+  cm.componentNames = moduleInfo.service()->property( QStringLiteral("X-KDE-ParentComponents") ).toStringList();
   d->modules.append( cm );
 
   if ( d->modules.count() == 1 || updateCurrentPage )

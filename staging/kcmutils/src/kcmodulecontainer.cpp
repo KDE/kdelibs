@@ -55,7 +55,7 @@ class KCModuleContainer::KCModuleContainerPrivate
 /***********************************************************************/
 KCModuleContainer::KCModuleContainer( QWidget* parent, const QString& mods )
     : KCModule( parent ),
-      d(new KCModuleContainerPrivate( QString(mods).remove( ' ' ).split( ',', QString::SkipEmptyParts ) ))
+      d(new KCModuleContainerPrivate( QString(mods).remove( QLatin1Char(' ') ).split( QLatin1Char(','), QString::SkipEmptyParts ) ))
 {
 	init();
 }
@@ -71,9 +71,9 @@ void KCModuleContainer::init()
 {
 	d->topLayout = new QVBoxLayout( this );
 	d->topLayout->setMargin( 0 );
-	d->topLayout->setObjectName( "topLayout" );
+	d->topLayout->setObjectName( QStringLiteral("topLayout"));
 	d->tabWidget = new QTabWidget(this);
-	d->tabWidget->setObjectName( "tabWidget");
+	d->tabWidget->setObjectName( QStringLiteral("tabWidget"));
 	connect( d->tabWidget, SIGNAL(currentChanged(int)), SLOT(tabSwitched(int)));
 	d->topLayout->addWidget( d->tabWidget );
 
@@ -105,11 +105,11 @@ void KCModuleContainer::addModule( const QString& module )
 	KCModuleProxy* proxy = new KCModuleProxy( service, d->tabWidget );
 	allModules.append( proxy );
 
-	proxy->setObjectName( module.toLatin1() );
+	proxy->setObjectName(module);
 
 	d->tabWidget->addTab( proxy, QIcon::fromTheme( proxy->moduleInfo().icon() ),
 			/* Qt eats ampersands for dinner. But not this time. */
-			proxy->moduleInfo().moduleName().replace( '&', "&&" ));
+			proxy->moduleInfo().moduleName().replace( QLatin1Char('&'), QStringLiteral("&&") ));
 
 	d->tabWidget->setTabToolTip( d->tabWidget->indexOf( proxy ), proxy->moduleInfo().comment() );
 
