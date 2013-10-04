@@ -55,6 +55,6 @@ install(TARGETS KDeclarative
 install(FILES
   ${KDeclarative_BINARY_DIR}/kdeclarative/kdeclarative_export.h
   ${KDeclarative_LIB_HEADERS}
-  DESTINATION ${INCLUDE_INSTALL_DIR}
+  DESTINATION ${INCLUDE_INSTALL_DIR}/kdeclarative
   COMPONENT Devel
 )
