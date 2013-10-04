@@ -17,22 +17,21 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#include <QApplication>
+#include <QGuiApplication>
 #include <QtQuick/QQuickView>
 #include <QtQml/QQmlContext>
-#include <QScriptEngine>
 
-#include <kdeclarative.h>
+#include <kdeclarative/kdeclarative.h>
 
 #include "testobject_p.h"
 
 int main(int argc, char *argv[])
 {
-    QApplication app(argc, argv);
+    QGuiApplication app(argc, argv);
 
     QQuickView view;
     QQmlContext *context = view.rootContext();
-    context->setContextProperty("backgroundColor",
+    context->setContextProperty(QStringLiteral("backgroundColor"),
                                 QColor(Qt::yellow));
 
     KDeclarative kdeclarative;
@@ -41,10 +40,8 @@ int main(int argc, char *argv[])
     //binds things like kconfig and icons
     kdeclarative.setupBindings();
 
-    view.setSource(QUrl::fromLocalFile("test.qml"));
+    view.setSource(QUrl::fromLocalFile(QStringLiteral("test.qml")));
     view.show();
 
     return app.exec();
 }
-
-#include "moc_testobject_p.cpp"

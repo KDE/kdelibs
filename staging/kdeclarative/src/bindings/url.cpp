@@ -19,6 +19,7 @@
 #include <QtScript/QScriptValue>
 #include <QtScript/QScriptEngine>
 #include <QtScript/QScriptContext>
+#include <QUrl>
 #include "backportglobal.h"
 
 Q_DECLARE_METATYPE(QUrl*)
@@ -37,7 +38,7 @@ static QScriptValue urlCtor(QScriptContext *ctx, QScriptEngine *eng)
 static QScriptValue toString(QScriptContext *ctx, QScriptEngine *eng)
 {
     DECLARE_SELF(QUrl, toString);
-    return QScriptValue(eng, self->prettyUrl());
+    return QScriptValue(eng, self->toString());
 }
 
 static QScriptValue protocol(QScriptContext *ctx, QScriptEngine *eng)
@@ -45,7 +46,7 @@ static QScriptValue protocol(QScriptContext *ctx, QScriptEngine *eng)
     DECLARE_SELF(QUrl, protocol);
     if (ctx->argumentCount()) {
         QString v = ctx->argument(0).toString();
-        self->setProtocol(v);
+        self->setScheme(v);
     }
 
     return QScriptValue(eng, self->scheme());
@@ -78,10 +79,10 @@ static QScriptValue user(QScriptContext *ctx, QScriptEngine *eng)
     DECLARE_SELF(QUrl, user);
     if (ctx->argumentCount()) {
         QString v = ctx->argument(0).toString();
-        self->setUser(v);
+        self->setUserName(v);
     }
 
-    return QScriptValue(eng, self->user());
+    return QScriptValue(eng, self->userName());
 }
 
 static QScriptValue password(QScriptContext *ctx, QScriptEngine *eng)
@@ -101,12 +102,12 @@ QScriptValue constructQUrlClass(QScriptEngine *eng)
     QScriptValue::PropertyFlags getter = QScriptValue::PropertyGetter;
     QScriptValue::PropertyFlags setter = QScriptValue::PropertySetter;
 
-    proto.setProperty("toString", eng->newFunction(toString), getter);
-    proto.setProperty("protocol", eng->newFunction(protocol), getter | setter);
-    proto.setProperty("host", eng->newFunction(host), getter | setter);
-    proto.setProperty("path", eng->newFunction(path), getter | setter);
-    proto.setProperty("user", eng->newFunction(user), getter | setter);
-    proto.setProperty("password", eng->newFunction(password), getter | setter);
+    proto.setProperty(QStringLiteral("toString"), eng->newFunction(toString), getter);
+    proto.setProperty(QStringLiteral("protocol"), eng->newFunction(protocol), getter | setter);
+    proto.setProperty(QStringLiteral("host"), eng->newFunction(host), getter | setter);
+    proto.setProperty(QStringLiteral("path"), eng->newFunction(path), getter | setter);
+    proto.setProperty(QStringLiteral("user"), eng->newFunction(user), getter | setter);
+    proto.setProperty(QStringLiteral("password"), eng->newFunction(password), getter | setter);
 
     eng->setDefaultPrototype(qMetaTypeId<QUrl*>(), proto);
     eng->setDefaultPrototype(qMetaTypeId<QUrl>(), proto);

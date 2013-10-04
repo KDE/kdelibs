@@ -33,7 +33,7 @@ QScriptValue jsi18n(QScriptContext *context, QScriptEngine *engine)
         return engine->undefinedValue();
     }
 
-    KLocalizedString message = ki18n(context->argument(0).toString().toUtf8());
+    KLocalizedString message = ki18n(context->argument(0).toString().toUtf8().constData());
 
     const int numArgs = context->argumentCount();
     for (int i = 1; i < numArgs; ++i) {
@@ -53,8 +53,8 @@ QScriptValue jsi18nc(QScriptContext *context, QScriptEngine *engine)
         return engine->undefinedValue();
     }
 
-    KLocalizedString message = ki18nc(context->argument(0).toString().toUtf8(),
-                                      context->argument(1).toString().toUtf8());
+    KLocalizedString message = ki18nc(context->argument(0).toString().toUtf8().constData(),
+                                      context->argument(1).toString().toUtf8().constData());
 
     for (int i = 2; i < numArgs; ++i) {
         message = message.subs(context->argument(i).toString());
@@ -73,8 +73,8 @@ QScriptValue jsi18np(QScriptContext *context, QScriptEngine *engine)
         return engine->undefinedValue();
     }
 
-    KLocalizedString message = ki18np(context->argument(0).toString().toUtf8(),
-                                      context->argument(1).toString().toUtf8());
+    KLocalizedString message = ki18np(context->argument(0).toString().toUtf8().constData(),
+                                      context->argument(1).toString().toUtf8().constData());
 
     for (int i = 2; i < numArgs; ++i) {
         QScriptValue v = context->argument(i);
@@ -98,9 +98,9 @@ QScriptValue jsi18ncp(QScriptContext *context, QScriptEngine *engine)
         return engine->undefinedValue();
     }
 
-    KLocalizedString message = ki18ncp(context->argument(0).toString().toUtf8(),
-                                       context->argument(1).toString().toUtf8(),
-                                       context->argument(2).toString().toUtf8());
+    KLocalizedString message = ki18ncp(context->argument(0).toString().toUtf8().constData(),
+                                       context->argument(1).toString().toUtf8().constData(),
+                                       context->argument(2).toString().toUtf8().constData());
 
     for (int i = 3; i < numArgs; ++i) {
         QScriptValue v = context->argument(i);
@@ -117,9 +117,9 @@ QScriptValue jsi18ncp(QScriptContext *context, QScriptEngine *engine)
 void bindI18N(QScriptEngine *engine)
 {
     QScriptValue global = engine->globalObject();
-    global.setProperty("i18n", engine->newFunction(jsi18n));
-    global.setProperty("i18nc", engine->newFunction(jsi18nc));
-    global.setProperty("i18np", engine->newFunction(jsi18np));
-    global.setProperty("i18ncp", engine->newFunction(jsi18ncp));
+    global.setProperty(QStringLiteral("i18n"), engine->newFunction(jsi18n));
+    global.setProperty(QStringLiteral("i18nc"), engine->newFunction(jsi18nc));
+    global.setProperty(QStringLiteral("i18np"), engine->newFunction(jsi18np));
+    global.setProperty(QStringLiteral("i18ncp"), engine->newFunction(jsi18ncp));
 }
 

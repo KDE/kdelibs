@@ -167,7 +167,6 @@ add_subdirectory( kinit  )
 add_subdirectory( includes )
 add_subdirectory( doc )
 
-add_subdirectory( experimental )
 add_subdirectory( knewstuff )
 add_subdirectory( knotify )
 

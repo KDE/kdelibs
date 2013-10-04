@@ -94,15 +94,15 @@ public:
 
 void QmlObjectPrivate::errorPrint(QQmlComponent *component)
 {
-    QString errorStr = "Error loading QML file.\n";
+    QString errorStr = QStringLiteral("Error loading QML file.\n");
     if(component->isError()){
         QList<QQmlError> errors = component->errors();
         foreach (const QQmlError &error, errors) {
             errorStr += (error.line()>0?QString(QString::number(error.line()) + QLatin1String(": ")):QLatin1String(""))
-                + error.description() + '\n';
+                + error.description() + QLatin1Char('\n');
         }
     }
-    qWarning() << component->url().toString() + '\n' + errorStr;
+    qWarning() << component->url().toString() << '\n' << errorStr;
 }
 
 void QmlObjectPrivate::execute(const QUrl &source)

@@ -23,7 +23,7 @@
 #include <QQmlPropertyMap>
 #include <QPointer>
 
-#include <kconfigskeleton.h>
+class KConfigSkeleton;
 
 #include <kdeclarative/kdeclarative_export.h>
 
@@ -41,7 +41,7 @@ private Q_SLOTS:
     void writeConfigValue(const QString &key, const QVariant &value);
 
 private:
-    QPointer<KConfigSkeleton>m_config;
+    QPointer<KConfigSkeleton> m_config;
 };
 
 #endif

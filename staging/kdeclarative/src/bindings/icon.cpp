@@ -19,13 +19,11 @@
 #include <QtScript/QScriptValue>
 #include <QtScript/QScriptEngine>
 #include <QtScript/QScriptContext>
+#include <QIcon>
 
-#include <kicon.h>
 #include "backportglobal.h"
 
 Q_DECLARE_METATYPE(QIcon*)
-Q_DECLARE_METATYPE(KIcon)
-Q_DECLARE_METATYPE(KIcon*)
 
 static QScriptValue iconCtor(QScriptContext *ctx, QScriptEngine *eng)
 {
@@ -91,9 +89,9 @@ QScriptValue constructIconClass(QScriptEngine *eng)
     QScriptValue proto = qScriptValueFromValue(eng, QIcon());
     QScriptValue::PropertyFlags getter = QScriptValue::PropertyGetter;
     QScriptValue::PropertyFlags setter = QScriptValue::PropertySetter;
-    proto.setProperty("addPixmap", eng->newFunction(addPixmap));
-    proto.setProperty("addFile", eng->newFunction(addFile));
-    proto.setProperty("null", eng->newFunction(isNull), getter);
+    proto.setProperty(QStringLiteral("addPixmap"), eng->newFunction(addPixmap));
+    proto.setProperty(QStringLiteral("addFile"), eng->newFunction(addFile));
+    proto.setProperty(QStringLiteral("null"), eng->newFunction(isNull), getter);
 
     QScriptValue ctorFun = eng->newFunction(iconCtor, proto);
     ADD_ENUM_VALUE(ctorFun, QIcon, Normal);

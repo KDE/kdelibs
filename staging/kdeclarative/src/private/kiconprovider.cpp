@@ -33,7 +33,7 @@ KIconProvider::KIconProvider()
 QPixmap KIconProvider::requestPixmap(const QString &id, QSize *size, const QSize &requestedSize)
 {
     // We need to handle QIcon::state
-    const QStringList source = id.split('/');
+    const QStringList source = id.split(QLatin1Char('/'));
 
     QPixmap pixmap;
     if (requestedSize.isValid()) {
@@ -49,11 +49,11 @@ QPixmap KIconProvider::requestPixmap(const QString &id, QSize *size, const QSize
         const QString state(source.at(1));
         int finalState = KIconLoader::DefaultState;
 
-        if (state == "active") {
+        if (state == QStringLiteral("active")) {
             finalState = KIconLoader::ActiveState;
-        } else if (state == "disabled") {
+        } else if (state == QStringLiteral("disabled")) {
             finalState = KIconLoader::DisabledState;
-        } else if (state == "last") {
+        } else if (state == QStringLiteral("last")) {
             finalState = KIconLoader::LastState;
         }
 

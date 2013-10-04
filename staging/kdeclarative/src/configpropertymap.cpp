@@ -21,7 +21,7 @@
 
 #include <QDebug>
 
-#include <kcoreconfigskeleton.h>
+#include <kconfigskeleton.h>
 
 
 ConfigPropertyMap::ConfigPropertyMap(KConfigSkeleton *config, QObject *parent)

@@ -91,13 +91,13 @@ void KDeclarative::setupBindings()
         it.toBack();
         while (it.hasPrevious()) {
             QString path = it.previous();
-            path = path.left(path.lastIndexOf("/"));
-            d->declarativeEngine.data()->addImportPath(path + "/platformqml/" + target);
+            path = path.left(path.lastIndexOf(QLatin1Char('/')));
+            d->declarativeEngine.data()->addImportPath(path + QStringLiteral("/platformqml/") + target);
         }
     }
 
     // setup ImageProvider for KDE icons
-    d->declarativeEngine.data()->addImageProvider(QString("icon"), new KIconProvider);
+    d->declarativeEngine.data()->addImageProvider(QString(QStringLiteral("icon")), new KIconProvider);
 }
 
 void KDeclarative::setupQmlJsDebugger()
@@ -126,11 +126,11 @@ QStringList KDeclarative::runtimePlatform()
 {
     static QStringList *runtimePlatform = 0;
     if (!runtimePlatform) {
-        const QString env = getenv("PLASMA_PLATFORM");
-        runtimePlatform = new QStringList(env.split(":", QString::SkipEmptyParts));
+        const QString env = QString::fromLocal8Bit(getenv("PLASMA_PLATFORM"));
+        runtimePlatform = new QStringList(env.split(QLatin1Char(':'), QString::SkipEmptyParts));
         if (runtimePlatform->isEmpty()) {
             KConfigGroup cg(KSharedConfig::openConfig(), "General");
-            *runtimePlatform = cg.readEntry("runtimePlatform", *runtimePlatform);
+            *runtimePlatform = cg.readEntry(QStringLiteral("runtimePlatform"), *runtimePlatform);
         }
     }
 

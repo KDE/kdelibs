@@ -26,7 +26,7 @@
     if (!self) { \
         return ctx->throwError(QScriptContext::TypeError, \
             QString::fromLatin1("%0.prototype.%1: this object is not a %0") \
-            .arg(#Class).arg(#__fn__)); \
+            .arg(QStringLiteral(#Class)).arg(QStringLiteral(#__fn__))); \
     }
 
 #define DECLARE_SELF2(Class, __fn__, __ret__) \
@@ -34,7 +34,7 @@
     if (!self) { \
         context()->throwError(QScriptContext::TypeError, \
             QString::fromLatin1("%0.prototype.%1: this object is not a %0") \
-            .arg(#Class).arg(#__fn__)); \
+            .arg(QStringLiteral(#Class)).arg(QStringLiteral(#__fn__))); \
         return __ret__; \
     }
 
@@ -55,7 +55,7 @@ do { \
 #define ADD_CTOR_FUNCTION(__c__, __f__) ADD_METHOD(__c__, __f__)
 
 #define ADD_ENUM_VALUE(__c__, __ns__, __v__) \
-    __c__.setProperty(#__v__, QScriptValue(__c__.engine(), __ns__::__v__))
+    __c__.setProperty(QStringLiteral(#__v__), QScriptValue(__c__.engine(), __ns__::__v__))
 
 
 #define BEGIN_DECLARE_METHOD(Class, __mtd__) \
@@ -257,7 +257,7 @@ public:
         } else if (value.isQObject()) {
             QObject *qobj = value.toQObject();
             QByteArray typeName = QMetaType::typeName(qMetaTypeId<T*>());
-            target = reinterpret_cast<T*>(qobj->qt_metacast(typeName.left(typeName.size()-1)));
+            target = reinterpret_cast<T*>(qobj->qt_metacast(typeName.left(typeName.size()-1).constData()));
         } else {
             target = 0;
         }

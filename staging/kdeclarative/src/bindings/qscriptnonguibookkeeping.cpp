@@ -20,14 +20,10 @@
 #include <QtScript/QScriptEngine>
 #include <QtScript/QScriptValueIterator>
 
-#include <config-kdeclarative.h>
-
 #include <kconfiggroup.h>
 #include <kjob.h>
-#if !KDECLARATIVE_NO_KIO
 #include <kio/global.h>
 #include <kio/job.h>
-#endif
 #include <ksharedconfig.h>
 
 Q_DECLARE_METATYPE(KConfigGroup)
@@ -45,7 +41,6 @@ void qKJobFromQScriptValue(const QScriptValue &scriptValue, KJobPtr &job)
     job = static_cast<KJob *>(obj);
 }
 
-#if !KDECLARATIVE_NO_KIO
 typedef KIO::Job* KioJobPtr;
 QScriptValue qScriptValueFromKIOJob(QScriptEngine *engine, const KioJobPtr &job)
 {
@@ -57,7 +52,6 @@ void qKIOJobFromQScriptValue(const QScriptValue &scriptValue, KioJobPtr &job)
     QObject *obj = scriptValue.toQObject();
     job = static_cast<KIO::Job *>(obj);
 }
-#endif
 
 QScriptValue qScriptValueFromKConfigGroup(QScriptEngine *engine, const KConfigGroup &config)
 {
@@ -73,14 +67,14 @@ QScriptValue qScriptValueFromKConfigGroup(QScriptEngine *engine, const KConfigGr
     QMap<QString, QString>::const_iterator end = entryMap.constEnd();
 
     //setting the group name
-    obj.setProperty("__file", QScriptValue(engine, config.config()->name()));
-    obj.setProperty("__name", QScriptValue(engine, config.name()));
+    obj.setProperty(QStringLiteral("__file"), QScriptValue(engine, config.config()->name()));
+    obj.setProperty(QStringLiteral("__name"), QScriptValue(engine, config.name()));
 
     //setting the key/value pairs
     for (it = begin; it != end; ++it) {
         //qDebug() << "setting" << it.key() << "to" << it.value();
         QString prop = it.key();
-        prop.replace(' ', '_');
+        prop.replace(QLatin1Char(' '), QLatin1Char('_'));
         obj.setProperty(prop, it.value());
     }
 
@@ -89,14 +83,14 @@ QScriptValue qScriptValueFromKConfigGroup(QScriptEngine *engine, const KConfigGr
 
 void kConfigGroupFromScriptValue(const QScriptValue& obj, KConfigGroup &config)
 {
-    config = KConfigGroup(KSharedConfig::openConfig(obj.property("__file").toString()), obj.property("__name").toString());
+    config = KConfigGroup(KSharedConfig::openConfig(obj.property(QStringLiteral("__file")).toString()), obj.property(QStringLiteral("__name")).toString());
 
     QScriptValueIterator it(obj);
 
     while (it.hasNext()) {
         it.next();
         //qDebug() << it.name() << "is" << it.value().toString();
-        if (it.name() != "__name") {
+        if (it.name() != QStringLiteral("__name")) {
             config.writeEntry(it.name(), it.value().toString());
         }
     }
@@ -106,8 +100,6 @@ void registerNonGuiMetaTypes(QScriptEngine *engine)
 {
     qScriptRegisterMetaType<KConfigGroup>(engine, qScriptValueFromKConfigGroup, kConfigGroupFromScriptValue, QScriptValue());
     qScriptRegisterMetaType<KJob *>(engine, qScriptValueFromKJob, qKJobFromQScriptValue);
-#if !KDECLARATIVE_NO_KIO
     qScriptRegisterMetaType<KIO::Job *>(engine, qScriptValueFromKIOJob, qKIOJobFromQScriptValue);
-#endif
 }
 
