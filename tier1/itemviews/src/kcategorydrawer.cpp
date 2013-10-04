@@ -27,26 +27,27 @@
 #include <kcategorizedview.h>
 #include <kcategorizedsortfilterproxymodel.h>
 
-#define HORIZONTAL_HINT 3
-
 class KCategoryDrawer::Private
 {
 public:
-    Private()
+    Private(KCategorizedView *view)
+        : view(view)
     {
     }
 
     ~Private()
     {
     }
+
+    KCategorizedView *view;
 };
 
-#ifndef KDE_NO_DEPRECATED
-KCategoryDrawer::KCategoryDrawer()
-    : d(new Private)
+
+KCategoryDrawer::KCategoryDrawer(KCategorizedView *view)
+     : QObject(view)
+    , d(new Private(view))
 {
 }
-#endif
 
 KCategoryDrawer::~KCategoryDrawer()
 {
@@ -173,90 +174,32 @@ int KCategoryDrawer::rightMargin() const
     return 0;
 }
 
-#ifndef KDE_NO_DEPRECATED
-KCategoryDrawerV2::KCategoryDrawerV2(QObject *parent)
-    : QObject(parent)
-    , KCategoryDrawer()
-{
-}
-
-KCategoryDrawerV2::~KCategoryDrawerV2()
-{
-}
-
-void KCategoryDrawerV2::mouseButtonPressed(const QModelIndex&, QMouseEvent *event)
-{
-    event->ignore();
-}
-
-void KCategoryDrawerV2::mouseButtonReleased(const QModelIndex&, QMouseEvent *event)
-{
-    event->ignore();
-}
-
-void KCategoryDrawerV2::mouseButtonMoved(const QModelIndex&, QMouseEvent *event)
-{
-    event->ignore();
-}
-
-void KCategoryDrawerV2::mouseButtonDoubleClicked(const QModelIndex&, QMouseEvent *event)
-{
-    event->ignore();
-}
-#endif
-
-class KCategoryDrawerV3::Private
-{
-public:
-    Private(KCategorizedView *view)
-        : view(view)
-    {
-    }
-
-    ~Private()
-    {
-    }
-
-    KCategorizedView *view;
-};
-
-KCategoryDrawerV3::KCategoryDrawerV3(KCategorizedView *view)
-    : KCategoryDrawerV2(view)
-    , d(new Private(view))
-{
-}
-
-KCategoryDrawerV3::~KCategoryDrawerV3()
-{
-    delete d;
-}
-
-KCategorizedView *KCategoryDrawerV3::view() const
+KCategorizedView *KCategoryDrawer::view() const
 {
     return d->view;
 }
 
-void KCategoryDrawerV3::mouseButtonPressed(const QModelIndex&, const QRect&, QMouseEvent *event)
+void KCategoryDrawer::mouseButtonPressed(const QModelIndex&, const QRect&, QMouseEvent *event)
 {
     event->ignore();
 }
 
-void KCategoryDrawerV3::mouseButtonReleased(const QModelIndex&, const QRect&, QMouseEvent *event)
+void KCategoryDrawer::mouseButtonReleased(const QModelIndex&, const QRect&, QMouseEvent *event)
 {
     event->ignore();
 }
 
-void KCategoryDrawerV3::mouseMoved(const QModelIndex&, const QRect&, QMouseEvent *event)
+void KCategoryDrawer::mouseMoved(const QModelIndex&, const QRect&, QMouseEvent *event)
 {
     event->ignore();
 }
 
-void KCategoryDrawerV3::mouseButtonDoubleClicked(const QModelIndex&, const QRect&, QMouseEvent *event)
+void KCategoryDrawer::mouseButtonDoubleClicked(const QModelIndex&, const QRect&, QMouseEvent *event)
 {
     event->ignore();
 }
 
-void KCategoryDrawerV3::mouseLeft(const QModelIndex&, const QRect&)
+void KCategoryDrawer::mouseLeft(const QModelIndex&, const QRect&)
 {
 }
 

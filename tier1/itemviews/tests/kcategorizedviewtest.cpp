@@ -63,7 +63,7 @@ int main(int argc, char **argv)
     QMainWindow *mainWindow = new QMainWindow();
     mainWindow->setMinimumSize(640, 480);
     KCategorizedView *listView = new KCategorizedView();
-    listView->setCategoryDrawer(new KCategoryDrawer());
+    listView->setCategoryDrawer(new KCategoryDrawer(listView));
     listView->setViewMode(QListView::IconMode);
     MyModel *model = new MyModel();
 

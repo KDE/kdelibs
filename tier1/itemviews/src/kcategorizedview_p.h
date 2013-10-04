@@ -140,8 +140,6 @@ public:
     KCategorizedView *q;
     KCategorizedSortFilterProxyModel *proxyModel;
     KCategoryDrawer *categoryDrawer;
-    KCategoryDrawerV2 *categoryDrawerV2;
-    KCategoryDrawerV3 *categoryDrawerV3;
     int categorySpacing;
     bool alternatingBlockColors;
     bool collapsibleBlocks;

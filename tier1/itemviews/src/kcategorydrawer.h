@@ -33,21 +33,28 @@ class QStyleOption;
 class KCategorizedView;
 
 /**
-  * @deprecated
-  *
   * The category drawing is performed by this class. It also gives information about the category
   * height and margins.
   *
-  * @warning Please use KCategoryDrawerV3 instead
   */
 class ITEMVIEWS_EXPORT KCategoryDrawer
+    : public QObject
 {
-public:
-#ifndef KDE_NO_DEPRECATED
-    ITEMVIEWS_DEPRECATED KCategoryDrawer();
-#endif
+    friend class KCategorizedView;
 
+public:
+    /*
+     * Construct a category drawer for a given view
+     *
+     * @since 5.0
+     */
+    KCategoryDrawer(KCategorizedView *view);
     virtual ~KCategoryDrawer();
+
+    /**
+      * @return The view this category drawer is associated with.
+      */
+    KCategorizedView *view() const;
 
     /**
       * This method purpose is to draw a category represented by the given
@@ -81,39 +88,6 @@ public:
       */
     virtual int rightMargin() const;
 
-private:
-    class Private;
-    Private *const d;
-};
-
-
-/**
-  * @deprecated
-  *
-  * @since 4.4
-  *
-  * @warning Please use KCategoryDrawerV3 instead
-  */
-class ITEMVIEWS_EXPORT KCategoryDrawerV2
-    : public QObject
-    , public KCategoryDrawer
-{
-    Q_OBJECT
-
-public:
-#ifndef KDE_NO_DEPRECATED
-    ITEMVIEWS_DEPRECATED KCategoryDrawerV2(QObject *parent = 0);
-    virtual ~KCategoryDrawerV2();
-
-    ITEMVIEWS_DEPRECATED virtual void mouseButtonPressed(const QModelIndex &index, QMouseEvent *event);
-
-    ITEMVIEWS_DEPRECATED virtual void mouseButtonReleased(const QModelIndex &index, QMouseEvent *event);
-
-    ITEMVIEWS_DEPRECATED virtual void mouseButtonMoved(const QModelIndex &index, QMouseEvent *event);
-
-    ITEMVIEWS_DEPRECATED virtual void mouseButtonDoubleClicked(const QModelIndex &index, QMouseEvent *event);
-#endif
-
 Q_SIGNALS:
     /**
       * This signal becomes emitted when collapse or expand has been clicked.
@@ -128,28 +102,6 @@ Q_SIGNALS:
       * the connected slot can perform the needed changes (view, model, selection model, delegate...)
       */
     void actionRequested(int action, const QModelIndex &index);
-};
-
-/**
-  * @since 4.5
-  */
-class ITEMVIEWS_EXPORT KCategoryDrawerV3
-    : public KCategoryDrawerV2
-{
-    friend class KCategorizedView;
-
-public:
-    KCategoryDrawerV3(KCategorizedView *view);
-    virtual ~KCategoryDrawerV3();
-
-    /**
-      * @return The view this category drawer is associated with.
-      */
-    KCategorizedView *view() const;
-
-    using KCategoryDrawerV2::mouseButtonPressed;
-    using KCategoryDrawerV2::mouseButtonReleased;
-    using KCategoryDrawerV2::mouseButtonDoubleClicked;
 
 protected:
     /**
@@ -212,5 +164,16 @@ private:
     class Private;
     Private *const d;
 };
+
+#ifndef KDE_NO_DEPRECATED
+/**
+ * @deprecated Use KCategoryDrawer instead
+ */
+
+class KCategoryDrawerV3 : public KCategoryDrawer {
+public:
+      ITEMVIEWS_DEPRECATED KCategoryDrawerV3(KCategorizedView *view) : KCategoryDrawer(view) {}
+};
+#endif
 
 #endif // KCATEGORYDRAWER_H
