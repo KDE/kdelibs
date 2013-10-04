@@ -33,6 +33,8 @@
 #include <Security/Security.h>
 #include <Security/SecKeychain.h>
 
+//TODO: OSX_KEYCHAIN_PORT_DISABLED is never defined, all the enclosing code should be removed
+
 using namespace KWallet;
 
 typedef QMap<QString, QString> StringStringMap;
