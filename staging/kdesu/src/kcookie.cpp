@@ -73,7 +73,7 @@ void KCookie::getXCookie()
     }
 
     QProcess proc;
-    proc.start("xauth", QStringList() << "list" << disp);
+    proc.start(QStringLiteral("xauth"), QStringList() << QStringLiteral("list") << QString::fromUtf8(disp));
     if (!proc.waitForStarted()) {
         qCritical() << "[" << __FILE__ << ":" << __LINE__ << "] " << "Could not run xauth.";
         return;

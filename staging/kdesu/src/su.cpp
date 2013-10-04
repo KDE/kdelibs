@@ -34,9 +34,9 @@
 #endif
 
 #ifdef KDESU_USE_SUDO_DEFAULT
-#  define DEFAULT_SUPER_USER_COMMAND "sudo"
+#  define DEFAULT_SUPER_USER_COMMAND QStringLiteral("sudo")
 #else
-#  define DEFAULT_SUPER_USER_COMMAND "su"
+#  define DEFAULT_SUPER_USER_COMMAND QStringLiteral("su")
 #endif
 
 namespace KDESu {
@@ -58,7 +58,7 @@ SuProcess::SuProcess(const QByteArray &user, const QByteArray &command)
     KConfigGroup group(config, "super-user-command");
     d->superUserCommand = group.readEntry("super-user-command", DEFAULT_SUPER_USER_COMMAND);
 
-    if (d->superUserCommand != "sudo" && d->superUserCommand != "su") {
+    if (d->superUserCommand != QLatin1String("sudo") && d->superUserCommand != QLatin1String("su")) {
         qWarning() << "unknown super user command.";
         d->superUserCommand = DEFAULT_SUPER_USER_COMMAND;
     }
@@ -76,12 +76,12 @@ QString SuProcess::superUserCommand()
 
 bool SuProcess::useUsersOwnPassword()
 {
-    if (superUserCommand() == "sudo" && m_user == "root") {
+    if (superUserCommand() == QLatin1String("sudo") && m_user == "root") {
         return true;
     }
 
     KUser user;
-    return user.loginName() == m_user;
+    return user.loginName() == QString::fromUtf8(m_user);
 }
 
 int SuProcess::checkInstall(const char *password)
@@ -105,12 +105,12 @@ int SuProcess::exec(const char *password, int check)
 
     // since user may change after constructor (due to setUser())
     // we need to override sudo with su for non-root here
-    if (m_user != "root") {
-        d->superUserCommand = "su";
+    if (m_user != QByteArray("root")) {
+        d->superUserCommand = QStringLiteral("su");
     }
 
     QList<QByteArray> args;
-    if (d->superUserCommand == "sudo") {
+    if (d->superUserCommand == QLatin1String("sudo")) {
         args += "-u";
     }
 
@@ -120,21 +120,21 @@ int SuProcess::exec(const char *password, int check)
         args += m_user;
     }
 
-    if (d->superUserCommand == "su") {
+    if (d->superUserCommand == QLatin1String("su")) {
         args += "-c";
     }
     args += QByteArray(LIBEXEC_INSTALL_DIR) + "/kdesu_stub";
     args += "-"; // krazy:exclude=doublequote_chars (QList, not QString)
 
     QByteArray command;
-    if (d->superUserCommand == "sudo") {
+    if (d->superUserCommand == QLatin1String("sudo")) {
         command = __PATH_SUDO;
     } else {
         command = __PATH_SU;
     }
 
     if (QT_ACCESS(command.constData(), X_OK) != 0) {
-        command = QFile::encodeName(QStandardPaths::findExecutable(d->superUserCommand.toLatin1()));
+        command = QFile::encodeName(QStandardPaths::findExecutable(d->superUserCommand));
         if (command.isEmpty()) {
             return check ? SuNotFound : -1;
         }
@@ -154,7 +154,7 @@ int SuProcess::exec(const char *password, int check)
     }
     if (check == NeedPassword) {
         if (ret == killme) {
-            if (d->superUserCommand == "sudo") {
+            if (d->superUserCommand == QLatin1String("sudo")) {
                 // sudo can not be killed, just return
                 return ret;
             }
@@ -179,7 +179,7 @@ int SuProcess::exec(const char *password, int check)
 
     if (ret != ok) {
         kill(m_pid, SIGKILL);
-        if (d->superUserCommand != "sudo") {
+        if (d->superUserCommand != QLatin1String("sudo")) {
             waitForChild();
         }
         return SuIncorrectPassword;
