@@ -4,6 +4,7 @@ find_package(ECM 0.0.8 REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
 set(REQUIRED_QT_VERSION 5.2)
+set(KF5_VERSION "5.0.0")
 find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 find_package(Qt5 "${REQUIRED_QT_VERSION}" REQUIRED NO_MODULE COMPONENTS Test)
 
@@ -19,7 +20,18 @@ add_subdirectory( tests )
 # create a Config.cmake and a ConfigVersion.cmake file and install them
 set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KPty")
 
+# Includes
+include(FeatureSummary)
+include(ECMSetupVersion)
 include(CMakePackageConfigHelpers)
+
+ecm_setup_version(
+  ${KF5_VERSION}
+  VARIABLE_PREFIX KPTY
+  VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kpty_version.h"
+  PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KPtyConfigVersion.cmake"
+)
+
 
 configure_package_config_file(
   "${CMAKE_CURRENT_SOURCE_DIR}/KPtyConfig.cmake.in"
