@@ -76,10 +76,7 @@ set(kfile_STAT_SRCS
   kfile/kabstractfilemodule.cpp
   kfile/kencodingfiledialog.cpp
   kfile/kfiledialog.cpp
-  kfile/kimagefilepreview.cpp
-  kfile/kpreviewwidgetbase.cpp
   kfile/krecentdirs.cpp
-  kfile/kfilemetapreview.cpp
 )
 
 if(NOT KIO_NO_SOLID)
@@ -169,8 +166,6 @@ install( FILES
   kfile/kabstractfilewidget.h
   kfile/kencodingfiledialog.h
   kfile/kfiledialog.h
-  kfile/kimagefilepreview.h
-  kfile/kpreviewwidgetbase.h
   kfile/kpropsdialog.h
   kfile/krecentdirs.h
 

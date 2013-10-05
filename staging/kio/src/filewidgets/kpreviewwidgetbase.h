@@ -23,7 +23,7 @@
 
 #include <QWidget>
 
-#include <kio/kio_export.h>
+#include <kio/kiofilewidgets_export.h>
 
 class QUrl;
 
@@ -40,7 +40,7 @@ class QUrl;
  * @short Abstract baseclass for all preview widgets.
  * @author Frerich Raabe <raabe@kde.org>
  */
-class KIO_EXPORT KPreviewWidgetBase : public QWidget
+class KIOFILEWIDGETS_EXPORT KPreviewWidgetBase : public QWidget
 {
     Q_OBJECT
 

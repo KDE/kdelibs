@@ -37,6 +37,12 @@ endif()
 
 add_subdirectory(widgets)
 
+if (NOT EXISTS ${_INCDIR}/kiofilewidgets_export.h)
+    file(WRITE ${_INCDIR}/kiofilewidgets_export.h "#include \"${CMAKE_CURRENT_BINARY_DIR}/filewidgets/kiofilewidgets_export.h\"\n")
+endif()
+
+add_subdirectory(filewidgets)
+
 if ( NOT WINCE )
     add_subdirectory(kssld)
 endif ( NOT WINCE )

@@ -27,8 +27,6 @@
 #include <kio/previewjob.h>
 #include <kconfiggroup.h>
 
-#include <defaults-kfile.h>
-
 /**** KImageFilePreview ****/
 
 class KImageFilePreview::KImageFilePreviewPrivate

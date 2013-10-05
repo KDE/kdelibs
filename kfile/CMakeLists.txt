@@ -61,6 +61,7 @@ add_library(kfile ${kfile_LIB_SRCS})
 generate_export_header(kfile)
 target_link_libraries(kfile
    ${KDE4_KIO_LIBS}
+   KIOFileWidgets
    ${ZLIB_LIBRARY}
    ${Solid_LIBRARIES}
    ${X11_LIBRARIES}

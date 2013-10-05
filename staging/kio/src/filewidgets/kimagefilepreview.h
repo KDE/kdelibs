@@ -23,7 +23,7 @@ namespace KIO { class PreviewJob; }
 /**
  * Image preview widget for the file dialog.
  */
-class KIO_EXPORT KImageFilePreview : public KPreviewWidgetBase
+class KIOFILEWIDGETS_EXPORT KImageFilePreview : public KPreviewWidgetBase
 {
 	Q_OBJECT
 
