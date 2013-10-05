@@ -50,7 +50,8 @@ void JobTests::initTestCase ()
     ThreadWeaver::setDebugLevel(true, 1);
 }
 
-// call finish() before leave a test to make sure the queue is empty
+// Call finish() before leaving a test or use a WaitForIdleAndFinished object to make sure the queue is empty
+// and in an idle state.GD
 
 void JobTests::WeaverLazyThreadCreationTest()
 {
@@ -812,6 +813,17 @@ void JobTests::DequeueSuspendedSequenceTest()
     weaver.enqueueRaw(sequence.data());
     weaver.dequeue();
     // don't crash
+}
+
+void JobTests::IdDecoratorDecoratesTest()
+{
+    using namespace ThreadWeaver;
+    QString sequence;
+    JobPointer job(new IdDecorator(new AppendCharacterJob('a', &sequence)));
+    WaitForIdleAndFinished w(Weaver::instance());
+    Weaver::instance()->enqueue(job);
+    Weaver::instance()->finish();
+    QCOMPARE(sequence, QString::fromLatin1("a"));
 }
 
 QTEST_MAIN ( JobTests )

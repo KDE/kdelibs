@@ -45,7 +45,8 @@ private Q_SLOTS:
     void JobSignalsAreEmittedAsynchronouslyTest();
     void JobSignalsDeliveryTest();
     void JobPointerExecutionTest();
-    void DequeueSuspendedSequenceTest(); //FIXME ...test?
+    void DequeueSuspendedSequenceTest();
+    void IdDecoratorDecoratesTest();
 
 public Q_SLOTS: // slots used during tests that are not test cases
     void jobStarted(ThreadWeaver::JobPointer);
