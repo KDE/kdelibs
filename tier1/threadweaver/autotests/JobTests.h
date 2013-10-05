@@ -47,6 +47,8 @@ private Q_SLOTS:
     void JobPointerExecutionTest();
     void DequeueSuspendedSequenceTest();
     void IdDecoratorDecoratesTest();
+    void IdDecoratorAutoDeleteTest();
+    void IdDecoratorSingleAllocationTest();
 
 public Q_SLOTS: // slots used during tests that are not test cases
     void jobStarted(ThreadWeaver::JobPointer);

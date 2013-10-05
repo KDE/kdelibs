@@ -19,8 +19,11 @@ IdDecorator::IdDecorator(JobInterface *decoratee, bool autoDelete)
 
 IdDecorator::~IdDecorator()
 {
-    Q_ASSERT(d1);
-    delete job();
+    // Do not assert here. IdDecorator can decorate a null pointer. Only assert if a method is called on a decorared
+    // null  pointer.
+    if (autoDelete()) {
+        delete job();
+    }
 }
 
 QMutex *IdDecorator::mutex() const
