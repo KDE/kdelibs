@@ -17,12 +17,16 @@ class JobSequence;
 class THREADWEAVER_EXPORT IdDecorator : public JobInterface
 {
 public:
-    explicit IdDecorator(JobInterface* job);
+    explicit IdDecorator(JobInterface* job, bool autoDelete = true);
     ~IdDecorator() Q_DECL_OVERRIDE;
     /** Retrieve the decorated job. */
     const JobInterface* job() const;
     /** Retrieve the decorated job. */
     JobInterface* job();
+    /** Auto-delete the decoratee or not. */
+    void setAutoDelete(bool onOff);
+    /** Will the decoratee be auto-deleted? */
+    bool autoDelete() const;
     /** Retrieve the decorated job as a JobCollection.
      *  If the decorated Job is not a JobCollection, 0 is returned. */
     const JobCollection* collection() const;
@@ -62,8 +66,10 @@ protected:
     QMutex* mutex() const Q_DECL_OVERRIDE;
 
 private:
-    class Private;
-    Private* const d;
+    class Private1;
+    Private1* const d1;
+    class Private2;
+    Private2* d2;
 };
 
 }
