@@ -49,6 +49,8 @@ install(TARGETS KDESu EXPORT KDESuTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 ########### next target ###############
 
+include(ECMMarkNonGuiExecutable)
+
 add_executable(kdesu_stub kdesu_stub.c)
 ecm_mark_nongui_executable(kdesu_stub)
 
