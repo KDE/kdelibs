@@ -59,8 +59,8 @@ KWidgetItemDelegatePrivate::KWidgetItemDelegatePrivate(KWidgetItemDelegate *q, Q
     , model(0)
     , selectionModel(0)
     , viewDestroyed(false)
-    , q(q)
     , initializeTimer(new QTimer(this))
+    , q(q)
 {
     initializeTimer->setInterval(50);
     connect(initializeTimer, SIGNAL(timeout()), this, SLOT(initializeModel()));
