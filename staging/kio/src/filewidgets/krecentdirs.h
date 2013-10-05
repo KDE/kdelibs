@@ -30,7 +30,7 @@
 
 #include <QtCore/QStringList>
 
-#include <kio/kio_export.h>
+#include <kio/kiofilewidgets_export.h>
 
 /**
  * The goal of this namespace is to make sure that, when the user needs to 
@@ -57,21 +57,21 @@ namespace KRecentDirs
      *
      * @since 4.6
      */
-    KIO_EXPORT QStringList list(const QString &fileClass);
+    KIOFILEWIDGETS_EXPORT QStringList list(const QString &fileClass);
     
     /**
      * Returns the most recently used directory accociated with this file-class.
      *
      * @since 4.6
      */
-    KIO_EXPORT QString dir(const QString &fileClass);
+    KIOFILEWIDGETS_EXPORT QString dir(const QString &fileClass);
     
     /**
      * Associates @p directory with @p fileClass
      *
      * @since 4.6
      */
-    KIO_EXPORT void add(const QString &fileClass, const QString &directory);
+    KIOFILEWIDGETS_EXPORT void add(const QString &fileClass, const QString &directory);
 }
 
 #endif

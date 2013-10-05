@@ -21,7 +21,7 @@
 #define KFILEPLACEEDITDIALOG_H
 
 // Not exported anymore, only used internally.
-//#include <kfile_export.h>
+//#include <kio/kiofilewidgets_export.h>
 
 #include <QDialog>
 #include <QUrl>

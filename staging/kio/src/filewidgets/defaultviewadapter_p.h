@@ -20,7 +20,7 @@
 #ifndef DEFAULTVIEWADAPTER_H
 #define DEFAULTVIEWADAPTER_H
 
-#include "kio_export.h"
+#include "kio/kiofilewidgets_export.h"
 #include "kabstractviewadapter_p.h"
 
 class QAbstractItemView;
@@ -31,7 +31,7 @@ namespace KIO
      * Implementation of the view adapter for the default case when
      * an instance of QAbstractItemView is used as view.
      */
-    class KIO_EXPORT DefaultViewAdapter : public KAbstractViewAdapter
+    class KIOFILEWIDGETS_EXPORT DefaultViewAdapter : public KAbstractViewAdapter
     {
     public:
         DefaultViewAdapter(QAbstractItemView* view, QObject* parent);

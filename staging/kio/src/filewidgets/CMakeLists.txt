@@ -1,11 +1,38 @@
 project(KIOFileWidgets)
 
-# configure_file(config-kiofilewidgets.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kiofilewidgets.h)
+configure_file(config-kiofilewidgets.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kiofilewidgets.h)
 
 set(kiofilewidgets_SRCS
   kfilemetapreview.cpp
   kimagefilepreview.cpp
   kpreviewwidgetbase.cpp
+  krecentdirs.cpp
+  defaultviewadapter.cpp
+
+  kdiroperator.cpp
+  kdiroperatordetailview.cpp
+  kdirsortfilterproxymodel.cpp #used in combination with kdirmodel.cpp
+  kfilebookmarkhandler.cpp
+  kfilefiltercombo.cpp
+  kfiletreeview.cpp
+  kfilewidget.cpp
+  kfileplacesitem.cpp
+  kfileplacesmodel.cpp
+  kfileplacessharedbookmarks.cpp
+  kfileplacesview.cpp
+  kfileplaceeditdialog.cpp
+  kfilepreviewgenerator.cpp
+  knameandurlinputdialog.cpp
+  knewfilemenu.cpp
+  kurlnavigatordropdownbutton.cpp
+  kurlnavigatorbuttonbase.cpp
+  kurlnavigatorbutton.cpp
+  kurlnavigatorplacesselector.cpp
+  kurlnavigatorprotocolcombo.cpp
+  kurlnavigatortogglebutton.cpp
+  kurlnavigator.cpp
+  kurlnavigatormenu.cpp
+
 )
 
 add_library(KIOFileWidgets ${kiofilewidgets_SRCS})
@@ -42,6 +69,19 @@ install( FILES
 install( FILES
   kimagefilepreview.h
   kpreviewwidgetbase.h
+  krecentdirs.h
+
+  kabstractfilewidget.h
+  kdiroperator.h
+  kdirsortfilterproxymodel.h
+  kfilefiltercombo.h
+  kfileplacesmodel.h
+  kfileplacesview.h
+  kfilepreviewgenerator.h
+  kfilewidget.h
+  kurlnavigator.h
+  knewfilemenu.h
+  knameandurlinputdialog.h
 
    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
 

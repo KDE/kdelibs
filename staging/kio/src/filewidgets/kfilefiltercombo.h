@@ -20,13 +20,13 @@
 #ifndef KFILEFILTERCOMBO_H
 #define KFILEFILTERCOMBO_H
 
-#include <kfile_export.h>
+#include <kio/kiofilewidgets_export.h>
 
 #include <QtCore/QStringList>
 
 #include <kcombobox.h>
 
-class KFILE_EXPORT KFileFilterCombo : public KComboBox
+class KIOFILEWIDGETS_EXPORT KFileFilterCombo : public KComboBox
 {
     Q_OBJECT
 

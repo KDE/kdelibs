@@ -5,7 +5,14 @@ if( Qt5UiTools_FOUND )
 	set(krossmoduleforms_SRCS form.cpp)
 	add_library(krossmoduleforms MODULE ${krossmoduleforms_SRCS})
 
-	target_link_libraries(krossmoduleforms Qt5::UiTools KParts ${KDE4_KFILE_LIBS} krosscore krossui KI18n)
+   target_link_libraries(krossmoduleforms
+      Qt5::UiTools
+      KParts
+      ${KDE4_KFILE_LIBS}
+      KIOFileWidgets
+      krosscore
+      krossui
+      KI18n)
 	install(TARGETS krossmoduleforms DESTINATION ${PLUGIN_INSTALL_DIR})
 endif( Qt5UiTools_FOUND )
 

@@ -32,12 +32,12 @@
 #include "kurlcombobox.h"
 #include "kurlnavigator.h"
 #include "kfilepreviewgenerator.h"
-#include <config-kfile.h>
+#include <config-kiofilewidgets.h>
+#include <defaults-kfile.h>
 
 #include <kactioncollection.h>
 #include <kconfiggroup.h>
 #include <kdiroperator.h>
-#include <kdirselectdialog.h>
 #include <kfilefiltercombo.h>
 #include <kimagefilepreview.h>
 #include <krecentdocument.h>

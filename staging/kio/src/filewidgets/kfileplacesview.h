@@ -19,7 +19,7 @@
 #ifndef KFILEPLACESVIEW_H
 #define KFILEPLACESVIEW_H
 
-#include <kfile_export.h>
+#include <kio/kiofilewidgets_export.h>
 
 #include <QListView>
 
@@ -31,7 +31,7 @@ class QContextMenuEvent;
 /**
  * This class allows to display a KFilePlacesModel.
  */
-class KFILE_EXPORT KFilePlacesView : public QListView
+class KIOFILEWIDGETS_EXPORT KFilePlacesView : public QListView
 {
     Q_OBJECT
 public:

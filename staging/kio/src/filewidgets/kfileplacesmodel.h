@@ -20,7 +20,7 @@
 #ifndef KFILEPLACESMODEL_H
 #define KFILEPLACESMODEL_H
 
-#include <kfile_export.h>
+#include <kio/kiofilewidgets_export.h>
 
 #include <QtCore/QAbstractItemModel>
 #include <QUrl>
@@ -36,7 +36,7 @@ class QAction;
  * where user can access files. Only revelant when
  * used with QListView or QTableView.
  */
-class KFILE_EXPORT KFilePlacesModel : public QAbstractItemModel
+class KIOFILEWIDGETS_EXPORT KFilePlacesModel : public QAbstractItemModel
 {
     Q_OBJECT
 public:

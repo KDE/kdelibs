@@ -29,7 +29,8 @@
 #include "kpreviewwidgetbase.h"
 #include "knewfilemenu.h"
 
-#include <config-kfile.h>
+#include <config-kiofilewidgets.h>
+#include <defaults-kfile.h> // ConfigGroup, DefaultShowHidden, DefaultDirsFirst, DefaultSortReversed
 
 #include <QApplication>
 #include <QHeaderView>

@@ -22,7 +22,7 @@
 #include <QDebug>
 #include <klocalizedstring.h>
 #include <qmimedatabase.h>
-#include <config-kfile.h>
+#include <config-kiofilewidgets.h>
 #include <QtCore/QEvent>
 #include <QLineEdit>
 

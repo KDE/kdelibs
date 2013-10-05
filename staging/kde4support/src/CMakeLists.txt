@@ -214,6 +214,7 @@ target_link_libraries(KDE4Support
    ${KWidgetsAddons_LIBRARIES}
    KConfigWidgets
    KIOCore
+   KIOFileWidgets
    kio
    ${KIO_EXTRA_LIBS}
    KI18n

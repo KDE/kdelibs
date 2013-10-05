@@ -26,12 +26,12 @@
 
 #include <QUrl>
 
-#include <kfile_export.h>
+#include <kio/kiofilewidgets_export.h>
 
 /**
  * The file treeview offers a treeview on the filesystem.
  */
-class KFILE_EXPORT KFileTreeView : public QTreeView // exported only for kfiletreeviewtest
+class KIOFILEWIDGETS_EXPORT KFileTreeView : public QTreeView // exported only for kfiletreeviewtest
 {
     Q_OBJECT
 

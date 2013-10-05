@@ -49,7 +49,6 @@ include(ConfigureChecks.cmake)
 configure_file(kio/config-kio.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kio/config-kio.h )
 
 set(kiocore_STAT_SRCS
-  kio/defaultviewadapter.cpp
   kio/kdbusservicestarter.cpp
   kio/kimageio.cpp
 )
@@ -76,7 +75,6 @@ set(kfile_STAT_SRCS
   kfile/kabstractfilemodule.cpp
   kfile/kencodingfiledialog.cpp
   kfile/kfiledialog.cpp
-  kfile/krecentdirs.cpp
 )
 
 if(NOT KIO_NO_SOLID)
@@ -119,7 +117,7 @@ target_include_directories(kio PRIVATE
    ${kiocore_BINARY_DIR}/..   # kio_version.h
 )
 
-target_link_libraries(kio KIOWidgets KIOCore ${KCoreAddons_LIBRARIES} KI18n KCompletion KJobWidgets KIconThemes XmlGui ${KWidgetsAddons_LIBRARIES} ${KWindowSystem_LIBRARIES} ${ZLIB_LIBRARY} Qt5::Network Qt5::Xml Qt5::Svg ${X11_LIBRARIES} ${KIO_EXTRA_LIBS} KWallet KCrash KTextWidgets Qt5::X11Extras)
+target_link_libraries(kio KIOWidgets KIOCore KIOFileWidgets ${KCoreAddons_LIBRARIES} KI18n KCompletion KJobWidgets KIconThemes XmlGui ${KWidgetsAddons_LIBRARIES} ${KWindowSystem_LIBRARIES} ${ZLIB_LIBRARY} Qt5::Network Qt5::Xml Qt5::Svg ${X11_LIBRARIES} ${KIO_EXTRA_LIBS} KWallet KCrash KTextWidgets Qt5::X11Extras)
 target_link_libraries(kio LINK_INTERFACE_LIBRARIES KIOWidgets KIOCore Qt5::Network Qt5::Xml Qt5::Widgets KWidgetsAddons)
 
 if(ACL_FOUND)
@@ -163,11 +161,9 @@ install( FILES
   kio/kdbusservicestarter.h
   kio/kimageio.h
   kfile/kabstractfilemodule.h
-  kfile/kabstractfilewidget.h
   kfile/kencodingfiledialog.h
   kfile/kfiledialog.h
   kfile/kpropsdialog.h
-  kfile/krecentdirs.h
 
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
 

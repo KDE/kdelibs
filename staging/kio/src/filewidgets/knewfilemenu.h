@@ -23,7 +23,7 @@
 
 #include <QUrl>
 #include <kactionmenu.h>
-#include <kfile_export.h>
+#include <kio/kiofilewidgets_export.h>
 
 class KJob;
 
@@ -51,7 +51,7 @@ class KNewFileMenuPrivate;
  * from Christoph Pickart <pickart@iam.uni-bonn.de>
  * @since 4.5
  */
-class KFILE_EXPORT KNewFileMenu : public KActionMenu
+class KIOFILEWIDGETS_EXPORT KNewFileMenu : public KActionMenu
 {
   Q_OBJECT
 public:

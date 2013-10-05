@@ -28,7 +28,7 @@
 #ifndef KFILEWIDGET_H
 #define KFILEWIDGET_H
 
-#include "kfile_export.h"
+#include "kio/kiofilewidgets_export.h"
 #include "kabstractfilewidget.h"
 #include <QWidget>
 
@@ -37,7 +37,7 @@ class KJob;
 class KFileItem;
 class KDirOperator;
 
-class KFILE_EXPORT KFileWidget : public QWidget, public KAbstractFileWidget
+class KIOFILEWIDGETS_EXPORT KFileWidget : public QWidget, public KAbstractFileWidget
 {
     Q_OBJECT
     Q_INTERFACES(KAbstractFileWidget)

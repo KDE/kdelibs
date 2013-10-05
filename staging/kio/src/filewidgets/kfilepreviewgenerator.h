@@ -20,7 +20,7 @@
 #ifndef KFILEPREVIEWGENERATOR_H
 #define KFILEPREVIEWGENERATOR_H
 
-#include <kfile_export.h>
+#include <kio/kiofilewidgets_export.h>
 
 #include <QtCore/QObject>
 
@@ -47,7 +47,7 @@ class QAbstractProxyModel;
  *
  * @since 4.2
  */
-class KFILE_EXPORT KFilePreviewGenerator : public QObject
+class KIOFILEWIDGETS_EXPORT KFilePreviewGenerator : public QObject
 {
     Q_OBJECT
 

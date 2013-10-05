@@ -27,7 +27,7 @@
 
 #include <kcategorizedsortfilterproxymodel.h>
 
-#include <kfile_export.h>
+#include <kio/kiofilewidgets_export.h>
 
 /**
  * @brief Acts as proxy model for KDirModel to sort and filter
@@ -47,7 +47,7 @@
  *
  * @author Dominic Battre, Martin Pool and Peter Penz
  */
-class KFILE_EXPORT KDirSortFilterProxyModel
+class KIOFILEWIDGETS_EXPORT KDirSortFilterProxyModel
     : public KCategorizedSortFilterProxyModel
 {
     Q_OBJECT

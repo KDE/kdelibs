@@ -37,7 +37,7 @@
 #include <kdirnotify.h>
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
-#include <knotification.h>
+//#include <knotification.h>
 #include <kio/job.h>
 #include <kio/jobuidelegate.h>
 #include <kjob.h>
@@ -649,7 +649,7 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
             QDataStream stream(&packedArgs, QIODevice::WriteOnly);
             stream << int(1);
             KIO::Job *job = KIO::special(QUrl("trash:/"), packedArgs);
-            KNotification::event("Trash: emptied", QString() , QPixmap() , 0, KNotification::DefaultEvent);
+            //KNotification::event("Trash: emptied", QString() , QPixmap() , 0, KNotification::DefaultEvent);
             KJobWidgets::setWindow(job, parentWidget());
             connect(job, SIGNAL(result(KJob*)), SLOT(_k_trashUpdated(KJob*)));
         }

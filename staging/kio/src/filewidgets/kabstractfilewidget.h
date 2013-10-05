@@ -28,7 +28,7 @@
 class KPreviewWidgetBase;
 
 #include "kfile.h"
-#include <kio/kio_export.h>
+#include <kio/kiofilewidgets_export.h>
 #include <qmimetype.h>
 
 class QUrl;
@@ -55,7 +55,7 @@ class KFileFilterCombo;
  * <li>accepted()</li>
  * </ul>
  */
-class KIO_EXPORT KAbstractFileWidget
+class KIOFILEWIDGETS_EXPORT KAbstractFileWidget
 {
 public:
     virtual ~KAbstractFileWidget() {}

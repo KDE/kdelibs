@@ -19,9 +19,9 @@
 
 #include "kfilepreviewgenerator.h"
 
-#include "../kio/kio/defaultviewadapter_p.h" // KDE5 TODO: move this class here
+#include "defaultviewadapter_p.h"
 #include <imagefilter_p.h> // from kiowidgets
-#include <config-kfile.h> // for HAVE_XRENDER
+#include <config-kiofilewidgets.h> // for HAVE_XRENDER
 #include <kconfiggroup.h>
 #include <kfileitem.h>
 #include <kiconeffect.h>
