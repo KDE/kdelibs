@@ -168,7 +168,6 @@ add_subdirectory( includes )
 add_subdirectory( doc )
 
 add_subdirectory( knewstuff )
-add_subdirectory( knotify )
 
 add_subdirectory( kdewidgets )
 
