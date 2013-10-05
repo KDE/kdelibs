@@ -42,8 +42,6 @@ class KBookmarkActionInterface;
 
 class KBookmarkMenuPrivate; // Not implemented
 
-namespace KIO { class Job; }
-
 /**
  * This class provides a bookmark menu.  It is typically used in
  * cooperation with KActionMenu but doesn't have to be.
