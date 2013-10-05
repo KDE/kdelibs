@@ -228,7 +228,6 @@ void JobTests::EmitStartedOnFirstElementTest()
         ThreadWeaver::debug(2, "JobTests::EmitStartedOnFirstElementTest: waiting (%i)\n", i);
         qApp->processEvents();
     }
-    QSKIP("This test is too fragile"); // PENDING(Mirko): fix
     QCOMPARE(collectionStartedSignalSpy.count(), 1);
     QCOMPARE(collectionDoneSignalSpy.count(), 1);
     QVERIFY(ThreadWeaver::Weaver::instance()->isIdle());
@@ -824,6 +823,35 @@ void JobTests::IdDecoratorDecoratesTest()
     Weaver::instance()->enqueue(job);
     Weaver::instance()->finish();
     QCOMPARE(sequence, QString::fromLatin1("a"));
+}
+
+void JobTests::IdDecoratorAutoDeleteTest()
+{
+    using namespace ThreadWeaver;
+    IdDecorator id(0);
+    QCOMPARE(id.autoDelete(), true); // autoDelete is on by default
+    id.setAutoDelete(false);
+    QCOMPARE(id.autoDelete(), false);
+    id.setAutoDelete(true);
+    QCOMPARE(id.autoDelete(), true);
+    // now do not crash, even though id decorates a null pointer
+}
+
+void JobTests::IdDecoratorSingleAllocationTest()
+{
+    using namespace ThreadWeaver;
+
+    struct DecoratedJob : public ThreadWeaver::IdDecorator {
+        QString sequence;
+        AppendCharacterJob job;
+        DecoratedJob() : ThreadWeaver::IdDecorator(&job, false), job('a', &sequence) {}
+    };
+
+    WaitForIdleAndFinished w(Weaver::instance());
+    DecoratedJob job;
+    Weaver::instance()->enqueueRaw(&job);
+    Weaver::instance()->finish();
+    QCOMPARE(job.sequence, QString::fromLatin1("a"));
 }
 
 QTEST_MAIN ( JobTests )
