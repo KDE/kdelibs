@@ -73,18 +73,18 @@ public:
 protected:
 
     /// Reimplemented from KArchive
-    virtual bool doWriteSymLink(const QString &name, const QString &target,
-                                const QString &user, const QString &group,
-                                mode_t perm, const QDateTime& atime, const QDateTime& mtime, const QDateTime& ctime);
+    bool doWriteSymLink(const QString &name, const QString &target,
+                        const QString &user, const QString &group,
+                        mode_t perm, const QDateTime &atime, const QDateTime &mtime, const QDateTime &ctime) Q_DECL_OVERRIDE;
     /// Reimplemented from KArchive
-    virtual bool doWriteDir( const QString& name, const QString& user, const QString& group,
-                             mode_t perm, const QDateTime& atime, const QDateTime& mtime, const QDateTime& ctime );
+    bool doWriteDir(const QString &name, const QString &user, const QString &group,
+                    mode_t perm, const QDateTime &atime, const QDateTime &mtime, const QDateTime &ctime) Q_DECL_OVERRIDE;
     /// Reimplemented from KArchive
-    virtual bool doPrepareWriting( const QString& name, const QString& user,
-                                   const QString& group, qint64 size, mode_t perm,
-                                   const QDateTime& atime, const QDateTime& mtime, const QDateTime& ctime );
+    bool doPrepareWriting(const QString &name, const QString &user,
+                          const QString &group, qint64 size, mode_t perm,
+                          const QDateTime &atime, const QDateTime &mtime, const QDateTime &ctime) Q_DECL_OVERRIDE;
     /// Reimplemented from KArchive
-    virtual bool doFinishWriting( qint64 size );
+    bool doFinishWriting(qint64 size) Q_DECL_OVERRIDE;
 
     /**
      * Opens the archive for reading.
@@ -92,15 +92,15 @@ protected:
      * and creates the KArchiveDirectory/KArchiveFile entries.
      * @param mode the mode of the file
      */
-    virtual bool openArchive( QIODevice::OpenMode mode );
-    virtual bool closeArchive();
+    bool openArchive(QIODevice::OpenMode mode) Q_DECL_OVERRIDE;
+    bool closeArchive() Q_DECL_OVERRIDE;
 
-    virtual bool createDevice( QIODevice::OpenMode mode );
+    bool createDevice(QIODevice::OpenMode mode) Q_DECL_OVERRIDE;
 
 private:
 
 protected:
-    virtual void virtual_hook( int id, void* data );
+    void virtual_hook(int id, void* data) Q_DECL_OVERRIDE;
 private:
     class KTarPrivate;
     KTarPrivate* const d;

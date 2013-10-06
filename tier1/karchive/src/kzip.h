@@ -120,24 +120,24 @@ public:
      * @param size the size of the chunk
      * @return true if successful, false otherwise
      */
-    virtual bool writeData( const char* data, qint64 size );
+    bool writeData(const char *data, qint64 size) Q_DECL_OVERRIDE;
 
 protected:
     /// Reimplemented from KArchive
-    virtual bool doWriteSymLink(const QString &name, const QString &target,
-                                const QString &user, const QString &group,
-                                mode_t perm, const QDateTime& atime, const QDateTime& mtime, const QDateTime& ctime);
+    bool doWriteSymLink(const QString &name, const QString &target,
+                        const QString &user, const QString &group,
+                        mode_t perm, const QDateTime &atime, const QDateTime &mtime, const QDateTime &ctime) Q_DECL_OVERRIDE;
     /// Reimplemented from KArchive
-    virtual bool doPrepareWriting(const QString& name, const QString& user,
-                                 const QString& group, qint64 size, mode_t perm,
-                                 const QDateTime& atime, const QDateTime& mtime, const QDateTime& creationTime );
+    bool doPrepareWriting(const QString &name, const QString &user,
+                          const QString &group, qint64 size, mode_t perm,
+                          const QDateTime &atime, const QDateTime &mtime, const QDateTime &creationTime) Q_DECL_OVERRIDE;
 
     /**
      * Write data to a file that has been created using prepareWriting().
      * @param size the size of the file
      * @return true if successful, false otherwise
      */
-    virtual bool doFinishWriting( qint64 size );
+    bool doFinishWriting(qint64 size) Q_DECL_OVERRIDE;
 
     /**
      * Opens the archive for reading.
@@ -145,17 +145,17 @@ protected:
      * and creates the KArchiveDirectory/KArchiveFile entries.
      * @param mode the mode of the file
      */
-    virtual bool openArchive( QIODevice::OpenMode mode );
+    bool openArchive(QIODevice::OpenMode mode) Q_DECL_OVERRIDE;
 
     /// Closes the archive
-    virtual bool closeArchive();
+    bool closeArchive() Q_DECL_OVERRIDE;
 
     /// Reimplemented from KArchive
-    virtual bool doWriteDir( const QString& name, const QString& user, const QString& group, mode_t perm,
-                             const QDateTime& atime, const QDateTime& mtime, const QDateTime& ctime );
+    bool doWriteDir(const QString &name, const QString &user, const QString &group, mode_t perm,
+                    const QDateTime &atime, const QDateTime &mtime, const QDateTime &ctime) Q_DECL_OVERRIDE;
 
 protected:
-    virtual void virtual_hook( int id, void* data );
+    void virtual_hook(int id, void* data) Q_DECL_OVERRIDE;
 
 private:
     class KZipPrivate;
@@ -203,7 +203,7 @@ public:
      * @return the content of this file.
      * Call data() with care (only once per file), this data isn't cached.
      */
-    virtual QByteArray data() const;
+    QByteArray data() const Q_DECL_OVERRIDE;
 
     /**
      * This method returns a QIODevice to read the file contents.
@@ -212,7 +212,7 @@ public:
      * who will have to delete it.
      * The returned device auto-opens (in readonly mode), no need to open it.
      */
-    virtual QIODevice* createDevice() const;
+    QIODevice* createDevice() const Q_DECL_OVERRIDE;
 
 private:
     class KZipFileEntryPrivate;
