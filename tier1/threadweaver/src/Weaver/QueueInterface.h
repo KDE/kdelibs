@@ -8,7 +8,7 @@ namespace ThreadWeaver {
 class Job;
 class Thread;
 
-class QueueInterface {
+class THREADWEAVER_EXPORT QueueInterface {
 public:
     virtual ~QueueInterface() {}
 
