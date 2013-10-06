@@ -35,34 +35,26 @@
 #include <zlib.h>
 #include <string.h>
 
-const int max_path_len = 4095;	// maximum number of character a path may contain
+static const int max_path_len = 4095;	// maximum number of character a path may contain
 
-static void transformToMsDos(const QDateTime& dt, char* buffer)
+static void transformToMsDos(const QDateTime& _dt, char* buffer)
 {
-    if (dt.isValid()) {
-        const quint16 time =
-            (dt.time().hour() << 11)    // 5 bit hour
-            | (dt.time().minute() << 5)   // 6 bit minute
-            | (dt.time().second() >> 1);  // 5 bit double seconds
+    const QDateTime dt = _dt.isValid() ? _dt : QDateTime::currentDateTime();
+    const quint16 time =
+        (dt.time().hour() << 11)    // 5 bit hour
+        | (dt.time().minute() << 5)   // 6 bit minute
+        | (dt.time().second() >> 1);  // 5 bit double seconds
 
-        buffer[0] = char(time);
-        buffer[1] = char(time >> 8);
+    buffer[0] = char(time);
+    buffer[1] = char(time >> 8);
 
-        const quint16 date =
-            ((dt.date().year() - 1980) << 9) // 7 bit year 1980-based
-            | (dt.date().month() << 5)           // 4 bit month
-            | (dt.date().day());                 // 5 bit day
+    const quint16 date =
+        ((dt.date().year() - 1980) << 9) // 7 bit year 1980-based
+        | (dt.date().month() << 5)           // 4 bit month
+        | (dt.date().day());                 // 5 bit day
 
-        buffer[2] = char(date);
-        buffer[3] = char(date >> 8);
-    }
-    else // !dt.isValid(), assume 1980-01-01 midnight
-    {
-        buffer[0] = 0;
-        buffer[1] = 0;
-        buffer[2] = 33;
-        buffer[3] = 0;
-    }
+    buffer[2] = char(date);
+    buffer[3] = char(date >> 8);
 }
 
 static uint transformFromMsDos(const char* buffer)
