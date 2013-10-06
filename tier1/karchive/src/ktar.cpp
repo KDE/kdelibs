@@ -62,8 +62,8 @@ public:
 
     bool fillTempFile(const QString & fileName);
     bool writeBackTempFile( const QString & fileName );
-    void fillBuffer(char * buffer, const char * mode, qint64 size, uint mtime,
-                     char typeflag, const char * uname, const char * gname );
+    void fillBuffer(char *buffer, const char *mode, qint64 size, const QDateTime &mtime,
+                    char typeflag, const char *uname, const char *gname);
     void writeLonglink(char *buffer, const QByteArray &name, char typeflag,
                        const char *uname, const char *gname);
     qint64 readRawHeader(char *buffer);
@@ -588,9 +588,9 @@ struct posix_header
 };
 */
 
-void KTar::KTarPrivate::fillBuffer( char * buffer,
-                                    const char * mode, qint64 size, uint mtime, char typeflag,
-                                    const char * uname, const char * gname ) {
+void KTar::KTarPrivate::fillBuffer(char *buffer,
+                                   const char *mode, qint64 size, const QDateTime &mtime, char typeflag,
+                                   const char *uname, const char *gname) {
   // mode (as in stpos())
   assert( strlen(mode) == 6 );
   memcpy( buffer+0x64, mode, 6 );
@@ -609,7 +609,8 @@ void KTar::KTarPrivate::fillBuffer( char * buffer,
   buffer[ 0x87 ] = ' '; // space-terminate (no null after)
 
   // modification time
-  s = QByteArray::number( static_cast<qulonglong>(mtime), 8 ); // octal
+  const QDateTime modificationTime = mtime.isValid() ? mtime : QDateTime::currentDateTime();
+  s = QByteArray::number( static_cast<qulonglong>(modificationTime.toMSecsSinceEpoch() / 1000), 8 ); // octal
   s = s.rightJustified( 11, '0' );
   memcpy( buffer + 0x88, s.data(), 11 );
   buffer[ 0x93 ] = ' '; // space-terminate (no null after) -- well current tar writes a null byte
@@ -655,7 +656,7 @@ void KTar::KTarPrivate::writeLonglink(char *buffer, const QByteArray &name, char
                                       const char *uname, const char *gname) {
   strcpy( buffer, "././@LongLink" );
   qint64 namelen = name.length() + 1;
-  fillBuffer( buffer, "     0", namelen, 0, typeflag, uname, gname );
+  fillBuffer( buffer, "     0", namelen, QDateTime(), typeflag, uname, gname );
   q->device()->write( buffer, 0x200 ); // TODO error checking
   qint64 offset = 0;
   while (namelen > 0) {
@@ -728,7 +729,7 @@ bool KTar::doPrepareWriting(const QString &name, const QString &user,
 
     QByteArray permstr = QByteArray::number( (unsigned int)perm, 8 );
     permstr = permstr.rightJustified(6, '0');
-    d->fillBuffer(buffer, permstr.constData(), size, mtime.toTime_t(), 0x30, uname.constData(), gname.constData());
+    d->fillBuffer(buffer, permstr.constData(), size, mtime, 0x30, uname.constData(), gname.constData());
 
     // Write header
     return device()->write( buffer, 0x200 ) == 0x200;
@@ -781,7 +782,7 @@ bool KTar::doWriteDir(const QString &name, const QString &user,
 
     QByteArray permstr = QByteArray::number( (unsigned int)perm, 8 );
     permstr = permstr.rightJustified(6, ' ');
-    d->fillBuffer( buffer, permstr.constData(), 0, mtime.toTime_t(), 0x35, uname.constData(), gname.constData());
+    d->fillBuffer( buffer, permstr.constData(), 0, mtime, 0x35, uname.constData(), gname.constData());
 
     // Write header
     device()->write( buffer, 0x200 );
@@ -838,7 +839,7 @@ bool KTar::doWriteSymLink(const QString &name, const QString &target,
 
     QByteArray permstr = QByteArray::number( (unsigned int)perm, 8 );
     permstr = permstr.rightJustified(6, ' ');
-    d->fillBuffer(buffer, permstr.constData(), 0, mtime.toTime_t(), 0x32, uname.constData(), gname.constData());
+    d->fillBuffer(buffer, permstr.constData(), 0, mtime, 0x32, uname.constData(), gname.constData());
 
     // Write header
     bool retval = device()->write( buffer, 0x200 ) == 0x200;
