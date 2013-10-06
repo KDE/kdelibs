@@ -3,7 +3,7 @@
 #include "DeleteTest.h"
 
 #include <JobPointer.h>
-#include <QObjectJobDecorator.h>
+#include <QObjectDecorator.h>
 #include <JobSequence.h>
 #include <ThreadWeaver.h>
 #include <DebuggingAids.h>
@@ -43,7 +43,7 @@ void DeleteTest::DeleteSequenceTest()
     const int NumberOfSequences = 100;
     ThreadWeaver::Weaver::instance()->suspend();
     for (int i = 0; i < NumberOfSequences; ++i) {
-        QJobPointer seq(new QObjectJobDecorator(new InstanceCountingJobSequence));
+        QJobPointer seq(new QObjectDecorator(new InstanceCountingJobSequence));
         seq->sequence()->addJob(JobPointer(new BusyJob));
         seq->sequence()->addJob(JobPointer(new BusyJob));
         QVERIFY(connect(seq.data(), SIGNAL(done(ThreadWeaver::JobPointer)), SLOT(deleteSequence(ThreadWeaver::JobPointer))));

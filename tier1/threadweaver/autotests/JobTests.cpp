@@ -14,7 +14,7 @@
 #include <ResourceRestrictionPolicy.h>
 #include <Dependency.h>
 #include <DependencyPolicy.h>
-#include <QObjectJobDecorator.h>
+#include <QObjectDecorator.h>
 
 #include "AppendCharacterJob.h"
 #include "AppendCharacterAndVerifyJob.h"
@@ -153,7 +153,7 @@ void JobTests::ShortJobSequenceTest() {
 
 void JobTests::EmptyJobSequenceTest() {
     using namespace ThreadWeaver;
-    QObjectJobDecorator sequence(new JobSequence());
+    QObjectDecorator sequence(new JobSequence());
     WaitForIdleAndFinished w(Weaver::instance()); Q_UNUSED(w);
     Q_ASSERT(Weaver::instance()->isIdle());
     QSignalSpy doneSignalSpy(&sequence, SIGNAL(done(ThreadWeaver::JobPointer)));
@@ -171,9 +171,9 @@ void JobTests::IncompleteCollectionTest()
     using namespace ThreadWeaver;
 
     QString result;
-    QObjectJobDecorator jobA(new AppendCharacterJob(QChar('a'), &result));
+    QObjectDecorator jobA(new AppendCharacterJob(QChar('a'), &result));
     AppendCharacterJob jobB(QChar('b'), &result); //jobB does not get added to the sequence and queued
-    QObjectJobDecorator col(new JobCollection());
+    QObjectDecorator col(new JobCollection());
     col.collection()->addRawJob(&jobA);
 
     WaitForIdleAndFinished w(Weaver::instance());
@@ -208,7 +208,7 @@ void JobTests::EmitStartedOnFirstElementTest()
 
     JobPointer jobA(new AppendCharacterJob(QChar('a'), &result));
     JobPointer jobB(new AppendCharacterJob(QChar('b'), &result));
-    QObjectJobDecorator collection(new JobCollection());
+    QObjectDecorator collection(new JobCollection());
     JobCollection* decorated = dynamic_cast<JobCollection*>(collection.job());
     QVERIFY(decorated!=0);
     decorated->addJob(jobA);
@@ -244,7 +244,7 @@ void JobTests::CollectionDependenciesTest()
     // set up a collection that depends on jobC which does not get queued
     ThreadWeaver::JobPointer jobA(new AppendCharacterJob(QChar('a'), &result));
     ThreadWeaver::JobPointer jobB(new AppendCharacterJob(QChar('b'), &result));
-    QObjectJobDecorator col(new JobCollection());
+    QObjectDecorator col(new JobCollection());
     QSignalSpy collectionStartedSignalSpy(&col, SIGNAL(started(ThreadWeaver::JobPointer)));
     col.collection()->addJob(jobA);
     col.collection()->addJob(jobB);
@@ -733,13 +733,13 @@ void JobTests::JobSignalsAreEmittedAsynchronouslyTest()
     char bits[] = { 'a', 'b', 'c', 'd', 'e', 'f', 'g' };
     const int NumberOfBits = sizeof bits / sizeof bits[0];
     QString sequence;
-    QObjectJobDecorator collection(new JobCollection, this);
+    QObjectDecorator collection(new JobCollection, this);
 
     QVERIFY(connect(&collection, SIGNAL(started(ThreadWeaver::JobPointer)), SLOT(jobStarted(ThreadWeaver::JobPointer))));
     QVERIFY(connect( &collection, SIGNAL(done(ThreadWeaver::JobPointer)), SLOT(jobDone(ThreadWeaver::JobPointer))));
     for ( int counter = 0; counter < NumberOfBits; ++counter )
     {
-        QJobPointer job(new QObjectJobDecorator(new AppendCharacterJob( bits[counter], &sequence)));
+        QJobPointer job(new QObjectDecorator(new AppendCharacterJob( bits[counter], &sequence)));
         QVERIFY(connect(job.data(), SIGNAL(started(ThreadWeaver::JobPointer)), SLOT(jobStarted(ThreadWeaver::JobPointer))));
         QVERIFY(connect(job.data(), SIGNAL(done(ThreadWeaver::JobPointer)), SLOT(jobDone(ThreadWeaver::JobPointer))));
         collection.collection()->addJob(job);
@@ -770,7 +770,7 @@ void JobTests::JobSignalsDeliveryTest()
     QCOMPARE(deliveryTestCounter.loadAcquire(), 0);
     WaitForIdleAndFinished w(Weaver::instance());
     for(int count = 0; count < 100; ++count) {
-        QJobPointer job(new QObjectJobDecorator(new Lambda<void(*)()>(noOp)));
+        QJobPointer job(new QObjectDecorator(new Lambda<void(*)()>(noOp)));
         QVERIFY(connect(job.data(), SIGNAL(done(ThreadWeaver::JobPointer)), SLOT(deliveryTestJobDone(ThreadWeaver::JobPointer))));
         deliveryTestCounter.fetchAndAddRelease(1);
         Weaver::instance()->enqueue(job);

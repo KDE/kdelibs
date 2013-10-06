@@ -1,5 +1,5 @@
-#ifndef THREADWEAVER_QOBJECTJOBDECORATOR_H
-#define THREADWEAVER_QOBJECTJOBDECORATOR_H
+#ifndef THREADWEAVER_QOBJECTDECORATOR_H
+#define THREADWEAVER_QOBJECTDECORATOR_H
 
 #include <QtCore/QObject>
 
@@ -11,11 +11,11 @@ namespace ThreadWeaver {
 class JobCollection;
 class JobSequence;
 
-class THREADWEAVER_EXPORT QObjectJobDecorator : public QObject, public IdDecorator
+class THREADWEAVER_EXPORT QObjectDecorator : public QObject, public IdDecorator
 {
     Q_OBJECT
 public:
-    explicit QObjectJobDecorator(JobInterface* job, QObject *parent = 0);
+    explicit QObjectDecorator(JobInterface* job, QObject *parent = 0);
 
 Q_SIGNALS:
     /** This signal is emitted when this job is being processed by a thread. */
@@ -32,8 +32,8 @@ protected:
     void defaultEnd(JobPointer job, Thread* thread) Q_DECL_OVERRIDE;
 };
 
-typedef QSharedPointer<QObjectJobDecorator> QJobPointer;
+typedef QSharedPointer<QObjectDecorator> QJobPointer;
 
 }
 
-#endif // THREADWEAVER_QOBJECTJOBDECORATOR_H
+#endif // THREADWEAVER_QOBJECTDECORATOR_H

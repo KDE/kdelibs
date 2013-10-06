@@ -21,7 +21,7 @@
 
 #include <ThreadWeaver.h>
 #include <Thread.h>
-#include <QObjectJobDecorator.h>
+#include <QObjectDecorator.h>
 
 // always. ahm. no. never. never show your private parts in public.
 #ifdef THREADWEAVER_PRIVATE_API
@@ -127,7 +127,7 @@ void QueueTests::DeleteDoneJobsFromSequenceTest()
 {
     using namespace ThreadWeaver;
     QString sequence;
-    autoDeleteJob = new QObjectJobDecorator(new AppendCharacterJob(QChar('a'), &sequence));
+    autoDeleteJob = new QObjectDecorator(new AppendCharacterJob(QChar('a'), &sequence));
     AppendCharacterJob b(QChar('b'), &sequence);
     AppendCharacterJob c(QChar('c'), &sequence);
     JobCollection jobCollection;
@@ -156,7 +156,7 @@ void QueueTests::DeleteCollectionOnDoneTest()
 {
     using namespace ThreadWeaver;
     QString sequence;
-    autoDeleteCollection = new QObjectJobDecorator(new JobCollection);
+    autoDeleteCollection = new QObjectDecorator(new JobCollection);
     QVERIFY(connect(autoDeleteCollection, SIGNAL(done(ThreadWeaver::JobPointer)),
                     SLOT(deleteCollection(ThreadWeaver::JobPointer))));
 

@@ -1,24 +1,24 @@
-#include <QObjectJobDecorator.h>
+#include <QObjectDecorator.h>
 #include <JobCollection.h>
 #include <JobSequence.h>
 #include <ManagedJobPointer.h>
 
 namespace ThreadWeaver {
 
-QObjectJobDecorator::QObjectJobDecorator(JobInterface *decoratee, QObject *parent)
+QObjectDecorator::QObjectDecorator(JobInterface *decoratee, QObject *parent)
     : QObject(parent)
     , IdDecorator(decoratee)
 {
 }
 
-void QObjectJobDecorator::defaultBegin(JobPointer self, Thread *thread)
+void QObjectDecorator::defaultBegin(JobPointer self, Thread *thread)
 {
     Q_ASSERT(job());
     Q_EMIT started(self);
     job()->defaultBegin(self, thread);
 }
 
-void QObjectJobDecorator::defaultEnd(JobPointer self, Thread *thread)
+void QObjectDecorator::defaultEnd(JobPointer self, Thread *thread)
 {
     Q_ASSERT(job());
     job()->defaultEnd(self, thread);
@@ -30,4 +30,4 @@ void QObjectJobDecorator::defaultEnd(JobPointer self, Thread *thread)
 
 }
 
-#include "moc_QObjectJobDecorator.cpp"
+#include "moc_QObjectDecorator.cpp"

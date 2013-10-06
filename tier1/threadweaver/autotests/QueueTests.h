@@ -26,7 +26,7 @@ public:
 namespace ThreadWeaver {
     class Job;
     class JobCollection;
-    class QObjectJobDecorator;
+    class QObjectDecorator;
 }
 
 using ThreadWeaver::Job;
@@ -58,9 +58,9 @@ public Q_SLOTS:
 
 private:
     // this is also part of DeleteDoneJobsFromSequenceTest
-    ThreadWeaver::QObjectJobDecorator* autoDeleteJob;
+    ThreadWeaver::QObjectDecorator* autoDeleteJob;
     // this is part of DeleteCollectionOnDoneTest
-    ThreadWeaver::QObjectJobDecorator* autoDeleteCollection;
+    ThreadWeaver::QObjectDecorator* autoDeleteCollection;
 
 private Q_SLOTS:
 

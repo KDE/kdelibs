@@ -9,7 +9,7 @@ set(ThreadWeaver_LIB_SRCS
     Thread.cpp
     Job.cpp
     IdDecorator.cpp
-    QObjectJobDecorator.cpp
+    QObjectDecorator.cpp
     ManagedJobPointer.cpp
     Executor.cpp
     ExecuteWrapper.cpp
@@ -48,7 +48,7 @@ install(FILES
     JobInterface.h
     Job.h
     IdDecorator.h
-    QObjectJobDecorator.h
+    QObjectDecorator.h
     Lambda.h
     State.h
     WeaverObserver.h
