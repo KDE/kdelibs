@@ -598,9 +598,9 @@ void KTar::KTarPrivate::fillBuffer(char *buffer,
   buffer[ 0x6b ] = '\0';
 
   // dummy uid
-  strcpy( buffer + 0x6c, "   765 ");
+  strcpy( buffer + 0x6c, "   765 "); // 501 in decimal
   // dummy gid
-  strcpy( buffer + 0x74, "   144 ");
+  strcpy( buffer + 0x74, "   144 "); // 100 in decimal
 
   // size
   QByteArray s = QByteArray::number( size, 8 ); // octal
