@@ -157,9 +157,9 @@ public:
      * @param mtime modification time of the file
      * @param ctime time of last status change
      */
-    virtual bool writeDir( const QString& name, const QString& user, const QString& group,
-                           mode_t perm = 040755, const QDateTime& atime = QDateTime(),
-                           const QDateTime& mtime = QDateTime(), const QDateTime& ctime = QDateTime() );
+    bool writeDir(const QString &name, const QString &user, const QString &group,
+                  mode_t perm = 040755, const QDateTime &atime = QDateTime(),
+                  const QDateTime &mtime = QDateTime(), const QDateTime &ctime = QDateTime());
 
     /**
      * Writes a symbolic link to the archive if supported.
@@ -174,10 +174,10 @@ public:
      * @param mtime modification time of the file
      * @param ctime time of last status change
      */
-    virtual bool writeSymLink(const QString &name, const QString &target,
-                              const QString &user, const QString &group,
-                              mode_t perm = 0120755, const QDateTime& atime = QDateTime(),
-                              const QDateTime& mtime = QDateTime(), const QDateTime& ctime = QDateTime() );
+    bool writeSymLink(const QString &name, const QString &target,
+                      const QString &user, const QString &group,
+                      mode_t perm = 0120755, const QDateTime &atime = QDateTime(),
+                      const QDateTime &mtime = QDateTime(), const QDateTime &ctime = QDateTime());
 
     /**
      * If an archive is opened for writing then you can add a new file
@@ -198,10 +198,10 @@ public:
      * @param mtime modification time of the file
      * @param ctime time of last status change
      */
-    virtual bool writeFile( const QString& name, const QString& user, const QString& group,
-                            const char* data, qint64 size,
-                            mode_t perm = 0100644, const QDateTime& atime = QDateTime(),
-                            const QDateTime& mtime = QDateTime(), const QDateTime& ctime = QDateTime() );
+    bool writeFile(const QString &name, const QString &user, const QString &group,
+                   const char *data, qint64 size,
+                   mode_t perm = 0100644, const QDateTime &atime = QDateTime(),
+                   const QDateTime &mtime = QDateTime(), const QDateTime &ctime = QDateTime());
 
     /**
      * Here's another way of writing a file into an archive:
@@ -222,10 +222,10 @@ public:
      * @param mtime modification time of the file
      * @param ctime time of last status change
      */
-    virtual bool prepareWriting( const QString& name, const QString& user,
-                                 const QString& group, qint64 size,
-                                 mode_t perm = 0100644, const QDateTime& atime = QDateTime(),
-                                 const QDateTime& mtime = QDateTime(), const QDateTime& ctime = QDateTime() );
+    bool prepareWriting(const QString &name, const QString &user,
+                        const QString &group, qint64 size,
+                        mode_t perm = 0100644, const QDateTime &atime = QDateTime(),
+                        const QDateTime &mtime = QDateTime(), const QDateTime &ctime = QDateTime());
 
     /**
      * Write data into the current file - to be called after calling prepareWriting
@@ -237,7 +237,7 @@ public:
      * @param size the size of the file
      * @see prepareWriting()
      */
-    virtual bool finishWriting( qint64 size );
+    bool finishWriting(qint64 size);
 
 protected:
     /**
