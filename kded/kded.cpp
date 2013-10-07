@@ -47,12 +47,6 @@
 #include <kcoreaddons_version.h> // KCOREADDONS_VERSION_MAJOR
 #include "config-kded.h"
 
-#if HAVE_X11
-#include <qx11info_x11.h>
-#include <X11/Xlib.h>
-#include <fixx11h.h>
-#endif
-
 #include <qstandardpaths.h>
 
 #define KDED_EXENAME "kded5"
@@ -835,28 +829,29 @@ extern "C" Q_DECL_EXPORT int kdemain(int argc, char *argv[])
      if (bCheckUpdates)
          (void) new KUpdateD; // Watch for updates
 
-#if HAVE_X11
-     XEvent e;
-     e.xclient.type = ClientMessage;
-     e.xclient.message_type = XInternAtom( QX11Info::display(), "_KDE_SPLASH_PROGRESS", False );
-     e.xclient.display = QX11Info::display();
-     e.xclient.window = QX11Info::appRootWindow();
-     e.xclient.format = 8;
-     strcpy( e.xclient.data.b, "kded" );
-     XSendEvent( QX11Info::display(), QX11Info::appRootWindow(), False, SubstructureNotifyMask, &e );
-#endif
+//NOTE: We are going to change how KDE starts and this certanly doesn't fit on the new design.
+// #if HAVE_X11
+//      XEvent e;
+//      e.xclient.type = ClientMessage;
+//      e.xclient.message_type = XInternAtom( QX11Info::display(), "_KDE_SPLASH_PROGRESS", False );
+//      e.xclient.display = QX11Info::display();
+//      e.xclient.window = QX11Info::appRootWindow();
+//      e.xclient.format = 8;
+//      strcpy( e.xclient.data.b, "kded" );
+//      XSendEvent( QX11Info::display(), QX11Info::appRootWindow(), False, SubstructureNotifyMask, &e );
+// #endif
 
      runKonfUpdate(); // Run it once.
 
-#if HAVE_X11
-     e.xclient.type = ClientMessage;
-     e.xclient.message_type = XInternAtom( QX11Info::display(), "_KDE_SPLASH_PROGRESS", False );
-     e.xclient.display = QX11Info::display();
-     e.xclient.window = QX11Info::appRootWindow();
-     e.xclient.format = 8;
-     strcpy( e.xclient.data.b, "confupdate" );
-     XSendEvent( QX11Info::display(), QX11Info::appRootWindow(), False, SubstructureNotifyMask, &e );
-#endif
+// #if HAVE_X11
+//      e.xclient.type = ClientMessage;
+//      e.xclient.message_type = XInternAtom( QX11Info::display(), "_KDE_SPLASH_PROGRESS", False );
+//      e.xclient.display = QX11Info::display();
+//      e.xclient.window = QX11Info::appRootWindow();
+//      e.xclient.format = 8;
+//      strcpy( e.xclient.data.b, "confupdate" );
+//      XSendEvent( QX11Info::display(), QX11Info::appRootWindow(), False, SubstructureNotifyMask, &e );
+// #endif
 
      //if (bCheckHostname)
      //    (void) new KHostnameD(HostnamePollInterval); // Watch for hostname changes
