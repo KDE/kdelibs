@@ -161,7 +161,6 @@ add_subdirectory( kioslave   )
 add_subdirectory( khtml )
 
 add_subdirectory( interfaces  )
-add_subdirectory( kross )
 add_subdirectory( includes )
 add_subdirectory( doc )
 
