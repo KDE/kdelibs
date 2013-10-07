@@ -12,15 +12,12 @@ include(CMakePackageConfigHelpers)
 include(ECMSetupVersion)
 
 if(NOT WIN32)
-    find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS X11Extras)
+    find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS DBus)
 endif(NOT WIN32)
 
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config-kded.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kded.h)
-
-find_package(X11)
-set(HAVE_X11 ${X11_FOUND})
 
 ########### next target ###############
 
@@ -37,7 +34,7 @@ if (APPLE)
     set_target_properties(kded5 PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "KDE Daemon")
 endif (APPLE)
 
-target_link_libraries(kdeinit_kded5 Qt5::X11Extras ${KDE4_KIO_LIBS} ${X11_LIBRARIES} KF5::KCoreAddons KF5::KDBusAddons KF5::KI18n KF5::KCrash KF5::KWindowSystem)
+target_link_libraries(kdeinit_kded5 ${KDE4_KIO_LIBS} KF5::KCoreAddons KF5::KDBusAddons KF5::KI18n KF5::KCrash KF5::KWindowSystem)
 
 install(TARGETS kdeinit_kded5 ${INSTALL_TARGETS_DEFAULT_ARGS})
 
