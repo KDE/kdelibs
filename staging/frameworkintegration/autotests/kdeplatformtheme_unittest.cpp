@@ -53,22 +53,35 @@ static void prepareEnvironment()
 
 Q_COREAPP_STARTUP_FUNCTION(prepareEnvironment);
 
-class QTestToolButton : public QToolButton
+class EventTest : public QObject
 {
-    virtual bool event(QEvent* e)
+public:
+    EventTest(QObject* tested, QEvent::Type type)
+        : QObject(), gotEvent(false), m_type(type)
     {
-        if (e->type() == QEvent::StyleChange) {
+        tested->installEventFilter(this);
+
+    }
+
+    virtual bool eventFilter(QObject*, QEvent* e)
+    {
+        if (e->type() == m_type) {
             gotEvent = true;
         }
-        return QToolButton::event(e);
+        return false;
     }
-    public:
-        bool gotEvent;
+
+    bool gotEvent;
+    QEvent::Type m_type;
 };
 
 class KdePlatformTheme_UnitTest : public QObject
 {
     Q_OBJECT
+    public:
+        KdePlatformTheme_UnitTest()
+        {}
+
     private:
         void sendNotifyChange(KHintsSettings::ChangeType type, int arg = -1)
         {
@@ -83,13 +96,12 @@ class KdePlatformTheme_UnitTest : public QObject
         }
 
         QEventLoop m_loop;
-        QTestToolButton m_toolBtn;
+        QToolButton m_toolBtn;
         KdePlatformTheme *m_qpa;
     private Q_SLOTS:
         void initTestCase()
         {
             m_qpa = new KdePlatformTheme();
-            m_toolBtn.gotEvent = false;
             QDBusConnection::sessionBus().connect(QString(), "/KGlobalSettings", "org.kde.KGlobalSettings",
                                                    "notifyChange",  &m_loop, SLOT(quit()));
         }
@@ -179,6 +191,7 @@ class KdePlatformTheme_UnitTest : public QObject
 
         void testPlatformHintChanges()
         {
+            EventTest tester(&m_toolBtn, QEvent::StyleChange);
             sendNotifyChange(KHintsSettings::SettingsChanged, KHintsSettings::SETTINGS_QT);
             m_loop.exec();
 
@@ -199,7 +212,7 @@ class KdePlatformTheme_UnitTest : public QObject
             m_loop.exec();
 
             QCOMPARE(m_qpa->themeHint(QPlatformTheme::ToolButtonStyle).toInt(), (int) Qt::ToolButtonTextUnderIcon);
-            QCOMPARE(m_toolBtn.gotEvent, true);
+            QCOMPARE(tester.gotEvent, true);
 
             sendNotifyChange(KHintsSettings::StyleChanged, 2);
             m_loop.exec();
@@ -221,8 +234,10 @@ class KdePlatformTheme_UnitTest : public QObject
 
         void testPlatformPaletteChanges()
         {
+            EventTest tester(QGuiApplication::instance(), QEvent::ApplicationPaletteChange);
             sendNotifyChange(KHintsSettings::PaletteChanged, 0);
             m_loop.exec();
+            QCOMPARE(tester.gotEvent, true);
 
             const QPalette *palette = m_qpa->palette();
             QPalette::ColorGroup states[3] = {QPalette::Active, QPalette::Inactive, QPalette::Disabled};

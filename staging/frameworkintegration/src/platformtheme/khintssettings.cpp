@@ -126,9 +126,11 @@ void KHintsSettings::slotNotifyChange(int type, int arg)
     KConfigGroup cg(ptr, "KDE");
 
     switch(type) {
-    case PaletteChanged:
+    case PaletteChanged: {
         loadPalettes();
-        break;
+        QEvent ev(QEvent::ApplicationPaletteChange);
+        QGuiApplication::sendEvent(QGuiApplication::instance(), &ev);
+    }   break;
     case SettingsChanged: {
 
         SettingsCategory category = static_cast<SettingsCategory>(arg);
