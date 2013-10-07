@@ -1,11 +1,11 @@
 @PACKAGE_INIT@
 
-# Any changes in this file will be overwritten by CMake.
+find_dependency(Qt5Core @REQUIRED_QT_VERSION@)
 
-set(KHtml_INSTALL_PREFIX "@PACKAGE_CMAKE_INSTALL_PREFIX@")
-set_and_check(KHtml_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")
+set(KHTML_INSTALL_PREFIX "@PACKAGE_CMAKE_INSTALL_PREFIX@")
+set_and_check(KHTML_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")
 
 include("${CMAKE_CURRENT_LIST_DIR}/KHtmlTargets.cmake")
 
-set(KHtml_LIBRARIES KF5::KHtml)
-set(KHtml_INCLUDE_DIRS ${KHtml_INCLUDE_DIR})
+set(KHTML_LIBRARIES KF5::KHtml)
+set(KHTML_INCLUDE_DIRS ${KHTML_INCLUDE_DIR} )

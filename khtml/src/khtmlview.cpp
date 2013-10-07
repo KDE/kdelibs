@@ -68,7 +68,7 @@
 #include <kiconloader.h>
 #include <knotification.h>
 #include <kconfig.h>
-#include <khtml_version.h>
+#include <../khtml_version.h>
 
 #include <kstringhandler.h>
 #include <kconfiggroup.h>

@@ -1,12 +1,8 @@
 
 add_subdirectory( tests )
 
-include_directories( ${CMAKE_SOURCE_DIR}/khtml ${CMAKE_SOURCE_DIR}/kio/kssl )
+include_directories( ${KHTML_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/kio/kssl )
 include_directories( ${CMAKE_BINARY_DIR}/kio/kssl )
-
-
-########### next target ###############
-
 
 ########### next target ###############
 

@@ -158,7 +158,7 @@ add_subdirectory( kded       )
 add_subdirectory( kfile )
 add_subdirectory( kioslave   )
 
-add_subdirectory( khtml )
+add_subdirectory( khtml  )
 
 add_subdirectory( interfaces  )
 add_subdirectory( includes )
