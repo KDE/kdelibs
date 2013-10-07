@@ -21,14 +21,14 @@
 
 #include <QDebug>
 
-#include <kconfigskeleton.h>
+#include <kcoreconfigskeleton.h>
 
 
-ConfigPropertyMap::ConfigPropertyMap(KConfigSkeleton *config, QObject *parent)
+ConfigPropertyMap::ConfigPropertyMap(KCoreConfigSkeleton *config, QObject *parent)
     : QQmlPropertyMap(parent),
       m_config(config)
 {
-    connect(config, &KConfigSkeleton::configChanged,
+    connect(config, &KCoreConfigSkeleton::configChanged,
             this, &ConfigPropertyMap::loadConfig);
     connect(this, &ConfigPropertyMap::valueChanged,
             this, &ConfigPropertyMap::writeConfigValue);

@@ -32,12 +32,12 @@ target_link_libraries(KDeclarative
     Qt5::Quick
   LINK_PRIVATE
     Qt5::Script
-    KConfigGui
     KI18n
     KIconThemes
 
     KCoreAddons
     KIOCore
+    KConfigCore # KCoreConfigSkeleton, in ConfigPropertyMap
 )
 target_include_directories(KDeclarative PUBLIC "$<BUILD_INTERFACE:${KDeclarative_BINARY_DIR}>")
 
