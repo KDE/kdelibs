@@ -29,6 +29,10 @@ set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KInit")
 
 add_subdirectory(src)
 
+install( FILES
+    KInitMacros.cmake
+    DESTINATION ${CMAKECONFIG_INSTALL_DIR} COMPONENT Devel )
+
 install(FILES
         kde5init_dummy.cpp.in
         kde5init_win32lib_dummy.cpp.in
