@@ -22,8 +22,6 @@
 #include "ksycocaresourcelist.h"
 #include "vfolder_menu.h"
 
-// #include <config-kded.h>
-
 #include <kservice.h>
 #include "kbuildservicetypefactory.h"
 #include "kbuildmimetypefactory.h"
