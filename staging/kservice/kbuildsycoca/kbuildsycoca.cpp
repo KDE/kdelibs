@@ -43,7 +43,6 @@
 
 #include <assert.h>
 #include <kdirwatch.h>
-#include <klocalizedstring.h>
 
 #if !KBUILDSYCOCA_NO_KCRASH
 #include <kcrash.h>
@@ -663,7 +662,6 @@ extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
    KCrash::setApplicationName(QString::fromLatin1(KBUILDSYCOCA_EXENAME));
 #endif
 
-   KLocalizedString::setApplicationDomain("kdelibs5");
    // force generating of KLocale object. if not, the database will get
    // be translated
    QLocale::setDefault(QLocale::C);
