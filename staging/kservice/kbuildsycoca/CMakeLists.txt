@@ -9,8 +9,6 @@ set(kbuildsycoca_KDEINIT_SRCS
    vfolder_menu.cpp
    )
 
-
-
 # We need to add a '5' so that kde4 apps running kbuildsycoca don't run the kde4 one.
 kf5_add_kdeinit_executable( kbuildsycoca5 NOGUI ${kbuildsycoca_KDEINIT_SRCS})
 
