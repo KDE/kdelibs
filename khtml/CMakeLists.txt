@@ -17,6 +17,11 @@ ecm_setup_version(5.0.0 VARIABLE_PREFIX KHTML
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/khtml_version.h"
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KHtmlConfigVersion.cmake")
 
+find_package(Phonon4Qt5 4.6.60 NO_MODULE)
+if (NOT Phonon4Qt5_FOUND)
+  return()
+endif()
+
 find_package(Perl)
 set_package_properties(Perl PROPERTIES URL "http://www.perl.org" TYPE REQUIRED PURPOSE "Needed for building kdelibs")
 
