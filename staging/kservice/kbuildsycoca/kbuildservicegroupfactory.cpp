@@ -23,7 +23,6 @@
 #include <kservicegroup_p.h>
 
 #include <QDebug>
-#include <klocalizedstring.h>
 #include <assert.h>
 #include <QtCore/QHash>
 

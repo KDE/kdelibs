@@ -30,7 +30,6 @@
 #include <QDir>
 #include <qmimedatabase.h>
 
-#include <klocalizedstring.h>
 #include <assert.h>
 #include <kmimetypefactory.h>
 #include <qstandardpaths.h>

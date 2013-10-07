@@ -23,7 +23,6 @@
 
 
 #include <QDebug>
-#include <klocalizedstring.h>
 #include <assert.h>
 #include <kdesktopfile.h>
 #include <kconfiggroup.h>
