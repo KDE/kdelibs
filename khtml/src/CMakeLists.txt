@@ -205,7 +205,7 @@ set(khtmlfind_STAT_SRCS
   ui/findbar/khtmlfindbar.cpp
 )
 
-kde4_add_ui_files(khtmlfind_STAT_SRCS
+qt5_wrap_ui(khtmlfind_STAT_SRCS
   ui/findbar/khtmlfindbar_base.ui
 )
 
@@ -213,7 +213,7 @@ set(passwordbar_STAT_SRCS
   ui/passwordbar/storepassbar.cpp
 )
 
-kde4_add_ui_files(passwordbar_STAT_SRCS
+qt5_wrap_ui(passwordbar_STAT_SRCS
   ui/passwordbar/storepassbar_base.ui
 )
 
@@ -526,7 +526,7 @@ endif(kdelibs_SOURCE_DIR)
 qt5_add_dbus_interface(khtml_LIB_SRCS ${kcookiejar_XML} kcookiejar_interface)
 
 
-kde4_add_ui_files(khtml_LIB_SRCS
+qt5_wrap_ui(khtml_LIB_SRCS
    kjserrordlgbase.ui
    htmlpageinfo.ui
    html/keygenwizard.ui
