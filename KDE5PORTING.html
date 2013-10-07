@@ -316,7 +316,7 @@ is no longer available. To simply make the code build, for the sake of porting o
 <li>KCodecAction: use enum KEncodingProber::ProberType instead of enum KEncodingDetector::AutoDetectScript</li>
 <li>KXMessages: the "obsolete = false" argument has been removed from all methods, and int screen has a default value of -1 now. Remove the "-1, false" in all calls. The sendMessage and sendMessageX methods were apparently unused, and have been commented out. Email kde-frameworks-devel at kde.org if you need them back.</li>
 <li>KGlobalSettings::contextMenuKey is gone, reimplement QWidget::contextMenuEvent() instead.</li>
-<li>KGlobalSettings::*Font methods are deprecated. Use QFontsDatabase::systemFonts(). ::menuFont, ::taskBarFont and ::toolBarFont are not available now (they are provided by the QPA but not public API). If cases needing those arise we'll
+<li>KGlobalSettings::*Font methods are deprecated. Use QFontDatabase::systemFonts(). ::menuFont, ::taskBarFont and ::toolBarFont are not available now (they are provided by the QPA but not public API). If cases needing those arise we'll
 have to find an alternative</li>
 <li>KGlobalSettings::naturalCompare is deprecated, you'll have to especifically read the settings:
 <pre>
