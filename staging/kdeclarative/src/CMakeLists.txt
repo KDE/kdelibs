@@ -29,15 +29,14 @@ generate_export_header(KDeclarative EXPORT_FILE_NAME ${KDeclarative_BINARY_DIR}/
 target_link_libraries(KDeclarative
   LINK_PUBLIC
     Qt5::Qml
-    Qt5::Quick
   LINK_PRIVATE
-    Qt5::Script
-    KI18n
-    KIconThemes
-
-    KCoreAddons
-    KIOCore
+    Qt5::Quick  #QQuickImageProvider
+    Qt5::Script #QScriptValue, QScriptEngine (see bindings/*.cpp)
     KConfigCore # KCoreConfigSkeleton, in ConfigPropertyMap
+    KI18n       #i18n bindings
+    KIconThemes #KIconProvider
+    KCoreAddons #qscriptnonguibookkeeping.cpp
+    KIOCore     #qscriptnonguibookkeeping.cpp
 )
 target_include_directories(KDeclarative PUBLIC "$<BUILD_INTERFACE:${KDeclarative_BINARY_DIR}>")
 
