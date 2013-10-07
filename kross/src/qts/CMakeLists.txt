@@ -17,10 +17,8 @@ set(krossqtstest_SRCS main.cpp)
 add_executable(krossqtstest ${krossqtstest_SRCS})
 ecm_mark_as_test(krossqtstest)
 target_link_libraries(krossqtstest krossqtsplugin KrossCore Qt5::Script ${KCoreAddons_LIBRARIES} KI18n Qt5::Widgets)
-# set(krossqtsplugintest_SRCS main.cpp)
-# target_link_libraries(krossqtsplugintest ${KCoreAddons_LIBRARIES})
-# kde4_add_executable(krossqtsplugintest ${krossqtsplugintest_SRCS})
-# #install(TARGETS krossqtsplugintest DESTINATION ${BIN_INSTALL_DIR})
+
+add_test(krossqtstest-test-es krossqtstest ${CMAKE_CURRENT_SOURCE_DIR}/test.es)
 
 ########### next target ###############
 
