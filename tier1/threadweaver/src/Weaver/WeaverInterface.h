@@ -185,6 +185,11 @@ public:
     to the application to decide if and how job aborts are
     necessary. */
     virtual void requestAbort() = 0;
+
+    /** @brief Reschedule the jobs in the queue.
+     * This method triggers a scheduling attempt to perform jobs. It will schedule enqueued jobs to be executed by idle threads.
+     * It should only be necessary to call it if the canRun() status of a job changed spontaneously due to external reasons. */
+    virtual void reschedule() = 0;
 };
 
 }

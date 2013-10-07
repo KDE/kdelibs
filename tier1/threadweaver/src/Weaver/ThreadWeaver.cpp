@@ -208,4 +208,9 @@ void Weaver::requestAbort()
     d->implementation->requestAbort();
 }
 
+void Weaver::reschedule()
+{
+    d->implementation->reschedule();
+}
+
 #include "ThreadWeaver.moc"

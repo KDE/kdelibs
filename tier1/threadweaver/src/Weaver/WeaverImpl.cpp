@@ -94,7 +94,7 @@ void WeaverImpl::shutDown_p()
     finish();
     suspend();
     setState(ShuttingDown);
-    m_jobAvailable.wakeAll();
+    reschedule();
     m_jobFinished.wakeAll();
 
     // problem: Some threads might not be asleep yet, just finding
@@ -116,7 +116,7 @@ void WeaverImpl::shutDown_p()
             for ( ;; )
             {
                 Q_ASSERT(state()->stateId() == ShuttingDown);
-                m_jobAvailable.wakeAll();
+                reschedule();
                 if ( th->wait( 100 ) ) break;
                 debug ( 1,  "WeaverImpl::shutDown: thread %i did not exit as expected, "
                         "retrying.\n", th->id() );
@@ -247,7 +247,7 @@ void WeaverImpl::enqueue_p(JobPointer job)
         } else {
             m_assignments.append(job);
         }
-        assignJobs();
+        reschedule();
     }
 }
 
@@ -318,7 +318,7 @@ void WeaverImpl::finish_p()
         debug(2, "WeaverImpl::finish: not done, waiting.\n" );
         if (m_jobFinished.wait(m_mutex, MaxWaitMilliSeconds) == false) {
             debug(2, "WeaverImpl::finish: wait timed out, %i jobs left, waking threads.\n", queueLength_p());
-            m_jobAvailable.wakeAll();
+            reschedule();
         }
     }
     debug (2, "WeaverImpl::finish: done.\n\n\n" );
@@ -390,6 +390,11 @@ void WeaverImpl::requestAbort()
     return state()->requestAbort();
 }
 
+void WeaverImpl::reschedule()
+{
+    m_jobAvailable.wakeAll();
+}
+
 void WeaverImpl::requestAbort_p()
 {
     Q_ASSERT(!m_mutex->tryLock()); //mutex has to be held when this method is called
@@ -458,11 +463,6 @@ bool WeaverImpl::canBeExecuted(JobPointer job)
 Thread* WeaverImpl::createThread()
 {
     return new Thread( this );
-}
-
-void WeaverImpl::assignJobs()
-{
-    m_jobAvailable.wakeAll();
 }
 
 void WeaverImpl::incActiveThreadCount()

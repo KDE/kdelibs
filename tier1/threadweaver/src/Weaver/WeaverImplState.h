@@ -74,6 +74,8 @@ public:
     int queueLength() const Q_DECL_OVERRIDE;
     /** Request abort for all queued and currently executed jobs. */
     void requestAbort() Q_DECL_OVERRIDE;
+    /** Reschedule jobs to threads. */
+    void reschedule() Q_DECL_OVERRIDE;
     /** Wait (by suspending the calling thread) until a job becomes available. */
     void waitForAvailableJob(Thread *th ) Q_DECL_OVERRIDE;
 

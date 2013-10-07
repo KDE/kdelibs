@@ -41,7 +41,7 @@ namespace ThreadWeaver {
 
 void WorkingHardState::activated()
 {
-    weaver()->assignJobs();
+    weaver()->reschedule();
 }
 
 WorkingHardState::WorkingHardState(WeaverImpl *weaver)

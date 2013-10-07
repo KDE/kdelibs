@@ -101,6 +101,7 @@ public:
     bool isIdle() const Q_DECL_OVERRIDE;
     int queueLength () const Q_DECL_OVERRIDE;
     void requestAbort() Q_DECL_OVERRIDE;
+    void reschedule() Q_DECL_OVERRIDE;
     void shutDown() Q_DECL_OVERRIDE;
 
 protected:

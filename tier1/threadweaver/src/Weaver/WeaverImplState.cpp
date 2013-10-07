@@ -129,6 +129,11 @@ void WeaverImplState::requestAbort()
     return weaver()->requestAbort_p();
 }
 
+void WeaverImplState::reschedule()
+{
+    // Not implemented, performed directly in WeaverImpl::reschedule().
+}
+
 void WeaverImplState::waitForAvailableJob(Thread *th)
 {
     weaver()->blockThreadUntilJobsAreBeingAssigned(th);

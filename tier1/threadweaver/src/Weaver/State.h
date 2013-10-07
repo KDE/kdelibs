@@ -92,10 +92,12 @@ public:
      *  state handling. */
     virtual void activated();
 
- protected:
+protected:
     /** The Weaver interface this state handles. */
     virtual WeaverInterface* weaver();
     virtual const WeaverInterface* weaver() const;
+
+private:
     class Private;
     Private * const d;
 };

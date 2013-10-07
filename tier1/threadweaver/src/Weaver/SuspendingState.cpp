@@ -51,7 +51,7 @@ void SuspendingState::resume()
 
 void SuspendingState::activated()
 {
-    weaver()->assignJobs();
+    weaver()->reschedule();
 }
 
 JobPointer SuspendingState::applyForWork(Thread *th, JobPointer previous)

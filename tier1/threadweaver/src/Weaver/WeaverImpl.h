@@ -126,10 +126,9 @@ public:
      * If justReturning is true, do not assign a new job, just process the completed previous one. */
     JobPointer takeFirstAvailableJobOrSuspendOrWait(Thread* th, JobPointer previous,
                                                     bool suspendIfAllThreadsInactive, bool justReturning);
-    /** Schedule enqueued jobs to be executed by idle threads.
-     * This will try to distribute as many jobs as possible to all idle threads. */
-    void assignJobs();
     void requestAbort() Q_DECL_OVERRIDE;
+
+    void reschedule() Q_DECL_OVERRIDE;
 
     /** Dump the current jobs to the console. Not part of the API. */
     void dumpJobs();
