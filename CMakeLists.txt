@@ -50,6 +50,8 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules" ${ECM_MODULE_PATH})
 # this gives us the KDE install dir variables (instead of defining them in FindKDE4Internal.cmake),
 # RPATH handling and test settings.
 
+include(${CMAKE_SOURCE_DIR}/staging/kinit/KInitMacros.cmake)
+
 add_subdirectory( tier1 )
 
 set(ItemModels_LIBRARIES ItemModels)
@@ -163,7 +165,6 @@ add_subdirectory( khtml )
 
 add_subdirectory( interfaces  )
 add_subdirectory( kross )
-add_subdirectory( kinit  )
 add_subdirectory( includes )
 add_subdirectory( doc )
 
@@ -182,9 +183,7 @@ install( FILES ${CMAKE_CURRENT_SOURCE_DIR}/KDELibs4Config.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/KDEPlatformProfile.cmake
                ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/KDE4Macros.cmake
-               ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/kde4init_dummy.cpp.in
                ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/kde4_exec_via_sh.cmake
-               ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/kde4init_win32lib_dummy.cpp.in
                ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/kde4_cmake_uninstall.cmake.in
                ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/Win32.Manifest.in
          DESTINATION ${CMAKECONFIG_INSTALL_DIR} COMPONENT Devel)

@@ -46,7 +46,7 @@ add_library(KWindowSystem ${kwindowsystem_SRCS})
 generate_export_header(KWindowSystem)
 
 target_link_libraries(KWindowSystem
-  LINK_PUBLIC Qt5::Core
+  LINK_PUBLIC Qt5::Gui
   LINK_PRIVATE Qt5::Widgets ${platformLinkLibraries}
 )
 

@@ -35,7 +35,7 @@ set(kded_KDEINIT_SRCS kded.cpp kdedadaptor.cpp
 )
 
 
-kde4_add_kdeinit_executable(kded5  ${kded_KDEINIT_SRCS})
+kf5_add_kdeinit_executable(kded5 ${kded_KDEINIT_SRCS})
 
 if (APPLE)
     set_target_properties(kded5 PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.template)
@@ -83,7 +83,7 @@ set(kbuildsycoca_KDEINIT_SRCS
 
 
 # We need to add a '4' so that kde3 apps running kbuildsycoca don't run the kde4 one.
-kde4_add_kdeinit_executable( kbuildsycoca5 NOGUI ${kbuildsycoca_KDEINIT_SRCS})
+kf5_add_kdeinit_executable( kbuildsycoca5 NOGUI ${kbuildsycoca_KDEINIT_SRCS})
 
 target_link_libraries(kdeinit_kbuildsycoca5
    ${KCoreAddons_LIBRARIES}

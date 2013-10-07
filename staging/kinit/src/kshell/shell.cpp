@@ -22,4 +22,4 @@
 /* this should just save me from duplicating the code */
 
 #define WE_ARE_KSHELL
-#include "wrapper.cpp"
+#include "../wrapper.cpp"

@@ -22,4 +22,4 @@
 /* this should just save me from duplicating the code */
 
 #define WE_ARE_KWRAPPER
-#include "wrapper.cpp"
+#include "../wrapper.cpp"
