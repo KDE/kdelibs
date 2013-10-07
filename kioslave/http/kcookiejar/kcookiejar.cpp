@@ -96,12 +96,17 @@ static QDateTime parseDate(const QString& _value)
     // RFC 2616 sec 3.3.1 & RFC 6265 sec 4.1.1
     QDateTime dt = QDateTime::fromString(value, Qt::RFC2822Date);
 
-    // In addition to the RFC date formats we support the ANSI C asctime format
-    // per RFC 2616 sec 3.3.1 and a variation of that detected @ amazon.com
     if (!dt.isValid()) {
         static const char* date_formats[] = {
-            "%:B%t%d%t%H:%M:%S%t%Y%t%Z", /* ANSI C's asctime() format (#145244): Jan 01 00:00:00 1970 GMT */
-            "%:B%t%d%t%Y%t%H:%M:%S%t%Z", /* A variation on the above format seen @ amazon.com: Jan 01 1970 00:00:00 GMT */
+            // Other formats documented in RFC 2616 sec 3.3.1
+            // Note: the RFC says timezone information MUST be "GMT", hence the hardcoded timezone string
+            "MMM dd HH:mm:ss yyyy",       /* ANSI C's asctime() format (#145244): Jan 01 00:00:00 1970 GMT */
+            "dd-MMM-yy HH:mm:ss 'GMT'",   /* RFC 850 date: 06-Dec-39 00:30:42 GMT */
+            // Non-standard formats
+            "MMM dd yyyy HH:mm:ss",       /* A variation on ANSI C format seen @ amazon.com: Jan 01 1970 00:00:00 GMT */
+            "dd-MMM-yyyy HH:mm:ss 'GMT'", /* cookies.test: Y2K38 problem: 06-Dec-2039 00:30:42 GMT */
+            "MMM dd HH:mm:ss yyyy 'GMT'", /* cookies.test: Non-standard expiration dates: Sep 12 07:00:00 2020 GMT */
+            "MMM dd yyyy HH:mm:ss 'GMT'", /* cookies.test: Non-standard expiration dates: Sep 12 2020 07:00:00 GMT */
             0
         };
 
