@@ -1,6 +1,5 @@
 add_subdirectory(kjobwidgets)
 
-add_subdirectory(kwallet)
 add_subdirectory(kservice)
 add_subdirectory(kio)
 add_subdirectory(frameworkintegration)
