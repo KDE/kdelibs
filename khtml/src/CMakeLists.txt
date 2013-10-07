@@ -799,21 +799,4 @@ install( FILES error.html DESTINATION ${DATA_INSTALL_DIR}/khtml )
 
 install( FILES khtmlrc DESTINATION ${CONFIG_INSTALL_DIR} )
 
-# create a Config.cmake and a ConfigVersion.cmake file and install them
-set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KHtml")
-
-configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/KHtmlConfig.cmake.in"
-                              "${CMAKE_CURRENT_BINARY_DIR}/KHtmlConfig.cmake"
-                              INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
-                              PATH_VARS  INCLUDE_INSTALL_DIR CMAKE_INSTALL_PREFIX )
-
-install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/KHtmlConfig.cmake"
-               "${CMAKE_CURRENT_BINARY_DIR}/KHtmlConfigVersion.cmake"
-        DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
-        COMPONENT Devel )
-
-install(EXPORT KHtmlTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KHtmlTargets.cmake NAMESPACE KF5:: )
-
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/khtml_version.h
-        DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
 
