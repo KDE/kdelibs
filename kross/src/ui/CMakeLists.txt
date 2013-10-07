@@ -12,6 +12,8 @@ set_target_properties(KrossUi PROPERTIES VERSION ${GENERIC_LIB_VERSION}
                                          SOVERSION ${GENERIC_LIB_SOVERSION}
                      )
 
+target_include_directories(KrossUi PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/../include>")
+
 generate_export_header(KrossUi)
 
 install(TARGETS KrossUi EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
