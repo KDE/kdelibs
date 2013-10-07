@@ -38,7 +38,6 @@
 
 #include <kdbusservice.h>
 #include <qapplication.h>
-#include <klocalizedstring.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <kdirwatch.h>
@@ -780,8 +779,6 @@ void KBuildsycocaAdaptor::enableTestMode()
 
 extern "C" Q_DECL_EXPORT int kdemain(int argc, char *argv[])
 {
-    KLocalizedString::setApplicationDomain("kdelibs4");
-
     //options.add("check", qi18n("Check Sycoca database only once"));
 
      // WABA: Make sure not to enable session management.
