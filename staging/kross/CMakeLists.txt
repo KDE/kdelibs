@@ -21,7 +21,7 @@ ecm_setup_version(5.0.0 VARIABLE_PREFIX KROSS
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
 add_subdirectory(src)
-add_subdirectory(tests)
+add_subdirectory(autotests)
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
 set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/Kross")
