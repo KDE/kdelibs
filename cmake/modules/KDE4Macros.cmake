@@ -224,7 +224,7 @@ macro (KDE4_ADD_KDEINIT_EXECUTABLE _target_NAME )
 
    kde4_check_executable_params(_SRCS _nogui _test ${ARGN})
 
-   configure_file(${KDE4_MODULE_DIR}../KInit/kde5init_dummy.cpp.in ${CMAKE_CURRENT_BINARY_DIR}/${_target_NAME}_dummy.cpp)
+   configure_file(${KDE4_MODULE_DIR}/../KInit/kde5init_dummy.cpp.in ${CMAKE_CURRENT_BINARY_DIR}/${_target_NAME}_dummy.cpp)
    set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/${_target_NAME}_dummy.cpp PROPERTIES SKIP_AUTOMOC TRUE)
    # under Windows, build a normal executable and additionally a dummy kdeinit4_foo.lib, whose only purpose on windows is to
    # keep the linking logic from the CMakeLists.txt on UNIX working (under UNIX all necessary libs are linked against the kdeinit
