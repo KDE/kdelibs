@@ -1,3 +1,5 @@
+set(_KINITDIR ${CMAKE_CURRENT_LIST_DIR})
+
 macro(_FIND_KDEINIT_FILE OUTPUT_VAR INFIX)
     set(_KDE5INIT_DUMMY_FILENAME kde5init${INFIX}_dummy.cpp.in)
     if(kdelibs_SOURCE_DIR)
@@ -5,7 +7,7 @@ macro(_FIND_KDEINIT_FILE OUTPUT_VAR INFIX)
     elseif(KInit_SOURCE_DIR)
         set(${OUTPUT_VAR} "${KInit_SOURCE_DIR}/${_KDE5INIT_DUMMY_FILENAME}")
     else()
-        find_file(${OUTPUT_VAR} NAMES ${_KDE5INIT_DUMMY_FILENAME} PATHS ${CMAKECONFIG_INSTALL_PREFIX}/KInit)
+        find_file(${OUTPUT_VAR} NAMES ${_KDE5INIT_DUMMY_FILENAME} HINTS ${_KINITDIR})
     endif()
 endmacro()
 
