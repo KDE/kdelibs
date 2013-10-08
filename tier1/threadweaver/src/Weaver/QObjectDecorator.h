@@ -15,7 +15,8 @@ class THREADWEAVER_EXPORT QObjectDecorator : public QObject, public IdDecorator
 {
     Q_OBJECT
 public:
-    explicit QObjectDecorator(JobInterface* job, QObject *parent = 0);
+    explicit QObjectDecorator(JobInterface* decoratee, QObject *parent = 0);
+    explicit QObjectDecorator(JobInterface* decoratee, bool autoDelete, QObject *parent = 0);
 
 Q_SIGNALS:
     /** This signal is emitted when this job is being processed by a thread. */

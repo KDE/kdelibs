@@ -11,6 +11,12 @@ QObjectDecorator::QObjectDecorator(JobInterface *decoratee, QObject *parent)
 {
 }
 
+QObjectDecorator::QObjectDecorator(JobInterface *decoratee, bool autoDelete, QObject *parent)
+    : QObject(parent)
+    , IdDecorator(decoratee, autoDelete)
+{
+}
+
 void QObjectDecorator::defaultBegin(JobPointer self, Thread *thread)
 {
     Q_ASSERT(job());
