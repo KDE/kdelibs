@@ -148,7 +148,6 @@ static QStringList recursiveListEntries( const KArchiveDirectory * dir, const QS
     {
         descr += QString(" time=") + entry->date().toString("dd.MM.yyyy hh:mm:ss");
     }
-    // TODO add date and time
 
     //qDebug() << descr;
     ret.append( descr );
@@ -395,6 +394,18 @@ void KArchiveTest::testCreateTarXXX()
     }
 }
 
+static void compareEntryWithTimestamp(const QString &dateString, const QString &expectedDateString, const QDateTime &expectedDateTime)
+{
+    // Take the time from the listing and chop it off
+    const QDateTime dt = QDateTime::fromString(dateString.right(19), "dd.MM.yyyy hh:mm:ss");
+    QString str(dateString);
+    str.chop(25);
+    QCOMPARE(str, expectedDateString);
+
+    // Compare the times separately with allowed 1 sec diversion
+    QVERIFY(dt.secsTo(expectedDateTime) <= 1);
+}
+
 /**
  * @dataProvider setupData
  */
@@ -427,50 +438,37 @@ void KArchiveTest::testReadTar() // testCreateTarGz must have been run first.
     QString owner = localFileData.owner().isEmpty() ? getCurrentUserName() : localFileData.owner();
     QString group = localFileData.group().isEmpty() ? getCurrentGroupName() : localFileData.group();
     QString emptyTime = QDateTime().toString("dd.MM.yyyy hh:mm:ss");
-    QDateTime dt = QFileInfo(fileName).created();
+    const QDateTime creationTime = QFileInfo(fileName).created();
 
-    QCOMPARE( listing[ 0], QString("mode=40755 user=user group=group path=aaaemptydir type=dir time=%1").arg(emptyTime) );
+    compareEntryWithTimestamp(listing[0], QString("mode=40755 user=user group=group path=aaaemptydir type=dir"), creationTime);
+
     QCOMPARE( listing[ 1], QString("mode=40777 user=%1 group=%2 path=dir type=dir time=%3").arg(owner).arg(group).arg(emptyTime) );
     QCOMPARE( listing[ 2], QString("mode=40777 user=%1 group=%2 path=dir/subdir type=dir time=%3").arg(owner).arg(group).arg(emptyTime) );
-    QCOMPARE( listing[ 3], QString("mode=100644 user=user group=group path=dir/subdir/mediumfile2 type=file size=100 time=%3").arg(emptyTime) );
-    QCOMPARE( listing[ 4], QString("mode=100644 user=weis group=users path=empty type=file size=0 time=") );
-    QCOMPARE( listing[ 5], QString("mode=100644 user=user group=group path=hugefile type=file size=20000 time=") );
-    QCOMPARE( listing[ 6], QString("mode=100644 user=user group=group path=mediumfile type=file size=100 time=") );
+    compareEntryWithTimestamp(listing[3], QString("mode=100644 user=user group=group path=dir/subdir/mediumfile2 type=file size=100"), creationTime);
+    compareEntryWithTimestamp(listing[4], QString("mode=100644 user=weis group=users path=empty type=file size=0"), creationTime);
+    compareEntryWithTimestamp(listing[5], QString("mode=100644 user=user group=group path=hugefile type=file size=20000"), creationTime);
+    compareEntryWithTimestamp(listing[6], QString("mode=100644 user=user group=group path=mediumfile type=file size=100"), creationTime);
     QCOMPARE( listing[ 7], QString("mode=40777 user=%1 group=%2 path=my type=dir time=").arg(owner).arg(group) );
     QCOMPARE( listing[ 8], QString("mode=40777 user=%1 group=%2 path=my/dir type=dir time=").arg(owner).arg(group) );
-    QCOMPARE( listing[ 9], QString("mode=100644 user=dfaure group=hackers path=my/dir/test3 type=file size=29 time=") );
-    QCOMPARE( listing[10], QString("mode=100440 user=weis group=users path=test1 type=file size=5 time=") );
-    QCOMPARE( listing[11], QString("mode=100644 user=weis group=users path=test2 type=file size=8 time=") );
+    compareEntryWithTimestamp(listing[9], QString("mode=100644 user=dfaure group=hackers path=my/dir/test3 type=file size=29"), creationTime);
+    compareEntryWithTimestamp(listing[10], QString("mode=100440 user=weis group=users path=test1 type=file size=5"), creationTime);
+    compareEntryWithTimestamp(listing[11], QString("mode=100644 user=weis group=users path=test2 type=file size=8"), creationTime);
     QCOMPARE( listing[12], QString("mode=40777 user=%1 group=%2 path=z type=dir time=").arg(owner).arg(group) );
-
-    // NOTE: this test can occasionally fail, when archive time is not equal to file time in the archive.
-    // This happens bacause of a contention and is not a bug. Just rerun test.
 
     // This one was added with addLocalFile, so ignore mode/user/group.
     QString str = listing[13];
     str.replace(QRegExp("mode.*path"), "path" );
 
-    // Take the time from the listing and chop it off
-    QDateTime dt2 = QDateTime::fromString(str.right(19), "dd.MM.yyyy hh:mm:ss");
-    str.chop(25);
-    QCOMPARE( str, QString("path=z/test3 type=file size=13") );
-
-    // Compare the times separately with allowed 1 sec diversion
-    QVERIFY( dt2.secsTo(dt) <= 1 );
+    compareEntryWithTimestamp(str, QString("path=z/test3 type=file size=13"), creationTime);
 
 #ifndef Q_OS_WIN
     str = listing[14];
     str.replace(QRegExp("mode.*path"), "path" );
 
-    dt2 = QDateTime::fromString(str.right(19), "dd.MM.yyyy hh:mm:ss");
-    str.chop(25);
-
-    QCOMPARE( str, QString("path=z/test3_symlink type=file size=0 symlink=test3") );
-    QVERIFY( dt2.secsTo(dt) <= 1 );
+    compareEntryWithTimestamp(str, QString("path=z/test3_symlink type=file size=0 symlink=test3"), creationTime);
 #endif
 
     QVERIFY( tar.close() );
-
     }
 }
 
