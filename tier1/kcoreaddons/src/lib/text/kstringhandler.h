@@ -203,20 +203,6 @@ namespace KStringHandler
     KCOREADDONS_EXPORT QString from8Bit( const char *str );
 
     /**
-      Does a natural comparing of the strings. A negative value is returned if \a a
-      is smaller than \a b. A positive value is returned if \a a is greater than \a b. 0
-      is returned if both values are equal.
-
-      @param a first string to compare
-      @param b second string to compare
-      @param caseSensitivity whether to use case sensitive compare or not
-
-      @since 4.1
-      @deprecated since 5.0, should use QCollator instead.
-     */
-    KCOREADDONS_DEPRECATED_EXPORT int naturalCompare( const QString& a, const QString& b, Qt::CaseSensitivity caseSensitivity = Qt::CaseSensitive );
-
-    /**
       Preprocesses the given string in order to provide additional line breaking
       opportunities for QTextLayout.
 

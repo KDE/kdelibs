@@ -26,7 +26,7 @@
 #include <QtCore/QRegExp>            // for the word ranges
 #include <QtCore/QCharRef>
 #include <QtCore/QMutableStringListIterator>
-#include <QtCore/QCollator>
+
 
 
 //
@@ -295,14 +295,6 @@ QString KStringHandler::from8Bit( const char *str )
   return KStringHandler::isUtf8( str ) ?
              QString::fromUtf8( str ) :
              QString::fromLocal8Bit( str );
-}
-
-int KStringHandler::naturalCompare(const QString &a, const QString &b, Qt::CaseSensitivity caseSensitivity)
-{
-    QCollator c;
-    c.setCaseSensitivity(caseSensitivity);
-    c.setNumericMode(true);
-    return c.compare(a, b);
 }
 
 QString KStringHandler::preProcessWrap(const QString &text)

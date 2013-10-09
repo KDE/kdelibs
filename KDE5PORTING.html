@@ -283,6 +283,7 @@ is no longer available. To simply make the code build, for the sake of porting o
 <li>qtest_kde.h is deprecated. Port to &lt;QtTest&gt;, for core tests, or to &lt;QtTestWidgets&gt; for tests that use widgets, otherwise they'll crash in code that requires QApplication internally.</li>
 <li>K_EXPORT_PLUGIN is deprecated. Either use Qt's <a href="http://qt-project.org/doc/qt-5.0/qtcore/plugins-howto.html#the-lower-level-api-extending-qt-applications">native plugin system</a> for simple plugins, or the K_PLUGIN_FACTORY or the K_PLUGIN_FACTORY_WITH_JSON macro, defined in kpluginfactory.h. In both cases, remove the K_EXPORT_PLUGIN macro from your code. This case is indicated by the K_EXPORT_PLUGIN_is_deprecated_see_KDE5PORTING warning. More details about the plugin factoiry changes are explained <a href="http://vizzzion.org/blog/2013/08/kde-frameworks-5-plugin-factory-guts/">in this article</a>. </li>
 <li>KAuthorized::authorizeUrlAction and KAuthorized::allowUrlAction have been moved to a new KUrlAuthorized namespace.</li>
+<li>KStringHandler::naturalCompare() is deprecated now, QCollator (QtCore) should be used from now on. If you still want the exact same old behavior, you can use it from kstringhandler_deprecated.h (KDE4Support),</li>
 </ul>
 
 <h4 align="right"><a href="#TOC">Return to the Table of Contents</a></h4>

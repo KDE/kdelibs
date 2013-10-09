@@ -70,6 +70,7 @@ set(libkde4support_SRCS
     kdecore/kglobal.cpp
     kdecore/kcmdlineargs.cpp
     kdecore/kurl.cpp
+    kdecore/kstringhandler_deprecated.cpp
 
     kdeui/k3icon.cpp
     kdeui/k4style.cpp
@@ -301,6 +302,7 @@ install(FILES
     kdecore/klockfile.h
     kdecore/kurl.h
     kdecore/ksharedptr.h
+    kdecore/kstringhandler_deprecated.h
 
     kio/kdiskfreespace.h
     kio/kdatatool.h
