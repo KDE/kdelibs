@@ -939,7 +939,7 @@ bool KZip::doWriteDir(const QString &name, const QString &user, const QString &g
     QString dirName = name;
     if (!name.endsWith(QLatin1Char('/')))
         dirName = dirName.append(QLatin1Char('/'));
-    return writeFile(dirName, user, group, 0, 0, perm, atime, mtime, ctime);
+    return writeFile(dirName, QByteArray(), perm, user, group, atime, mtime, ctime);
 }
 
 bool KZip::doPrepareWriting(const QString &name, const QString &user,

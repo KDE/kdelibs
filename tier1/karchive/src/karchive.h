@@ -157,7 +157,7 @@ public:
      * @param mtime modification time of the file
      * @param ctime time of last status change
      */
-    bool writeDir(const QString &name, const QString &user, const QString &group,
+    bool writeDir(const QString &name, const QString &user = QString(), const QString &group = QString(),
                   mode_t perm = 040755, const QDateTime &atime = QDateTime(),
                   const QDateTime &mtime = QDateTime(), const QDateTime &ctime = QDateTime());
 
@@ -175,7 +175,7 @@ public:
      * @param ctime time of last status change
      */
     bool writeSymLink(const QString &name, const QString &target,
-                      const QString &user, const QString &group,
+                      const QString &user = QString(), const QString &group = QString(),
                       mode_t perm = 0120755, const QDateTime &atime = QDateTime(),
                       const QDateTime &mtime = QDateTime(), const QDateTime &ctime = QDateTime());
 
@@ -197,10 +197,43 @@ public:
      * @param atime time the file was last accessed
      * @param mtime modification time of the file
      * @param ctime time of last status change
+     * @overload
      */
-    bool writeFile(const QString &name, const QString &user, const QString &group,
+#ifndef KDE_NO_DEPRECATED
+    KARCHIVE_DEPRECATED bool writeFile(const QString &name, const QString &user, const QString &group,
                    const char *data, qint64 size,
                    mode_t perm = 0100644, const QDateTime &atime = QDateTime(),
+                   const QDateTime &mtime = QDateTime(), const QDateTime &ctime = QDateTime());
+    // The above can lead to ambiguous calls when using "..." for the first 4 arguments,
+    // but that's good, better than unexpected behavior due to the signature change.
+#endif
+
+    /**
+     * Writes a new file into the archive.
+     *
+     * The archive must be opened for writing first.
+     *
+     * The necessary parent directories are created automatically
+     * if needed. For instance, writing "mydir/test1" does not
+     * require creating the directory "mydir" first.
+     *
+     * This method also allows some file metadata to be
+     * set. However, depending on the archive type not all metadata might be
+     * written out.
+     *
+     * @param name the name of the file
+     * @param data the data to write
+     * @param perm permissions of the file
+     * @param user the user that owns the file
+     * @param group the group that owns the file
+     * @param atime time the file was last accessed
+     * @param mtime modification time of the file
+     * @param ctime time of last status change
+     */
+    bool writeFile(const QString &name, const QByteArray& data,
+                   mode_t perm = 0100644,
+                   const QString &user = QString(), const QString &group = QString(),
+                   const QDateTime &atime = QDateTime(),
                    const QDateTime &mtime = QDateTime(), const QDateTime &ctime = QDateTime());
 
     /**

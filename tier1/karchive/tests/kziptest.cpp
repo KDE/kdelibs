@@ -58,11 +58,9 @@ void recursive_transfer(const KArchiveDirectory *dir,
             printf("DATA=%s\n", qPrintable(str));
 
             if (e->symLinkTarget().isEmpty()) {
-                zip->writeFile(path + e->name(),
-                                "holgi", "holgrp",
-                                arr.constData(), arr.size());
+                zip->writeFile(path + e->name(), arr);
             } else {
-                zip->writeSymLink(path + e->name(), e->symLinkTarget(), "leo", "leo", 0120777);
+                zip->writeSymLink(path + e->name(), e->symLinkTarget());
             }
         } else if (e->isDirectory()) {
             recursive_transfer(static_cast<const KArchiveDirectory *>(e),
@@ -173,7 +171,7 @@ int main(int argc, char** argv)
             return 1;
         }
 
-        zip.writeFile(argv[3], "", "", f.readAll().constData(), f.size());
+        zip.writeFile(argv[3], f.readAll());
         zip.close();
 
         return 0;

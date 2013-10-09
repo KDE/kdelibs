@@ -294,10 +294,22 @@ bool KArchive::addLocalDirectory( const QString& path, const QString& destName )
     return true;
 }
 
+#ifndef KDE_NO_DEPRECATED
 bool KArchive::writeFile(const QString& name, const QString& user,
                           const QString& group, const char* data, qint64 size,
                           mode_t perm, const QDateTime &atime, const QDateTime &mtime, const QDateTime &ctime )
 {
+    QByteArray array(data, size);
+    return writeFile(name, array, perm, user, group, atime, mtime, ctime);
+}
+#endif
+
+bool KArchive::writeFile(const QString &name, const QByteArray &data,
+                         mode_t perm,
+                         const QString &user, const QString &group, const QDateTime &atime,
+                         const QDateTime &mtime, const QDateTime &ctime)
+{
+    const qint64 size = data.size();
     if ( !prepareWriting( name, user, group, size, perm, atime, mtime, ctime ) )
     {
         //qWarning() << "prepareWriting failed";
@@ -305,9 +317,8 @@ bool KArchive::writeFile(const QString& name, const QString& user,
     }
 
     // Write data
-    // Note: if data is 0L, don't call write, it would terminate the KFilterDev
-    if ( data && size && !writeData( data, size ) )
-    {
+    // Note: if data is null, don't call write, it would terminate the KCompressionDevice
+    if (data.constData() && size && !writeData(data.constData(), size)) {
         //qWarning() << "writeData failed";
         return false;
     }

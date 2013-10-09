@@ -214,6 +214,7 @@ A script is available in kdesdk/kde-dev-scripts/kf5/convert-kstandarddirs.pl to 
 <li>KConfigBase::sync now returns a bool</li>
 <li>KCoreConfigSkeleton::writeConfig now returns a bool</li>
 <li>KCoreConfigSkeleton::usrWriteConfig now returns a bool</li>
+<li>KArchive::writeFile takes arguments in a different order from before, so that "user" and "group" are now optional, and so that const char* data, qint64 size could be replaced with a QByteArray.</li>
 <li>KTemporaryFile is deprecated, port to QTemporaryFile instead, see KTemporaryFile API documentation for details.</li>
 <li>KTempDir is deprecated, port to QTemporaryDir instead, see KTempDir API documentation for details.</li>
 <li>KToolInvocation::invokeHelp is now KHelpClient::invokeHelp, in the kwidgets framework.</li>

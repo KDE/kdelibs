@@ -36,17 +36,17 @@ private Q_SLOTS:
 
     void testCreateTar_data();
     void testCreateTar();
-    void testCreateTarXXX_data(){ setupData(); };
+    void testCreateTarXXX_data(){ setupData(); }
     void testCreateTarXXX();
-    void testReadTar_data(){ setupData(); };
+    void testReadTar_data(){ setupData(); }
     void testReadTar();
-    void testUncompress_data(){ setupData(); };
+    void testUncompress_data(){ setupData(); }
     void testUncompress();
-    void testTarFileData_data(){ setupData(); };
+    void testTarFileData_data(){ setupData(); }
     void testTarFileData();
-    void testTarCopyTo_data(){ setupData(); };
+    void testTarCopyTo_data(){ setupData(); }
     void testTarCopyTo();
-    void testTarReadWrite_data(){ setupData(); };
+    void testTarReadWrite_data(){ setupData(); }
     void testTarReadWrite();
     void testTarMaxLength_data();
     void testTarMaxLength();
@@ -67,17 +67,17 @@ private Q_SLOTS:
     void testZipAddLocalDirectory();
 
 #if HAVE_XZ_SUPPORT
-    void testCreate7Zip_data(){ setup7ZipData(); };
+    void testCreate7Zip_data(){ setup7ZipData(); }
     void testCreate7Zip();
-    void testRead7Zip_data(){ setup7ZipData(); };
+    void testRead7Zip_data(){ setup7ZipData(); }
     void testRead7Zip();
-    void test7ZipFileData_data(){ setup7ZipData(); };
+    void test7ZipFileData_data(){ setup7ZipData(); }
     void test7ZipFileData();
-    void test7ZipCopyTo_data(){ setup7ZipData(); };
+    void test7ZipCopyTo_data(){ setup7ZipData(); }
     void test7ZipCopyTo();
-    void test7ZipReadWrite_data(){ setup7ZipData(); };
+    void test7ZipReadWrite_data(){ setup7ZipData(); }
     void test7ZipReadWrite();
-    void test7ZipMaxLength_data(){ setup7ZipData(); };
+    void test7ZipMaxLength_data(){ setup7ZipData(); }
     void test7ZipMaxLength();
 #endif
 

@@ -50,8 +50,8 @@ static const int SIZE1 = 100;
  */
 static void writeTestFilesToArchive( KArchive* archive )
 {
-    QVERIFY( archive->writeFile( "empty", "weis", "users", "", 0 ) );
-    QVERIFY( archive->writeFile( "test1", "weis", "users", "Hallo", 5, 0100440 ) );
+    QVERIFY(archive->writeFile("empty", "", 0100644, "weis", "users"));
+    QVERIFY(archive->writeFile("test1", QByteArray("Hallo"), 0100440, QString("weis"), QString("users")));
     // Now let's try with the prepareWriting/writeData/finishWriting API
     QVERIFY( archive->prepareWriting( "test2", "weis", "users", 8 ) );
     QVERIFY( archive->writeData( "Hallo ", 6 ) );
@@ -66,24 +66,24 @@ static void writeTestFilesToArchive( KArchive* archive )
     QVERIFY( archive->addLocalFile( "test3", "z/test3" ) );
 
     // writeFile API
-    QVERIFY( archive->writeFile( "my/dir/test3", "dfaure", "hackers", "I do not speak German\nDavid.", 29 ) );
+    QVERIFY(archive->writeFile( "my/dir/test3", "I do not speak German\nDavid.", 0100644, "dfaure", "hackers"));
 
     // Now a medium file : 100 null bytes
     char medium[ SIZE1 ];
     memset( medium, 0, SIZE1 );
-    QVERIFY( archive->writeFile( "mediumfile", "user", "group", medium, SIZE1 ) );
+    QVERIFY(archive->writeFile("mediumfile", QByteArray(medium, SIZE1)));
     // Another one, with an absolute path
-    QVERIFY( archive->writeFile( "/dir/subdir/mediumfile2", "user", "group", medium, SIZE1 ) );
+    QVERIFY(archive->writeFile("/dir/subdir/mediumfile2", QByteArray(medium, SIZE1)));
 
     // Now a huge file : 20000 null bytes
     int n = 20000;
     char * huge = new char[ n ];
     memset( huge, 0, n );
-    QVERIFY( archive->writeFile( "hugefile", "user", "group", huge, n ) );
+    QVERIFY(archive->writeFile( "hugefile", QByteArray(huge, n)));
     delete [] huge;
 
     // Now an empty directory
-    QVERIFY( archive->writeDir( "aaaemptydir", "user", "group" ) );
+    QVERIFY(archive->writeDir("aaaemptydir"));
 
 #ifndef Q_OS_WIN
     // Add local symlink
@@ -234,7 +234,7 @@ static void testFileData( KArchive* archive )
 
 static void testReadWrite( KArchive* archive )
 {
-    QVERIFY(archive->writeFile("newfile", "dfaure", "users", "New File", 8, 0100440));
+    QVERIFY(archive->writeFile("newfile", "New File", 0100440, "dfaure", "users"));
 }
 
 static void testCopyTo( KArchive* archive )
@@ -266,7 +266,7 @@ static void testCopyTo( KArchive* archive )
     QFileInfo fileInfo4(dirName+"my/dir/test3");
     QVERIFY(fileInfo4.exists());
     QVERIFY(fileInfo4.isFile());
-    QCOMPARE(fileInfo4.size(), Q_INT64_C(29));
+    QCOMPARE(fileInfo4.size(), Q_INT64_C(28));
 
 #ifndef Q_OS_WIN
     const QString fileName = dirName+"z/test3_symlink";
@@ -394,16 +394,19 @@ void KArchiveTest::testCreateTarXXX()
     }
 }
 
-static void compareEntryWithTimestamp(const QString &dateString, const QString &expectedDateString, const QDateTime &expectedDateTime)
-{
-    // Take the time from the listing and chop it off
-    const QDateTime dt = QDateTime::fromString(dateString.right(19), "dd.MM.yyyy hh:mm:ss");
-    QString str(dateString);
-    str.chop(25);
-    QCOMPARE(str, expectedDateString);
+//static void compareEntryWithTimestamp(const QString &dateString, const QString &expectedDateString, const QDateTime &expectedDateTime)
+// Made it a macro so that line numbers are meaningful on failure
 
-    // Compare the times separately with allowed 1 sec diversion
-    QVERIFY(dt.secsTo(expectedDateTime) <= 1);
+#define compareEntryWithTimestamp(dateString, expectedDateString, expectedDateTime) \
+{ \
+    /* Take the time from the listing and chop it off */ \
+    const QDateTime dt = QDateTime::fromString(dateString.right(19), "dd.MM.yyyy hh:mm:ss"); \
+    QString _str(dateString); \
+    _str.chop(25); \
+    QCOMPARE(_str, expectedDateString); \
+\
+    /* Compare the times separately with allowed 1 sec diversion */ \
+    QVERIFY(dt.secsTo(expectedDateTime) <= 1); \
 }
 
 /**
@@ -440,17 +443,17 @@ void KArchiveTest::testReadTar() // testCreateTarGz must have been run first.
     QString emptyTime = QDateTime().toString("dd.MM.yyyy hh:mm:ss");
     const QDateTime creationTime = QFileInfo(fileName).created();
 
-    compareEntryWithTimestamp(listing[0], QString("mode=40755 user=user group=group path=aaaemptydir type=dir"), creationTime);
+    compareEntryWithTimestamp(listing[0], QString("mode=40755 user= group= path=aaaemptydir type=dir"), creationTime);
 
     QCOMPARE( listing[ 1], QString("mode=40777 user=%1 group=%2 path=dir type=dir time=%3").arg(owner).arg(group).arg(emptyTime) );
     QCOMPARE( listing[ 2], QString("mode=40777 user=%1 group=%2 path=dir/subdir type=dir time=%3").arg(owner).arg(group).arg(emptyTime) );
-    compareEntryWithTimestamp(listing[3], QString("mode=100644 user=user group=group path=dir/subdir/mediumfile2 type=file size=100"), creationTime);
+    compareEntryWithTimestamp(listing[3], QString("mode=100644 user= group= path=dir/subdir/mediumfile2 type=file size=100"), creationTime);
     compareEntryWithTimestamp(listing[4], QString("mode=100644 user=weis group=users path=empty type=file size=0"), creationTime);
-    compareEntryWithTimestamp(listing[5], QString("mode=100644 user=user group=group path=hugefile type=file size=20000"), creationTime);
-    compareEntryWithTimestamp(listing[6], QString("mode=100644 user=user group=group path=mediumfile type=file size=100"), creationTime);
+    compareEntryWithTimestamp(listing[5], QString("mode=100644 user= group= path=hugefile type=file size=20000"), creationTime);
+    compareEntryWithTimestamp(listing[6], QString("mode=100644 user= group= path=mediumfile type=file size=100"), creationTime);
     QCOMPARE( listing[ 7], QString("mode=40777 user=%1 group=%2 path=my type=dir time=").arg(owner).arg(group) );
     QCOMPARE( listing[ 8], QString("mode=40777 user=%1 group=%2 path=my/dir type=dir time=").arg(owner).arg(group) );
-    compareEntryWithTimestamp(listing[9], QString("mode=100644 user=dfaure group=hackers path=my/dir/test3 type=file size=29"), creationTime);
+    compareEntryWithTimestamp(listing[9], QString("mode=100644 user=dfaure group=hackers path=my/dir/test3 type=file size=28"), creationTime);
     compareEntryWithTimestamp(listing[10], QString("mode=100440 user=weis group=users path=test1 type=file size=5"), creationTime);
     compareEntryWithTimestamp(listing[11], QString("mode=100644 user=weis group=users path=test2 type=file size=8"), creationTime);
     QCOMPARE( listing[12], QString("mode=40777 user=%1 group=%2 path=z type=dir time=").arg(owner).arg(group) );
@@ -594,7 +597,7 @@ void KArchiveTest::testTarMaxLength()
       str.fill( 'a', i-10 );
       num.setNum( i );
       num = num.rightJustified( 10, '0' );
-      tar.writeFile( str+num, "testu", "testg", "hum", 3 );
+      tar.writeFile(str+num, "hum");
     }
     // Result of this test : works perfectly now (failed at 482 formerly and
     // before that at 154).
@@ -606,9 +609,9 @@ void KArchiveTest::testTarMaxLength()
     QVERIFY( dir != 0 );
     const QStringList listing = recursiveListEntries( dir, "", WithUserGroup );
 
-    QCOMPARE( listing[  0], QString("mode=100644 user=testu group=testg path=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa0000000098 type=file size=3") );
-    QCOMPARE( listing[  3], QString("mode=100644 user=testu group=testg path=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa0000000101 type=file size=3") );
-    QCOMPARE( listing[  4], QString("mode=100644 user=testu group=testg path=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa0000000102 type=file size=3") );
+    QCOMPARE( listing[  0], QString("mode=100644 user= group= path=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa0000000098 type=file size=3") );
+    QCOMPARE( listing[  3], QString("mode=100644 user= group= path=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa0000000101 type=file size=3") );
+    QCOMPARE( listing[  4], QString("mode=100644 user= group= path=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa0000000102 type=file size=3") );
 
     QCOMPARE( listing.count(), 416 );
 
@@ -690,7 +693,7 @@ void KArchiveTest::testTarRootDir() // bug 309463
     QVERIFY( dir != 0 );
 
     const QStringList listing = recursiveListEntries(dir, "", WithUserGroup);
-    qDebug() << listing.join("\n");
+    //qDebug() << listing.join("\n");
 
     QVERIFY(listing[0].contains("%{APPNAME}.cpp"));
     QVERIFY(listing[1].contains("%{APPNAME}.h"));
@@ -708,7 +711,7 @@ void KArchiveTest::testTarDirectoryTwice() // bug 206994
     QVERIFY( dir != 0 );
 
     const QStringList listing = recursiveListEntries(dir, "", WithUserGroup);
-    qDebug() << listing.join("\n");
+    //qDebug() << listing.join("\n");
 
     QVERIFY(listing[0].contains("path=d"));
     QVERIFY(listing[1].contains("path=d/f1.txt"));
@@ -733,7 +736,7 @@ void KArchiveTest::testCreateZip()
 
     zip.setCompression( KZip::NoCompression );
     QByteArray zipMimeType( s_zipMimeType );
-    zip.writeFile( "mimetype", "", "", zipMimeType.data(), zipMimeType.size() );
+    zip.writeFile("mimetype", zipMimeType);
     zip.setCompression( KZip::DeflateCompression );
 
     writeTestFilesToArchive( &zip );
@@ -828,7 +831,7 @@ void KArchiveTest::testReadZip()
     QCOMPARE( listing[ 7], QString("mode=100644 path=mimetype type=file size=%1").arg(strlen(s_zipMimeType)) );
     QCOMPARE( listing[ 8], QString("mode=40777 path=my type=dir") );
     QCOMPARE( listing[ 9], QString("mode=40777 path=my/dir type=dir") );
-    QCOMPARE( listing[10], QString("mode=100644 path=my/dir/test3 type=file size=29") );
+    QCOMPARE( listing[10], QString("mode=100644 path=my/dir/test3 type=file size=28") );
     QCOMPARE( listing[11], QString("mode=100440 path=test1 type=file size=5") );
     QCOMPARE( listing[12], QString("mode=100644 path=test2 type=file size=8") );
     QCOMPARE( listing[13], QString("mode=40777 path=z type=dir") );
@@ -881,7 +884,7 @@ void KArchiveTest::testZipMaxLength()
       str.fill( 'a', i-10 );
       num.setNum( i );
       num = num.rightJustified( 10, '0' );
-      zip.writeFile( str+num, "testu", "testg", "hum", 3 );
+      zip.writeFile(str+num, "hum");
     }
     QVERIFY( zip.close() );
 
@@ -909,7 +912,7 @@ void KArchiveTest::testZipWithNonLatinFileNames()
     const QByteArray fileData("Test of data with a russian file name");
     const QString fileName = QString::fromUtf8( "Архитектура.okular" );
     const QString recodedFileName = QFile::decodeName( QFile::encodeName( fileName ) );
-    QVERIFY( zip.writeFile( fileName, "pino", "users", fileData.constData(), fileData.size() ) );
+    QVERIFY(zip.writeFile(fileName, fileData));
 
     QVERIFY( zip.close() );
 
@@ -1053,7 +1056,7 @@ void KArchiveTest::testRead7Zip() // testCreate7Zip must have been run first.
     QCOMPARE( listing[ 6], QString("mode=100644 path=mediumfile type=file size=100") );
     QCOMPARE( listing[ 7], QString("mode=40777 path=my type=dir") );
     QCOMPARE( listing[ 8], QString("mode=40777 path=my/dir type=dir") );
-    QCOMPARE( listing[ 9], QString("mode=100644 path=my/dir/test3 type=file size=29") );
+    QCOMPARE( listing[ 9], QString("mode=100644 path=my/dir/test3 type=file size=28") );
     QCOMPARE( listing[10], QString("mode=100440 path=test1 type=file size=5") );
     QCOMPARE( listing[11], QString("mode=100644 path=test2 type=file size=8") );
     QCOMPARE( listing[12], QString("mode=40777 path=z type=dir"));
@@ -1148,18 +1151,14 @@ void KArchiveTest::test7ZipMaxLength()
     QVERIFY( k7zip.open( QIODevice::WriteOnly ) );
 
     // Generate long filenames of each possible length bigger than 98...
-    // Also exceed 512 byte block size limit to see how well the ././@LongLink
-    // implementation fares
     for (int i = 98; i < 514 ; i++ )
     {
       QString str, num;
       str.fill( 'a', i-10 );
       num.setNum( i );
       num = num.rightJustified( 10, '0' );
-      k7zip.writeFile( str+num, "testu", "testg", "hum", 3 );
+      k7zip.writeFile(str+num, "hum");
     }
-    // Result of this test : works perfectly now (failed at 482 formerly and
-    // before that at 154).
     QVERIFY( k7zip.close() );
 
     QVERIFY( k7zip.open( QIODevice::ReadOnly ) );
