@@ -51,12 +51,12 @@ if(NOT MSVC)
 
     ########### next target ###############
 endif(NOT MSVC)
-#
-# set(kencodingdetector_SRCS
-#     ${KHTML_SOURCE_DIR}/misc/kencodingdetector.cpp
-#     ${KHTML_SOURCE_DIR}/misc/guess_ja.cpp
-# )
-# kde4_add_unit_test(kencodingdetectortest kencodingdetectortest.cpp ${kencodingdetector_SRCS})
-# target_link_libraries(kencodingdetectortest KCodecs KI18n KHtml Qt5::Test)
+
+set(kencodingdetector_SRCS
+    ${KHTML_SOURCE_DIR}/misc/kencodingdetector.cpp
+    ${KHTML_SOURCE_DIR}/misc/guess_ja.cpp
+)
+kde4_add_unit_test(kencodingdetectortest kencodingdetectortest.cpp ${kencodingdetector_SRCS})
+target_link_libraries(kencodingdetectortest KCodecs KI18n KHtml Qt5::Test)
 
 # TODO: ksslkeygentest
