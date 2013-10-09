@@ -201,6 +201,8 @@ void KGlobalShortcutTest::testStealShortcut()
 void KGlobalShortcutTest::testSaveRestore()
 {
     setupTest("testSaveRestore");
+    if (!m_daemonInstalled)
+        QSKIP("kglobalaccel not installed");
 
     //It /would be nice/ to test persistent storage. That is not so easy...
     QList<QKeySequence> cutA = KGlobalAccel::self()->shortcut(m_actionA);
@@ -304,6 +306,8 @@ void KGlobalShortcutTest::testComponentAssignment()
 void KGlobalShortcutTest::testConfigurationActions()
 {
     setupTest("testConfigurationActions");
+    if (!m_daemonInstalled)
+        QSKIP("kglobalaccel not installed");
 
     // Create a configuration action
     QAction cfg_action("Text For Action A", NULL);
