@@ -578,7 +578,14 @@ bool KConfigIniBackend::lock()
         lockFile = new QLockFile(filePath() + QLatin1String(".lock"));
     }
 
-    lockFile->lock();
+    // This is a workaround for current QLockFilePrivate::tryLock_sys
+    // which might crash calling qAppName() if sync() is called after
+    // the QCoreApplication instance is gone. It might be the case with
+    // KSharedConfig instances cleanup.
+    if (!lockFile->tryLock(lockFile->staleLockTime())) {
+        lockFile->removeStaleLockFile();
+        lockFile->lock();
+    }
     return lockFile->isLocked();
 }
 
