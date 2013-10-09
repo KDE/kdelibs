@@ -49,7 +49,8 @@ Q_GLOBAL_STATIC(GlobalSharedConfigList, globalSharedConfigList)
 
 void _k_globalMainConfigSync()
 {
-    globalSharedConfigList->mainConfig->sync();
+    if (globalSharedConfigList->mainConfig)
+        globalSharedConfigList->mainConfig->sync();
 }
 
 
