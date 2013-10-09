@@ -3628,7 +3628,7 @@ void KDateTimeTest::strings_qttextdate()
 
 void KDateTimeTest::strings_format()
 {
-    KCalendarSystem* calendar = KCalendarSystem::create(QString("gregorian"), KGlobal::locale());
+    KCalendarSystem* calendar = KCalendarSystem::create(KLocale::GregorianCalendar, KGlobal::locale());
     KTimeZone london = KSystemTimeZones::zone("Europe/London");
     KTimeZone paris  = KSystemTimeZones::zone("Europe/Paris");
     KTimeZone berlin = KSystemTimeZones::zone("Europe/Berlin");
