@@ -33,8 +33,7 @@
 KFontSettingsData::KFontSettingsData()
     : QObject(0)
 {
-    QDBusConnection::sessionBus().connect( QString(), "/KDEPlatformTheme", "org.kde.KDEPlatformTheme",
-                                                      "refreshFonts", this, SLOT(dropFontSettingsCache()) );
+    QMetaObject::invokeMethod(this, "delayedDBusConnects", Qt::QueuedConnection);
 
     for( int i=0; i<FontTypesCount; ++i )
         mFonts[i] = 0;
@@ -100,4 +99,10 @@ void KFontSettingsData::dropFontSettingsCache()
     } else {
         QGuiApplication::setFont(*font(KFontSettingsData::GeneralFont));
     }
+}
+
+void KFontSettingsData::delayedDBusConnects()
+{
+    QDBusConnection::sessionBus().connect( QString(), "/KDEPlatformTheme", "org.kde.KDEPlatformTheme",
+                                                      "refreshFonts", this, SLOT(dropFontSettingsCache()) );
 }

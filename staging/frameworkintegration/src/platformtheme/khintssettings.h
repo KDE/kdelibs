@@ -64,6 +64,7 @@ class KHintsSettings : public QObject
         }
 
     private Q_SLOTS:
+        void delayedDBusConnects();
         void setupIconLoader();
         void slotNotifyChange(int type, int arg);
 

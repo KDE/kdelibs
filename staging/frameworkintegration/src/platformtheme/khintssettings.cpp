@@ -80,9 +80,7 @@ KHintsSettings::KHintsSettings() : QObject(0)
     bool showIcons = cg.readEntry("ShowIconsInMenuItems", !QApplication::testAttribute(Qt::AA_DontShowIconsInMenus));
     QCoreApplication::setAttribute(Qt::AA_DontShowIconsInMenus, !showIcons);
 
-    QDBusConnection::sessionBus().connect(QString(), QStringLiteral("/KGlobalSettings"), QStringLiteral("org.kde.KGlobalSettings"),
-                                                   QStringLiteral("notifyChange"), this, SLOT(slotNotifyChange(int, int)));
-
+    QMetaObject::invokeMethod(this, "delayedDBusConnects", Qt::QueuedConnection);
     QMetaObject::invokeMethod(this, "setupIconLoader", Qt::QueuedConnection);
 
     loadPalettes();
@@ -112,6 +110,12 @@ QStringList KHintsSettings::xdgIconThemePaths() const
     }
 
     return paths;
+}
+
+void KHintsSettings::delayedDBusConnects()
+{
+    QDBusConnection::sessionBus().connect(QString(), QStringLiteral("/KGlobalSettings"), QStringLiteral("org.kde.KGlobalSettings"),
+                                                   QStringLiteral("notifyChange"), this, SLOT(slotNotifyChange(int, int)));
 }
 
 void KHintsSettings::setupIconLoader()
