@@ -58,9 +58,11 @@ public:
      */
     virtual ~KCompressionDevice();
 
-    // The compression actually used by this device.
-    // If the support for the compression requested in the constructor
-    // is not available, then the device will use None.
+    /**
+     * The compression actually used by this device.
+     * If the support for the compression requested in the constructor
+     * is not available, then the device will use None.
+     */
     CompressionType compressionType() const;
 
     /**
@@ -93,10 +95,6 @@ public:
     virtual bool seek( qint64 );
 
     virtual bool atEnd() const;
-
-    /// Reimplemented to return true. KCompressionDevice is a sequential QIODevice.
-    /// Well, not really, since it supports seeking and KZip uses that.
-    //virtual bool isSequential() const { return true; }
 
     /**
      * Call this to create the appropriate filter for the CompressionType
