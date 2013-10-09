@@ -25,9 +25,20 @@
 #include "kconfig_p.h"
 #include <QCoreApplication>
 
+void _k_globalMainConfigSync();
+
 class GlobalSharedConfigList : public QList<KSharedConfig*>
 {
 public:
+    GlobalSharedConfigList()
+    {
+        // We want to force the sync() before the QCoreApplication
+        // instance is gone. Otherwise we trigger a QLockFile::lock()
+        // after QCoreApplication is gone, calling qAppName() for a non
+        // existent app...
+        qAddPostRoutine(&_k_globalMainConfigSync);
+    }
+
     // in addition to the list, we need to hold the main config,
     // so that it's not created and destroyed all the time.
     KSharedConfigPtr mainConfig;
@@ -35,6 +46,12 @@ public:
 
 
 Q_GLOBAL_STATIC(GlobalSharedConfigList, globalSharedConfigList)
+
+void _k_globalMainConfigSync()
+{
+    globalSharedConfigList->mainConfig->sync();
+}
+
 
 KSharedConfigPtr KSharedConfig::openConfig(const QString& _fileName,
                                            OpenFlags flags,
