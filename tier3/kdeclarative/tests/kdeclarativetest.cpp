@@ -25,6 +25,8 @@
 
 #include "testobject_p.h"
 
+#include <QtTest/qtestcase.h>
+
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
@@ -40,7 +42,7 @@ int main(int argc, char *argv[])
     //binds things like kconfig and icons
     kdeclarative.setupBindings();
 
-    view.setSource(QUrl::fromLocalFile(QStringLiteral("test.qml")));
+    view.setSource(QUrl::fromLocalFile(QFINDTESTDATA("test.qml")));
     view.show();
 
     return app.exec();

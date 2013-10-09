@@ -17,38 +17,15 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-import Qt 4.7
-import org.kde.plasma.core 0.1 as PlasmaCore
-import org.kde.plasma.graphicswidgets 0.1 as PlasmaWidgets
+import QtQuick 2.1
 
 Rectangle {
     width: 300
     height: 300
     color: "red"
 
-    Component.onCompleted: {
-        print(testObject.prop)
-        testObject.prop = i18n("New text")
-        print(testObject.prop)
-        //QtScript binded elements don't appear to notify
-        textElement.text = testObject.prop
-
-        //test urls
-        var url = new Url("http://www.kde.org")
-        print(url.protocol)
-        print(url.host)
-
-        //test icons
-        iconWidget.icon = new QIcon("konqueror")
-    }
-    Column {
+    Text {
         anchors.fill: parent
-        Text {
-            id: textElement
-            text: testObject.prop
-        }
-        PlasmaWidgets.IconWidget {
-            id: iconWidget
-        }
+        text: i18n("Hello")
     }
 }
