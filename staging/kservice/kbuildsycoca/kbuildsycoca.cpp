@@ -42,9 +42,7 @@
 #include <assert.h>
 #include <kdirwatch.h>
 
-#if !KBUILDSYCOCA_NO_KCRASH
 #include <kcrash.h>
-#endif
 #include <kmemfile_p.h>
 
 #include <stdlib.h>
@@ -654,11 +652,9 @@ extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
      qputenv("XDG_DATA_HOME", "-");
    }
 
-#if !KBUILDSYCOCA_NO_KCRASH
-   KCrash::setCrashHandler(KCrash::defaultCrashHandler);
-   KCrash::setEmergencySaveFunction(crashHandler);
-   KCrash::setApplicationName(QString::fromLatin1(KBUILDSYCOCA_EXENAME));
-#endif
+    KCrash::setCrashHandler(KCrash::defaultCrashHandler);
+    KCrash::setEmergencySaveFunction(crashHandler);
+    KCrash::setApplicationName(QString::fromLatin1(KBUILDSYCOCA_EXENAME));
 
    // force generating of KLocale object. if not, the database will get
    // be translated
