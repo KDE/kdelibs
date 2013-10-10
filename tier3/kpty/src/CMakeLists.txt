@@ -17,8 +17,6 @@ target_link_libraries(KPty LINK_PUBLIC Qt5::Core
                                 ${UTEMPTER_LIBRARY}
                                 KI18n)
 
-target_link_libraries(KPty LINK_INTERFACE_LIBRARIES KI18n )
-
 target_include_directories(KPty PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/..)
 
 set_target_properties(KPty PROPERTIES
