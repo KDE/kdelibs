@@ -52,10 +52,10 @@ public:
                             const QVariantList& args,
                             const QString &keyword);
 
-    static const KComponentData &componentData() { return *s_componentData; }
+    static const KAboutData &aboutData() { return *s_aboutData; }
 
 private:
-    static KComponentData *s_componentData;
+    static KAboutData *s_aboutData;
 };
 
 /**

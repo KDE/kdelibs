@@ -85,7 +85,6 @@ public:
     KJavaAppletViewer (QWidget * wparent, QObject * parent, const QStringList &args);
     ~KJavaAppletViewer ();
     CoverWidget * view () const;
-    static KAboutData* createAboutData ();
 
     KJavaAppletViewerBrowserExtension * browserextension() const
         { return m_browserextension; }
@@ -123,10 +122,10 @@ public:
     virtual ~KJavaAppletViewerFactory ();
     virtual QObject *create(const char *, QWidget *wparent, QObject *parent,
                             const QVariantList & args, const QString &);
-    static const KComponentData &componentData() { return *s_componentData; }
+    static const KAboutData &componentData() { return *s_aboutData; }
     static KIconLoader * iconLoader () { return s_iconLoader; }
 private:
-    static KComponentData *s_componentData;
+    static KAboutData  *s_aboutData;
     static KIconLoader * s_iconLoader;
 };
 

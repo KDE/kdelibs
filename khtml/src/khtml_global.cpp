@@ -22,6 +22,7 @@
 #include "khtml_global.h"
 #include "khtml_part.h"
 #include "khtml_settings.h"
+#include "../khtml_version.h"
 
 #include "css/cssstyleselector.h"
 #include "css/css_mediaquery.h"
@@ -35,9 +36,8 @@
 
 #include <QtCore/QLinkedList>
 
-#include <kcomponentdata.h>
 #include <kiconloader.h>
-#include <k4aboutdata.h>
+#include <kaboutdata.h>
 #include <klocalizedstring.h>
 
 #include <assert.h>
@@ -49,9 +49,8 @@
 
 KHTMLGlobal *KHTMLGlobal::s_self = 0;
 unsigned long int KHTMLGlobal::s_refcnt = 0;
-KComponentData *KHTMLGlobal::s_componentData = 0;
 KIconLoader *KHTMLGlobal::s_iconLoader = 0;
-K4AboutData *KHTMLGlobal::s_about = 0;
+KAboutData *KHTMLGlobal::s_about = 0;
 KHTMLSettings *KHTMLGlobal::s_settings = 0;
 
 static QLinkedList<KHTMLPart*> *s_parts = 0;
@@ -81,7 +80,6 @@ KHTMLGlobal::~KHTMLGlobal()
     {
         finalCheck();
         delete s_iconLoader;
-        delete s_componentData;
         delete s_about;
         delete s_settings;
         delete KHTMLSettings::avFamilies;
@@ -95,7 +93,6 @@ KHTMLGlobal::~KHTMLGlobal()
         }
 
         s_iconLoader = 0;
-        s_componentData = 0;
         s_about = 0;
         s_settings = 0;
         s_parts = 0;
@@ -199,36 +196,35 @@ void KHTMLGlobal::deregisterDocumentImpl( DOM::DocumentImpl *doc )
     }
 }
 
-const KComponentData &KHTMLGlobal::componentData()
+const KAboutData &KHTMLGlobal::aboutData()
 {
   assert( s_self );
 
-  if ( !s_componentData )
+  if ( !s_about )
   {
-    s_about = new K4AboutData( "khtml", 0, ki18n( "KHTML" ), "4.0",
-                              ki18n( "Embeddable HTML component" ),
-                              K4AboutData::License_LGPL );
-    s_about->addAuthor(ki18n("Lars Knoll"), KLocalizedString(), "knoll@kde.org");
-    s_about->addAuthor(ki18n("Antti Koivisto"), KLocalizedString(), "koivisto@kde.org");
-    s_about->addAuthor(ki18n("Waldo Bastian"), KLocalizedString(), "bastian@kde.org");
-    s_about->addAuthor(ki18n("Dirk Mueller"), KLocalizedString(), "mueller@kde.org");
-    s_about->addAuthor(ki18n("Peter Kelly"), KLocalizedString(), "pmk@kde.org");
-    s_about->addAuthor(ki18n("Torben Weis"), KLocalizedString(), "weis@kde.org");
-    s_about->addAuthor(ki18n("Martin Jones"), KLocalizedString(), "mjones@kde.org");
-    s_about->addAuthor(ki18n("Simon Hausmann"), KLocalizedString(), "hausmann@kde.org");
-    s_about->addAuthor(ki18n("Tobias Anton"), KLocalizedString(), "anton@stud.fbi.fh-darmstadt.de");
+    s_about = new KAboutData( "khtml", 0, i18n("KHTML"), QStringLiteral(KHTML_VERSION_STRING),
+                              i18n( "Embeddable HTML component"),
+                              KAboutData::License_LGPL );
+    s_about->addAuthor(QStringLiteral("Lars Knoll"), QString(), "knoll@kde.org");
+    s_about->addAuthor(QStringLiteral("Antti Koivisto"), QString(), "koivisto@kde.org");
+    s_about->addAuthor(QStringLiteral("Waldo Bastian"), QString(), "bastian@kde.org");
+    s_about->addAuthor(QStringLiteral("Dirk Mueller"), QString(), "mueller@kde.org");
+    s_about->addAuthor(QStringLiteral("Peter Kelly"), QString(), "pmk@kde.org");
+    s_about->addAuthor(QStringLiteral("Torben Weis"), QString(), "weis@kde.org");
+    s_about->addAuthor(QStringLiteral("Martin Jones"), QString(), "mjones@kde.org");
+    s_about->addAuthor(QStringLiteral("Simon Hausmann"), QString(), "hausmann@kde.org");
+    s_about->addAuthor(QStringLiteral("Tobias Anton"), QString(), "anton@stud.fbi.fh-darmstadt.de");
 
-    s_componentData = new KComponentData( s_about );
   }
 
-  return *s_componentData;
+  return *s_about;
 }
 
 KIconLoader *KHTMLGlobal::iconLoader()
 {
   if ( !s_iconLoader )
   {
-    s_iconLoader = new KIconLoader(componentData().componentName());
+    s_iconLoader = new KIconLoader(aboutData().componentName());
   }
 
   return s_iconLoader;

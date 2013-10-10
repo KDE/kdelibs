@@ -32,21 +32,23 @@
 
 #include <kjobuidelegate.h>
 #include <kio/job.h>
-#include <kcomponentdata.h>
 #include <qmimedatabase.h>
 #include <klocalizedstring.h>
 #include <kactioncollection.h>
+#include <kaboutdata.h>
 
-KComponentData *KHTMLImageFactory::s_componentData = 0;
+#include "../khtml_version.h"
+
+KAboutData *KHTMLImageFactory::s_aboutData = 0;
 
 KHTMLImageFactory::KHTMLImageFactory()
 {
-    s_componentData = new KComponentData( "khtmlimage" );
+    s_aboutData = new KAboutData( "khtmlimage", QString(), i18n("KHTML Image"), QStringLiteral(KHTML_VERSION_STRING));
 }
 
 KHTMLImageFactory::~KHTMLImageFactory()
 {
-    delete s_componentData;
+    delete s_aboutData;
 }
 
 QObject * KHTMLImageFactory::create(const char* iface,
@@ -69,7 +71,7 @@ KHTMLImage::KHTMLImage( QWidget *parentWidget,
     : KParts::ReadOnlyPart( parent ), m_image( 0 )
 {
     KHTMLPart* parentPart = qobject_cast<KHTMLPart*>( parent );
-    setComponentData( KHTMLImageFactory::componentData(), prof == KHTMLPart::BrowserViewGUI && !parentPart );
+    setComponentData( KHTMLImageFactory::aboutData(), prof == KHTMLPart::BrowserViewGUI && !parentPart );
 
     QWidget *box = new QWidget( parentWidget );
     box->setLayout( new QVBoxLayout( box ) );

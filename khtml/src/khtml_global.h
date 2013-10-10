@@ -26,9 +26,8 @@
 
 #include <kparts/historyprovider.h>
 
-class KComponentData;
 class KIconLoader;
-class K4AboutData;
+class KAboutData;
 class KHTMLSettings;
 class KHTMLPart;
 
@@ -59,7 +58,7 @@ public:
     static void registerDocumentImpl( DOM::DocumentImpl *doc );
     static void deregisterDocumentImpl( DOM::DocumentImpl *doc );
 
-    static const KComponentData &componentData();
+    static const KAboutData &aboutData();
     static KIconLoader *iconLoader();
 
     static KHTMLSettings *defaultHTMLSettings();
@@ -78,9 +77,8 @@ private:
 private:
     static unsigned long s_refcnt;
     static KHTMLGlobal *s_self;
-    static KComponentData *s_componentData;
     static KIconLoader *s_iconLoader;
-    static K4AboutData *s_about;
+    static KAboutData *s_about;
     static KHTMLSettings *s_settings;
 };
 

@@ -36,7 +36,6 @@
 #include <QVBoxLayout>
 #include <QtDBus/QtDBus>
 
-#include <kapplication.h>
 #include <kurlauthorized.h>
 #include <kaboutdata.h>
 #include <klocalizedstring.h>
@@ -50,17 +49,17 @@
 
 K_EXPORT_PLUGIN( KJavaAppletViewerFactory )
 
-KComponentData *KJavaAppletViewerFactory::s_componentData = 0;
+KAboutData *KJavaAppletViewerFactory::s_aboutData = 0;
 KIconLoader *KJavaAppletViewerFactory::s_iconLoader = 0;
 
 KJavaAppletViewerFactory::KJavaAppletViewerFactory () {
-    s_componentData = new KComponentData("kjava");
+    s_aboutData = new KAboutData("KJavaAppletViewer", QString(), i18n("KDE Java Applet Plugin"), "1.0");
     s_iconLoader = new KIconLoader("kjava");
 }
 
 KJavaAppletViewerFactory::~KJavaAppletViewerFactory () {
     delete s_iconLoader;
-    delete s_componentData;
+    delete s_aboutData;
 }
 
 QObject *KJavaAppletViewerFactory::create(const char *, QWidget *wparent, QObject *parent,
@@ -479,10 +478,6 @@ void KJavaAppletViewer::appletLoaded () {
 
 void KJavaAppletViewer::infoMessage (const QString & msg) {
     m_browserextension->infoMessage(msg);
-}
-
-KAboutData* KJavaAppletViewer::createAboutData () {
-    return new KAboutData("KJavaAppletViewer", QString(), i18n("KDE Java Applet Plugin"), "1.0");
 }
 
 //---------------------------------------------------------------------

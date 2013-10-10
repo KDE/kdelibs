@@ -453,6 +453,7 @@ include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/xpath
 )
 include_directories(
+ ${CMAKE_CURRENT_BINARY_DIR}
 # ${CMAKE_CURRENT_BINARY_DIR}/misc
 # ${CMAKE_CURRENT_BINARY_DIR}/dom
 # ${CMAKE_CURRENT_BINARY_DIR}/xml
@@ -557,7 +558,6 @@ target_link_libraries(KHtml
   KTextWidgets
   KF5::KIconThemes
   KNotifications
-  KDE4Support # KComponentData (TODO port to KAboutData
   KBookmarks
   KIOWidgets # KUrlRequester
 )

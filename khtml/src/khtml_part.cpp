@@ -100,7 +100,6 @@ using namespace DOM;
 #include <ktoggleaction.h>
 #include <kcodecaction.h>
 #include <kselectaction.h>
-#include <kcomponentdata.h>
 
 #include <ksslinfodialog.h>
 #include <ksslsettings.h>
@@ -128,6 +127,7 @@ using namespace DOM;
 
 #include "khtmlpart_p.h"
 #include "khtml_iface.h"
+
 #include "kpassivepopup.h"
 #include "rendering/render_form.h"
 #include <kwindowsystem.h>
@@ -188,7 +188,7 @@ KHTMLPart::KHTMLPart( QWidget *parentWidget, QObject *parent, GUIProfile prof )
 {
     d = 0;
     KHTMLGlobal::registerPart( this );
-    setComponentData( KHTMLGlobal::componentData(), false );
+    setComponentData( KHTMLGlobal::aboutData(), false );
     init( new KHTMLView( this, parentWidget ), prof );
 }
 
@@ -197,7 +197,7 @@ KHTMLPart::KHTMLPart( KHTMLView *view, QObject *parent, GUIProfile prof )
 {
     d = 0;
     KHTMLGlobal::registerPart( this );
-    setComponentData( KHTMLGlobal::componentData(), false );
+    setComponentData( KHTMLGlobal::aboutData(), false );
     assert( view );
     if (!view->part())
         view->setPart( this );
