@@ -665,8 +665,9 @@ QSize KPluginSelector::Private::PluginDelegate::sizeHint(const QStyleOptionViewI
                  qMax(KIconLoader::SizeMedium + MARGIN * 2, fmTitle.height() + option.fontMetrics.height() + MARGIN * 2));
 }
 
-QList<QWidget*> KPluginSelector::Private::PluginDelegate::createItemWidgets() const
+QList<QWidget*> KPluginSelector::Private::PluginDelegate::createItemWidgets(const QModelIndex &index) const
 {
+    Q_UNUSED(index);
     QList<QWidget*> widgetList;
 
     QCheckBox *enabledCheckBox = new QCheckBox;

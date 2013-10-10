@@ -46,8 +46,9 @@ ItemsViewDelegate::~ItemsViewDelegate()
 {
 }
 
-QList<QWidget*> ItemsViewDelegate::createItemWidgets() const
+QList<QWidget*> ItemsViewDelegate::createItemWidgets(const QModelIndex &index) const
 {
+    Q_UNUSED(index);
     QList<QWidget*> list;
 
     QLabel * infoLabel = new QLabel();

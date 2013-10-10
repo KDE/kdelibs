@@ -109,10 +109,7 @@ QList<QWidget*> KWidgetItemDelegatePool::findWidgets(const QPersistentModelIndex
         if (!d->delegate->itemView()->rect().contains(option.rect))
              return result;
 
-        // ### KDE5 This sets a property on the delegate because we can't add an argument to createItemWidgets
-        d->delegate->setProperty("goya:creatingWidgetForIndex", QVariant::fromValue(index));
-        result = d->delegate->createItemWidgets();
-        d->delegate->setProperty("goya:creatingWidgetForIndex", QVariant());
+        result = d->delegate->createItemWidgets(index);
         d->allocatedWidgets << result;
         d->usedWidgets[index] = result;
         foreach (QWidget *widget, result) {

@@ -46,7 +46,7 @@ public:
     virtual void paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const = 0;
 
     // get the list of widgets
-    virtual QList<QWidget*> createItemWidgets() const = 0;
+    virtual QList<QWidget*> createItemWidgets(const QModelIndex &index) const = 0;
 
     // update the widgets
     virtual void updateItemWidgets(const QList<QWidget*> widgets,

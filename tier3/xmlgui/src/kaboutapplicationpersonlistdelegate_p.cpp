@@ -45,8 +45,9 @@ KAboutApplicationPersonListDelegate::KAboutApplicationPersonListDelegate(
 {
 }
 
-QList< QWidget *> KAboutApplicationPersonListDelegate::createItemWidgets() const
+QList< QWidget *> KAboutApplicationPersonListDelegate::createItemWidgets(const QModelIndex &index) const
 {
+    Q_UNUSED(index);
     QList< QWidget *> list;
 
     QLabel *textLabel = new QLabel( itemView() );

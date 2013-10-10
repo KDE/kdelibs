@@ -51,7 +51,7 @@ ItemsGridViewDelegate::~ItemsGridViewDelegate()
 {
 }
 
-QList<QWidget*> ItemsGridViewDelegate::createItemWidgets() const
+QList<QWidget*> ItemsGridViewDelegate::createItemWidgets(const QModelIndex &index) const
 {
     QList<QWidget*> m_widgetList;
     KSqueezedTextLabel * titleLabel = new KSqueezedTextLabel();

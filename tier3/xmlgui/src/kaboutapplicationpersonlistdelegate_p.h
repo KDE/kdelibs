@@ -39,7 +39,7 @@ public:
 
     QSize sizeHint( const QStyleOptionViewItem &option, const QModelIndex &index ) const;
 
-    QList< QWidget *> createItemWidgets() const;
+    QList< QWidget *> createItemWidgets(const QModelIndex &index) const;
 
     void updateItemWidgets( const QList<QWidget *> widgets,
                             const QStyleOptionViewItem &option,

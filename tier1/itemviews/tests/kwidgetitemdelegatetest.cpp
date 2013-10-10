@@ -161,8 +161,9 @@ public:
         painter->restore();
     }
 
-    QList<QWidget*> createItemWidgets() const
+    QList<QWidget*> createItemWidgets(const QModelIndex &index) const
     {
+        Q_UNUSED(index);
         QPushButton *button = new QPushButton();
         QToolButton *toolButton = new QToolButton();
 

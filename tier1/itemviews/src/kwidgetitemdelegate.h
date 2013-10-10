@@ -88,13 +88,12 @@ protected:
      * @note If you want to connect some widget signals to any slot, you should
      *       do it here.
      *
-     * @note If you want to know the index for which you are creating widgets, it is
-     *       available as a QModelIndex Q_PROPERTY called "goya:creatingWidgetForIndex".
+     * @arg index the index to create widgets for.
      *
      * @return the list of newly created widgets which will be used to interact with an item.
      * @see updateItemWidgets()
      */
-    virtual QList<QWidget*> createItemWidgets() const = 0;
+    virtual QList<QWidget*> createItemWidgets(const QModelIndex &index) const = 0;
 
     /**
      * Updates a list of widgets for its use inside of the delegate (painting or
