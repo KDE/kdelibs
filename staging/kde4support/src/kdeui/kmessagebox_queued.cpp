@@ -24,12 +24,12 @@
 
 namespace KMessageBox {
 
-extern int KWIDGETSADDONS_EXPORT (*KMessageBox_exec_hook)(QDialog*);
+extern QDialogButtonBox::StandardButton KWIDGETSADDONS_EXPORT (*KMessageBox_exec_hook)(QDialog*);
 
-int queued_dialog_exec(QDialog *dialog)
+QDialogButtonBox::StandardButton queued_dialog_exec(QDialog *dialog)
 {
     KDialogQueue::queueDialog(dialog);
-    return KMessageBox::Cancel; // We have to return something.
+    return QDialogButtonBox::NoButton; // We have to return something.
 }
 
 void queuedDetailedError(QWidget *parent,  const QString &text,
