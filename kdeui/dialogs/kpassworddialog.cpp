@@ -123,20 +123,20 @@ void KPasswordDialog::KPasswordDialogPrivate::init()
     {
         QObject::connect( ui.anonymousCheckBox, SIGNAL(stateChanged(int)), q, SLOT(updateFields()) );
     }
-    
+
     if ( !( m_flags & KPasswordDialog::ShowDomainLine ) )
     {
         ui.domainLabel->hide();
         ui.domainEdit->hide();
-    }    
-    
+    }
+
     if ( !( m_flags & KPasswordDialog::ShowKeepPassword ) )
     {
         ui.keepCheckBox->hide();
     }
 
     updateFields();
-    
+
     QRect desktop = KGlobalSettings::desktopGeometry(q->topLevelWidget());
     q->setMinimumWidth(qMin(1000, qMax(q->sizeHint().width(), desktop.width() / 4)));
     q->setPixmap(KIcon("dialog-password").pixmap(KIconLoader::SizeHuge));
@@ -230,7 +230,7 @@ void KPasswordDialog::addCommentLine( const QString& label,
         // same inter-column spacing for all rows, see comment in qformlayout.cpp
         spacing = style()->combinedLayoutSpacing(QSizePolicy::Label, QSizePolicy::LineEdit, Qt::Horizontal, 0, this);
     }
-    
+
     QLabel* c = new QLabel(comment, mainWidget());
     c->setWordWrap(true);
 
@@ -285,7 +285,7 @@ void KPasswordDialog::showErrorMessage( const QString& message, const ErrorType 
             {
                 d->ui.domainLabel->setFont( bold );
                 d->ui.domainEdit->setFocus();
-            }            
+            }
             break;
         case FatalError:
             d->ui.userNameLabel->setEnabled( false );
