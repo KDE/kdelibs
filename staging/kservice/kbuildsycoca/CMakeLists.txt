@@ -20,6 +20,7 @@ target_link_libraries(kdeinit_kbuildsycoca5
    Qt5::Xml #vfolder menui QDomDocument and family
    Qt5::DBus #kbuildsycoca uses QDBus to talk with interested applications
 )
+
 if(NOT KBUILDSYCOCA_NO_KCRASH)
    target_link_libraries(kdeinit_kbuildsycoca5 KCrash)
 endif()
