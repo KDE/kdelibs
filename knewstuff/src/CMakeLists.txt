@@ -71,7 +71,7 @@ add_library(knewstuff3 ${knewstuff3_SRCS} )
 target_include_directories(knewstuff3 PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>")
 target_link_libraries(knewstuff3
     ${KDE4_KIO_LIBS}
-    ${KCoreAddons_LIBRARIES}
+    KF5::KCoreAddons
     ${LibAttica_LIBRARIES}
     KF5::KArchive
     KI18n

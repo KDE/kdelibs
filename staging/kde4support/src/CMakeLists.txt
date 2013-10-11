@@ -211,7 +211,7 @@ target_link_libraries(KDE4Support
    Qt5::Test
    Qt5::X11Extras
    Qt5::Svg
-   ${KCoreAddons_LIBRARIES}
+   KF5::KCoreAddons
    KCrash
    ${KWidgetsAddons_LIBRARIES}
    KConfigWidgets
@@ -257,7 +257,7 @@ endif(NOT KIO_NO_NEPOMUK)
 
 if(NOT KIO_NO_NEPOMUK)
     add_executable(kfilemetadatareader kio/kfilemetadatareaderprocess.cpp)
-    target_link_libraries(kfilemetadatareader ${KDE4_NEPOMUK_LIBRARY} nepomukutils ${KCoreAddons_LIBRARIES} KI18n KDE4Support)
+    target_link_libraries(kfilemetadatareader ${KDE4_NEPOMUK_LIBRARY} nepomukutils KF5::KCoreAddons KI18n KDE4Support)
     install(TARGETS kfilemetadatareader ${INSTALL_TARGETS_DEFAULT_ARGS})
 endif(NOT KIO_NO_NEPOMUK)
 

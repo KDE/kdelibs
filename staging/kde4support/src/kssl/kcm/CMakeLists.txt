@@ -7,7 +7,7 @@ kde4_add_ui_files(kcmssl_SRCS cacertificates.ui displaycert.ui)
 add_library(kcm_ssl ${kcmssl_SRCS})
 target_link_libraries(kcm_ssl
    ${KDE4_KIO_LIBS}
-   ${KCoreAddons_LIBRARIES}
+   KF5::KCoreAddons
    KConfigWidgets   # KCModule
    KI18n
 )

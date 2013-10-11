@@ -42,7 +42,7 @@ target_link_libraries(kfile
    ${ZLIB_LIBRARY}
    ${Solid_LIBRARIES}
    ${X11_LIBRARIES}
-   ${KCoreAddons_LIBRARIES}
+   KF5::KCoreAddons
    ${KWidgetsAddons_LIBRARIES}
    KI18n
    KIconThemes
@@ -56,7 +56,7 @@ if(X11_Xrender_FOUND)
   target_link_libraries(kfile ${X11_Xrender_LIB} )
 endif(X11_Xrender_FOUND)
 
-target_link_libraries(kfile LINK_INTERFACE_LIBRARIES kio Qt5::Widgets ${KCoreAddons_LIBRARIES} KCompletion KBookmarks)
+target_link_libraries(kfile LINK_INTERFACE_LIBRARIES kio Qt5::Widgets KF5::KCoreAddons KCompletion KBookmarks)
 
 set_target_properties(kfile PROPERTIES VERSION ${GENERIC_LIB_VERSION}
                                        SOVERSION ${GENERIC_LIB_SOVERSION}
@@ -74,6 +74,6 @@ set(kfilemodule_SRCS
   kfilemodule.cpp
 )
 add_library(kfilemodule MODULE ${kfilemodule_SRCS})
-target_link_libraries(kfilemodule ${KDE4_KFILE_LIBS} KIOFileWidgets ${KDE4_KIO_LIBS} ${KCoreAddons_LIBRARIES} )
+target_link_libraries(kfilemodule ${KDE4_KFILE_LIBS} KIOFileWidgets ${KDE4_KIO_LIBS} KF5::KCoreAddons )
 install(TARGETS kfilemodule DESTINATION ${PLUGIN_INSTALL_DIR})
 install(FILES kfilemodule.desktop DESTINATION ${SERVICES_INSTALL_DIR})

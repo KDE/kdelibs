@@ -28,7 +28,7 @@ target_include_directories(kauth_tests_static
     ${CMAKE_CURRENT_SOURCE_DIR}/../src
 )
 
-target_link_libraries(kauth_tests_static LINK_PUBLIC Qt5::DBus ${KCoreAddons_LIBRARIES})
+target_link_libraries(kauth_tests_static LINK_PUBLIC Qt5::DBus KF5::KCoreAddons)
 
 include(ECMMarkAsTest)
 

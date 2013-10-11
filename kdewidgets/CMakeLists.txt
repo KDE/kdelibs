@@ -18,7 +18,7 @@ add_subdirectory( tests )
 add_executable(makekdewidgets makekdewidgets.cpp)
 ecm_mark_nongui_executable(makekdewidgets)
 
-target_link_libraries(makekdewidgets KConfigCore ${KCoreAddons_LIBRARIES} KI18n)
+target_link_libraries(makekdewidgets KConfigCore KF5::KCoreAddons KI18n)
 
 # "export" this target too so we can use the LOCATION property of the imported target in
 # FindKDE4Internal.cmake to get the full path to the installed executable instead of using FIND_PROGRAM(), Alex

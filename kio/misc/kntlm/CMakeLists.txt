@@ -4,7 +4,7 @@ set(kntlm_LIB_SRCS kntlm.cpp des.cpp )
 add_library(kntlm ${kntlm_LIB_SRCS})
 generate_export_header(kntlm)
 
-target_link_libraries(kntlm ${KCoreAddons_LIBRARIES})
+target_link_libraries(kntlm KF5::KCoreAddons)
 
 set_target_properties(kntlm PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
 

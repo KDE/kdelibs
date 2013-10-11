@@ -112,7 +112,7 @@ target_include_directories(KIOCore PUBLIC
 
 target_link_libraries(KIOCore
 LINK_PUBLIC
- ${KCoreAddons_LIBRARIES}   # KJob
+ KF5::KCoreAddons   # KJob
  KService
 LINK_PRIVATE
  KI18n

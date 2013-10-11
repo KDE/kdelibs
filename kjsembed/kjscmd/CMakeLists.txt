@@ -27,7 +27,7 @@ endif (NOT DEFINED QT_ONLY)
 
 add_executable(${KJSCMDNAME} ${kjscmd_SRCS})
 
-target_link_libraries(${KJSCMDNAME} Qt5::Widgets ${KCoreAddons_LIBRARIES} ${KJSEMBEDLIBNAME} KJS KI18n KDE4Support)
+target_link_libraries(${KJSCMDNAME} Qt5::Widgets KF5::KCoreAddons ${KJSEMBEDLIBNAME} KJS KI18n KDE4Support)
 
 install(TARGETS ${KJSCMDNAME} ${INSTALL_TARGETS_DEFAULT_ARGS} )
 

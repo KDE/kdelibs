@@ -22,7 +22,7 @@ add_library(KF5::KBookmarks ALIAS KBookmarks)
 
 target_link_libraries(KBookmarks LINK_PUBLIC Qt5::Widgets Qt5::Xml)
 target_link_libraries(KBookmarks LINK_PRIVATE
-                                        ${KCoreAddons_LIBRARIES}
+                                        KF5::KCoreAddons
                                         ${KWidgetsAddons_LIBRARIES}
                                         KConfigWidgets # for KStandardAction
                                         XmlGui # for KActionCollection

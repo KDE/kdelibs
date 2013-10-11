@@ -21,7 +21,7 @@ macro(KDE4SUPPORT_UNIT_TESTS)
        Qt5::Test
        Qt5::Network
        Qt5::Concurrent
-       ${KCoreAddons_LIBRARIES}
+       KF5::KCoreAddons
        KI18n
        KCrash
        KDE4Attic

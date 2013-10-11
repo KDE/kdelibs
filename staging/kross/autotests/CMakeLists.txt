@@ -6,7 +6,7 @@ set(krosstest_SRCS
 
 
 add_executable(krosstest ${krosstest_SRCS})
-target_link_libraries(krosstest KrossCore ${KCoreAddons_LIBRARIES} KConfigCore Qt5::Widgets)
+target_link_libraries(krosstest KrossCore KF5::KCoreAddons KConfigCore Qt5::Widgets)
 
 add_test(kross-guiform-py krosstest ${CMAKE_CURRENT_SOURCE_DIR}/testguiform.py)
 add_test(kross-guiform-rb krosstest ${CMAKE_CURRENT_SOURCE_DIR}/testguiform.rb)
