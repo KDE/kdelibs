@@ -41,8 +41,7 @@
 #include <krecentdocument.h>
 #include <QDebug>
 #include <kwindowsystem.h>
-#include "kabstractfilewidget.h"
-#include "kabstractfilemodule.h"
+#include "kfilewidget.h"
 #include "krecentdirs.h"
 #include "kservice.h"
 #include <ksharedconfig.h>
@@ -139,32 +138,6 @@ static QString qtFilter(const QString& filter)
     return qtFilter(filters);
 }
 
-static KAbstractFileModule* s_module = 0;
-static KAbstractFileModule* loadFileModule( const QString& moduleName )
-{
-    KService::Ptr fileModuleService = KService::serviceByDesktopName(moduleName);
-    if(fileModuleService)
-        return fileModuleService->createInstance<KAbstractFileModule>();
-    else
-        return 0;
-}
-
-static const char s_defaultFileModuleName[] = "kfilemodule";
-static KAbstractFileModule* fileModule()
-{
-    if(!s_module) {
-        QString moduleName = KConfig("kdeglobals").group(ConfigGroup).readEntry("file module", s_defaultFileModuleName);
-        if(!(s_module = loadFileModule(moduleName))) {
-            // qDebug() << "Failed to load configured file module" << moduleName;
-            if(moduleName != s_defaultFileModuleName) {
-                // qDebug() << "Falling back to default file module.";
-                s_module = loadFileModule(s_defaultFileModuleName);
-            }
-        }
-    }
-    return s_module;
-}
-
 class KFileDialogPrivate
 {
 public:
@@ -247,7 +220,7 @@ public:
     }
 
     Native* native;
-    KAbstractFileWidget* w;
+    KFileWidget* w;
     KConfigGroup cfgGroup;
 };
 
@@ -264,12 +237,6 @@ KFileDialog::KFileDialog(const QUrl& startDir, const QString& filter,
       d( new KFileDialogPrivate )
 
 {
-    // It would be nice to have this behind d->native but it doesn't work
-    // because of derived classes like KEncodingDialog...
-    // Dlopen the file widget from libkfilemodule
-    QWidget* fileQWidget = fileModule()->createFileWidget(startDir, this);
-    d->w = ::qobject_cast<KAbstractFileWidget *>(fileQWidget);
-
     if (d->native) {
         KFileDialogPrivate::Native::s_startDir = startDir;
         // check if it's a mimefilter
@@ -280,6 +247,9 @@ KFileDialog::KFileDialog(const QUrl& startDir, const QString& filter,
           setFilter(filter);
         return;
     }
+
+    d->w = new KFileWidget(startDir, this);
+    KFileWidget *fileQWidget = d->w;
 
     KWindowConfig::restoreWindowSize(windowHandle(), d->cfgGroup); // call this before the fileQWidget is set as the main widget.
                                                                    // otherwise the sizes for the components are not obeyed (ereslibre)
@@ -295,12 +265,6 @@ KFileDialog::KFileDialog(const QUrl& startDir, const QString& filter,
     connect(d->w->cancelButton(), SIGNAL(clicked()), SLOT(slotCancel()));
 
     // Publish signals
-    // TODO: Move the relevant signal declarations from KFileWidget to the
-    //       KAbstractFileWidget interface?
-    //       Else, all of these connects (including "accepted") are not typesafe.
-    // Answer: you cannot define signals in a non-qobject base class (DF).
-    //         I simply documentde them in kabstractfilewidget.h now.
-    // qDebug() << "KFileDialog connecting signals";
     connect(fileQWidget, SIGNAL(fileSelected(QUrl)),
                          SIGNAL(fileSelected(QUrl)));
     connect(fileQWidget, SIGNAL(fileHighlighted(QUrl)),
@@ -623,13 +587,7 @@ QUrl KFileDialog::getExistingDirectoryUrl(const QUrl& startDir,
                                           QWidget *parent,
                                           const QString& caption)
 {
-    if (KFileDialogPrivate::isNative() && (!startDir.isValid() || startDir.isLocalFile())) {
-        QString result( QFileDialog::getExistingDirectory(parent, caption,
-            KFileDialogPrivate::Native::staticStartDir( startDir ).toLocalFile(),
-            QFileDialog::ShowDirsOnly) );
-        return result.isEmpty() ? QUrl() : QUrl::fromLocalFile(result);
-    }
-    return fileModule()->selectDirectory(startDir, false, parent, caption);
+    return QFileDialog::getExistingDirectoryUrl(parent, caption, KFileDialogPrivate::Native::staticStartDir(startDir));
 }
 
 QString KFileDialog::getExistingDirectory(const QUrl& startDir,
@@ -641,7 +599,7 @@ QString KFileDialog::getExistingDirectory(const QUrl& startDir,
             KFileDialogPrivate::Native::staticStartDir( startDir ).toLocalFile(),
             QFileDialog::ShowDirsOnly);
     }
-    QUrl url = fileModule()->selectDirectory(startDir, true, parent, caption);
+    QUrl url = KFileDialog::getExistingDirectoryUrl(startDir, parent, caption);
     if ( url.isValid() )
         return url.toLocalFile();
     return QString();
@@ -953,14 +911,14 @@ void KFileDialog::hideEvent( QHideEvent *e )
 QUrl KFileDialog::getStartUrl(const QUrl& startDir,
                               QString& recentDirClass)
 {
-    return fileModule()->getStartUrl(startDir, recentDirClass);
+    return KFileWidget::getStartUrl(startDir, recentDirClass);
 }
 
 void KFileDialog::setStartDir(const QUrl& directory)
 {
     if (KFileDialogPrivate::isNative())
         KFileDialogPrivate::Native::s_startDir = directory;
-    fileModule()->setStartDir(directory);
+    KFileWidget::setStartDir(directory);
 }
 
 KToolBar * KFileDialog::toolBar() const
@@ -1188,7 +1146,7 @@ public:
             return QFileDialog::getExistingDirectory(parent, caption, dir, options);
         }
 
-        fileModule(); // make sure i18n is initialized properly, needed for pure Qt applications
+        //fileModule(); // make sure i18n is initialized properly, needed for pure Qt applications
         return KFileDialog::getExistingDirectory(QUrl::fromLocalFile(dir), parent, caption);
     }
 
@@ -1202,7 +1160,7 @@ public:
             return QFileDialog::getOpenFileName(parent, caption, dir, filter, selectedFilter, options);
         }
 
-        fileModule(); // make sure i18n is initialized properly, needed for pure Qt applications
+        //fileModule(); // make sure i18n is initialized properly, needed for pure Qt applications
         KFileDialog dlg(QUrl::fromLocalFile(dir), qt2KdeFilter(filter), parent);
 
         dlg.setOperationMode(KFileDialog::Opening);
@@ -1228,7 +1186,7 @@ public:
             return QFileDialog::getOpenFileNames(parent, caption, dir, filter, selectedFilter, options);
         }
 
-        fileModule(); // make sure i18n is initialized properly, needed for pure Qt applications
+        //fileModule(); // make sure i18n is initialized properly, needed for pure Qt applications
         KFileDialog dlg(QUrl::fromLocalFile(dir), qt2KdeFilter(filter), parent);
 
         dlg.setOperationMode(KFileDialog::Opening);
@@ -1254,7 +1212,7 @@ public:
             return QFileDialog::getSaveFileName(parent, caption, dir, filter, selectedFilter, options);
         }
 
-        fileModule(); // make sure i18n is initialized properly, needed for pure Qt applications
+        //fileModule(); // make sure i18n is initialized properly, needed for pure Qt applications
         KFileDialog dlg(QUrl::fromLocalFile(dir), qt2KdeFilter(filter), parent);
 
         dlg.setOperationMode(KFileDialog::Saving);
