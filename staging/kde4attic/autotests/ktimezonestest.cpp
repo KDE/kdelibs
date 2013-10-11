@@ -35,6 +35,9 @@ TimeZoneTestData s_testData;
 
 void KTimeZonesTest::initTestCase()
 {
+    qputenv("TZ", "Europe/London");
+    ::tzset();
+
     s_testData.setupTimeZoneTest(); // see ktimezonestest_p.h
     mDataDir = s_testData.dataDir();
 }

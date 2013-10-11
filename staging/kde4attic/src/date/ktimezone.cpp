@@ -466,8 +466,8 @@ int KTimeZoneBackend::offsetAtZoneTime(const KTimeZone* caller, const QDateTime 
     if (!zoneDateTime.isValid()  ||  zoneDateTime.timeSpec() != Qt::LocalTime)    // check for invalid time
     {
         if (secondOffset)
-            *secondOffset = 0;
-        return 0;
+            *secondOffset = KTimeZone::InvalidOffset;
+        return KTimeZone::InvalidOffset;
     }
     const QList<KTimeZone::Transition> transitions = caller->transitions();
     int index = d->cachedTransitionIndex;
