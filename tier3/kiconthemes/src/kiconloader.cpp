@@ -164,11 +164,22 @@ public:
 
     ~KIconLoaderPrivate()
     {
+        clear();
+    }
+
+    void clear()
+    {
         /* antlarr: There's no need to delete d->mpThemeRoot as it's already
         deleted when the elements of d->links are deleted */
         qDeleteAll(links);
         delete[] mpGroups;
         delete mIconCache;
+        mpGroups = 0;
+        mIconCache = 0;
+        mPixmapCache.clear();
+        appname.clear();
+        searchPaths.clear();
+        links.clear();
     }
 
     /**
@@ -470,8 +481,7 @@ KIconLoader::KIconLoader(const QString& _appname, const QStringList& extraSearch
 void KIconLoader::reconfigure(const QString& _appname, const QStringList& extraSearchPaths)
 {
     d->mIconCache->clear();
-    delete d;
-    d = new KIconLoaderPrivate(this);
+    d->clear();
     d->init(_appname, extraSearchPaths);
 }
 
