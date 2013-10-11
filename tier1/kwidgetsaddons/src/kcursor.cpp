@@ -180,6 +180,7 @@ KCursorPrivate * KCursorPrivate::self()
 KCursorPrivate::KCursorPrivate()
 {
     hideCursorDelay = 5000; // 5s default value
+    enabled = true;
 }
 
 KCursorPrivate::~KCursorPrivate()
