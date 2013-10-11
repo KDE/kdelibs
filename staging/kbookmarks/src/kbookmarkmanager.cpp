@@ -50,7 +50,8 @@ class KBookmarkManagerList : public QList<KBookmarkManager *>
 {
 public:
     ~KBookmarkManagerList() {
-        qDeleteAll( begin() , end() ); // auto-delete functionality
+        QList<KBookmarkManager *> copy = *this;
+        qDeleteAll(copy); // auto-delete functionality
     }
 
     QReadWriteLock lock;

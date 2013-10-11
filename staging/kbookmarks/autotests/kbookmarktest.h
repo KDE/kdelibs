@@ -25,8 +25,10 @@ class KBookmarkTest : public QObject
 {
     Q_OBJECT
 private Q_SLOTS:
+    void initTestCase();
     void testMimeDataOneBookmark();
     void testMimeDataBookmarkList();
+    void testBookmarkManager();
 };
 
 
