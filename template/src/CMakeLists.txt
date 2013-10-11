@@ -4,6 +4,7 @@ set(foobar_SRCS
 
 add_library(FooBar ${foobar_SRCS})
 generate_export_header(FooBar)
+add_library(KF5::FooBar ALIAS FooBar)
 
 target_link_libraries(FooBar
   LINK_PUBLIC
