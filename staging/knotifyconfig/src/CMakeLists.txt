@@ -35,7 +35,6 @@ target_link_libraries(KNotifyConfig
             ${PHONON_LIBS}
             KCoreAddons
             Qt5::DBus)
-target_link_libraries(KNotifyConfig  LINK_INTERFACE_LIBRARIES Qt5::Widgets)
 
 set_target_properties(KNotifyConfig PROPERTIES
    VERSION ${GENERIC_LIB_VERSION}
