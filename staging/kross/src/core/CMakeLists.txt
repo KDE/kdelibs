@@ -10,8 +10,8 @@ set(krosscore_LIB_SRCS
 )
 
 add_library(KrossCore ${krosscore_LIB_SRCS})
-target_link_libraries(KrossCore KI18n Qt5::Script Qt5::Xml Qt5::Widgets KConfigCore)
-target_link_libraries(KrossCore LINK_INTERFACE_LIBRARIES Qt5::Script Qt5::Xml)
+target_link_libraries(KrossCore LINK_PRIVATE KI18n Qt5::Script Qt5::Xml Qt5::Widgets KConfigCore)
+target_link_libraries(KrossCore LINK_PUBLIC Qt5::Script Qt5::Xml)
 
 target_include_directories(KrossCore PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/../include>")
 

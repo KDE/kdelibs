@@ -37,6 +37,7 @@ set(kfile_LIB_SRCS
 add_library(kfile ${kfile_LIB_SRCS})
 generate_export_header(kfile)
 target_link_libraries(kfile
+  LINK_PRIVATE
    ${KDE4_KIO_LIBS}
    KIOFileWidgets
    ${ZLIB_LIBRARY}
@@ -53,10 +54,10 @@ target_link_libraries(kfile
 )
 
 if(X11_Xrender_FOUND)
-  target_link_libraries(kfile ${X11_Xrender_LIB} )
+  target_link_libraries(kfile LINK_PRIVATE ${X11_Xrender_LIB} )
 endif(X11_Xrender_FOUND)
 
-target_link_libraries(kfile LINK_INTERFACE_LIBRARIES kio Qt5::Widgets KF5::KCoreAddons KCompletion KBookmarks)
+target_link_libraries(kfile LINK_PUBLIC kio Qt5::Widgets KF5::KCoreAddons KCompletion KBookmarks)
 
 set_target_properties(kfile PROPERTIES VERSION ${GENERIC_LIB_VERSION}
                                        SOVERSION ${GENERIC_LIB_SOVERSION}

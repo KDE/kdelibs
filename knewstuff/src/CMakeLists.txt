@@ -70,6 +70,7 @@ add_library(knewstuff3 ${knewstuff3_SRCS} )
 
 target_include_directories(knewstuff3 PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>")
 target_link_libraries(knewstuff3
+  LINK_PRIVATE
     ${KDE4_KIO_LIBS}
     KF5::KCoreAddons
     ${LibAttica_LIBRARIES}
@@ -82,7 +83,7 @@ target_link_libraries(knewstuff3
     XmlGui
 )
 
-target_link_libraries(knewstuff3 LINK_INTERFACE_LIBRARIES KCompletion Qt5::Widgets)
+target_link_libraries(knewstuff3 LINK_PUBLIC KCompletion Qt5::Widgets)
 
 generate_export_header(knewstuff3)
 
