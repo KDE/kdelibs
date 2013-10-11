@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.12)
 
 project(KNotifications)
 
-find_package(ECM 0.0.8 REQUIRED NO_MODULE)
+find_package(ECM 0.0.9 REQUIRED NO_MODULE)
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${ECM_MODULE_PATH})
 

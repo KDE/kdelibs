@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.12)
 
 project(KUnitConversion)
 
-find_package(ECM 0.0.8 REQUIRED NO_MODULE)
+find_package(ECM 0.0.9 REQUIRED NO_MODULE)
 
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 

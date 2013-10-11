@@ -44,7 +44,7 @@ if (KHTML_BUILD_TESTREGRESSION)
    set (__KDE_HAVE_GCC_VISIBILITY 0)
 endif (KHTML_BUILD_TESTREGRESSION)
 
-find_package(ECM 0.0.8 REQUIRED NO_MODULE)
+find_package(ECM 0.0.9 REQUIRED NO_MODULE)
 
 # where to look first for cmake modules, before ${CMAKE_ROOT}/Modules/ is checked
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules" ${ECM_MODULE_PATH})
@@ -144,7 +144,7 @@ add_definitions(${KDE4_DEFINITIONS})
 set(KDE4Support_LIBRARIES KDE4Support)
 
 ################# list the subdirectories #################
-find_package(ECM 0.0.8 REQUIRED NO_MODULE)
+find_package(ECM 0.0.9 REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 find_package(KF5 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 include(CreateKDELibsDependenciesFile.cmake)

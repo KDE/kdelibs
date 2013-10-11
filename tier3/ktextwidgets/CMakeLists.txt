@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.10.20130309)
 
 project(KTextWidgets)
 
-find_package(ECM 0.0.8 REQUIRED NO_MODULE)
+find_package(ECM 0.0.9 REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
 set(REQUIRED_QT_VERSION 5.2.0)
