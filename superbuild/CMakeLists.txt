@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.11)
+cmake_minimum_required(VERSION 2.8.12)
 
 # This CMakeLists.txt is a "superbuild" for the libraries in tier1/ and tier2/.
 # This means it can be used to build them all standalone one-by-one.

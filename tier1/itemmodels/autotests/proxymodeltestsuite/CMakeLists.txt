@@ -7,7 +7,7 @@ if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_CURRENT_SOURCE_DIR}")
 
   find_package(Qt4 REQUIRED)
   find_package(Automoc4 REQUIRED)
-  cmake_minimum_required(VERSION 2.8.11)
+  cmake_minimum_required(VERSION 2.8.12)
 endif()
 
 include_directories(

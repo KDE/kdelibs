@@ -1,10 +1,10 @@
 
-set(reqd_cmake 2.8.11)
+set(reqd_cmake 2.8.12)
 if (CMAKE_VERSION VERSION_LESS reqd_cmake)
   message(FATAL_ERROR "
-  KDE Frameworks requires CMake 2.8.11 or later.
+  KDE Frameworks requires CMake 2.8.12 or later.
 
-  http://thread.gmane.org/gmane.comp.programming.tools.cmake.user/46695
+  http://thread.gmane.org/gmane.comp.programming.tools.cmake.devel/8114
 
   It is recommended that you build from git.
 
