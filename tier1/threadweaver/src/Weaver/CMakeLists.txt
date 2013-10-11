@@ -31,6 +31,7 @@ set(ThreadWeaver_LIB_SRCS
 
 add_library(ThreadWeaver ${ThreadWeaver_LIB_SRCS})
 generate_export_header(ThreadWeaver)
+add_library(KF5::ThreadWeaver ALIAS ThreadWeaver)
 target_link_libraries(ThreadWeaver LINK_PUBLIC Qt5::Core)
 target_include_directories(ThreadWeaver PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>")
 

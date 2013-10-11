@@ -24,6 +24,7 @@ set(kdesu_LIB_SRCS
 
 add_library(KDESu ${kdesu_LIB_SRCS})
 generate_export_header(KDESu)
+add_library(KF5::KDESu ALIAS KDESu)
 
 target_include_directories(KDESu PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/..)
 

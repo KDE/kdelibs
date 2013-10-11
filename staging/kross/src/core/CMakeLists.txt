@@ -23,6 +23,7 @@ set_target_properties(KrossCore PROPERTIES VERSION ${GENERIC_LIB_VERSION}
 install(TARGETS KrossCore EXPORT KrossLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 generate_export_header(KrossCore)
+add_library(KF5::KrossCore ALIAS KrossCore)
 
 install(FILES
     ${CMAKE_CURRENT_BINARY_DIR}/krosscore_export.h

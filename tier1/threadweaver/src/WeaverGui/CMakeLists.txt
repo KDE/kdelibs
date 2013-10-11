@@ -6,6 +6,7 @@ find_package(Qt5Widgets 5.2.0 REQUIRED NO_MODULE)
 
 add_library(ThreadWeaverGui ${ThreadWeaverGui_LIB_SRCS})
 generate_export_header(ThreadWeaverGui)
+add_library(KF5::ThreadWeaverGui ALIAS ThreadWeaverGui)
 
 target_link_libraries(ThreadWeaverGui LINK_PUBLIC ThreadWeaver Qt5::Widgets)
 set_target_properties(ThreadWeaverGui PROPERTIES VERSION   ${THREADWEAVER_VERSION_STRING}

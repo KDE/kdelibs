@@ -34,6 +34,7 @@ configure_file(config-knotifications.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-
 
 add_library(KNotifications ${knotifications_SRCS})
 generate_export_header(KNotifications)
+add_library(KF5::KNotifications ALIAS KNotifications)
 
 target_link_libraries(KNotifications LINK_PUBLIC
    Qt5::Widgets

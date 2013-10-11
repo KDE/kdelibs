@@ -86,6 +86,7 @@ set(kcoreaddons_INCLUDE_DIRS
 
 add_library(KCoreAddons ${libkcoreaddons_SRCS})
 generate_export_header(KCoreAddons)
+add_library(KF5::KCoreAddons ALIAS KCoreAddons)
 
 target_include_directories(KCoreAddons PUBLIC "$<BUILD_INTERFACE:${kcoreaddons_INCLUDE_DIRS}>")
 

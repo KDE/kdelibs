@@ -30,6 +30,7 @@ qt5_wrap_ui(kprintutils_LIB_SRCS ${kprintutils_UI})
 
 add_library(KPrintUtils ${kprintutils_LIB_SRCS})
 generate_export_header(KPrintUtils)
+add_library(KF5::KPrintUtils ALIAS KPrintUtils)
 
 target_link_libraries(KPrintUtils
   LINK_PUBLIC

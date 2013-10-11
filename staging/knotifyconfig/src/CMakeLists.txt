@@ -24,6 +24,7 @@ qt5_wrap_ui(knotifyconfig_LIB_SRCS ${knotifyconfig_UI} )
 
 add_library(KNotifyConfig ${knotifyconfig_LIB_SRCS})
 generate_export_header(KNotifyConfig)
+add_library(KF5::KNotifyConfig ALIAS KNotifyConfig)
 
 # Needs KIO for KUrlRequester
 target_link_libraries(KNotifyConfig

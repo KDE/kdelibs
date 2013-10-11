@@ -39,6 +39,7 @@ qt5_wrap_ui(sonnetui_SRCS ${sonnetui_UI})
 
 add_library(SonnetUi ${sonnetui_SRCS})
 generate_export_header(SonnetUi EXPORT_FILE_NAME sonnetui_export.h)
+add_library(KF5::SonnetUi ALIAS SonnetUi)
 
 target_link_libraries(SonnetUi
     LINK_PUBLIC Qt5::Widgets

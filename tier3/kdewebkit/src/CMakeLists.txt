@@ -8,6 +8,7 @@ set(KDEWebKit_LIB_SRCS
 
 add_library(KDEWebKit ${KDEWebKit_LIB_SRCS})
 generate_export_header(KDEWebKit)
+add_library(KF5::KDEWebKit ALIAS KDEWebKit)
 
 target_link_libraries(KDEWebKit LINK_PUBLIC Qt5::WebKitWidgets
                                 LINK_PRIVATE KCoreAddons KWallet KIOWidgets KParts)

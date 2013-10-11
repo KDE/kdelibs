@@ -187,6 +187,7 @@ configure_file(kdemacros.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h )
 
 add_library(KDE4Support ${libkde4support_SRCS})
 generate_export_header(KDE4Support)
+add_library(KF5::KDE4Support ALIAS KDE4Support)
 
 # Generate kdeversion.h
 configure_file(kdecore/kdeversion.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdeversion.h )

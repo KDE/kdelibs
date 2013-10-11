@@ -452,6 +452,7 @@ endif ()
 add_library(Solid  ${solid_LIB_SRCS})
 target_include_directories(Solid PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..;${CMAKE_CURRENT_BINARY_DIR}/..>")
 generate_export_header(Solid)
+add_library(KF5::Solid ALIAS Solid)
 
 target_link_libraries(Solid LINK_PUBLIC Qt5::Core
                             LINK_PRIVATE Qt5::DBus

@@ -11,6 +11,7 @@ set(itemmodels_SRCS
 
 add_library(ItemModels ${itemmodels_SRCS})
 generate_export_header(ItemModels)
+add_library(KF5::ItemModels ALIAS ItemModels)
 
 target_link_libraries(ItemModels LINK_PUBLIC Qt5::Core)
 

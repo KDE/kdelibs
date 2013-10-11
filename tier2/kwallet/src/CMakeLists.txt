@@ -25,6 +25,7 @@ endif()
 
 add_library(KWallet ${kwallet_SRCS})
 generate_export_header(KWallet)
+add_library(KF5::KWallet ALIAS KWallet)
 
 target_link_libraries(KWallet LINK_PUBLIC  Qt5::Widgets
                               LINK_PRIVATE KWindowSystem # KWindowSystem::allowExternalProcessWindowActivation

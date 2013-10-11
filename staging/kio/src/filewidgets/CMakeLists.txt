@@ -37,6 +37,7 @@ set(kiofilewidgets_SRCS
 
 add_library(KIOFileWidgets ${kiofilewidgets_SRCS})
 generate_export_header(KIOFileWidgets)
+add_library(KF5::KIOFileWidgets ALIAS KIOFileWidgets)
 
 target_include_directories(KIOFileWidgets PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/..>" # kio_version.h

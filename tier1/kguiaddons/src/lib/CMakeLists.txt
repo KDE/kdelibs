@@ -27,6 +27,7 @@ message("Port to Qt5 native filter")
 add_library(KGuiAddons ${kguiaddons_LIB_SRCS})
 
 generate_export_header(KGuiAddons)
+add_library(KF5::KGuiAddons ALIAS KGuiAddons)
 
 set(kguiaddons_INCLUDES
   ${CMAKE_CURRENT_SOURCE_DIR}/colors

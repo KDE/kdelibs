@@ -12,6 +12,7 @@ set(ktextwidgets_LIB_SRCS
 
 add_library(KTextWidgets ${ktextwidgets_LIB_SRCS})
 generate_export_header(KTextWidgets)
+add_library(KF5::KTextWidgets ALIAS KTextWidgets)
 
 set(ktextwidgets_INCLUDES
   ${CMAKE_CURRENT_SOURCE_DIR}/dialogs

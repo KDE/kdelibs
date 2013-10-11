@@ -36,6 +36,7 @@ set(karchive_SRCS
 
 add_library(KArchive ${karchive_SRCS} ${karchive_OPTIONAL_SRCS})
 generate_export_header(KArchive)
+add_library(KF5::KArchive ALIAS KArchive)
 
 target_link_libraries(KArchive LINK_PUBLIC Qt5::Core)
 target_link_libraries(KArchive LINK_PRIVATE ${karchive_OPTIONAL_LIBS} ${ZLIB_LIBRARY} )

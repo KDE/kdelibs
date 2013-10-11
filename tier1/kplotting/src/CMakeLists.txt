@@ -9,6 +9,7 @@ set(kplotting_SRCS
 
 add_library(KPlotting ${kplotting_SRCS})
 generate_export_header(KPlotting)
+add_library(KF5::KPlotting ALIAS KPlotting)
 
 target_link_libraries(KPlotting LINK_PUBLIC Qt5::Widgets)
 

@@ -11,6 +11,7 @@ qt5_add_dbus_adaptor(libkdbusaddons_SRCS org.freedesktop.Application.xml kdbusse
 
 add_library(KDBusAddons ${libkdbusaddons_SRCS})
 generate_export_header(KDBusAddons)
+add_library(KF5::KDBusAddons ALIAS KDBusAddons)
 
 
 

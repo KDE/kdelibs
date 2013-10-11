@@ -8,6 +8,7 @@ set(kemoticons_LIB_SRCS
 
 add_library(KEmoticons ${kemoticons_LIB_SRCS})
 generate_export_header(KEmoticons)
+add_library(KF5::KEmoticons ALIAS KEmoticons)
 
 target_link_libraries(KEmoticons
 LINK_PUBLIC

@@ -34,6 +34,7 @@ endforeach()
 
 add_library(KParts ${KParts_LIB_SRCS})
 generate_export_header(KParts EXPORT_FILE_NAME ${KParts_BINARY_DIR}/kparts/kparts_export.h)
+add_library(KF5::KParts ALIAS KParts)
 
 target_include_directories(KParts PUBLIC "$<BUILD_INTERFACE:${KParts_BINARY_DIR}>")
 target_link_libraries(KParts LINK_PUBLIC  KIOCore # essential to the technology

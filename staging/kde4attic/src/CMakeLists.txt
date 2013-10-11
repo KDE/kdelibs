@@ -77,6 +77,7 @@ qt5_wrap_ui(kde4attic_SRCS ${kde4attic_UI} )
 
 add_library(KDE4Attic ${kde4attic_SRCS})
 generate_export_header(KDE4Attic)
+add_library(KF5::KDE4Attic ALIAS KDE4Attic)
 
 target_include_directories(KDE4Attic PRIVATE
   ${CMAKE_CURRENT_BINARY_DIR}/date

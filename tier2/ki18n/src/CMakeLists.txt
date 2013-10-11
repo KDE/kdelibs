@@ -7,6 +7,7 @@ set(libki18n_SRCS
 
 add_library(KI18n ${libki18n_SRCS})
 generate_export_header(KI18n)
+add_library(KF5::KI18n ALIAS KI18n)
 
 target_link_libraries(KI18n LINK_PUBLIC Qt5::Core)
 

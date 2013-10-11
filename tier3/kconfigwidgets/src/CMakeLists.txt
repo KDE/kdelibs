@@ -14,6 +14,7 @@ set(kconfigwidgets_SRCS
 
 add_library(KConfigWidgets ${kconfigwidgets_SRCS})
 generate_export_header(KConfigWidgets)
+add_library(KF5::KConfigWidgets ALIAS KConfigWidgets)
 
 target_link_libraries(KConfigWidgets
   LINK_PUBLIC

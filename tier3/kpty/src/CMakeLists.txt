@@ -6,6 +6,7 @@ set(kpty_LIB_SRCS
 
 add_library(KPty ${kpty_LIB_SRCS})
 generate_export_header(KPty)
+add_library(KF5::KPty ALIAS KPty)
 
 include(ConfigureChecks.cmake)
 configure_file(config-pty.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-pty.h )

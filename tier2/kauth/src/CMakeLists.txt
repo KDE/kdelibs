@@ -22,6 +22,7 @@ set(libkauth_SRCS
 
 add_library(KAuth ${libkauth_SRCS})
 generate_export_header(KAuth)
+add_library(KF5::KAuth ALIAS KAuth)
 
 target_link_libraries(KAuth LINK_PUBLIC Qt5::Core ${KCoreAddons_LIBRARIES})
 target_link_libraries(KAuth LINK_PRIVATE Qt5::Widgets Qt5::DBus)

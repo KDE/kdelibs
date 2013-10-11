@@ -35,6 +35,7 @@ set(kstyle_SRCS
 
 add_library(KStyle ${kstyle_SRCS})
 generate_export_header(KStyle)
+add_library(KF5::KStyle ALIAS KStyle)
 
 target_link_libraries(KStyle
   LINK_PUBLIC

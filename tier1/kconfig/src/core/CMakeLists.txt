@@ -16,6 +16,7 @@ set(libkconfigcore_SRCS
 
 add_library(KConfigCore ${libkconfigcore_SRCS})
 generate_export_header(KConfigCore)
+add_library(KF5::KConfigCore ALIAS KConfigCore)
 
 target_link_libraries(KConfigCore LINK_PUBLIC Qt5::Core)
 if(WIN32)

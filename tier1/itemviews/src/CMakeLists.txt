@@ -13,6 +13,7 @@ set(itemviews_SRCS
 
 add_library(ItemViews ${itemviews_SRCS})
 generate_export_header(ItemViews)
+add_library(KF5::ItemViews ALIAS ItemViews)
 
 
 target_link_libraries(ItemViews LINK_PUBLIC Qt5::Widgets)

@@ -50,6 +50,7 @@ qt5_add_dbus_interface(kservice_SRCS kdeinit/org.kde.KLauncher.xml klauncher_ifa
 
 add_library(KService ${kservice_SRCS})
 generate_export_header(KService)
+add_library(KF5::KService ALIAS KService)
 set(kservice_includes
    ${CMAKE_CURRENT_BINARY_DIR}/.. # Since we publicly include kservice_version.h
    ${CMAKE_CURRENT_SOURCE_DIR}/services

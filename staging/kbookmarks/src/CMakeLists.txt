@@ -18,6 +18,7 @@ set(kbookmarks_SRCS
 
 add_library(KBookmarks ${kbookmarks_SRCS})
 generate_export_header(KBookmarks)
+add_library(KF5::KBookmarks ALIAS KBookmarks)
 
 target_link_libraries(KBookmarks LINK_PUBLIC Qt5::Widgets Qt5::Xml)
 target_link_libraries(KBookmarks LINK_PRIVATE

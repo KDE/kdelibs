@@ -34,6 +34,7 @@ set(kcodecs_SRCS
 
 add_library(KCodecs ${kcodecs_SRCS})
 generate_export_header(KCodecs)
+add_library(KF5::KCodecs ALIAS KCodecs)
 
 target_link_libraries(KCodecs LINK_PUBLIC Qt5::Core )
 

@@ -102,6 +102,7 @@ install(FILES
 
 add_library(KIOCore ${kiocore_SRCS})
 generate_export_header(KIOCore)
+add_library(KF5::KIOCore ALIAS KIOCore)
 
 target_include_directories(KIOCore PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/..>" # kio_version.h

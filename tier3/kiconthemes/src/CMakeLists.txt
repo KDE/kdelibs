@@ -10,6 +10,7 @@ set(kiconthemes_SRCS
 
 add_library(KIconThemes ${kiconthemes_SRCS})
 generate_export_header(KIconThemes)
+add_library(KF5::KIconThemes ALIAS KIconThemes)
 
 target_link_libraries(KIconThemes
   LINK_PUBLIC

@@ -85,6 +85,7 @@ qt5_wrap_ui(xmlgui_SRCS ${xmlgui_UI} )
 
 add_library(XmlGui ${xmlgui_SRCS})
 generate_export_header(XmlGui)
+add_library(KF5::XmlGui ALIAS XmlGui)
 
 target_link_libraries(XmlGui
 LINK_PUBLIC

@@ -81,6 +81,7 @@ qt5_add_resources(kiowidgets_SRCS kacleditwidget.qrc)
 
 add_library(KIOWidgets ${kiowidgets_SRCS})
 generate_export_header(KIOWidgets)
+add_library(KF5::KIOWidgets ALIAS KIOWidgets)
 
 target_include_directories(KIOWidgets PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/..>" # kio_version.h

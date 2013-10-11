@@ -17,6 +17,7 @@ qt5_add_dbus_interface(kjobwidgets_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/org.kde.JobV
 add_library(KJobWidgets ${kjobwidgets_SRCS})
 
 generate_export_header(KJobWidgets)
+add_library(KF5::KJobWidgets ALIAS KJobWidgets)
 
 target_link_libraries(KJobWidgets
    LINK_PUBLIC

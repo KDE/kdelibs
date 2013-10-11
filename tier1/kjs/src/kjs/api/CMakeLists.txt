@@ -8,6 +8,7 @@ set(kjsapi_LIB_SRCS
 
 add_library(KJSApi ${kjsapi_LIB_SRCS})
 generate_export_header(KJSApi)
+add_library(KF5::KJSApi ALIAS KJSApi)
 
 target_link_libraries(KJSApi
     LINK_PUBLIC Qt5::Core

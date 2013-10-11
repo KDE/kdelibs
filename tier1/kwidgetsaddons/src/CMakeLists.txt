@@ -69,6 +69,7 @@ qt5_wrap_ui(kwidgetsaddons_SRCS ${kwidgetsaddon_UI} )
 
 add_library(KWidgetsAddons ${kwidgetsaddons_SRCS})
 generate_export_header(KWidgetsAddons)
+add_library(KF5::KWidgetsAddons ALIAS KWidgetsAddons)
 
 target_link_libraries(KWidgetsAddons LINK_PUBLIC Qt5::Widgets)
 

@@ -25,6 +25,7 @@ set(kdeclarative_SRCS
 
 add_library(KDeclarative ${kdeclarative_SRCS})
 generate_export_header(KDeclarative EXPORT_FILE_NAME ${KDeclarative_BINARY_DIR}/kdeclarative/kdeclarative_export.h)
+add_library(KF5::KDeclarative ALIAS KDeclarative)
 
 target_link_libraries(KDeclarative
   LINK_PUBLIC

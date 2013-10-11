@@ -13,6 +13,7 @@ set(libkconfiggui_SRCS
 
 add_library(KConfigGui ${libkconfiggui_SRCS})
 generate_export_header(KConfigGui)
+add_library(KF5::KConfigGui ALIAS KConfigGui)
 
 target_link_libraries(KConfigGui LINK_PUBLIC Qt5::Gui Qt5::Xml KConfigCore)
 

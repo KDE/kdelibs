@@ -76,6 +76,7 @@ add_library(proxymodeltestsuite SHARED
   ${eventlogger_RCS_SRCS}
 )
 generate_export_header(proxymodeltestsuite)
+add_library(KF5::proxymodeltestsuite ALIAS proxymodeltestsuite)
 
 target_link_libraries(proxymodeltestsuite
    Qt5::Widgets
