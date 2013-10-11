@@ -73,7 +73,7 @@ target_link_libraries(knewstuff3
     ${KDE4_KIO_LIBS}
     ${KCoreAddons_LIBRARIES}
     ${LibAttica_LIBRARIES}
-    ${KArchive_LIBRARIES}
+    KF5::KArchive
     KI18n
     ItemViews
     KIconThemes

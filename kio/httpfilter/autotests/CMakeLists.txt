@@ -17,6 +17,6 @@ include(ECMMarkAsTest)
 # (only part of kio_http and kmultipart)
 
 add_executable(httpfiltertest httpfiltertest.cpp ../httpfilter.cc)
-target_link_libraries(httpfiltertest Qt5::Test ${KArchive_LIBRARIES} ${ZLIB_LIBRARIES})
+target_link_libraries(httpfiltertest Qt5::Test KF5::KArchive ${ZLIB_LIBRARIES})
 
 add_test(kiohttp-httpfiltertest httpfiltertest)

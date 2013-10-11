@@ -69,7 +69,7 @@ set(kio_http_PART_SRCS
 
 add_library(kio_http MODULE ${kio_http_PART_SRCS})
 
-target_link_libraries(kio_http Qt5::DBus ${KArchive_LIBRARIES} ${KDE4_KIO_LIBS} ${Solid_LIBRARIES} kntlm ${ZLIB_LIBRARY} ${KCoreAddons_LIBRARIES} KI18n)
+target_link_libraries(kio_http Qt5::DBus KF5::KArchive ${KDE4_KIO_LIBS} ${Solid_LIBRARIES} kntlm ${ZLIB_LIBRARY} ${KCoreAddons_LIBRARIES} KI18n)
 if(GSSAPI_FOUND)
   target_link_libraries(kio_http ${GSSAPI_LIBS} )
 endif(GSSAPI_FOUND)
