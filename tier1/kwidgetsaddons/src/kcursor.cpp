@@ -234,7 +234,7 @@ void KCursorPrivate::setAutoHideCursor( QWidget *w, bool enable, bool customEven
 
 bool KCursorPrivate::eventFilter( QObject *o, QEvent *e )
 {
-    if ( !enabled )
+    if (!enabled || e->type() == QEvent::ChildAdded)
         return false;
 
     KCursorPrivateAutoHideEventFilter* filter = m_eventFilters.value( o );
