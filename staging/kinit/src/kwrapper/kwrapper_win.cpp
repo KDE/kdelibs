@@ -35,7 +35,7 @@
        from a cache file located on a well known path relative from the requested 
        application. 
        The recent implementation expects a file name 'kdedirs.cache' two level 
-       above this executable which will be <ProgramFiles> in case kwrapper4 lives 
+       above this executable which will be <ProgramFiles> in case kwrapper5 lives
        in <Programfiles>/kde4/bin. 
        This works not in any case especially when running application inside the 
        build directory. 
@@ -64,7 +64,7 @@ int main(int argc, char **argv)
     QStringList envPath; /// pathes for using in environment of started process
     QStringList searchPath; /// pathes for using to find executable
     QString exeToStart;
-    QString myAppName = "kwrapper4:"; 
+    QString myAppName = "kwrapper5:";
     QStringList exeParams;
     int firstParam = 1;
 

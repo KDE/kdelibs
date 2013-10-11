@@ -1,3 +1,5 @@
+add_definitions(-DTRANSLATION_DOMAIN="kinit")
+
 configure_file(config-kdeinit.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kdeinit.h)
 include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -10,4 +12,3 @@ if (NOT WIN32)
   add_subdirectory(kshell)
   add_subdirectory(start_kdeinit)
 endif (NOT WIN32)
-

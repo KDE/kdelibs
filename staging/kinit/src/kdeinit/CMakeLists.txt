@@ -22,7 +22,15 @@ else (APPLE)
   ecm_mark_nongui_executable(kdeinit5)
 endif (APPLE)
 
-target_link_libraries(kdeinit5 ${kdeinit_LIBS} ${KINIT_SOCKET_LIBRARY} KCoreAddons KI18n KService KCrash KWindowSystem Qt5::DBus Qt5::Gui Qt5::Widgets)
+target_link_libraries(kdeinit5 ${kdeinit_LIBS} ${KINIT_SOCKET_LIBRARY}
+    Qt5::Gui #QFont::initialize
+    KService #KLibrary
+    KCoreAddons #kcoreaddons_version.h
+    KWindowSystem # KStartupInfo
+    KCrash # KCrash::loadedByKdeinit
+    KI18n #i18n() used on some error messages
+)
+
 if (X11_FOUND)
   target_link_libraries(kdeinit5 ${X11_X11_LIB})
 endif()

@@ -304,9 +304,9 @@ int main(int argc, char **argv)
 
    if (strcmp(start, "kdeinit5_wrapper") == 0)
       wrapper = 1;
-   else if (strcmp(start, "kshell4") == 0)
+   else if (strcmp(start, "kshell5") == 0)
       ext_wrapper = 1;
-   else if (strcmp(start, "kwrapper4") == 0)
+   else if (strcmp(start, "kwrapper5") == 0)
       kwrapper = 1;
    else if (strcmp(start, "kdeinit5_shutdown") == 0)
    {

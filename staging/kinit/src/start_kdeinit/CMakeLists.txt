@@ -1,8 +1,5 @@
 add_executable(start_kdeinit start_kdeinit.c)
-target_include_directories(start_kdeinit PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/..")
-
 add_executable(start_kdeinit_wrapper start_kdeinit_wrapper.c)
-target_include_directories(start_kdeinit_wrapper PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/..")
 
 install(TARGETS start_kdeinit DESTINATION ${LIBEXEC_INSTALL_DIR})
 install(TARGETS start_kdeinit_wrapper DESTINATION ${LIBEXEC_INSTALL_DIR})

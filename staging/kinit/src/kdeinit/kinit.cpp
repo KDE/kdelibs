@@ -84,6 +84,7 @@
 #include <qstandardpaths.h>
 
 #ifdef Q_OS_UNIX
+//TODO: make sure what libraries we want here...
 static const char *extra_libs[] = {
     "libkio.so.5",
     "libkparts.so.4",

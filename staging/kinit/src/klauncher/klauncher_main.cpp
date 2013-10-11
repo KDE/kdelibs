@@ -148,8 +148,6 @@ extern "C" Q_DECL_EXPORT int kdemain( int argc, char**argv )
    QCoreApplication app(argc, argv);
    app.setApplicationName(QStringLiteral("klauncher"));
 
-   KLocalizedString::setApplicationDomain("kdelibs4");
-
    int maxTry = 3;
    while(true)
    {
