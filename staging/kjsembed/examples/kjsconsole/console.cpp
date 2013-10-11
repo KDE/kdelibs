@@ -32,6 +32,7 @@
 #include <kjs/interpreter.h>
 #include <kjs/ustring.h>
 #include <kjs/object.h>
+#include <kjs/JSVariableObject.h>
 
 #include "ui_jsconsole.h"
 #include "kjs_object_model.h"

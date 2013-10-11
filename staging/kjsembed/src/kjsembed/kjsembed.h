@@ -26,7 +26,7 @@
 
 class QObject;
 
-#include <kjsembed/kjseglobal.h>
+#include <kjsembed/kjsembed_export.h>
 #include <kjs/object.h>
 
 namespace KJS {

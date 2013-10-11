@@ -35,10 +35,10 @@
 NumberBar::NumberBar( QWidget *parent )
     : QWidget( parent ), edit(0), m_stopLine(-1), m_currentLine(-1), m_bugLine(-1)
 {
-    setFixedWidth( fontMetrics().width( QString("0000") + 10 + 32 ) );
     stopMarker = QPixmap( ":/images/no.png" );
     currentMarker = QPixmap( ":/images/next.png" );
     bugMarker = QPixmap( ":/images/bug.png" );
+    setFixedWidth( fontMetrics().width( QStringLiteral("0000") ) + bugMarker.width() + stopMarker.width() + currentMarker.width()  );
 }
 
 NumberBar::~NumberBar()

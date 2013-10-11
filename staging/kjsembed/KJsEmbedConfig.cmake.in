@@ -1,0 +1,8 @@
+@PACKAGE_INIT@
+
+find_dependency(KI18n "@KF5_VERSION@")
+find_dependency(KJS "@KF5_VERSION@")
+
+include("${CMAKE_CURRENT_LIST_DIR}/KJsEmbedTargets.cmake")
+
+set(KJsEmbed_LIBRARIES KF5::KJsEmbed)

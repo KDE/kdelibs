@@ -25,6 +25,7 @@
 
 #include <QtCore/QObject>
 #include <QtCore/QByteRef>
+#include <QtCore/QVariant>
 #include <kjs/object.h>
 #include "kjsembed.h"
 

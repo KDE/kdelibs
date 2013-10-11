@@ -154,7 +154,6 @@ add_subdirectory( cmake )
 # For convenience only. Move down/remove and find dependencies with more locality instead.
 add_subdirectory( staging )
 
-add_subdirectory( kjsembed )
 add_subdirectory( licenses   )
 add_subdirectory( kio )
 add_subdirectory( kded       )
