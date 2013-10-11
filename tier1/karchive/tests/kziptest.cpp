@@ -17,19 +17,22 @@
  */
 
 #include "kzip.h"
+#include "kcompressiondevice.h"
 #include <stdio.h>
 #include <QtCore/QDebug>
 #include <QtCore/QFile>
+#include <QCoreApplication>
 
 void recursive_print(const KArchiveDirectory *dir, const QString &path)
 {
     foreach (const QString &it, dir->entries()) {
         const KArchiveEntry *entry = dir->entry(it);
-        printf("mode=%07o %s %s size: %lld pos: %lld %s%s isdir=%d%s", entry->permissions(),
+        printf("mode=%07o %s %s \"%s%s\" size: %lld pos: %lld isdir=%d%s", entry->permissions(),
                entry->user().toLatin1().constData(), entry->group().toLatin1().constData(),
+               path.toLatin1().constData(), it.toLatin1().constData(),
                entry->isDirectory() ? 0 : (static_cast<const KArchiveFile *>(entry))->size(),
                entry->isDirectory() ? 0 : (static_cast<const KArchiveFile *>(entry))->position(),
-               path.toLatin1().constData(), it.toLatin1().constData(), entry->isDirectory(),
+               entry->isDirectory(),
                entry->symLinkTarget().isEmpty() ? "" : QString(" symlink: %1").arg(entry->symLinkTarget()).toLatin1().constData());
 
         //    if (!entry->isDirectory()) printf("%d", (static_cast<const KArchiveFile *>(entry))->size());
@@ -73,7 +76,7 @@ static int doList(const QString &fileName)
 {
     KZip zip(fileName);
     if (!zip.open(QIODevice::ReadOnly)) {
-        qWarning() << "Could not open" << fileName << "for reading";
+        qWarning() << "Could not open" << fileName << "for reading. ZIP file doesn't exist or is invalid.";
         return 1;
     }
     const KArchiveDirectory *dir = zip.directory();
@@ -87,7 +90,7 @@ static int doPrintAll(const QString &fileName)
     KZip zip(fileName);
     qDebug() << "Opening zip file";
     if (!zip.open(QIODevice::ReadOnly)) {
-        qWarning() << "Could not open" << fileName << "for reading";
+        qWarning() << "Could not open" << fileName << "for reading. ZIP file doesn't exist or is invalid.";
         return 1;
     }
     const KArchiveDirectory *dir = zip.directory();
@@ -108,11 +111,54 @@ static int doPrintAll(const QString &fileName)
     return 0;
 }
 
+static int doSave(const QString &fileName)
+{
+    KZip zip(fileName);
+    if (!zip.open(QIODevice::WriteOnly)) {
+        qWarning() << "Could not open" << fileName << "for writing";
+        return 1;
+    }
+
+    const QByteArray data = "This is the data for the main file";
+    bool writeOk = zip.writeFile("maindoc.txt", data);
+    if (!writeOk) {
+        qWarning() << "Write error (main file)";
+        return 1;
+    }
+    const QByteArray data2 = "This is the data for the other file";
+    writeOk = zip.writeFile("subdir/other.txt", data2);
+    if (!writeOk) {
+        qWarning() << "Write error (other file)";
+        return 1;
+    }
+    //writeOk = zip.addLocalFile("David.jpg", "picture.jpg");
+    //if (!writeOk) {
+    //    qWarning() << "Write error (picture)";
+    //    return 1;
+    //}
+    return 0;
+}
+
+static int doLoad(const QString &fileName)
+{
+    KZip zip(fileName);
+    if (!zip.open(QIODevice::ReadOnly)) {
+        qWarning() << "Could not open" << fileName << "for reading. ZIP file doesn't exist or is invalid.";
+        return 1;
+    }
+    const KArchiveDirectory *dir = zip.directory();
+    const KArchiveEntry *mainEntry = dir->entry("maindoc.txt");
+    Q_ASSERT(mainEntry && mainEntry->isFile());
+    const KArchiveFile *mainFile = static_cast<const KArchiveFile *>(mainEntry);
+    qDebug() << "maindoc.txt:" << mainFile->data();
+    return 0;
+}
+
 static int doPrint(const QString &fileName, const QString &entryName)
 {
     KZip zip(fileName);
     if (!zip.open(QIODevice::ReadOnly)) {
-        qWarning() << "Could not open" << fileName << "for reading";
+        qWarning() << "Could not open" << fileName << "for reading. ZIP file doesn't exist or is invalid.";
         return 1;
     }
     const KArchiveDirectory *dir = zip.directory();
@@ -124,8 +170,86 @@ static int doPrint(const QString &fileName, const QString &entryName)
     printf("SIZE=%i\n",arr.size());
     QString str = QString::fromUtf8(arr);
     printf("%s", qPrintable(str));
-    zip.close();
+    return zip.close() ? 0 : 1 /*error*/;
+}
+
+static int doUpdate(const QString &archiveName, const QString &fileName)
+{
+    KZip zip(archiveName);
+    if (!zip.open(QIODevice::ReadWrite)) {
+        qWarning() << "Could not open" << archiveName << "for read/write";
+        return 1;
+    }
+
+    QFile f(fileName);
+    if (!f.open(QIODevice::ReadOnly)) {
+        qWarning() << "Could not open" << fileName << "for reading.";
+        return 1;
+    }
+
+    zip.writeFile(fileName, f.readAll());
+    return zip.close() ? 0 : 1 /*error*/;
+}
+
+static int doTransfer(const QString &sourceFile, const QString &destFile)
+{
+    KZip zip1(sourceFile);
+    KZip zip2(destFile);
+    if (!zip1.open(QIODevice::ReadOnly)) {
+        qWarning() << "Could not open" << sourceFile << "for reading. ZIP file doesn't exist or is invalid.";
+        return 1;
+    }
+    if (!zip2.open(QIODevice::WriteOnly)) {
+        qWarning() << "Could not open" << destFile << "for writing";
+        return 1;
+    }
+    const KArchiveDirectory *dir1 = zip1.directory();
+
+    recursive_transfer(dir1, "", &zip2);
+
+    zip1.close();
+    zip2.close();
     return 0;
+}
+
+static bool save(QIODevice *device)
+{
+    const QByteArray data = "This is some text that will be compressed.\n";
+    const int written = device->write(data);
+    if (written != data.size()) {
+        qWarning() << "Error writing data";
+        return 1;
+    }
+    // success
+    return 0;
+}
+
+static int doCompress(const QString &fileName)
+{
+    KCompressionDevice device(fileName, KCompressionDevice::BZip2);
+    if (!device.open(QIODevice::WriteOnly)) {
+        qWarning() << "Could not open" << fileName << "for writing";
+        return 1;
+    }
+
+    return save(&device);
+}
+
+static bool load(QIODevice *device)
+{
+    const QByteArray data = device->readAll();
+    printf("%s", data.constData());
+    return true;
+}
+
+static int doUncompress(const QString &fileName)
+{
+    KCompressionDevice device(fileName, KCompressionDevice::BZip2);
+    if (!device.open(QIODevice::ReadOnly)) {
+        qWarning() << "Could not open" << fileName << "for reading";
+        return 1;
+    }
+    return load(&device);
 }
 
 int main(int argc, char** argv)
@@ -138,10 +262,15 @@ int main(int argc, char** argv)
                " ./kziptest list /path/to/existing_file.zip       tests listing an existing zip\n"
                " ./kziptest print-all file.zip                    prints contents of all files.\n"
                " ./kziptest print file.zip filename               prints contents of one file.\n"
-               " ./kziptest update file.zip filename              updates contents of one file.\n"
-               " ./kziptest transfer file.zip newfile.zip         complete transfer.\n");
+               " ./kziptest update file.zip filename              update filename in file.zip.\n"
+               " ./kziptest save file.zip                         save file.\n"
+               " ./kziptest load file.zip                         load file.\n"
+               " ./kziptest write file.bz2                        write compressed file.\n"
+               " ./kziptest read file.bz2                         read uncompressed file.\n"
+        );
         return 1;
     }
+    QCoreApplication app(argc, argv);
     QString command = argv[1];
     if (command == "list") {
         return doList(QFile::decodeName(argv[2]));
@@ -153,51 +282,26 @@ int main(int argc, char** argv)
             return 1;
         }
         return doPrint(QFile::decodeName(argv[2]), argv[3]);
+    } else if (command == "save") {
+        return doSave(QFile::decodeName(argv[2]));
+    } else if (command == "load") {
+        return doLoad(QFile::decodeName(argv[2]));
+    } else if (command == "write") {
+        return doCompress(QFile::decodeName(argv[2]));
+    } else if (command == "read") {
+        return doUncompress(QFile::decodeName(argv[2]));
     } else if (command == "update") {
         if (argc != 4) {
             printf("usage: kziptest update archivename filename");
             return 1;
         }
-        KZip zip(argv[2]);
-        if (!zip.open(QIODevice::ReadWrite))
-        {
-            printf("Could not open %s for read/write\n", argv[2]);
-            return 1;
-        }
-
-        QFile f(argv[3]);
-        if (!f.open(QIODevice::ReadOnly)) {
-            printf("Could not open %s for reading\n", argv[2]);
-            return 1;
-        }
-
-        zip.writeFile(argv[3], f.readAll());
-        zip.close();
-
-        return 0;
+        return doUpdate(QFile::decodeName(argv[2]), QFile::decodeName(argv[3]));
     } else if (command == "transfer") {
         if (argc != 4) {
             printf("usage: kziptest transfer sourcefile destfile");
             return 1;
         }
-        KZip zip1(argv[2]);
-        KZip zip2(argv[3]);
-        if (!zip1.open(QIODevice::ReadOnly)) {
-            printf("Could not open %s for reading\n", argv[2]);
-            return 1;
-        }
-        if (!zip2.open(QIODevice::WriteOnly)) {
-            printf("Could not open %s for writing\n", argv[3]);
-            return 1;
-        }
-        const KArchiveDirectory *dir1 = zip1.directory();
-
-        recursive_transfer(dir1, "", &zip2);
-
-        zip1.close();
-        zip2.close();
-
-        return 0;
+        return doTransfer(QFile::decodeName(argv[2]), QFile::decodeName(argv[3]));
     } else {
         printf("Unknown command\n");
     }
