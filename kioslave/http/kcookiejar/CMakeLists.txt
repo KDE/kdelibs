@@ -40,7 +40,7 @@ target_link_libraries(kded_kcookiejar
    ${KDE4_KIO_LIBS}
    KF5::KWindowSystem
    KF5::KCoreAddons
-   KDBusAddons
+   KF5::KDBusAddons
    KF5::KI18n
    KF5::KWidgetsAddons
 )

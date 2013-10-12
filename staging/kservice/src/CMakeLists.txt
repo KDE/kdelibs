@@ -66,7 +66,7 @@ target_link_libraries(KService
   LINK_PRIVATE
     KF5::KCoreAddons
     KF5::KI18n
-    KDBusAddons   # KDEInitInterface
+    KF5::KDBusAddons   # KDEInitInterface
 )
 
 set_target_properties(KService PROPERTIES VERSION ${KSERVICE_VERSION_STRING}
