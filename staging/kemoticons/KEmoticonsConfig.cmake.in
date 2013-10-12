@@ -7,7 +7,6 @@ find_dependency(Qt5::Xml @REQUIRED_QT_VERSION@)
 find_dependency(KCoreAddons "${PACKAGE_VERSION}")
 find_dependency(KService "${PACKAGE_VERSION}")
 
-set(KEmoticons_INSTALL_PREFIX "@PACKAGE_CMAKE_INSTALL_PREFIX@")
 set_and_check(KEmoticons_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")
 
 # un-comment this once the dependencies have been cleaned:

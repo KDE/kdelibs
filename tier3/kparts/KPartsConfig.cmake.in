@@ -4,7 +4,6 @@ find_dependency(XmlGui "${PACKAGE_VERSION}")
 find_dependency(KIOCore "${PACKAGE_VERSION}")
 find_dependency(KTextWidgets "${PACKAGE_VERSION}")
 
-set(KParts_INSTALL_PREFIX "@PACKAGE_CMAKE_INSTALL_PREFIX@")
 set_and_check(KParts_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")
 
 include("${CMAKE_CURRENT_LIST_DIR}/KPartsTargets.cmake")
