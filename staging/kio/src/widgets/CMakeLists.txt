@@ -94,7 +94,7 @@ target_link_libraries(KIOWidgets
     KJobWidgets
     Qt5::Network  # SSL
     KCompletion   # KUrlCompletion uses KCompletion
-    KWidgetsAddons # keditlistwidget
+    KF5::KWidgetsAddons # keditlistwidget
   LINK_PRIVATE
     Qt5::DBus
     KF5::KI18n

@@ -98,7 +98,7 @@ LINK_PRIVATE
     Qt5::Network        #QNetworkAccessManager in kaboutapplicationpersonmodel_p
     Qt5::PrintSupport   #QPrinter in kshortcutseditor
     Qt5::X11Extras      #QX11Info in kglobalaccel, QX11Info::appTime, appUserTime, setAppUserTime
-    KWidgetsAddons
+    KF5::KWidgetsAddons
     ItemViews           #KWidgetItemDelegate in KAboutApplicationPersonListDelegate
     KF5::KI18n               #i18n and i18nc in many places
     KF5::KIconThemes         #KIconLoader and KIconThemes in KToolBar

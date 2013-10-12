@@ -31,7 +31,7 @@ LINK_PRIVATE
   Qt5::DBus
   SonnetCore
   KF5::KI18n
-  KWidgetsAddons
+  KF5::KWidgetsAddons
   KF5::KService
   KF5::KConfigCore
   KConfigWidgets

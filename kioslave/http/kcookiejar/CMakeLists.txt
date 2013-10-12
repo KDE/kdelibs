@@ -18,7 +18,7 @@ target_link_libraries( kcookiejar4
    Qt5::DBus
    KF5::KCoreAddons
    KF5::KI18n
-   ${KWidgetsAddons_LIBRARIES}
+   KF5::KWidgetsAddons
 )
 
 install(TARGETS kcookiejar4 ${INSTALL_TARGETS_DEFAULT_ARGS} )
@@ -42,7 +42,7 @@ target_link_libraries(kded_kcookiejar
    KF5::KCoreAddons
    KDBusAddons
    KF5::KI18n
-   KWidgetsAddons
+   KF5::KWidgetsAddons
 )
 
 install(TARGETS kded_kcookiejar  DESTINATION ${PLUGIN_INSTALL_DIR} )

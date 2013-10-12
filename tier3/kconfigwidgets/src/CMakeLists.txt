@@ -19,7 +19,7 @@ add_library(KF5::KConfigWidgets ALIAS KConfigWidgets)
 target_link_libraries(KConfigWidgets
   LINK_PUBLIC
     KCodecs # KCodecActions uses KCharsets, KEncodingProber
-    KWidgetsAddons # For K*Action, KPage*, KViewStateSerializer, KAcceleratorManager, K*GuiItem
+    KF5::KWidgetsAddons # For K*Action, KPage*, KViewStateSerializer, KAcceleratorManager, K*GuiItem
     KF5::KConfigGui # KStandardAction uses KStandardShortcut
     KAuth # KCModule uses KAuth::Action
   LINK_PRIVATE

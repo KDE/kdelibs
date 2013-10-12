@@ -38,5 +38,5 @@ KIO_EXECUTABLE_TESTS(
 set(kfstest_SRCS kfstest.cpp kfdtest.cpp)
 add_executable(kfstest ${kfstest_SRCS})
 ecm_mark_as_test(kfstest)
-target_link_libraries(kfstest KF5::KIconThemes ${KDE4_KIO_LIBS} KF5::KCoreAddons KWidgetsAddons)
+target_link_libraries(kfstest KF5::KIconThemes ${KDE4_KIO_LIBS} KF5::KCoreAddons KF5::KWidgetsAddons)
 

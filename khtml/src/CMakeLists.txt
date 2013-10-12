@@ -547,7 +547,7 @@ target_link_libraries(KHtml
   ${PNG_LIBRARIES}
   ${X11_LIBRARIES}
   KGuiAddons
-  ${KWidgetsAddons_LIBRARIES}
+  KF5::KWidgetsAddons
   KF5::KI18n
   KWindowSystem
   KWallet
@@ -702,7 +702,7 @@ install(TARGETS khtmlpart  DESTINATION ${PLUGIN_INSTALL_DIR} )
 add_library(khtmlimagepart MODULE khtmlimage_init.cpp)
 
 
-target_link_libraries(khtmlimagepart KHtml ${KWidgetsAddons_LIBRARIES} XmlGui KTextWidgets KParts KF5::KI18n)
+target_link_libraries(khtmlimagepart KHtml KF5::KWidgetsAddons XmlGui KTextWidgets KParts KF5::KI18n)
 
 install(TARGETS khtmlimagepart  DESTINATION ${PLUGIN_INSTALL_DIR} )
 

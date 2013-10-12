@@ -214,7 +214,7 @@ target_link_libraries(KDE4Support
    Qt5::Svg
    KF5::KCoreAddons
    KCrash
-   ${KWidgetsAddons_LIBRARIES}
+   KF5::KWidgetsAddons
    KConfigWidgets
    KIOCore
    KIOFileWidgets

@@ -25,7 +25,7 @@ target_link_libraries(KJobWidgets
       KF5::KCoreAddons    # KJob
    LINK_PRIVATE
       Qt5::DBus
-      KWidgetsAddons # KSqueezedTextLabel
+      KF5::KWidgetsAddons # KSqueezedTextLabel
 )
 
 if (HAVE_X11)
