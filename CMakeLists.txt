@@ -157,7 +157,6 @@ add_subdirectory( staging )
 add_subdirectory( licenses   )
 add_subdirectory( kio )
 add_subdirectory( kded       )
-add_subdirectory( kfile )
 add_subdirectory( kioslave   )
 
 add_subdirectory( khtml  )
