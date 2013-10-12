@@ -20,7 +20,7 @@ target_link_libraries(KConfigWidgets
   LINK_PUBLIC
     KCodecs # KCodecActions uses KCharsets, KEncodingProber
     KWidgetsAddons # For K*Action, KPage*, KViewStateSerializer, KAcceleratorManager, K*GuiItem
-    KConfigGui # KStandardAction uses KStandardShortcut
+    KF5::KConfigGui # KStandardAction uses KStandardShortcut
     KAuth # KCModule uses KAuth::Action
   LINK_PRIVATE
     Qt5::DBus # KPasteTextAction talks to Klipper via DBus
