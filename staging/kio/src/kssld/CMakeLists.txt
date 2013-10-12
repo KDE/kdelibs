@@ -10,7 +10,7 @@ LINK_PUBLIC
    KIOCore     # ksslcertificatemanager
    KDBusAddons # kdedmodule
 LINK_PRIVATE
-   KConfigCore
+   KF5::KConfigCore
    KF5::KService    # kpluginfactory
    Qt5::Network
    Qt5::DBus

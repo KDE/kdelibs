@@ -33,7 +33,7 @@ target_link_libraries(KDeclarative
   LINK_PRIVATE
     Qt5::Quick  #QQuickImageProvider
     Qt5::Script #QScriptValue, QScriptEngine (see bindings/*.cpp)
-    KConfigCore # KCoreConfigSkeleton, in ConfigPropertyMap
+    KF5::KConfigCore # KCoreConfigSkeleton, in ConfigPropertyMap
     KF5::KI18n       #i18n bindings
     KIconThemes #KIconProvider
     KF5::KCoreAddons #qscriptnonguibookkeeping.cpp

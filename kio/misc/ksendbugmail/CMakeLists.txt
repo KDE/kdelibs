@@ -14,7 +14,7 @@ set(ksendbugmail_SRCS
 add_executable(ksendbugmail ${ksendbugmail_SRCS})
 ecm_mark_nongui_executable(ksendbugmail)
 
-target_link_libraries(ksendbugmail Qt5::Widgets Qt5::Network KConfigCore KF5::KI18n KF5::KCoreAddons)
+target_link_libraries(ksendbugmail Qt5::Widgets Qt5::Network KF5::KConfigCore KF5::KI18n KF5::KCoreAddons)
 
 set_target_properties(ksendbugmail PROPERTIES COMPILE_FLAGS -DKIO_EXPORT=)
 

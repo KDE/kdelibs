@@ -65,7 +65,7 @@ if(AVAHI_FOUND)
   target_link_libraries(KDNSSD LINK_PRIVATE Qt5::DBus)
 elseif (DNSSD_FOUND)
   target_link_libraries(KDNSSD LINK_PRIVATE ${DNSSD_LIBRARIES}
-                                            KConfigCore # settings.kcfgc
+                                            KF5::KConfigCore # settings.kcfgc
                        )
 endif ()
 

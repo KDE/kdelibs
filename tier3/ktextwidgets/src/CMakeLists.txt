@@ -33,7 +33,7 @@ LINK_PRIVATE
   KF5::KI18n
   KWidgetsAddons
   KF5::KService
-  KConfigCore
+  KF5::KConfigCore
   KConfigWidgets
   KWindowSystem
   KIconThemes

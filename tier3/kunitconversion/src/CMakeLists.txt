@@ -50,7 +50,7 @@ target_include_directories(KUnitConversion PUBLIC "$<BUILD_INTERFACE:${KUnitConv
 target_link_libraries(KUnitConversion LINK_PUBLIC  Qt5::Core
                                       LINK_PRIVATE Qt5::Xml Qt5::Network
                                                    KF5::KI18n #i18n(), ...
-                                                   KConfigCore #only KCurrencyCodePrivate::loadCurrency
+                                                   KF5::KConfigCore #only KCurrencyCodePrivate::loadCurrency
 )
 
 set_target_properties(KUnitConversion PROPERTIES VERSION   ${KUNITCONVERSION_VERSION_STRING}
