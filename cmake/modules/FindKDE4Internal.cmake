@@ -53,7 +53,6 @@
 #  KDE4_KIDLETIME_LIBRARY   - the kidletime library
 #  KDE4_KCMUTILS_LIBRARY    - the kcmutils library
 #  KDE4_KPRINTUTILS_LIBRARY - the kprintutils library
-#  KDE4_KFILE_LIBRARY       - the kfile library
 #  KDE4_KHTML_LIBRARY       - the khtml library
 #  KDE4_KJS_LIBRARY         - the kjs library
 #  KDE4_KJSAPI_LIBRARY      - the kjs public api library
@@ -85,7 +84,6 @@
 #  KDE4_KIDLETIME_LIBS        - the kidletime library and all depending libraries
 #  KDE4_KCMUTILS_LIBS         - the kcmutils library and all depending libraries
 #  KDE4_KPRINTUTILS_LIBS      - the kprintutils library and all depending libraries
-#  KDE4_KFILE_LIBS            - the kfile library and all depending libraries
 #  KDE4_KHTML_LIBS            - the khtml library and all depending libraries
 #  KDE4_KJS_LIBS              - the kjs library and all depending libraries
 #  KDE4_KJSAPI_LIBS           - the kjs public api library and all depending libraries
@@ -415,7 +413,6 @@ _kde4_set_lib_variables(KDEUI_UNPORTED         kdeui         "${KDE4_TARGET_PREF
 _kde4_set_lib_variables(KDEWEBKIT     kdewebkit     "${KDE4_TARGET_PREFIX}")
 _kde4_set_lib_variables(KDNSSD        kdnssd        "${KDE4_TARGET_PREFIX}")
 _kde4_set_lib_variables(KEMOTICONS    kemoticons    "${KDE4_TARGET_PREFIX}")
-_kde4_set_lib_variables(KFILE         kfile         "${KDE4_TARGET_PREFIX}")
 _kde4_set_lib_variables(KHTML         khtml         "${KDE4_TARGET_PREFIX}")
 _kde4_set_lib_variables(KIDLETIME     KIdleTime     "${KDE4_TARGET_PREFIX}")
 _kde4_set_lib_variables(KIO           kio           "${KDE4_TARGET_PREFIX}")
@@ -437,7 +434,7 @@ _kde4_set_lib_variables(THREADWEAVER  ThreadWeaver  "${KDE4_TARGET_PREFIX}")
 
 set(KDE4_KDEUI_LIBRARY ${KDE4_KDEUI_UNPORTED_LIBRARY} )
 set(KDE4_KDEUI_LIBS    ${KDE4_KDEUI_LIBRARY} )
-set(KDE4_KDECORE_LIBS  ${INQT5_LIBRARY} ${KDE4_KDECORE_UNPORTED_LIBRARY} )
+set(KDE4_KDECORE_LIBS  ${KDE4_KDECORE_UNPORTED_LIBRARY} )
 
 if (UNIX)
    _kde4_set_lib_variables(KDESU kdesu       "${KDE4_TARGET_PREFIX}")
