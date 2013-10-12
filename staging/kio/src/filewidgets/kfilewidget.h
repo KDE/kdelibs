@@ -29,18 +29,33 @@
 #define KFILEWIDGET_H
 
 #include "kio/kiofilewidgets_export.h"
-#include "kabstractfilewidget.h"
+#include "kfile.h"
 #include <QWidget>
 
+class QUrl;
+class QPushButton;
+class KActionCollection;
+class KToolBar;
+class KFileWidgetPrivate;
+class KUrlComboBox;
+class KFileFilterCombo;
+
+class KPreviewWidgetBase;
+class QMimeType;
 class KConfigGroup;
 class KJob;
 class KFileItem;
 class KDirOperator;
 
-class KIOFILEWIDGETS_EXPORT KFileWidget : public QWidget, public KAbstractFileWidget
+/**
+ * File selector widget.
+ *
+ * This is the contents of the KDE file dialog, without the actual QDialog around it.
+ * It can be embedded directly into applications.
+ */
+class KIOFILEWIDGETS_EXPORT KFileWidget : public QWidget
 {
     Q_OBJECT
-    Q_INTERFACES(KAbstractFileWidget)
 public:
     /**
       * Constructs a file selector widget.
@@ -78,6 +93,19 @@ public:
      * Destructor
      */
     virtual ~KFileWidget();
+
+    /**
+     * Defines some default behavior of the filedialog.
+     * E.g. in mode @p Opening and @p Saving, the selected files/urls will
+     * be added to the "recent documents" list. The Saving mode also implies
+     * setKeepLocation() being set.
+     *
+     * @p Other means that no default actions are performed.
+     *
+     * @see setOperationMode
+     * @see operationMode
+     */
+    enum OperationMode { Other = 0, Opening, Saving };
 
     /**
      * @returns The selected fully qualified filename.
@@ -415,8 +443,22 @@ public:
      */
     virtual void setCustomWidget(const QString& text, QWidget* widget);
 
-    /// @internal for future extensions
-    virtual void virtual_hook( int id, void* data );
+    /**
+     * Sets whether the user should be asked for confirmation
+     * when an overwrite might occurr.
+     *
+     * @param enable Set this to true to enable checking.
+     * @since 4.2
+     */
+    void setConfirmOverwrite(bool enable);
+
+    /**
+     * Forces the inline previews to be shown or hidden, depending on @p show.
+     *
+     * @param show Whether to show inline previews or not.
+     * @since 4.2
+     */
+    void setInlinePreviewShown(bool show);
 
 public Q_SLOTS:
     /**
@@ -517,5 +559,4 @@ private:
     Q_PRIVATE_SLOT(d, void _k_slotIconSizeChanged(int))
 };
 
-#endif /* KABSTRACTFILEWIDGET_H */
-
+#endif

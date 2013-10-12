@@ -62,6 +62,7 @@ KDE 4.x when you want to port them to KDE Frameworks 5.<br>
 <li><a href="#kdecore">Changes in kdecore</a></li>
 <li><a href="#kdeui">Changes in kdeui</a></li>
 <li><a href="#kio">Changes in kio</a></li>
+<li><a href="#kfile">Changes in kfile</a></li>
 <li><a href="#kparts">Changes in kparts</a></li>
 </ul>
 
@@ -439,6 +440,15 @@ toolbar->setProperty("otherToolbar", true);</pre>
   <li>KIO::RenameDialogPlugin was removed, it was unused for a long time anyway. The rename dialog uses KFileMetaDataWidget and PreviewJob instead.</li>
   <li>When Job::setUiDelegate(0) is used on a CopyJob (KIO::copy or KIO::move), an extra call to setUiDelegateExtension(0) is probably necessary, to disable skip and rename dialogs.</li>
   <li>KIO::Job::isInteractive() has been removed, use uiDelegate() or uiDelegateExtension() depending on what is meant (error messages, or rename/skip dialog).</li>
+</ul>
+
+<h4 align="right"><a href="#TOC">Return to the Table of Contents</a></h4>
+
+<h2 id="kfile">Changes in kfile</h2>
+
+<ul>
+  <li>libkfile is now called KIOFileWidgets, part of the KIO framework.</li>
+  <li>KFileWidget no longer inherits KAbstractFileWidget (which no longer exists). KAbstractFileWidget::{OperationMode, Other, Opening, Saving} is now KFileWidget::{...}</li>
 </ul>
 
 <h4 align="right"><a href="#TOC">Return to the Table of Contents</a></h4>

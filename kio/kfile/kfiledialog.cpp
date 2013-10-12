@@ -146,7 +146,7 @@ public:
     public:
         Native()
           : mode(KFile::File),
-            operationMode(KAbstractFileWidget::Opening)
+            operationMode(KFileWidget::Opening)
         {
         }
         /** @return previously set (global) start dir or the first url
@@ -174,7 +174,7 @@ public:
         QStringList mimeTypes;
         QList<QUrl> selectedUrls;
         KFile::Modes mode;
-        KAbstractFileWidget::OperationMode operationMode;
+        KFileWidget::OperationMode operationMode;
     };
 
     KFileDialogPrivate()
@@ -871,9 +871,9 @@ bool KFileDialog::keepsLocation() const
 void KFileDialog::setOperationMode( OperationMode mode )
 {
     if (d->native)
-        d->native->operationMode = static_cast<KAbstractFileWidget::OperationMode>(mode);
+        d->native->operationMode = static_cast<KFileWidget::OperationMode>(mode);
     else
-        d->w->setOperationMode(static_cast<KAbstractFileWidget::OperationMode>(mode));
+        d->w->setOperationMode(static_cast<KFileWidget::OperationMode>(mode));
 }
 
 KFileDialog::OperationMode KFileDialog::operationMode() const
@@ -926,7 +926,7 @@ KToolBar * KFileDialog::toolBar() const
     return d->w->toolBar();
 }
 
-KAbstractFileWidget* KFileDialog::fileWidget()
+KFileWidget* KFileDialog::fileWidget()
 {
     return d->w;
 }
@@ -943,8 +943,8 @@ int KFileDialog::exec()
 // d->native->selectedUrls.clear();
     int res = QDialog::Rejected;
     switch (d->native->operationMode) {
-    case KAbstractFileWidget::Opening:
-    case KAbstractFileWidget::Other:
+    case KFileWidget::Opening:
+    case KFileWidget::Other:
         if (d->native->mode & KFile::File) {
             QUrl url( KFileDialogPrivate::getOpenUrl(
                d->native->startDir(), d->native->filter, parentWidget(), windowTitle(), &d->native->selectedFilter ) );
@@ -981,7 +981,7 @@ int KFileDialog::exec()
             break;
         }
         break;
-    case KAbstractFileWidget::Saving:
+    case KFileWidget::Saving:
         if (d->native->mode & KFile::File) {
             QUrl url( KFileDialogPrivate::getSaveUrl(
                 d->native->startDir(), d->native->filter, parentWidget(), windowTitle(), Options(0), &d->native->selectedFilter ) );

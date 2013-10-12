@@ -72,7 +72,6 @@ install( FILES
   kpreviewwidgetbase.h
   krecentdirs.h
 
-  kabstractfilewidget.h
   kdiroperator.h
   kdirsortfilterproxymodel.h
   kfilefiltercombo.h

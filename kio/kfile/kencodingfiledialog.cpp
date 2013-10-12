@@ -23,7 +23,7 @@
 
 #include <defaults-kfile.h>
 
-#include <kabstractfilewidget.h>
+#include <kfilewidget.h>
 #include <kcombobox.h>
 #include <klocalizedstring.h>
 #include <kcharsets.h>

@@ -72,7 +72,6 @@ if(UNIX)
 endif(UNIX)
 
 set(kfile_STAT_SRCS
-  kfile/kabstractfilemodule.cpp
   kfile/kencodingfiledialog.cpp
   kfile/kfiledialog.cpp
 )
@@ -150,7 +149,6 @@ install( FILES
  kfileplugin.desktop
  kurifilterplugin.desktop
  kfile/kpropertiesdialogplugin.desktop
- kfile/kiofilemodule.desktop
 DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
 
 install(  FILES
@@ -160,7 +158,6 @@ install(  FILES
 install( FILES
   kio/kdbusservicestarter.h
   kio/kimageio.h
-  kfile/kabstractfilemodule.h
   kfile/kencodingfiledialog.h
   kfile/kfiledialog.h
   kfile/kpropsdialog.h

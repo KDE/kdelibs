@@ -33,7 +33,6 @@
 #include <qmimetype.h>
 #include <QUrl>
 
-class KAbstractFileWidget;
 class KFileWidget;
 
 class KActionCollection;
@@ -684,7 +683,7 @@ public:
      * Returns the KFileWidget that implements most of this file dialog.
      * If you link to libkfile you can cast this to a KFileWidget*.
      */
-    KAbstractFileWidget* fileWidget();
+    KFileWidget* fileWidget();
 
     /**
      * Returns a pointer to the toolbar.

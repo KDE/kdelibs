@@ -320,7 +320,7 @@ static bool containsProtocolSection( const QString& string )
 }
 
 KFileWidget::KFileWidget( const QUrl& _startDir, QWidget *parent )
-    : QWidget(parent), KAbstractFileWidget(), d(new KFileWidgetPrivate(this))
+    : QWidget(parent), d(new KFileWidgetPrivate(this))
 {
     QUrl startDir(_startDir);
     // qDebug() << "startDir" << startDir;
@@ -2742,29 +2742,6 @@ void KFileWidget::setCustomWidget(const QString& text, QWidget* widget)
     d->lafBox->addWidget(widget, 2, 1, Qt::AlignVCenter);
 }
 
-void KFileWidget::virtual_hook( int id, void* data )
-{
-    // this is a workaround to avoid binary compatibility breakage
-    // since setConfirmOverwrite in kabstractfilewidget.h is a new function
-    // introduced for 4.2. As stated in kabstractfilewidget.h this workaround
-    // is going to become a virtual function for KDE5
-
-    switch (id) {
-        case 0: { // setConfirmOverwrite(bool)
-                bool *enable = static_cast<bool*>(data);
-                d->confirmOverwrite = *enable;
-            }
-            break;
-        case 1: { // setInlinePreviewShown(bool)
-                bool *show = static_cast<bool*>(data);
-                d->setInlinePreviewShown(*show);
-            }
-            break;
-        default:
-            break;
-    }
-}
-
 KDirOperator* KFileWidget::dirOperator()
 {
     return d->ops;
@@ -2811,5 +2788,15 @@ void KFileWidgetPrivate::setInlinePreviewShown(bool show)
     ops->setInlinePreviewShown(show);
 }
 
+
+void KFileWidget::setConfirmOverwrite(bool enable)
+{
+    d->confirmOverwrite = enable;
+}
+
+void KFileWidget::setInlinePreviewShown(bool show)
+{
+    d->setInlinePreviewShown(show);
+}
 
 #include "moc_kfilewidget.cpp"
