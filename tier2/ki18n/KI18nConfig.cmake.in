@@ -1,6 +1,5 @@
 @PACKAGE_INIT@
 
-find_dependency(Qt5Core @REQUIRED_QT_VERSION@)
 find_dependency(KJS "${PACKAGE_VERSION}")
 
 
