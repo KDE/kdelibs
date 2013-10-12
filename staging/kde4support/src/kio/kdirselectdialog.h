@@ -21,7 +21,7 @@
 #ifndef KDIRSELECTDIALOG_H
 #define KDIRSELECTDIALOG_H
 
-#include <kfile_export.h>
+#include <kde4support_export.h>
 
 #include <QDialog>
 #include <QUrl>
@@ -31,9 +31,9 @@ class QAbstractItemView;
 /**
  * A pretty dialog for a KDirSelect control for selecting directories.
  * @author Michael Jarrett <michaelj@corel.com>
- * @see KFileDialog
+ * @deprecated since 5.0, use QFileDialog::getExistingDirectoryUrl instead.
  */
-class KFILE_EXPORT KDirSelectDialog : public QDialog
+class KDE4SUPPORT_DEPRECATED_EXPORT KDirSelectDialog : public QDialog
 {
     Q_OBJECT
 
@@ -82,12 +82,10 @@ public:
      * @return The URL selected, or an empty URL if the user canceled
      * or no URL was selected.
      *
-     * NOTE: if you use this method and nothing else from libkfile,
-     * then you can use KFileDialog::getExistingDirectory (if localOnly was true)
-     * or KFileDialog::getExistingDirectoryUrl (if localOnly was false),
-     * and then you can link to libkio only instead of libkfile.
+     * @deprecated since 5.0, use QFileDialog::getExistingDirectory (if localOnly was true)
+     * or QFileDialog::getExistingDirectoryUrl (if localOnly was false) instead.
      */
-    static QUrl selectDirectory( const QUrl& startDir = QUrl(),
+    static KDE4SUPPORT_DEPRECATED QUrl selectDirectory( const QUrl& startDir = QUrl(),
                                  bool localOnly = false, QWidget *parent = 0L,
                                  const QString& caption = QString());
 

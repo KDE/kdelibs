@@ -31,7 +31,6 @@ endif(Soprano_FOUND)
 add_subdirectory(tests)
 
 set(kfile_LIB_SRCS
-  kdirselectdialog.cpp
 )
 
 add_library(kfile ${kfile_LIB_SRCS})
@@ -66,6 +65,5 @@ set_target_properties(kfile PROPERTIES VERSION ${GENERIC_LIB_VERSION}
 install(TARGETS kfile EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install( FILES
-  kdirselectdialog.h
   ${CMAKE_CURRENT_BINARY_DIR}/kfile_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
