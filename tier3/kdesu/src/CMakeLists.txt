@@ -33,7 +33,7 @@ target_link_libraries(KDESu
     KPty
   LINK_PRIVATE
     KCoreAddons # KUser::loginName
-    KService # KToolInvocation::kdeinitExecWait
+    KF5::KService # KToolInvocation::kdeinitExecWait
 )
 
 if(KDESU_USE_SUDO_DEFAULT)

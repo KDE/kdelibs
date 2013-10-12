@@ -11,7 +11,7 @@ LINK_PUBLIC
    KDBusAddons # kdedmodule
 LINK_PRIVATE
    KConfigCore
-   KService    # kpluginfactory
+   KF5::KService    # kpluginfactory
    Qt5::Network
    Qt5::DBus
 )

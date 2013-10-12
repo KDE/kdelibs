@@ -7,5 +7,5 @@ set(kmimeassociationstest_SRCS kmimeassociationstest.cpp ../kmimeassociations.cp
 
 kde4_add_unit_test(kmimeassociationstest ${kmimeassociationstest_SRCS})
 
-target_link_libraries(kmimeassociationstest KConfigCore KService Qt5::Test)
+target_link_libraries(kmimeassociationstest KConfigCore KF5::KService Qt5::Test)
 target_include_directories(kmimeassociationstest PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/..")

@@ -11,7 +11,7 @@ find_package(Qt5Widgets ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE)
 find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 if(NOT kdelibs_SOURCE_DIR)
   find_package(KCoreAddons 5.0.0 REQUIRED)
-  find_package(KService 5.0.0 REQUIRED)
+  find_package(KF5::KService 5.0.0 REQUIRED)
   find_package(KPty 5.0.0 REQUIRED)
 endif()
 

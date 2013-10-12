@@ -32,7 +32,7 @@ LINK_PRIVATE
   SonnetCore
   KF5::KI18n
   KWidgetsAddons
-  KService
+  KF5::KService
   KConfigCore
   KConfigWidgets
   KWindowSystem

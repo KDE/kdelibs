@@ -13,7 +13,7 @@ add_library(KF5::KEmoticons ALIAS KEmoticons)
 target_link_libraries(KEmoticons
 LINK_PUBLIC
     Qt5::Widgets # for QPixmap
-    KService     # for KService::Ptr, KServiceTypeTrader
+    KF5::KService     # for KService::Ptr, KServiceTypeTrader
 LINK_PRIVATE
     KArchive    # for KTar, KZip
 )

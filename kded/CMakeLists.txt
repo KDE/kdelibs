@@ -87,7 +87,7 @@ kf5_add_kdeinit_executable( kbuildsycoca5 NOGUI ${kbuildsycoca_KDEINIT_SRCS})
 
 target_link_libraries(kdeinit_kbuildsycoca5
    KF5::KCoreAddons
-   KService
+   KF5::KService
    KF5::KI18n
    Qt5::Xml
    Qt5::DBus

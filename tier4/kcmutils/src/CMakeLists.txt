@@ -20,7 +20,7 @@ target_link_libraries(KCMUtils
   LINK_PUBLIC
     Qt5::Widgets
     KConfigWidgets  # KCModule
-    KService        # KService
+    KF5::KService        # KService
   LINK_PRIVATE
     KCoreAddons
     KF5::KI18n

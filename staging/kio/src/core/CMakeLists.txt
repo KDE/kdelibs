@@ -113,7 +113,7 @@ target_include_directories(KIOCore PUBLIC
 target_link_libraries(KIOCore
 LINK_PUBLIC
  KF5::KCoreAddons   # KJob
- KService
+ KF5::KService
 LINK_PRIVATE
  KF5::KI18n
  Qt5::Network
