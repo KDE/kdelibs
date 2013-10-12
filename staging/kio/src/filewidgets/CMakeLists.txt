@@ -49,11 +49,11 @@ target_link_libraries(KIOFileWidgets
     KIOWidgets
     KBookmarks    # in KFilePlacesModel's API
     XmlGui        # for KActionCollection, used by KFileWidget/KDirOperator
+    ${Solid_LIBRARIES} # KFilePlacesModel/KFilePlacesView
   LINK_PRIVATE
     KIconThemes   # KIconLoader
     KI18n
     ItemViews     # kdirsortfilterproxymodel
-    ${Solid_LIBRARIES} # KFilePlacesModel/KFilePlacesView
 )
 
 set_target_properties(KIOFileWidgets PROPERTIES VERSION ${KIO_VERSION_STRING}
