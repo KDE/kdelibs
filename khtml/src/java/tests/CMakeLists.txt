@@ -21,7 +21,7 @@ target_link_libraries(testserver
     KF5::KI18n
     XmlGui
     KF5::KIconThemes
-    KWindowSystem
+    KF5::KWindowSystem
     Qt5::Network
 )
 

@@ -28,7 +28,7 @@ generate_export_header(KWallet)
 add_library(KF5::KWallet ALIAS KWallet)
 
 target_link_libraries(KWallet LINK_PUBLIC  Qt5::Widgets
-                              LINK_PRIVATE KWindowSystem # KWindowSystem::allowExternalProcessWindowActivation
+                              LINK_PRIVATE KF5::KWindowSystem # KWindowSystem::allowExternalProcessWindowActivation
                                            KF5::KConfigCore   # used to store the wallet to be used
 )
 

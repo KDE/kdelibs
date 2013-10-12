@@ -549,7 +549,7 @@ target_link_libraries(KHtml
   KGuiAddons
   KF5::KWidgetsAddons
   KF5::KI18n
-  KWindowSystem
+  KF5::KWindowSystem
   KWallet
   Qt5::X11Extras
   Qt5::PrintSupport

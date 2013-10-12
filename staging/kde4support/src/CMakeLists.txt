@@ -226,7 +226,7 @@ target_link_libraries(KDE4Support
    KDE4Attic
    KNotifications
    KF5::KIconThemes
-   KWindowSystem
+   KF5::KWindowSystem
    KGuiAddons
    KTextWidgets
    KParts

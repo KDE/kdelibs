@@ -103,7 +103,7 @@ LINK_PRIVATE
     KF5::KI18n               #i18n and i18nc in many places
     KF5::KIconThemes         #KIconLoader and KIconThemes in KToolBar
     KTextWidgets        #KTextEdit in kbugreport
-    KWindowSystem       #KKeyServer in kkeysequencewidget
+    KF5::KWindowSystem       #KKeyServer in kkeysequencewidget
     ${XMLGUI_EXTRA_LIBS}
 )
 

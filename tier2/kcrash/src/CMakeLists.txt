@@ -26,7 +26,7 @@ generate_export_header(KCrash)
 add_library(KF5::KCrash ALIAS KCrash)
 
 target_link_libraries(KCrash LINK_PUBLIC Qt5::Core)
-target_link_libraries(KCrash LINK_PRIVATE KF5::KCoreAddons ${KWindowSystem_LIBRARIES} Qt5::Gui)
+target_link_libraries(KCrash LINK_PRIVATE KF5::KCoreAddons KF5::KWindowSystem Qt5::Gui)
 
 
 if(${X11_FOUND})

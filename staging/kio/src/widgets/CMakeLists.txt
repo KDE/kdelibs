@@ -99,7 +99,7 @@ target_link_libraries(KIOWidgets
     Qt5::DBus
     KF5::KI18n
     KF5::KIconThemes   # KIconLoader
-    KWindowSystem # KStartupInfo
+    KF5::KWindowSystem # KStartupInfo
     KConfigWidgets # KColorScheme
 )
 

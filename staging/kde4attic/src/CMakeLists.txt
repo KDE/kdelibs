@@ -100,7 +100,7 @@ target_link_libraries(KDE4Attic
     KF5::KI18n
     KUnitConversion
     KNotifications
-    KWindowSystem
+    KF5::KWindowSystem
     ${kde4attic_OPTIONAL_LIBS}
 )
 

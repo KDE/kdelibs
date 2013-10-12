@@ -38,7 +38,7 @@ add_library(kded_kcookiejar MODULE ${kded_kcookiejar_SRCS})
 
 target_link_libraries(kded_kcookiejar
    ${KDE4_KIO_LIBS}
-   KWindowSystem
+   KF5::KWindowSystem
    KF5::KCoreAddons
    KDBusAddons
    KF5::KI18n

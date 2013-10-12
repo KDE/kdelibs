@@ -43,7 +43,7 @@ if (APPLE)
     set_target_properties(kded5 PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "KDE Daemon")
 endif (APPLE)
 
-target_link_libraries(kdeinit_kded5 Qt5::X11Extras ${KDE4_KIO_LIBS} ${X11_LIBRARIES} KF5::KCoreAddons ${KDBusAddons_LIBRARIES} KF5::KI18n KCrash KWindowSystem)
+target_link_libraries(kdeinit_kded5 Qt5::X11Extras ${KDE4_KIO_LIBS} ${X11_LIBRARIES} KF5::KCoreAddons ${KDBusAddons_LIBRARIES} KF5::KI18n KCrash KF5::KWindowSystem)
 
 install(TARGETS kdeinit_kded5 ${INSTALL_TARGETS_DEFAULT_ARGS})
 
