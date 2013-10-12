@@ -7,4 +7,3 @@ find_dependency(Qt5Xml @QT_REQUIRED_VERSION@)
 include("${CMAKE_CURRENT_LIST_DIR}/KBookmarksTargets.cmake")
 
 set(KBookmarks_LIBRARIES KF5::KBookmarks)
-set(KBookmarks_INCLUDE_DIRS ${KBookmarks_INCLUDE_DIR} )

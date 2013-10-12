@@ -4,4 +4,3 @@
 include("${CMAKE_CURRENT_LIST_DIR}/KDE4SupportTargets.cmake")
 
 set(KDE4Support_LIBRARIES KDE4__KDE4Support)
-set(KDE4Support_INCLUDE_DIRS ${KDE4Support_INCLUDE_DIR} )

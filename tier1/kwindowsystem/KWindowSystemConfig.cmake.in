@@ -6,4 +6,3 @@ find_dependency(Qt5Core @REQUIRED_QT_VERSION@)
 include("${CMAKE_CURRENT_LIST_DIR}/KWindowSystemTargets.cmake")
 
 set(KWindowSystem_LIBRARIES KF5::KWindowSystem)
-set(KWindowSystem_INCLUDE_DIRS ${KWindowSystem_INCLUDE_DIR})

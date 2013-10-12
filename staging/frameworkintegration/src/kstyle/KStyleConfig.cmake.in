@@ -6,4 +6,3 @@
 include("${CMAKE_CURRENT_LIST_DIR}/KStyleTargets.cmake")
 
 set(KStyle_LIBRARIES KF5::KStyle)
-set(KStyle_INCLUDE_DIRS ${KStyle_INCLUDE_DIR})

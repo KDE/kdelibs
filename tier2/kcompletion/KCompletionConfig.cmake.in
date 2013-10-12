@@ -8,4 +8,3 @@ find_dependency(KI18n "${PACKAGE_VERSION}")
 include("${CMAKE_CURRENT_LIST_DIR}/KCompletionTargets.cmake")
 
 set(KCompletion_LIBRARIES KF5::KCompletion)
-set(KCompletion_INCLUDE_DIRS ${KCompletion_INCLUDE_DIR} )

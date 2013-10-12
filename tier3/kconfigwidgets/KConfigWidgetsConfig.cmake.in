@@ -9,4 +9,3 @@ find_dependency(KAuth "${PACKAGE_VERSION}")
 include("${CMAKE_CURRENT_LIST_DIR}/KConfigWidgetsTargets.cmake")
 
 set(KConfigWidgets_LIBRARIES KF5::KConfigWidgets)
-set(KConfigWidgets_INCLUDE_DIRS ${KConfigWidgets_INCLUDE_DIR} )

@@ -7,4 +7,3 @@ find_dependency(KCoreAddons "${PACKAGE_VERSION}")
 include("${CMAKE_CURRENT_LIST_DIR}/KPtyTargets.cmake")
 
 set(KPTY_LIBRARIES KF5::KPty)
-set(KPTY_INCLUDE_DIRS ${KPTY_INCLUDE_DIR} )

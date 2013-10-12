@@ -6,4 +6,3 @@
 include("${CMAKE_CURRENT_LIST_DIR}/KHtmlTargets.cmake")
 
 set(KHtml_LIBRARIES KF5::KHtml)
-set(KHtml_INCLUDE_DIRS ${KHtml_INCLUDE_DIR})

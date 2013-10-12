@@ -7,4 +7,3 @@ find_dependency(Qt5PrintSupport @REQUIRED_QT_VERSION@)
 include("${CMAKE_CURRENT_LIST_DIR}/KPrintUtilsTargets.cmake")
 
 set(KPrintUtils_LIBRARIES KF5::KPrintUtils)
-set(KPrintUtils_INCLUDE_DIRS ${KPrintUtils_INCLUDE_DIR})

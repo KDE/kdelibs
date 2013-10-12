@@ -6,4 +6,3 @@ find_dependency(Qt5Core @REQUIRED_QT_VERSION@)
 include("${CMAKE_CURRENT_LIST_DIR}/ThreadWeaverTargets.cmake")
 
 set(ThreadWeaver_LIBRARIES KF5::ThreadWeaver)
-set(ThreadWeaver_INCLUDE_DIRS  "${ThreadWeaver_INCLUDE_DIR}" "${ThreadWeaver_INCLUDE_DIR}/threadweaver")

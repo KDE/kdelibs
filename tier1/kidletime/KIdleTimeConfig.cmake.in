@@ -6,4 +6,3 @@ find_dependency(Qt5Core @REQUIRED_QT_VERSION@)
 include("${CMAKE_CURRENT_LIST_DIR}/KIdleTimeTargets.cmake")
 
 set(KIdleTime_LIBRARIES KF5::KIdleTime)
-set(KIdleTime_INCLUDE_DIRS ${KIdleTime_INCLUDE_DIR})

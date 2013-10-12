@@ -9,4 +9,3 @@ find_dependency(Sonnet "${PACKAGE_VERSION}")
 include("${CMAKE_CURRENT_LIST_DIR}/KTextWidgetsTargets.cmake")
 
 set(KTextWidgets_LIBRARIES KF5::KTextWidgets)
-set(KTextWidgets_INCLUDE_DIRS ${KTextWidgets_INCLUDE_DIR} )

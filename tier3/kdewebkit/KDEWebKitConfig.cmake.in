@@ -6,4 +6,3 @@ find_dependency(Qt5WebkitWidgets @REQUIRED_QT_VERSION@)
 include("${CMAKE_CURRENT_LIST_DIR}/KDEWebkitTargets.cmake")
 
 set(KDEWebkit_LIBRARIES KF5::KDEWebkit)
-set(KDEWebkit_INCLUDE_DIRS ${KDEWebkit_INCLUDE_DIR} )

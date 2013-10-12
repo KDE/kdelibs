@@ -25,7 +25,6 @@ include("${CMAKE_CURRENT_LIST_DIR}/SolidTargets.cmake")
 
 # "public" variables:
 
-set(Solid_INCLUDE_DIRS "${Solid_INCLUDE_DIR}" )
 set(Solid_LIBRARIES KF5::Solid )
 
 set(Solid_HAVE_WINDOWS_WBEM @WBEM_FOUND@ )

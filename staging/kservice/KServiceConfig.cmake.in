@@ -7,4 +7,3 @@ include("${CMAKE_CURRENT_LIST_DIR}/KServiceTargets.cmake")
 include("${CMAKE_CURRENT_LIST_DIR}/KServiceMacros.cmake")
 
 set(KService_LIBRARIES KF5::KService)
-set(KService_INCLUDE_DIRS ${KService_INCLUDE_DIR} )
