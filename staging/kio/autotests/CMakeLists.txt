@@ -63,3 +63,23 @@ kiowidgets_unit_tests(
 )
 
 set_target_properties(krununittest PROPERTIES COMPILE_FLAGS "-DCMAKE_INSTALL_PREFIX=\\\"${CMAKE_INSTALL_PREFIX}\\\" -DLIBEXEC_INSTALL_DIR=\\\"${LIBEXEC_INSTALL_DIR}\\\"")
+
+macro(KIOFILEWIDGETS_UNIT_TESTS)
+  foreach(_testname ${ARGN})
+    add_executable(${_testname} ${_testname}.cpp)
+    add_test(kiofilewidgets-${_testname} ${_testname})
+    target_link_libraries(${_testname}
+       KIOFileWidgets
+       Qt5::Test
+    )
+    ecm_mark_as_test(${_testname})
+  endforeach()
+endmacro()
+
+kiofilewidgets_unit_tests(
+ kurlnavigatortest
+ kdiroperatortest
+ knewfilemenutest
+ kfileplacesmodeltest
+)
+

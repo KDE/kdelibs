@@ -28,8 +28,6 @@ if(Soprano_FOUND)
 include_directories(${SOPRANO_INCLUDE_DIR})
 endif(Soprano_FOUND)
 
-add_subdirectory(tests)
-
 set(kfile_LIB_SRCS
 )
 

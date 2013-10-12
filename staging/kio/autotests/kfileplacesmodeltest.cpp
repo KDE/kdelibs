@@ -31,10 +31,6 @@
 #include <stdlib.h>
 #include <qstandardpaths.h>
 
-#ifndef TEST_DATA
-    #error "TEST_DATA not set. An XML file describing a computer is required for this test"
-#endif
-
 #ifdef Q_OS_WIN
     //c:\ as root for windows
     #define KDE_ROOT_PATH "C:\\"
@@ -96,7 +92,9 @@ void KFilePlacesModelTest::initTestCase()
     f2.remove();
 
     qRegisterMetaType<QModelIndex>();
-    qputenv("SOLID_FAKEHW", TEST_DATA);
+    const QString fakeHw = QFINDTESTDATA("fakecomputer.xml");
+    QVERIFY(!fakeHw.isEmpty());
+    qputenv("SOLID_FAKEHW", QFile::encodeName(fakeHw));
     m_places = new KFilePlacesModel();
     m_places2 = new KFilePlacesModel();
 }
