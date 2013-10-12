@@ -12,7 +12,7 @@ qt5_generate_dbus_interface(klauncher_adaptor.h org.kde.KLauncher.xml)
 
 kf5_add_kdeinit_executable(klauncher NOGUI ${klauncher_KDEINIT_SRCS})
 set_target_properties(kdeinit_klauncher PROPERTIES DEFINE_SYMBOL MAKE_KLAUNCHER)
-target_link_libraries(kdeinit_klauncher KIOWidgets ${X11_LIBRARIES} KCoreAddons KCrash KI18n KWindowSystem Qt5::DBus)
+target_link_libraries(kdeinit_klauncher KIOWidgets ${X11_LIBRARIES} KCoreAddons KCrash KF5::KI18n KWindowSystem Qt5::DBus)
 
 install(TARGETS kdeinit_klauncher ${INSTALL_TARGETS_DEFAULT_ARGS})
 install(TARGETS klauncher DESTINATION ${LIBEXEC_INSTALL_DIR} )

@@ -75,7 +75,7 @@ target_link_libraries(knewstuff3
     KF5::KCoreAddons
     ${LibAttica_LIBRARIES}
     KF5::KArchive
-    KI18n
+    KF5::KI18n
     ItemViews
     KIconThemes
     KWindowSystem

@@ -220,7 +220,7 @@ target_link_libraries(KDE4Support
    KIOFileWidgets
    kio
    ${KIO_EXTRA_LIBS}
-   KI18n
+   KF5::KI18n
    ${X11_LIBRARIES}
    KCompletion
    KDE4Attic
@@ -258,7 +258,7 @@ endif(NOT KIO_NO_NEPOMUK)
 
 if(NOT KIO_NO_NEPOMUK)
     add_executable(kfilemetadatareader kio/kfilemetadatareaderprocess.cpp)
-    target_link_libraries(kfilemetadatareader ${KDE4_NEPOMUK_LIBRARY} nepomukutils KF5::KCoreAddons KI18n KDE4Support)
+    target_link_libraries(kfilemetadatareader ${KDE4_NEPOMUK_LIBRARY} nepomukutils KF5::KCoreAddons KF5::KI18n KDE4Support)
     install(TARGETS kfilemetadatareader ${INSTALL_TARGETS_DEFAULT_ARGS})
 endif(NOT KIO_NO_NEPOMUK)
 

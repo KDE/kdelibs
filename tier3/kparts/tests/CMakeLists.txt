@@ -1,4 +1,4 @@
-set(PARTS_TEST_LIBRARY_DEPENDENCIES Qt5::Test KParts KCoreAddons KI18n XmlGui KIOCore)
+set(PARTS_TEST_LIBRARY_DEPENDENCIES Qt5::Test KParts KCoreAddons KF5::KI18n XmlGui KIOCore)
 
 set(partstest_SRCS
     parts.cpp

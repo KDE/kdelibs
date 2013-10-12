@@ -65,7 +65,7 @@ target_link_libraries(KService
     KConfigCore
   LINK_PRIVATE
     KCoreAddons
-    KI18n
+    KF5::KI18n
     KDBusAddons   # KDEInitInterface
 )
 

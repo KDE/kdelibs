@@ -23,7 +23,7 @@ target_link_libraries(KCMUtils
     KService        # KService
   LINK_PRIVATE
     KCoreAddons
-    KI18n
+    KF5::KI18n
     KIconThemes     # KIconLoader
     ItemViews       # KWidgetItemDelegate
     XmlGui          # KAboutApplicationDialog

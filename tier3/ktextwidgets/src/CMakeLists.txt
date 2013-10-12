@@ -30,7 +30,7 @@ LINK_PUBLIC
 LINK_PRIVATE
   Qt5::DBus
   SonnetCore
-  KI18n
+  KF5::KI18n
   KWidgetsAddons
   KService
   KConfigCore

@@ -28,7 +28,7 @@ target_link_libraries(kdeinit5 ${kdeinit_LIBS} ${KINIT_SOCKET_LIBRARY}
     KCoreAddons #kcoreaddons_version.h
     KWindowSystem # KStartupInfo
     KCrash # KCrash::loadedByKdeinit
-    KI18n #i18n() used on some error messages
+    KF5::KI18n #i18n() used on some error messages
 )
 
 if (X11_FOUND)

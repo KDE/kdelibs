@@ -18,7 +18,7 @@ add_subdirectory( tests )
 add_executable(makekdewidgets makekdewidgets.cpp)
 ecm_mark_nongui_executable(makekdewidgets)
 
-target_link_libraries(makekdewidgets KConfigCore KF5::KCoreAddons KI18n)
+target_link_libraries(makekdewidgets KConfigCore KF5::KCoreAddons KF5::KI18n)
 
 # "export" this target too so we can use the LOCATION property of the imported target in
 # FindKDE4Internal.cmake to get the full path to the installed executable instead of using FIND_PROGRAM(), Alex
@@ -52,7 +52,7 @@ if(Qt5Designer_FOUND)
 
   add_library(kdewidgets MODULE ${kdewidgets_PART_SRCS})
 
-  target_link_libraries(kdewidgets ${KDE4_KIO_LIBS} KIOFileWidgets ${KPlotting_LIBRARIES} KDE4Attic KDE4Support ${KWidgetsAddons_LIBRARIES} KI18n KIconThemes KTextWidgets ItemViews)
+  target_link_libraries(kdewidgets ${KDE4_KIO_LIBS} KIOFileWidgets ${KPlotting_LIBRARIES} KDE4Attic KDE4Support ${KWidgetsAddons_LIBRARIES} KF5::KI18n KIconThemes KTextWidgets ItemViews)
   if(NOT WIN32)
     set_target_properties(kdewidgets PROPERTIES
                                      INSTALL_RPATH_USE_LINK_PATH TRUE

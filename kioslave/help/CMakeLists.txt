@@ -40,7 +40,7 @@ set(kio_help_PART_SRCS
 
 add_library(kio_help MODULE ${kio_help_PART_SRCS})
 
-target_link_libraries(kio_help KI18n KF5::KArchive kio xslt_kde ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} ${LIBXSLT_EXSLT_LIBRARIES} )
+target_link_libraries(kio_help KF5::KI18n KF5::KArchive kio xslt_kde ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} ${LIBXSLT_EXSLT_LIBRARIES} )
 
 install(TARGETS kio_help  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
@@ -52,7 +52,7 @@ set(kio_ghelp_PART_SRCS kio_help.cpp main_ghelp.cpp xslt_help.cpp)
 
 add_library(kio_ghelp MODULE ${kio_ghelp_PART_SRCS})
 
-target_link_libraries(kio_ghelp KI18n KF5::KArchive kio xslt_kde ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} ${LIBXSLT_EXSLT_LIBRARIES} )
+target_link_libraries(kio_ghelp KF5::KI18n KF5::KArchive kio xslt_kde ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} ${LIBXSLT_EXSLT_LIBRARIES} )
 
 install(TARGETS kio_ghelp  DESTINATION ${PLUGIN_INSTALL_DIR} )
 

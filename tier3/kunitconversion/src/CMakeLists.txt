@@ -49,7 +49,7 @@ add_library(KF5::KUnitConversion ALIAS KUnitConversion)
 target_include_directories(KUnitConversion PUBLIC "$<BUILD_INTERFACE:${KUnitConversion_BINARY_DIR}>")
 target_link_libraries(KUnitConversion LINK_PUBLIC  Qt5::Core
                                       LINK_PRIVATE Qt5::Xml Qt5::Network
-                                                   KI18n #i18n(), ...
+                                                   KF5::KI18n #i18n(), ...
                                                    KConfigCore #only KCurrencyCodePrivate::loadCurrency
 )
 

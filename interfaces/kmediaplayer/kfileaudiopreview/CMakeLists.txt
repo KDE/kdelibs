@@ -15,7 +15,7 @@ target_link_libraries(kfileaudiopreview
    ${KDE4_KIO_LIBS}
    KIOFileWidgets    # KPreviewWidgetBase
    ${PHONON_LIBRARIES}
-   KI18n
+   KF5::KI18n
 )
 
 install(TARGETS kfileaudiopreview  DESTINATION ${PLUGIN_INSTALL_DIR} )

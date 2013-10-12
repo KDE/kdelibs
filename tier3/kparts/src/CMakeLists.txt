@@ -41,7 +41,7 @@ target_link_libraries(KParts LINK_PUBLIC  KIOCore # essential to the technology
                                           XmlGui # essential to the technology
                                           KTextWidgets # needed for KFind, as interface
                              LINK_PRIVATE KIOWidgets #browserextension.cpp uses kurifilter.h
-                                          KI18n #few uses of i18n and i18nc, can be probably stripped down
+                                          KF5::KI18n #few uses of i18n and i18nc, can be probably stripped down
                                           KNotifications #needed by browseropenorsavequestion.cpp
                                           KIconThemes #only used by KPart::iconLoader()
                       )

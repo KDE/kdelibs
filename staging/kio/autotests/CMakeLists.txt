@@ -12,7 +12,7 @@ macro(KIOCORE_UNIT_TESTS)
     add_test(kiocore-${_testname} ${_testname})
     target_link_libraries(${_testname}
        KIOCore
-       KI18n
+       KF5::KI18n
        Qt5::Test
        Qt5::Network
     )

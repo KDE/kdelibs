@@ -31,7 +31,7 @@ target_link_libraries(KNotifyConfig
         LINK_PUBLIC
             Qt5::Widgets
         LINK_PRIVATE
-            KI18n
+            KF5::KI18n
             ${KDE4_KIO_LIBS}
             ${PHONON_LIBS}
             KCoreAddons

@@ -34,7 +34,7 @@ target_link_libraries(KDeclarative
     Qt5::Quick  #QQuickImageProvider
     Qt5::Script #QScriptValue, QScriptEngine (see bindings/*.cpp)
     KConfigCore # KCoreConfigSkeleton, in ConfigPropertyMap
-    KI18n       #i18n bindings
+    KF5::KI18n       #i18n bindings
     KIconThemes #KIconProvider
     KCoreAddons #qscriptnonguibookkeeping.cpp
     KIOCore     #qscriptnonguibookkeeping.cpp

@@ -15,7 +15,7 @@ ftp.cpp
 
 add_library(kio_ftp MODULE ${kio_ftp_PART_SRCS})
 set_target_properties(kio_file PROPERTIES PREFIX "")
-target_link_libraries(kio_ftp Qt5::Network KIOCore KF5::KCoreAddons KI18n)
+target_link_libraries(kio_ftp Qt5::Network KIOCore KF5::KCoreAddons KF5::KI18n)
 
 install(TARGETS kio_ftp  DESTINATION ${PLUGIN_INSTALL_DIR} )
 

@@ -115,7 +115,7 @@ LINK_PUBLIC
  KF5::KCoreAddons   # KJob
  KService
 LINK_PRIVATE
- KI18n
+ KF5::KI18n
  Qt5::Network
  Qt5::Concurrent            # QtConcurrentRun in hostinfo.cpp
  ${KConfig_CORE_LIBRARY}

@@ -97,7 +97,7 @@ target_link_libraries(KIOWidgets
     KWidgetsAddons # keditlistwidget
   LINK_PRIVATE
     Qt5::DBus
-    KI18n
+    KF5::KI18n
     KIconThemes   # KIconLoader
     KWindowSystem # KStartupInfo
     KConfigWidgets # KColorScheme

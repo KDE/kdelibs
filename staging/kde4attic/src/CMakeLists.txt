@@ -97,7 +97,7 @@ target_link_libraries(KDE4Attic
     XmlGui
   LINK_PRIVATE
     Qt5::Concurrent
-    KI18n
+    KF5::KI18n
     KUnitConversion
     KNotifications
     KWindowSystem

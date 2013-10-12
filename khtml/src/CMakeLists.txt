@@ -548,7 +548,7 @@ target_link_libraries(KHtml
   ${X11_LIBRARIES}
   KGuiAddons
   ${KWidgetsAddons_LIBRARIES}
-  KI18n
+  KF5::KI18n
   KWindowSystem
   KWallet
   Qt5::X11Extras
@@ -564,7 +564,7 @@ target_link_libraries(KHtml
 if (KJS_DEBUGGER)
   target_link_libraries(KHtml LINK_PRIVATE ktexteditor)
 endif()
-target_link_libraries(KHtml LINK_PUBLIC KJS kio Qt5::Widgets KI18n KBookmarks KParts)
+target_link_libraries(KHtml LINK_PUBLIC KJS kio Qt5::Widgets KF5::KI18n KBookmarks KParts)
 
 set_target_properties(KHtml PROPERTIES VERSION ${KHTML_VERSION_STRING}
                                        SOVERSION ${KHTML_SOVERSION}
@@ -690,7 +690,7 @@ set(khtmlpart_PART_SRCS khtml_factory.cpp )
 add_library(khtmlpart MODULE ${khtmlpart_PART_SRCS})
 set_target_properties(khtmlpart PROPERTIES PREFIX "${CMAKE_SHARED_LIBRARY_PREFIX}")
 
-target_link_libraries(khtmlpart KHtml XmlGui KTextWidgets KParts KI18n)
+target_link_libraries(khtmlpart KHtml XmlGui KTextWidgets KParts KF5::KI18n)
 
 install(TARGETS khtmlpart  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
@@ -702,7 +702,7 @@ install(TARGETS khtmlpart  DESTINATION ${PLUGIN_INSTALL_DIR} )
 add_library(khtmlimagepart MODULE khtmlimage_init.cpp)
 
 
-target_link_libraries(khtmlimagepart KHtml ${KWidgetsAddons_LIBRARIES} XmlGui KTextWidgets KParts KI18n)
+target_link_libraries(khtmlimagepart KHtml ${KWidgetsAddons_LIBRARIES} XmlGui KTextWidgets KParts KF5::KI18n)
 
 install(TARGETS khtmlimagepart  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
@@ -710,7 +710,7 @@ install(TARGETS khtmlimagepart  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 add_library(khtmladaptorpart MODULE khtmladaptorpart.cpp)
 
-target_link_libraries(khtmladaptorpart KParts KJS KI18n XmlGui)
+target_link_libraries(khtmladaptorpart KParts KJS KF5::KI18n XmlGui)
 
 install(TARGETS khtmladaptorpart DESTINATION ${PLUGIN_INSTALL_DIR} )
 

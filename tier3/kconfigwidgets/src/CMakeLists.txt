@@ -26,7 +26,7 @@ target_link_libraries(KConfigWidgets
     Qt5::DBus # KPasteTextAction talks to Klipper via DBus
     KCoreAddons # KCModule uses KAboutData, KTip uses KRandom
     KGuiAddons # KColorScheme uses KColorUtils
-    KI18n # For action and widget texts
+    KF5::KI18n # For action and widget texts
 )
 
 set_target_properties(KConfigWidgets PROPERTIES VERSION   ${KCONFIGWIDGETS_VERSION_STRING}

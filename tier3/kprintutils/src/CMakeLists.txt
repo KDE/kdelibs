@@ -39,7 +39,7 @@ target_link_libraries(KPrintUtils
   LINK_PRIVATE
     KParts
     KCoreAddons
-    KI18n
+    KF5::KI18n
 )
 set_target_properties(KPrintUtils PROPERTIES
                       VERSION ${GENERIC_LIB_VERSION}

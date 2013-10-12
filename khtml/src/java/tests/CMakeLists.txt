@@ -18,7 +18,7 @@ ecm_mark_as_test(testserver)
 target_link_libraries(testserver
     KParts
     KDE4Support
-    KI18n
+    KF5::KI18n
     XmlGui
     KIconThemes
     KWindowSystem

@@ -17,7 +17,7 @@ ecm_mark_nongui_executable(kcookiejar4)
 target_link_libraries( kcookiejar4
    Qt5::DBus
    KF5::KCoreAddons
-   KI18n
+   KF5::KI18n
    ${KWidgetsAddons_LIBRARIES}
 )
 
@@ -41,7 +41,7 @@ target_link_libraries(kded_kcookiejar
    KWindowSystem
    KCoreAddons
    KDBusAddons
-   KI18n
+   KF5::KI18n
    KWidgetsAddons
 )
 

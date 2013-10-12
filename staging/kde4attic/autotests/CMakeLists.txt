@@ -8,7 +8,7 @@ macro(KDE4ATTIC_TESTS)
         add_executable(${_testname} ${_testname}.cpp)
         add_test(kde4attic-${_testname} ${_testname})
         ecm_mark_as_test(${_testname})
-        target_link_libraries(${_testname} Qt5::Test KDE4Attic KI18n)
+        target_link_libraries(${_testname} Qt5::Test KDE4Attic KF5::KI18n)
     endforeach(_testname)
 endmacro()
 
@@ -32,7 +32,7 @@ set(klocaletest_SRCS klocaletest.cpp ../src/date/kdayperiod.cpp)
 add_executable(klocaletest ${klocaletest_SRCS})
 add_test(kde4attic-klocaletest klocaletest)
 ecm_mark_as_test(klocaletest)
-target_link_libraries(klocaletest Qt5::Test KI18n KDE4Attic)
+target_link_libraries(klocaletest Qt5::Test KF5::KI18n KDE4Attic)
 
 ########### kdatetimeformattertest ###############
 
@@ -41,4 +41,4 @@ set(kdatetimeformattertest_SRCS kdatetimeformattertest.cpp ../src/date/kdatetime
 add_executable(kdatetimeformattertest ${kdatetimeformattertest_SRCS})
 add_test(kde4attic-kdatetimeformattertest kdatetimeformattertest)
 ecm_mark_as_test(kdatetimeformattertest)
-target_link_libraries(kdatetimeformattertest Qt5::Test KI18n KDE4Attic)
+target_link_libraries(kdatetimeformattertest Qt5::Test KF5::KI18n KDE4Attic)

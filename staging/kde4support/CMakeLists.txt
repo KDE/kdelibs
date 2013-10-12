@@ -57,7 +57,7 @@ add_definitions(
 add_executable(kf5-config kde-config.cpp )
 ecm_mark_nongui_executable(kf5-config)
 
-target_link_libraries(kf5-config KF5::KCoreAddons KI18n KConfigCore KDE4Support)
+target_link_libraries(kf5-config KF5::KCoreAddons KF5::KI18n KConfigCore KDE4Support)
 target_include_directories(kf5-config PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/../..")
 
 install(TARGETS kf5-config EXPORT KDE4SupportTargets ${INSTALL_TARGETS_DEFAULT_ARGS} ) # put this for now into the export set KDE4SupportTargets, so that it exists and is not empty

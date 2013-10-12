@@ -100,7 +100,7 @@ LINK_PRIVATE
     Qt5::X11Extras      #QX11Info in kglobalaccel, QX11Info::appTime, appUserTime, setAppUserTime
     KWidgetsAddons
     ItemViews           #KWidgetItemDelegate in KAboutApplicationPersonListDelegate
-    KI18n               #i18n and i18nc in many places
+    KF5::KI18n               #i18n and i18nc in many places
     KIconThemes         #KIconLoader and KIconThemes in KToolBar
     KTextWidgets        #KTextEdit in kbugreport
     KWindowSystem       #KKeyServer in kkeysequencewidget

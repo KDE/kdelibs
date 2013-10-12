@@ -47,7 +47,7 @@ if(NOT MSVC)
     add_executable(khtmltest ${khtmltest_SRCS} )
     ecm_mark_as_test(khtmltest)
     target_link_libraries( khtmltest KHtml XmlGui KTextWidgets KParts )
-    #KJS KI18n
+    #KJS KF5::KI18n
 
     ########### next target ###############
 endif(NOT MSVC)
@@ -57,6 +57,6 @@ set(kencodingdetector_SRCS
     ${KHTML_SOURCE_DIR}/misc/guess_ja.cpp
 )
 kde4_add_unit_test(kencodingdetectortest kencodingdetectortest.cpp ${kencodingdetector_SRCS})
-target_link_libraries(kencodingdetectortest KCodecs KI18n KHtml Qt5::Test)
+target_link_libraries(kencodingdetectortest KCodecs KF5::KI18n KHtml Qt5::Test)
 
 # TODO: ksslkeygentest
