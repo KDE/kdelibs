@@ -4,7 +4,6 @@ find_dependency(Qt5Widgets @QT_REQUIRED_VERSION@)
 find_dependency(KCoreAddons "${PACKAGE_VERSION}")
 
 
-set_and_check(KJobWidgets_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")
 
 include("${CMAKE_CURRENT_LIST_DIR}/KJobWidgetsTargets.cmake")
 

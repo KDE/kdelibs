@@ -2,7 +2,6 @@
 
 find_dependency(Qt5Core @REQUIRED_QT_VERSION@)
 
-set_and_check(KJS_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")
 
 set(KJS_HAVE_PCRE_REGEX "@PCRE_FOUND@")
 

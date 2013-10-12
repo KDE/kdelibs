@@ -2,7 +2,6 @@
 
 # Any changes in this file will be overwritten by CMake.
 
-set_and_check(KStyle_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")
 
 include("${CMAKE_CURRENT_LIST_DIR}/KStyleTargets.cmake")
 

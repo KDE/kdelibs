@@ -2,7 +2,6 @@
 
 find_dependency(Qt5Core @REQUIRED_QT_VERSION@)
 
-set_and_check(KArchive_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")
 
 set(KArchive_HAVE_BZIP2 "@BZIP2_FOUND@")
 set(KArchive_HAVE_LZMA  "@LIBLZMA_FOUND@")
