@@ -2,7 +2,7 @@
 
 find_dependency(Qt5Widgets @REQUIRED_QT_VERSION@)
 find_dependency(KConfigWidgets "${PACKAGE_VERSION}")
-find_dependency(KF5::KI18n "${PACKAGE_VERSION}")
+find_dependency(KI18n "${PACKAGE_VERSION}")
 
 set(KCompletion_INSTALL_PREFIX "@PACKAGE_CMAKE_INSTALL_PREFIX@")
 set_and_check(KCompletion_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")
