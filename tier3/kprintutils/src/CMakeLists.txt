@@ -38,7 +38,7 @@ target_link_libraries(KPrintUtils
     Qt5::PrintSupport
   LINK_PRIVATE
     KParts
-    KCoreAddons
+    KF5::KCoreAddons
     KF5::KI18n
 )
 set_target_properties(KPrintUtils PROPERTIES

@@ -79,7 +79,7 @@ if(NOT KDE_NO_DEPRECATED)
   add_library(klibloadertestmodule MODULE ${klibloadertestmodule_PART_SRCS})
   set_target_properties(klibloadertestmodule PROPERTIES PREFIX "") # remove lib prefix - missing from cmake
 
-  target_link_libraries(klibloadertestmodule KDE4Support KF5::KI18n Qt5::Test KF5::KService KCoreAddons)
+  target_link_libraries(klibloadertestmodule KDE4Support KF5::KI18n Qt5::Test KF5::KService KF5::KCoreAddons)
 
   set_target_properties(klibloadertestmodule PROPERTIES SKIP_BUILD_RPATH FALSE BUILD_WITH_INSTALL_RPATH FALSE)
 endif(NOT KDE_NO_DEPRECATED)
@@ -91,7 +91,7 @@ set(klibloadertestmodule4_PART_SRCS klibloadertest4_module.cpp )
 add_library(klibloadertestmodule4 MODULE ${klibloadertestmodule4_PART_SRCS})
 set_target_properties(klibloadertestmodule4 PROPERTIES PREFIX "") # remove lib prefix - missing from cmake
 
-target_link_libraries(klibloadertestmodule4 KDE4Support KF5::KI18n Qt5::Test KF5::KService KCoreAddons)
+target_link_libraries(klibloadertestmodule4 KDE4Support KF5::KI18n Qt5::Test KF5::KService KF5::KCoreAddons)
 
 set_target_properties(klibloadertestmodule4 PROPERTIES SKIP_BUILD_RPATH FALSE BUILD_WITH_INSTALL_RPATH FALSE)
 

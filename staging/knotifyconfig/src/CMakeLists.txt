@@ -34,7 +34,7 @@ target_link_libraries(KNotifyConfig
             KF5::KI18n
             ${KDE4_KIO_LIBS}
             ${PHONON_LIBS}
-            KCoreAddons
+            KF5::KCoreAddons
             Qt5::DBus)
 
 set_target_properties(KNotifyConfig PROPERTIES

@@ -32,7 +32,7 @@ target_link_libraries(KDESu
   LINK_PUBLIC
     KPty
   LINK_PRIVATE
-    KCoreAddons # KUser::loginName
+    KF5::KCoreAddons # KUser::loginName
     KF5::KService # KToolInvocation::kdeinitExecWait
 )
 

@@ -24,7 +24,7 @@ target_link_libraries(KConfigWidgets
     KAuth # KCModule uses KAuth::Action
   LINK_PRIVATE
     Qt5::DBus # KPasteTextAction talks to Klipper via DBus
-    KCoreAddons # KCModule uses KAboutData, KTip uses KRandom
+    KF5::KCoreAddons # KCModule uses KAboutData, KTip uses KRandom
     KGuiAddons # KColorScheme uses KColorUtils
     KF5::KI18n # For action and widget texts
 )

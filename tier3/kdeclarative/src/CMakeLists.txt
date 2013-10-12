@@ -36,7 +36,7 @@ target_link_libraries(KDeclarative
     KConfigCore # KCoreConfigSkeleton, in ConfigPropertyMap
     KF5::KI18n       #i18n bindings
     KIconThemes #KIconProvider
-    KCoreAddons #qscriptnonguibookkeeping.cpp
+    KF5::KCoreAddons #qscriptnonguibookkeeping.cpp
     KIOCore     #qscriptnonguibookkeeping.cpp
 )
 target_include_directories(KDeclarative PUBLIC "$<BUILD_INTERFACE:${KDeclarative_BINARY_DIR}>")

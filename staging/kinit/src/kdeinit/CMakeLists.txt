@@ -25,7 +25,7 @@ endif (APPLE)
 target_link_libraries(kdeinit5 ${kdeinit_LIBS} ${KINIT_SOCKET_LIBRARY}
     Qt5::Gui #QFont::initialize
     KF5::KService #KLibrary
-    KCoreAddons #kcoreaddons_version.h
+    KF5::KCoreAddons #kcoreaddons_version.h
     KWindowSystem # KStartupInfo
     KCrash # KCrash::loadedByKdeinit
     KF5::KI18n #i18n() used on some error messages

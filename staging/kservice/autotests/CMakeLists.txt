@@ -24,7 +24,7 @@ endmacro(KSERVICE_UNIT_TESTS)
 # the pluginlocatortest
 add_library(fakeplugin MODULE nsaplugin.cpp)
 set_target_properties(fakeplugin PROPERTIES PREFIX "")
-target_link_libraries(fakeplugin KService KCoreAddons)
+target_link_libraries(fakeplugin KService KF5::KCoreAddons)
 
 
 kservice_unit_tests(

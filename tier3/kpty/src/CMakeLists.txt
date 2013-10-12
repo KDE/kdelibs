@@ -12,7 +12,7 @@ include(ConfigureChecks.cmake)
 configure_file(config-pty.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-pty.h )
 
 target_link_libraries(KPty LINK_PUBLIC Qt5::Core
-                                       KCoreAddons # KProcess
+                                       KF5::KCoreAddons # KProcess
                            LINK_PRIVATE
                                 ${UTIL_LIBRARY}
                                 ${UTEMPTER_LIBRARY}

@@ -22,7 +22,7 @@ target_link_libraries(KCMUtils
     KConfigWidgets  # KCModule
     KF5::KService        # KService
   LINK_PRIVATE
-    KCoreAddons
+    KF5::KCoreAddons
     KF5::KI18n
     KIconThemes     # KIconLoader
     ItemViews       # KWidgetItemDelegate
