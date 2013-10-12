@@ -4331,12 +4331,10 @@ void NETWinInfo::update(const unsigned long dirty_props[]) {
 
     if (dirty2 & WM2FrameOverlap) {
         p->frame_overlap = NETStrut();
-        bool ok = false;
         if (XGetWindowProperty(p->display, p->window, kde_net_wm_frame_overlap,
                                0l, 4l, False, XA_CARDINAL, &type_ret, &format_ret,
                                &nitems_ret, &unused, &data_ret) == Success) {
             if (type_ret == XA_CARDINAL && format_ret == 32 && nitems_ret == 4) {
-                ok = true;
                 long *d = (long *) data_ret;
 
                 p->frame_overlap.left   = d[0];
