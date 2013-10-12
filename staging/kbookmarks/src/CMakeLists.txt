@@ -26,7 +26,7 @@ target_link_libraries(KBookmarks LINK_PRIVATE
                                         ${KWidgetsAddons_LIBRARIES}
                                         KConfigWidgets # for KStandardAction
                                         XmlGui # for KActionCollection
-                                        KIconThemes # for SmallIcon
+                                        KF5::KIconThemes # for SmallIcon
 )
 
 set_target_properties(KBookmarks PROPERTIES VERSION   ${KBOOKMARKS_VERSION_STRING}

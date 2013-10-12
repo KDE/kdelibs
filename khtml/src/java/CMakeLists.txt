@@ -19,7 +19,7 @@ set(kjavaappletviewer_PART_SRCS
 
 add_library(kjavaappletviewer MODULE ${kjavaappletviewer_PART_SRCS})
 
-target_link_libraries(kjavaappletviewer Qt5::Network KParts ${KWindowSystem_LIBRARIES} KWidgetsAddons KDE4Support XmlGui KF5::KI18n KIconThemes )
+target_link_libraries(kjavaappletviewer Qt5::Network KParts ${KWindowSystem_LIBRARIES} KWidgetsAddons KDE4Support XmlGui KF5::KI18n KF5::KIconThemes )
 
 install(TARGETS kjavaappletviewer  DESTINATION ${PLUGIN_INSTALL_DIR} )
 

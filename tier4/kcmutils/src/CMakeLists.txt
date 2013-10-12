@@ -24,7 +24,7 @@ target_link_libraries(KCMUtils
   LINK_PRIVATE
     KF5::KCoreAddons
     KF5::KI18n
-    KIconThemes     # KIconLoader
+    KF5::KIconThemes     # KIconLoader
     ItemViews       # KWidgetItemDelegate
     XmlGui          # KAboutApplicationDialog
 )

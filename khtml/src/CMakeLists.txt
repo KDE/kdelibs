@@ -555,7 +555,7 @@ target_link_libraries(KHtml
   Qt5::PrintSupport
   XmlGui
   KTextWidgets
-  KIconThemes
+  KF5::KIconThemes
   KNotifications
   KDE4Support # KComponentData (TODO port to KAboutData
   KBookmarks

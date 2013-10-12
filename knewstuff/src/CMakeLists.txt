@@ -77,7 +77,7 @@ target_link_libraries(knewstuff3
     KF5::KArchive
     KF5::KI18n
     ItemViews
-    KIconThemes
+    KF5::KIconThemes
     KWindowSystem
     KTextWidgets
     XmlGui

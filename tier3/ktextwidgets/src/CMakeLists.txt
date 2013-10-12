@@ -36,7 +36,7 @@ LINK_PRIVATE
   KF5::KConfigCore
   KConfigWidgets
   KWindowSystem
-  KIconThemes
+  KF5::KIconThemes
   KCompletion
 )
 

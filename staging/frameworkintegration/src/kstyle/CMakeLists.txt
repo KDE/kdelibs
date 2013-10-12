@@ -42,7 +42,7 @@ target_link_libraries(KStyle
     Qt5::Widgets
   LINK_PRIVATE
     KConfigWidgets
-    KIconThemes
+    KF5::KIconThemes
 )
 
 set_target_properties(KStyle PROPERTIES VERSION   ${KSTYLE_VERSION_STRING}

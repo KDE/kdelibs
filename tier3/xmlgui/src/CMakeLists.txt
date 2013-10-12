@@ -101,7 +101,7 @@ LINK_PRIVATE
     KWidgetsAddons
     ItemViews           #KWidgetItemDelegate in KAboutApplicationPersonListDelegate
     KF5::KI18n               #i18n and i18nc in many places
-    KIconThemes         #KIconLoader and KIconThemes in KToolBar
+    KF5::KIconThemes         #KIconLoader and KIconThemes in KToolBar
     KTextWidgets        #KTextEdit in kbugreport
     KWindowSystem       #KKeyServer in kkeysequencewidget
     ${XMLGUI_EXTRA_LIBS}

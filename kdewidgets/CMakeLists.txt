@@ -52,7 +52,7 @@ if(Qt5Designer_FOUND)
 
   add_library(kdewidgets MODULE ${kdewidgets_PART_SRCS})
 
-  target_link_libraries(kdewidgets ${KDE4_KIO_LIBS} KIOFileWidgets ${KPlotting_LIBRARIES} KDE4Attic KDE4Support ${KWidgetsAddons_LIBRARIES} KF5::KI18n KIconThemes KTextWidgets ItemViews)
+  target_link_libraries(kdewidgets ${KDE4_KIO_LIBS} KIOFileWidgets ${KPlotting_LIBRARIES} KDE4Attic KDE4Support ${KWidgetsAddons_LIBRARIES} KF5::KI18n KF5::KIconThemes KTextWidgets ItemViews)
   if(NOT WIN32)
     set_target_properties(kdewidgets PROPERTIES
                                      INSTALL_RPATH_USE_LINK_PATH TRUE

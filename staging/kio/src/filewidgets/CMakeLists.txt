@@ -51,7 +51,7 @@ target_link_libraries(KIOFileWidgets
     XmlGui        # for KActionCollection, used by KFileWidget/KDirOperator
     ${Solid_LIBRARIES} # KFilePlacesModel/KFilePlacesView
   LINK_PRIVATE
-    KIconThemes   # KIconLoader
+    KF5::KIconThemes   # KIconLoader
     KF5::KI18n
     ItemViews     # kdirsortfilterproxymodel
 )

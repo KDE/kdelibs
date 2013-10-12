@@ -43,7 +43,7 @@ target_link_libraries(KParts LINK_PUBLIC  KIOCore # essential to the technology
                              LINK_PRIVATE KIOWidgets #browserextension.cpp uses kurifilter.h
                                           KF5::KI18n #few uses of i18n and i18nc, can be probably stripped down
                                           KNotifications #needed by browseropenorsavequestion.cpp
-                                          KIconThemes #only used by KPart::iconLoader()
+                                          KF5::KIconThemes #only used by KPart::iconLoader()
                       )
 
 if(HAVE_NEPOMUK)

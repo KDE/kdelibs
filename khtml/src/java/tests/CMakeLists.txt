@@ -20,7 +20,7 @@ target_link_libraries(testserver
     KDE4Support
     KF5::KI18n
     XmlGui
-    KIconThemes
+    KF5::KIconThemes
     KWindowSystem
     Qt5::Network
 )
