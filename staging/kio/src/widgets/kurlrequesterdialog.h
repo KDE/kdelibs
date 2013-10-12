@@ -28,10 +28,10 @@
 class KUrlRequester;
 class QFileDialog;
 class KUrlRequesterDialogPrivate;
+
 /**
  * Dialog in which a user can enter a filename or url. It is a dialog
- * encapsulating KUrlRequester. The API is derived from
- * KFileDialog.
+ * encapsulating KUrlRequester.
  *
  * @short Simple dialog to enter a filename/url.
  * @author Wilco Greven <greven@kde.org>

@@ -42,9 +42,9 @@
  * static add() method whenever the user opens or saves a new
  * document if you want it to show up in the menu.
  *
- * You don't have to worry about this if you are using any
- * KFileDialog derived class to open and save documents, as it
- * already calls this class.  User defined limits on the maximum
+ * You don't have to worry about this if you are using
+ * QFileDialog to open and save documents, as the KDE implementation
+ * (KFileWidget) already calls this class.  User defined limits on the maximum
  * number of documents to save, etc... are all automatically handled.
  *
  * @author Daniel M. Duley <mosfet@kde.org>

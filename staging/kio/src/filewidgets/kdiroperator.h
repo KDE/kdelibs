@@ -70,7 +70,7 @@ class DeleteJob;
  * from Björn Sahlström <bjorn@kbear.org> until they will be integrated
  * into this library. See http://devel-home.kde.org/~pfeiffer/DnD-classes.tar.gz
  *
- * This widget is the one used in the KFileDialog.
+ * This widget is the one used in the KFileWidget.
  *
  * Basic usage is like this:
  * \code

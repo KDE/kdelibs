@@ -1,22 +1,19 @@
-/** @mainpage The File Selection Dialog
+/** @mainpage File Selection Widgets
 
 @section purpose Purpose
 
-The kfile library provides the file selection dialog and its components.
+The KIOFileWidgets library provides the file selection dialog and its components.
 
 @section desc Description
 
-The file dialog is available to all kde applications by using the KFileDialog class
-from the KIO library. This class doesn't contain the actual implementation of the file
-dialog, however: it dynamically opens the code that contains the implementation.
-The kfile library provides KFileWidget, which is the main widget in the file dialog, as well as
+The file dialog is available to all kde applications by using the QFileDialog class.
+The KDE QPA theme plugin uses a KFileDialog automatically.
+
+The KIOFileWidgets library provides KFileWidget, which is the main widget in the file dialog, as well as
 the KDirOperator widget which contains the file views, and other components of the file dialog.
-Applications only need to link to libkfile if they need direct access to KFileWidget
+Applications only need to link to KIOFileWidgets if they need direct access to KFileWidget
 or KDirOperator or to the other widgets used by the file dialog, either in order to
 modify the behavior of the file dialog, or to reuse its components into the application itself.
-
-Use ${KDE4_KFILE_LIBS} in the target_link_libraries of your CMakeLists.txt
-to link to kfile.
 
 @authors
 Stephan Kulow<br>
@@ -34,6 +31,6 @@ David Faure
 
 */
 
-// DOXYGEN_REFERENCES = kdecore kdeui kio solid
-// DOXYGEN_SET_PROJECT_NAME = KFile
+// DOXYGEN_REFERENCES = KIOCore KIOWidgets
+// DOXYGEN_SET_PROJECT_NAME = KIOFileWidgets
 // vim:ts=4:sw=4:expandtab:filetype=doxygen
