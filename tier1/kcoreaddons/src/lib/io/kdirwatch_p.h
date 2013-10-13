@@ -63,7 +63,7 @@ class QSocketNotifier;
 #define IN_ONLYDIR 0x01000000
 #endif
 
-#endif
+#endif // HAVE_SYS_INOTIFY_H
 
 #include <sys/types.h> // time_t, ino_t
 #include <ctime>
@@ -108,8 +108,8 @@ private:
 };
 #else
 typedef QFileSystemWatcher KFileSystemWatcher;
-#endif
-#endif
+#endif // Q_OS_WIN
+#endif // HAVE_QFILESYSTEMWATCHER
 
 /* KDirWatchPrivate is a singleton and does the watching
  * for every KDirWatch instance in the application.
