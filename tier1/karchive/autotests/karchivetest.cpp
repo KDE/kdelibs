@@ -405,8 +405,8 @@ void KArchiveTest::testCreateTarXXX()
     _str.chop(25); \
     QCOMPARE(_str, expectedDateString); \
 \
-    /* Compare the times separately with allowed 1 sec diversion */ \
-    QVERIFY(dt.secsTo(expectedDateTime) <= 1); \
+    /* Compare the times separately with allowed 2 sec diversion */ \
+    QVERIFY(dt.secsTo(expectedDateTime) <= 2); \
 }
 
 /**
