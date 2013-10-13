@@ -50,20 +50,6 @@ class QSocketNotifier;
 #include <fam.h>
 #endif
 
-#if HAVE_SYS_INOTIFY_H
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/inotify.h>
-
-#ifndef IN_DONT_FOLLOW
-#define IN_DONT_FOLLOW 0x02000000
-#endif
-
-#ifndef IN_ONLYDIR
-#define IN_ONLYDIR 0x01000000
-#endif
-
-#endif // HAVE_SYS_INOTIFY_H
 
 #include <sys/types.h> // time_t, ino_t
 #include <ctime>

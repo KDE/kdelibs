@@ -62,11 +62,26 @@
 #include <stdlib.h>
 #include <string.h>
 
+#if HAVE_SYS_INOTIFY_H
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/inotify.h>
+
+#ifndef IN_DONT_FOLLOW
+#define IN_DONT_FOLLOW 0x02000000
+#endif
+
+#ifndef IN_ONLYDIR
+#define IN_ONLYDIR 0x01000000
+#endif
+
 // debug
 #include <sys/ioctl.h>
 
 
 #include <sys/utsname.h>
+
+#endif // HAVE_SYS_INOTIFY_H
 
 // set this to true for much more verbose debug output
 static const bool s_verboseDebug = false;
