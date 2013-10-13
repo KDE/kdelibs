@@ -29,7 +29,7 @@ SolidExtensionPlugin::SolidExtensionPlugin(QObject *parent)
 {
 }
 
-void SolidExtensionPlugin::registerTypes(const char *uri) Q_DECL_OVERRIDE
+void SolidExtensionPlugin::registerTypes(const char *uri)
 {
     using namespace Solid;
 
