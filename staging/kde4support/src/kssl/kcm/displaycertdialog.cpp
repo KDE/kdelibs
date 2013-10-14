@@ -22,7 +22,7 @@
 #include <QDialogButtonBox>
 #include <QPushButton>
 #include <kstandardguiitem.h>
-
+#include <klocalizedstring.h>
 
 DisplayCertDialog::DisplayCertDialog(QWidget *parent)
  : QDialog(parent),

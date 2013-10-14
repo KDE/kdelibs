@@ -1,5 +1,7 @@
 add_definitions(-DTRANSLATION_DOMAIN="kinit")
 
+include(${CMAKE_SOURCE_DIR}/staging/kinit/KInitMacros.cmake)
+
 configure_file(config-kdeinit.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kdeinit.h)
 include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
 

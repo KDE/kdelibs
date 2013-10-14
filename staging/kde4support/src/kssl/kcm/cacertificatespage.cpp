@@ -22,6 +22,7 @@
 
 #include <kio_ksslcertificatemanager.h>
 #include <kio_ksslcertificatemanager_p.h>
+#include <klocalizedstring.h>
 using namespace KIO;
 
 #include <QDebug>

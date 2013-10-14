@@ -26,7 +26,7 @@
 #include <QVBoxLayout>
 #include <kpluginfactory.h>
 #include <kpluginloader.h>
-
+#include <klocalizedstring.h>
 
 K_PLUGIN_FACTORY(KcmSslFactory, registerPlugin<KcmSsl>();)
 

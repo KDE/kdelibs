@@ -53,11 +53,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules" ${ECM_MODULE_PATH})
 # RPATH handling and test settings.
 find_package(KF5 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 
-include(${CMAKE_SOURCE_DIR}/staging/kinit/KInitMacros.cmake)
-
 add_subdirectory( tier1 )
-
-include(${CMAKE_SOURCE_DIR}/tier1/kconfig/KConfigMacros.cmake)
 
 # tier1/ already builds standalone, so it should not get any include dirs from here.
 
@@ -69,9 +65,7 @@ endif()
 add_subdirectory( tier2 )
 add_subdirectory( tier3 )
 add_subdirectory( tier4 )
-
-
-set(KAuth_LIBRARIES  KAuth)
+add_subdirectory( staging )
 
 ################# write platform profile file which will be installed #################
 include(CreateKDEPlatformProfile.cmake)
@@ -107,22 +101,13 @@ endif(${generatedFileInSourceDir})
 
 add_definitions(${KDE4_DEFINITIONS})
 
-################# configure checks and create the configured files #################
-
-# Needed for the calls to kconfig_add_kcfg_files in some modules
-
-set(KDE4Support_LIBRARIES KDE4Support)
-
 ################# list the subdirectories #################
-find_package(ECM 0.0.9 REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
-find_package(KF5 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 include(CreateKDELibsDependenciesFile.cmake)
 set(CMAKECONFIG_INSTALL_DIR ${LIB_INSTALL_DIR}/cmake/KDELibs4)
 
 add_subdirectory( cmake )
 # For convenience only. Move down/remove and find dependencies with more locality instead.
-add_subdirectory( staging )
 
 add_subdirectory( licenses   )
 add_subdirectory( kio )

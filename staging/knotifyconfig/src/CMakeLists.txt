@@ -32,7 +32,7 @@ target_link_libraries(KNotifyConfig
             Qt5::Widgets
         LINK_PRIVATE
             KF5::KI18n
-            ${KDE4_KIO_LIBS}
+            KF5::KIOWidgets
             ${PHONON_LIBS}
             KF5::KCoreAddons
             Qt5::DBus)

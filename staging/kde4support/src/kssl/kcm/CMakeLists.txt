@@ -2,13 +2,15 @@
 
 set(kcmssl_SRCS kcmssl.cpp cacertificatespage.cpp displaycertdialog.cpp)
 
-kde4_add_ui_files(kcmssl_SRCS cacertificates.ui displaycert.ui)
+#todo: port to include klocalizedstring.h
+qt5_wrap_ui(kcmssl_SRCS cacertificates.ui displaycert.ui)
 
 add_library(kcm_ssl ${kcmssl_SRCS})
 target_link_libraries(kcm_ssl
-   ${KDE4_KIO_LIBS}
+   Qt5::Network
+   KF5::KIOWidgets
    KF5::KCoreAddons
-   KConfigWidgets   # KCModule
+   KF5::KConfigWidgets   # KCModule
    KF5::KI18n
 )
 install(TARGETS kcm_ssl DESTINATION ${PLUGIN_INSTALL_DIR})
