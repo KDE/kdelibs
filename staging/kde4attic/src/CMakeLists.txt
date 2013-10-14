@@ -12,7 +12,6 @@ set(kde4attic_SRCS
   kdatecombobox.cpp
   kdatepicker.cpp
   kdatetable.cpp
-  kdatevalidator.cpp
   kdatetimeedit.cpp
   kdatetimewidget.cpp
   kdatewidget.cpp
@@ -102,6 +101,7 @@ target_link_libraries(KDE4Attic
     KUnitConversion
     KNotifications
     KF5::KWindowSystem
+    KF5::KGuiAddons
     ${kde4attic_OPTIONAL_LIBS}
 )
 
@@ -115,7 +115,6 @@ install(FILES
   kdatecombobox.h
   kdatepicker.h
   kdatetable.h
-  kdatevalidator.h
   kdatetimeedit.h
   kdatetimewidget.h
   kdatewidget.h

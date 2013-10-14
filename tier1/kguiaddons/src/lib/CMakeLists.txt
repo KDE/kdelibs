@@ -4,6 +4,7 @@ set(kguiaddons_LIB_SRCS
  colors/kcolorutils.cpp
  colors/kcolorcollection.cpp
  colors/kcolormimedata.cpp
+ text/kdatevalidator.cpp
  text/kwordwrap.cpp
  fonts/kfontutils.cpp
  util/kiconutils.cpp
@@ -49,6 +50,7 @@ install( FILES
  colors/kcolorutils.h
  colors/kcolorcollection.h
  colors/kcolormimedata.h
+ text/kdatevalidator.h
  text/kwordwrap.h
  fonts/kfontutils.h
  util/kiconutils.h

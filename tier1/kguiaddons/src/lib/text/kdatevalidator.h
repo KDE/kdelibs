@@ -22,14 +22,14 @@
 #ifndef KDATEVALIDATOR_H
 #define KDATEVALIDATOR_H
 
-#include <kde4attic_export.h>
+#include <kguiaddons_export.h>
 
 #include <QValidator>
 
 /**
 * Validates user-entered dates.
 */
-class KDE4ATTIC_EXPORT KDateValidator : public QValidator
+class KGUIADDONS_EXPORT KDateValidator : public QValidator
 {
 public:
     explicit KDateValidator( QObject *parent = 0 );

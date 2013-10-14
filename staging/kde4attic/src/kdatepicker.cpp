@@ -22,7 +22,7 @@
 #include "kdatepicker.h"
 #include "kdatepicker_p.h"
 #include "kdatetable.h"
-#include "kdatevalidator.h"
+#include <kdatevalidator.h>
 
 #include <QApplication>
 #include <QFont>
