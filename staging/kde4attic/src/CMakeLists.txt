@@ -17,6 +17,7 @@ set(kde4attic_SRCS
   kdatewidget.cpp
   kgesture.cpp
   kgesturemap.cpp
+  kpopupframe.cpp
   ktimecombobox.cpp
   ktimezonewidget.cpp
   ksslcertificatemanager.cpp
@@ -119,6 +120,7 @@ install(FILES
   kdatetimewidget.h
   kdatewidget.h
   kgesture.h
+  kpopupframe.h
   ktimecombobox.h
   ktimezonewidget.h
   ktcpsocket.h

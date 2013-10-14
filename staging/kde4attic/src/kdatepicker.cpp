@@ -23,6 +23,7 @@
 #include "kdatepicker_p.h"
 #include "kdatetable.h"
 #include <kdatevalidator.h>
+#include <kpopupframe.h>
 
 #include <QApplication>
 #include <QFont>
