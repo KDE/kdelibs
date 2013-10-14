@@ -48,6 +48,7 @@ namespace Kross {
 
                 delete m_engine;
                 m_engine = new QScriptEngine();
+                m_engine->installTranslatorFunctions();
 
                 // load the Kross QScriptExtensionPlugin plugin that provides
                 // us a bridge between Kross and QtScript. See here plugin.h
