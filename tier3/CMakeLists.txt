@@ -8,6 +8,7 @@ add_subdirectory(kiconthemes)
 add_subdirectory(xmlgui)
 add_subdirectory(kprintutils)
 add_subdirectory(kdeclarative)
+add_subdirectory(kinit)
 
 if(Qt5WebKitWidgets_FOUND)
     add_subdirectory(kdewebkit)
