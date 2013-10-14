@@ -35,19 +35,6 @@ ExampleWidget::ExampleWidget( QWidget *parent )
     setMinimumSize(sizeHint());
 }
 
-
-class Foo: public QDialog
-{
- public:
-   Foo() : QDialog(0) {
-	   setObjectName("foo");
-	   setModal(true);
-	   resize(200,200);
-	   new QLabel("Hello World", this);
-	   show();
-   }
-};
-
 void showResult(int test, int i)
 {
     printf("Test %d. returned %d ", test, i);
