@@ -57,37 +57,7 @@ include(${CMAKE_SOURCE_DIR}/staging/kinit/KInitMacros.cmake)
 
 add_subdirectory( tier1 )
 
-set(ItemModels_LIBRARIES ItemModels)
-
-set(KArchive_LIBRARIES KArchive)
-
-set(KConfig_CORE_LIBRARY KConfigCore)
-set(KConfig_GUI_LIBRARY KConfigGui)
-set(KConfig_LIBRARIES KConfigCore KConfigGui)
-
-set(KConfig_KCFGC_EXECUTABLE kconfig_compiler)
 include(${CMAKE_SOURCE_DIR}/tier1/kconfig/KConfigMacros.cmake)
-
-set(KCoreAddons_LIBRARIES KCoreAddons)
-
-set(KCodecs_LIBRARIES KCodecs)
-
-set(KDBusAddons_LIBRARIES KDBusAddons)
-
-set(KIdleTime_LIBRARIES KIdleTime)
-
-set(KWindowSystem_LIBRARIES KWindowSystem)
-
-set(KWidgetsAddons_LIBRARIES KWidgetsAddons )
-
-set(KPlotting_LIBRARIES KPlotting)
-
-set(Solid_LIBRARIES Solid)
-
-set(Sonnet_SonnetCore_LIBRARY SonnetCore)
-set(Sonnet_SonnetUi_LIBRARY SonnetUi)
-set(Sonnet_LIBRARIES ${Sonnet_SonnetUi_LIBRARY} ${Sonnet_SonnetCore_LIBRARY} )
-
 
 # tier1/ already builds standalone, so it should not get any include dirs from here.
 

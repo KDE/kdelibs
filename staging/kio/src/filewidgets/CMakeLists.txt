@@ -49,7 +49,7 @@ target_link_libraries(KIOFileWidgets
     KIOWidgets
     KBookmarks    # in KFilePlacesModel's API
     XmlGui        # for KActionCollection, used by KFileWidget/KDirOperator
-    ${Solid_LIBRARIES} # KFilePlacesModel/KFilePlacesView
+    KF5::Solid    # KFilePlacesModel/KFilePlacesView
   LINK_PRIVATE
     KF5::KIconThemes   # KIconLoader
     KF5::KI18n

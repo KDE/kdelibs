@@ -115,12 +115,12 @@ LINK_PUBLIC
  KF5::KCoreAddons   # KJob
  KF5::KService
 LINK_PRIVATE
- KF5::KI18n
  Qt5::Network
  Qt5::Concurrent            # QtConcurrentRun in hostinfo.cpp
- ${KConfig_CORE_LIBRARY}
  Qt5::Xml                   # davjob.cpp uses QDom
- ${KDBusAddons_LIBRARIES}   # KDBusConnectionPool
+ KF5::KI18n
+ KF5::KConfigCore
+ KF5::KDBusAddons           # KDBusConnectionPool
 )
 
 if(ACL_FOUND)

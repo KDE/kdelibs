@@ -542,7 +542,7 @@ target_link_libraries(KHtml
   ${PHONON_LIBRARIES}
   KF5::KJS
   KArchive
-  ${Sonnet_SonnetCore_LIBRARY}
+  KF5::SonnetCore
   ${JPEG_LIBRARIES}
   ${GIF_LIBRARIES}
   ${PNG_LIBRARIES}
