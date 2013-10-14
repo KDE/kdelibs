@@ -15,7 +15,6 @@ kde4attic_executable_tests(
   kcharselecttest
   kdatepicktest
   kdatetabletest
-  kdatetimeedittest
   kdatetimewidgettest
   kdatewidgettest
 )
