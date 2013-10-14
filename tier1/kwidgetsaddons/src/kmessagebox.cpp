@@ -884,7 +884,7 @@ ButtonCode warningYesNoCancelList(QWidget *parent, const QString &text,
                                     const QString &dontAskAgainName,
                                     Options options)
 {
-    return warningYesNoCancelList(new QDialog(parent), text, strlist, caption, buttonYes, buttonNo, buttonCancel,
+    return warningYesNoCancelListInternal(new QDialog(parent), text, strlist, caption, buttonYes, buttonNo, buttonCancel,
         dontAskAgainName, options);
 }
 
