@@ -147,9 +147,8 @@ public:
      *
      * Never returns 0. This method creates the file dialog on demand.
      *
-     * Important: in "Directory only" mode, a KDirSelectDialog is used
-     * instead, so calling this method is useless.
-     * @deprecated since 5.0
+     * @deprecated since 5.0. The dialog will be created anyway when the user
+     * requests it, and will behave according to the properties of KUrlRequester.
      */
 #ifndef KDE_NO_DEPRECATED
     virtual KIOWIDGETS_DEPRECATED QFileDialog *fileDialog() const;
