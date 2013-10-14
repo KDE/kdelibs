@@ -82,20 +82,12 @@ KPasswordDialog::~KPasswordDialog()
 
 void KPasswordDialog::KPasswordDialogPrivate::updateFields()
 {
-    if (q->anonymousMode())
-    {
-        ui.userEdit->setEnabled( false );
-        ui.domainEdit->setEnabled( false );
-        ui.passEdit->setEnabled( false );
-    	ui.keepCheckBox->setEnabled( false );
+    if (m_flags & KPasswordDialog::UsernameReadOnly) {
+        ui.userEdit->setReadOnly(true);
+        ui.credentialsGroup->setFocusProxy(ui.passEdit);
     }
-    else
-    {
-        ui.userEdit->setEnabled(!( m_flags & KPasswordDialog::UsernameReadOnly ));
-        ui.domainEdit->setEnabled(!( m_flags & KPasswordDialog::DomainReadOnly ));
-        ui.passEdit->setEnabled( true );
-    	ui.keepCheckBox->setEnabled( true );
-    }
+    ui.domainEdit->setReadOnly(( m_flags & KPasswordDialog::DomainReadOnly ));
+    ui.credentialsGroup->setEnabled( !q->anonymousMode() );
 }
 
 void KPasswordDialog::KPasswordDialogPrivate::init()
@@ -106,6 +98,7 @@ void KPasswordDialog::KPasswordDialogPrivate::init()
     // Row 4: Username field
     if ( m_flags & KPasswordDialog::ShowUsernameLine ) {
         ui.userEdit->setFocus();
+        ui.credentialsGroup->setFocusProxy( ui.userEdit );
         QObject::connect( ui.userEdit, SIGNAL(returnPressed()), ui.passEdit, SLOT(setFocus()) );
     } else {
         ui.userNameLabel->hide();
@@ -113,15 +106,13 @@ void KPasswordDialog::KPasswordDialogPrivate::init()
         ui.domainLabel->hide();
         ui.domainEdit->hide();
         ui.passEdit->setFocus();
+        ui.credentialsGroup->setFocusProxy( ui.passEdit );
     }
 
     if ( !( m_flags & KPasswordDialog::ShowAnonymousLoginCheckBox ) )
     {
-        ui.anonymousCheckBox->hide();
-    }
-    else
-    {
-        QObject::connect( ui.anonymousCheckBox, SIGNAL(stateChanged(int)), q, SLOT(updateFields()) );
+        ui.anonymousRadioButton->hide();
+        ui.usePasswordButton->hide();
     }
 
     if ( !( m_flags & KPasswordDialog::ShowDomainLine ) )
@@ -200,12 +191,21 @@ QString KPasswordDialog::domain() const
 
 void KPasswordDialog::setAnonymousMode(bool anonymous)
 {
-    d->ui.anonymousCheckBox->setChecked( anonymous );
+    if (anonymous && !(d->m_flags & KPasswordDialog::ShowAnonymousLoginCheckBox)) {
+        // This is an error case, but we can at least let user see what's about
+        // to happen if they proceed.
+        d->ui.anonymousRadioButton->setVisible( true );
+
+        d->ui.usePasswordButton->setVisible( true );
+        d->ui.usePasswordButton->setEnabled( false );
+    }
+
+    d->ui.anonymousRadioButton->setChecked( anonymous );
 }
 
 bool KPasswordDialog::anonymousMode() const
 {
-    return d->ui.anonymousCheckBox->isChecked();
+    return d->ui.anonymousRadioButton->isChecked();
 }
 
 
@@ -342,17 +342,19 @@ void KPasswordDialog::setKnownLogins( const QMap<QString, QString>& knownLogins 
 
     Q_ASSERT( !d->ui.userEdit->isReadOnly() );
     if ( !d->userEditCombo ) {
+        int row = -1;
+        QFormLayout::ItemRole userEditRole = QFormLayout::FieldRole;
+
+        d->ui.formLayout->getWidgetPosition(d->ui.userEdit, &row, &userEditRole);
         d->ui.formLayout->removeWidget(d->ui.userEdit);
         delete d->ui.userEdit;
-        d->userEditCombo = new KComboBox( true, mainWidget() );
+        d->userEditCombo = new KComboBox( true, d->ui.credentialsGroup );
         d->ui.userEdit = d->userEditCombo->lineEdit();
-//        QSize s = d->userEditCombo->sizeHint();
-//        d->ui.userEditCombo->setFixedHeight( s.height() );
-//        d->ui.userEditCombo->setMinimumWidth( s.width() );
         d->ui.userNameLabel->setBuddy( d->userEditCombo );
-        d->ui.formLayout->setWidget( d->commentRow, QFormLayout::FieldRole, d->userEditCombo );
-        setTabOrder( d->ui.userEdit, d->ui.anonymousCheckBox );
-        setTabOrder( d->ui.anonymousCheckBox, d->ui.domainEdit );
+        d->ui.formLayout->setWidget( row > -1 ? row : 0, userEditRole, d->userEditCombo );
+
+        setTabOrder( d->ui.userEdit, d->ui.anonymousRadioButton );
+        setTabOrder( d->ui.anonymousRadioButton, d->ui.domainEdit );
         setTabOrder( d->ui.domainEdit, d->ui.passEdit );
         setTabOrder( d->ui.passEdit, d->ui.keepCheckBox );
         connect( d->ui.userEdit, SIGNAL(returnPressed()), d->ui.passEdit, SLOT(setFocus()) );
