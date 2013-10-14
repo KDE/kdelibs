@@ -21,32 +21,18 @@
 
 #include "kdatetable.h"
 
-#include <kconfig.h>
 #include <kcolorscheme.h>
-#include <knotification.h>
 #include <kcalendarsystem.h>
 #include <klocalizeddate.h>
-#include <kstandardshortcut.h>
-#include "kdatepicker.h"
-#include "kactioncollection.h"
 
 #include <QAction>
-#include <QDebug>
 #include <QFontDatabase>
-#include <QtCore/QDate>
-#include <QtCore/QCharRef>
-#include <QPen>
-#include <QDesktopWidget>
 #include <QPainter>
 #include <QStyle>
 #include <QStyleOptionViewItem>
-#include <QDialog>
 #include <QActionEvent>
-#include <QFontDatabase>
-#include <QtCore/QHash>
 #include <QApplication>
 #include <QMenu>
-#include <assert.h>
 
 #include <cmath>
 
@@ -163,37 +149,41 @@ void KDateTable::initWidget( const QDate &date )
 
 void KDateTable::initAccels()
 {
-    KActionCollection * localCollection = new KActionCollection( this );
-
-    QAction* next = localCollection->addAction( QLatin1String( "next" ) );
-    next->setShortcuts( KStandardShortcut::next() );
+    QAction* next = new QAction(this);
+    next->setObjectName( QLatin1String( "next" ) );
+    next->setShortcuts( QKeySequence::keyBindings(QKeySequence::Forward) );
+    next->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     connect( next, SIGNAL(triggered(bool)), SLOT(nextMonth()) );
 
-    QAction* prior = localCollection->addAction( QLatin1String( "prior" ) );
-    prior->setShortcuts( KStandardShortcut::prior() );
+    QAction* prior = new QAction(this);
+    prior->setObjectName( QLatin1String( "prior" ) );
+    prior->setShortcuts( QKeySequence::keyBindings(QKeySequence::Back) );
+    prior->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     connect( prior, SIGNAL(triggered(bool)), SLOT(previousMonth()) );
 
-    QAction* beginMonth = localCollection->addAction( QLatin1String( "beginMonth" ) );
-    beginMonth->setShortcuts( KStandardShortcut::begin() );
+    QAction* beginMonth = new QAction(this);
+    beginMonth->setObjectName( QLatin1String( "beginMonth" ) );
+    beginMonth->setShortcuts( QKeySequence::keyBindings(QKeySequence::MoveToStartOfDocument) );
+    beginMonth->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     connect( beginMonth, SIGNAL(triggered(bool)), SLOT(beginningOfMonth()) );
 
-    QAction* endMonth = localCollection->addAction( QLatin1String( "endMonth" ) );
-    endMonth->setShortcuts( KStandardShortcut::end() );
+    QAction* endMonth = new QAction(this);
+    endMonth->setObjectName( QLatin1String( "endMonth" ) );
+    endMonth->setShortcuts( QKeySequence::keyBindings(QKeySequence::MoveToEndOfDocument) );
+    endMonth->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     connect( endMonth, SIGNAL(triggered(bool)), SLOT(endOfMonth()) );
 
-    QAction* beginWeek = localCollection->addAction( QLatin1String( "beginWeek" ) );
-    beginWeek->setShortcuts( KStandardShortcut::beginningOfLine() );
+    QAction* beginWeek = new QAction(this);
+    beginWeek->setObjectName( QLatin1String( "beginWeek" ) );
+    beginWeek->setShortcuts( QKeySequence::keyBindings(QKeySequence::MoveToStartOfLine) );
+    beginWeek->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     connect( beginWeek, SIGNAL(triggered(bool)), SLOT(beginningOfWeek()) );
 
-    QAction* endWeek = localCollection->addAction( "endWeek" );
-    endWeek->setShortcuts( KStandardShortcut::endOfLine() );
+    QAction* endWeek = new QAction(this);
+    endWeek->setObjectName( "endWeek" );
+    endWeek->setShortcuts( QKeySequence::keyBindings(QKeySequence::MoveToEndOfLine) );
+    endWeek->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     connect( endWeek, SIGNAL(triggered(bool)), SLOT(endOfWeek()) );
-
-    localCollection->readSettings();
-    localCollection->addAssociatedWidget( this );
-    foreach (QAction* action, localCollection->actions()) {
-        action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    }
 }
 
 int KDateTable::posFromDate( const QDate &date )
@@ -516,7 +506,7 @@ void KDateTable::keyPressEvent( QKeyEvent *e )
         break;
     default:
         if ( !e->modifiers() ) { // hm
-            KNotification::beep();
+            QApplication::beep();
         }
     }
 }
@@ -588,7 +578,7 @@ void KDateTable::mousePressEvent( QMouseEvent *e )
     }
 
     if( !isEnabled() ) {
-        KNotification::beep();
+        QApplication::beep();
         return;
     }
 
