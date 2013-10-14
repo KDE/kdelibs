@@ -172,6 +172,7 @@ set(kjs_LIB_SRCS
 
 
 add_library(KJS ${kjs_LIB_SRCS})
+add_library(KF5::KJS ALIAS KJS)
 
 set(kjs_INCLUDES
   ${CMAKE_CURRENT_BINARY_DIR}/..

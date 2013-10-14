@@ -540,7 +540,7 @@ target_link_libraries(KHtml
   LINK_PRIVATE
   KParts
   ${PHONON_LIBRARIES}
-  KJS
+  KF5::KJS
   KArchive
   ${Sonnet_SonnetCore_LIBRARY}
   ${JPEG_LIBRARIES}
@@ -564,7 +564,7 @@ target_link_libraries(KHtml
 if (KJS_DEBUGGER)
   target_link_libraries(KHtml LINK_PRIVATE ktexteditor)
 endif()
-target_link_libraries(KHtml LINK_PUBLIC KJS kio Qt5::Widgets KF5::KI18n KBookmarks KParts)
+target_link_libraries(KHtml LINK_PUBLIC kio Qt5::Widgets KF5::KJS KF5::KI18n KF5::KBookmarks KF5::KParts)
 
 set_target_properties(KHtml PROPERTIES VERSION ${KHTML_VERSION_STRING}
                                        SOVERSION ${KHTML_SOVERSION}
@@ -710,7 +710,7 @@ install(TARGETS khtmlimagepart  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 add_library(khtmladaptorpart MODULE khtmladaptorpart.cpp)
 
-target_link_libraries(khtmladaptorpart KParts KJS KF5::KI18n XmlGui)
+target_link_libraries(khtmladaptorpart KParts KF5::KJS KF5::KI18n XmlGui)
 
 install(TARGETS khtmladaptorpart DESTINATION ${PLUGIN_INSTALL_DIR} )
 
