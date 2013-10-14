@@ -8,6 +8,7 @@ set(kwidgetsaddons_SRCS
   kfontaction.cpp
   fonthelpers.cpp
   kfontsizeaction.cpp
+  kpopupframe.cpp
   kselectaction.cpp
   kdragwidgetdecorator.cpp
   kdualaction.cpp
@@ -100,6 +101,7 @@ install(FILES
   kmessagebox.h
   kmessageboxdontaskagaininterface.h
   kmultitabbar.h
+  kpopupframe.h
   kselectaction.h
   kstandardguiitem.h
   kurllabel.h

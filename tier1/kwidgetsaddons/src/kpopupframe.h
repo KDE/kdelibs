@@ -22,7 +22,7 @@
 #ifndef KPOPUPFRAME_H
 #define KPOPUPFRAME_H
 
-#include <kde4attic_export.h>
+#include <kwidgetsaddons_export.h>
 
 #include <QFrame>
 
@@ -30,7 +30,7 @@
  * Frame with popup menu behavior.
  * @author Tim Gilman, Mirko Boehm
  */
-class KDE4ATTIC_EXPORT KPopupFrame : public QFrame
+class KWIDGETSADDONS_EXPORT KPopupFrame : public QFrame
 {
     Q_OBJECT
 protected:
