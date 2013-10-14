@@ -333,8 +333,7 @@ have to find an alternative</li>
     <li>The remainder of the methods are now in kmessagebox.h from kwidgetsaddons
         <ul>
             <li>setDontShowAskAgainConfig was renamed to setDontShowAgainConfig</li>
-            <li>NOTE1: KMessageBox no longer uses notifications</li>
-            <li>NOTE2: Too long messages no longer trigger KSqueezedTextLabel usage. This is a temporary measure, though, to avoid dependencies on kdeui.</li>
+            <li>NOTE: KMessageBox no longer uses notifications</li>
         </ul>
     </li>
     <li>KMessageBox methods now return enums instead of ints. While code using int will continue to build, you are encouraged to switch to enums for better type safety.</li>

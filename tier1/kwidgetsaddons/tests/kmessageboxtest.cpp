@@ -220,6 +220,16 @@ bool testMessageBox(int test)
         KMessageBox::informationList(0, "The follwoing words have been found:", list, QString(), "Search_Words");
         break;
 
+    case 25: {
+        i = KMessageBox::Ok;
+        QString msg;
+        for (int j = 0; j < 200; ++j) {
+            msg.append("LongMessageWithoutAnyBreaksShouldAppearSqueezed.");
+        }
+        KMessageBox::sorry(0, msg);
+        break;
+    }
+
     default:
         return false; // done
     } // Switch

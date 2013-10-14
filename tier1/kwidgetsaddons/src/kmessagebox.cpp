@@ -285,18 +285,14 @@ QDialogButtonBox::StandardButton createKMessageBox(QDialog *dialog, QDialogButto
     if (messageLabel->sizeHint().width() > desktop.width() * 0.5) {
         // enable automatic wrapping of messages which are longer than 50% of screen width
         messageLabel->setWordWrap(true);
-#pragma message("KDE5 TODO: reactivate the code below once KSqueezedTextLabel would also get splitted")
-#if 0
-        // display a text widget with scrollbar if still too wide
+        // use a squeezed label if text is still too wide
         usingSqueezedTextLabel = messageLabel->sizeHint().width() > desktop.width() * 0.85;
-        if (usingSqueezedTextLabel)
-        {
+        if (usingSqueezedTextLabel) {
             delete messageLabel;
             messageLabel = new KSqueezedTextLabel(text, mainWidget);
             messageLabel->setOpenExternalLinks(options & KMessageBox::AllowLink);
             messageLabel->setTextInteractionFlags(flags);
         }
-#endif
     }
 
     QPalette messagePal(messageLabel->palette());
