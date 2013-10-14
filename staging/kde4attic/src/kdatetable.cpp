@@ -199,49 +199,6 @@ KPopupFrame::KPopupFramePrivate::~KPopupFramePrivate()
 }
 
 
-class KDateValidator::KDateValidatorPrivate
-{
-public:
-    KDateValidatorPrivate( KDateValidator *q ): q( q )
-    {
-    }
-
-    ~KDateValidatorPrivate()
-    {
-    }
-
-    KDateValidator *q;
-};
-
-KDateValidator::KDateValidator( QWidget *parent ) : QValidator( parent ), d( 0 )
-{
-}
-
-QValidator::State KDateValidator::validate( QString &text, int &unused ) const
-{
-    Q_UNUSED( unused );
-
-    QDate temp;
-    // ----- everything is tested in date():
-    return date( text, temp );
-}
-
-QValidator::State KDateValidator::date( const QString &text, QDate &d ) const
-{
-    //FIXME This is wrong if the widget is not using the global!
-    QDate tmp = KLocale::global()->readDate( text );
-    if ( KLocale::global()->calendar()->isValid( tmp ) ) {
-        d = tmp;
-        return Acceptable;
-    } else {
-        return QValidator::Intermediate;
-    }
-}
-
-void KDateValidator::fixup( QString& ) const
-{
-}
-
 KDateTable::KDateTable( const QDate& date, QWidget* parent )
            : QWidget( parent ),
              d( new KDateTablePrivate( this ) )

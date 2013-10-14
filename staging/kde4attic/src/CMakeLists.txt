@@ -12,6 +12,7 @@ set(kde4attic_SRCS
   kdatecombobox.cpp
   kdatepicker.cpp
   kdatetable.cpp
+  kdatevalidator.cpp
   kdatetimeedit.cpp
   kdatetimewidget.cpp
   kdatewidget.cpp
@@ -114,6 +115,7 @@ install(FILES
   kdatecombobox.h
   kdatepicker.h
   kdatetable.h
+  kdatevalidator.h
   kdatetimeedit.h
   kdatetimewidget.h
   kdatewidget.h

@@ -24,7 +24,6 @@
 
 #include <kde4attic_export.h>
 
-#include <QValidator>
 #include <QLineEdit>
 #include <QtCore/QDateTime>
 
@@ -104,22 +103,6 @@ private:
     KPopupFramePrivate * const d;
 
     Q_DISABLE_COPY( KPopupFrame )
-};
-
-/**
-* Validates user-entered dates.
-*/
-class KDE4ATTIC_EXPORT KDateValidator : public QValidator
-{
-public:
-    KDateValidator( QWidget *parent = 0 );
-    virtual State validate( QString &text, int &e ) const;
-    virtual void fixup ( QString &input ) const;
-    State date( const QString &text, QDate &date ) const;
-private:
-    class KDateValidatorPrivate;
-    friend class KDateValidatorPrivate;
-    KDateValidatorPrivate * const d;
 };
 
 /**
