@@ -12,6 +12,7 @@ set(kiofilewidgets_SRCS
   kdiroperator.cpp
   kdiroperatordetailview.cpp
   kdirsortfilterproxymodel.cpp #used in combination with kdirmodel.cpp
+  kencodingfiledialog.cpp
   kfilebookmarkhandler.cpp
   kfilefiltercombo.cpp
   kfiletreeview.cpp
@@ -74,6 +75,7 @@ install( FILES
 
   kdiroperator.h
   kdirsortfilterproxymodel.h
+  kencodingfiledialog.h
   kfilefiltercombo.h
   kfileplacesmodel.h
   kfileplacesview.h

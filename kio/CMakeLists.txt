@@ -72,7 +72,6 @@ if(UNIX)
 endif(UNIX)
 
 set(kfile_STAT_SRCS
-  kfile/kencodingfiledialog.cpp
   kfile/kfiledialog.cpp
 )
 
@@ -158,7 +157,6 @@ install(  FILES
 install( FILES
   kio/kdbusservicestarter.h
   kio/kimageio.h
-  kfile/kencodingfiledialog.h
   kfile/kfiledialog.h
   kfile/kpropsdialog.h
 
