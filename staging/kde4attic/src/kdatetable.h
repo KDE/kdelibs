@@ -28,7 +28,6 @@
 #include <QtCore/QDateTime>
 
 class QMenu;
-class KColorScheme;
 
 /**
  * Date selection table.
@@ -188,7 +187,7 @@ private:
 
     void initWidget( const QDate &date );
     void initAccels();
-    void paintCell( QPainter *painter, int row, int col, const KColorScheme &colorScheme );
+    void paintCell( QPainter *painter, int row, int col );
 
     Q_DISABLE_COPY( KDateTable )
 };

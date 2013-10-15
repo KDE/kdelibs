@@ -21,8 +21,6 @@
 
 #include "kdatetable.h"
 
-#include <kcolorscheme.h>
-
 #include <QAction>
 #include <QFontDatabase>
 #include <QPainter>
@@ -211,7 +209,6 @@ QDate KDateTable::dateFromPos( int position )
 void KDateTable::paintEvent( QPaintEvent *e )
 {
     QPainter p( this );
-    KColorScheme colorScheme(palette().currentColorGroup(), KColorScheme::View);
     const QRect &rectToUpdate = e->rect();
     double cellWidth = width() / ( double ) d->m_numDayColumns;
     double cellHeight = height() / ( double ) d->m_numWeekRows;
@@ -228,7 +225,7 @@ void KDateTable::paintEvent( QPaintEvent *e )
     }
     for ( int i = leftCol; i <= rightCol; ++i ) {
         for ( int j = topRow; j <= bottomRow; ++j ) {
-            paintCell( &p, j, i, colorScheme );
+            paintCell( &p, j, i );
             p.translate( 0, cellHeight );
         }
         if ( layoutDirection() == Qt::RightToLeft ) {
@@ -240,7 +237,7 @@ void KDateTable::paintEvent( QPaintEvent *e )
     }
 }
 
-void KDateTable::paintCell( QPainter *painter, int row, int col, const KColorScheme &colorScheme )
+void KDateTable::paintCell( QPainter *painter, int row, int col )
 {
     double w = ( width() / ( double ) d->m_numDayColumns ) - 1;
     double h = ( height() / ( double ) d->m_numWeekRows ) - 1;
@@ -285,8 +282,7 @@ void KDateTable::paintCell( QPainter *painter, int row, int col, const KColorSch
         if ( workingDay ) {
             cellTextColor = palette().color(QPalette::WindowText);
         } else {
-            KColorScheme colorScheme(palette().currentColorGroup(), KColorScheme::Window);
-            cellTextColor = colorScheme.foreground(KColorScheme::NegativeText).color();
+            cellTextColor = Qt::darkRed;
         }
         cellBackgroundColor = palette().color(QPalette::Window);
 
@@ -316,7 +312,7 @@ void KDateTable::paintCell( QPainter *painter, int row, int col, const KColorSch
             // ° painting a day of the previous month or
             // ° painting a day of the following month or
             cellBackgroundColor = palette().color(backgroundRole());
-            cellTextColor = colorScheme.foreground(KColorScheme::InactiveText).color();
+            cellTextColor = palette().color(QPalette::Disabled, QPalette::Text);
         } else {
             //Paint a day of the current month
 
@@ -350,7 +346,7 @@ void KDateTable::paintCell( QPainter *painter, int row, int col, const KColorSch
             // If we are drawing the current date, then draw it bold and active
             if ( currentDay ) {
                 cellFont.setBold( true );
-                cellTextColor = colorScheme.foreground(KColorScheme::ActiveText).color();
+                cellTextColor = palette().color(QPalette::LinkVisited);
             }
 
             // if we are drawing the day cell currently selected in the table
@@ -372,9 +368,7 @@ void KDateTable::paintCell( QPainter *painter, int row, int col, const KColorSch
 
             //If the cell day is the day of religious observance, then always color text red unless Custom overrides
             if ( ! customDay && dayOfPray ) {
-                KColorScheme colorScheme(palette().currentColorGroup(),
-                                         selectedDay ? KColorScheme::Selection : KColorScheme::View);
-                cellTextColor = colorScheme.foreground(KColorScheme::NegativeText).color();
+                cellTextColor = Qt::darkRed;
             }
 
         }
