@@ -25,7 +25,6 @@
 
 #include "klocale.h"
 #include "klocalizedstring.h"
-#include "kcombobox.h"
 #include "kmessagebox.h"
 
 class KTimeComboBoxPrivate
@@ -277,7 +276,7 @@ void KTimeComboBoxPrivate::warnTime()
 }
 
 KTimeComboBox::KTimeComboBox(QWidget *parent)
-              :KComboBox(parent),
+              :QComboBox(parent),
                d(new KTimeComboBoxPrivate(this))
 {
     setEditable(true);
@@ -472,7 +471,7 @@ void KTimeComboBox::setTimeList(QList<QTime> timeList,
 
 bool KTimeComboBox::eventFilter(QObject *object, QEvent *event)
 {
-    return KComboBox::eventFilter(object, event);
+    return QComboBox::eventFilter(object, event);
 }
 
 void KTimeComboBox::keyPressEvent(QKeyEvent *keyEvent)
@@ -492,7 +491,7 @@ void KTimeComboBox::keyPressEvent(QKeyEvent *keyEvent)
         temp = d->m_time.addSecs(3600);
         break;
     default:
-        KComboBox::keyPressEvent(keyEvent);
+        QComboBox::keyPressEvent(keyEvent);
         return;
     }
     if (temp.isValid() && temp >= d->m_minTime && temp <= d->m_maxTime) {
@@ -504,37 +503,37 @@ void KTimeComboBox::focusOutEvent(QFocusEvent *event)
 {
     d->parseTime();
     d->warnTime();
-    KComboBox::focusOutEvent(event);
+    QComboBox::focusOutEvent(event);
 }
 
 void KTimeComboBox::showPopup()
 {
-    KComboBox::showPopup();
+    QComboBox::showPopup();
 }
 
 void KTimeComboBox::hidePopup()
 {
-    KComboBox::hidePopup();
+    QComboBox::hidePopup();
 }
 
 void KTimeComboBox::mousePressEvent(QMouseEvent *event)
 {
-    KComboBox::mousePressEvent(event);
+    QComboBox::mousePressEvent(event);
 }
 
 void KTimeComboBox::wheelEvent(QWheelEvent *event)
 {
-    KComboBox::wheelEvent(event);
+    QComboBox::wheelEvent(event);
 }
 
 void KTimeComboBox::focusInEvent(QFocusEvent *event)
 {
-    KComboBox::focusInEvent(event);
+    QComboBox::focusInEvent(event);
 }
 
 void KTimeComboBox::resizeEvent(QResizeEvent *event)
 {
-    KComboBox::resizeEvent(event);
+    QComboBox::resizeEvent(event);
 }
 
 #include "moc_ktimecombobox.cpp"

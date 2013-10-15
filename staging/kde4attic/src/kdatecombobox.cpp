@@ -32,7 +32,6 @@
 #include "klocale.h"
 #include "klocalizedstring.h"
 #include "klocalizeddate.h"
-#include "kcombobox.h"
 #include "kdatepicker.h"
 #include "kmessagebox.h"
 
@@ -278,7 +277,7 @@ void KDateComboBoxPrivate::warnDate()
 
 
 KDateComboBox::KDateComboBox(QWidget *parent)
-              :KComboBox(parent),
+              :QComboBox(parent),
                d(new KDateComboBoxPrivate(this))
 {
     setEditable(true);
@@ -463,7 +462,7 @@ void KDateComboBox::setDateMap(QMap<QDate, QString> dateMap)
 
 bool KDateComboBox::eventFilter(QObject *object, QEvent *event)
 {
-    return KComboBox::eventFilter(object, event);
+    return QComboBox::eventFilter(object, event);
 }
 
 void KDateComboBox::keyPressEvent(QKeyEvent *keyEvent)
@@ -483,7 +482,7 @@ void KDateComboBox::keyPressEvent(QKeyEvent *keyEvent)
         temp = d->m_date.addMonths(1).date();
         break;
     default:
-        KComboBox::keyPressEvent(keyEvent);
+        QComboBox::keyPressEvent(keyEvent);
         return;
     }
     if (temp.isValid() && temp >= d->m_minDate && temp <= d->m_maxDate) {
@@ -495,7 +494,7 @@ void KDateComboBox::focusOutEvent(QFocusEvent *event)
 {
     d->parseDate();
     d->warnDate();
-    KComboBox::focusOutEvent(event);
+    QComboBox::focusOutEvent(event);
 }
 
 void KDateComboBox::showPopup()
@@ -539,27 +538,27 @@ void KDateComboBox::showPopup()
 
 void KDateComboBox::hidePopup()
 {
-    KComboBox::hidePopup();
+    QComboBox::hidePopup();
 }
 
 void KDateComboBox::mousePressEvent(QMouseEvent *event)
 {
-    KComboBox::mousePressEvent(event);
+    QComboBox::mousePressEvent(event);
 }
 
 void KDateComboBox::wheelEvent(QWheelEvent *event)
 {
-    KComboBox::wheelEvent(event);
+    QComboBox::wheelEvent(event);
 }
 
 void KDateComboBox::focusInEvent(QFocusEvent *event)
 {
-    KComboBox::focusInEvent(event);
+    QComboBox::focusInEvent(event);
 }
 
 void KDateComboBox::resizeEvent(QResizeEvent *event)
 {
-    KComboBox::resizeEvent(event);
+    QComboBox::resizeEvent(event);
 }
 
 #include "moc_kdatecombobox.cpp"

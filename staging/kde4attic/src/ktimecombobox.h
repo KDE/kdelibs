@@ -22,14 +22,13 @@
 
 #include <kde4attic_export.h>
 
-#include <QWidget>
+#include <QComboBox>
 
-#include "kcombobox.h"
 #include "klocale.h"
 
 class KTimeComboBoxPrivate;
 
-class KDE4ATTIC_EXPORT KTimeComboBox : public KComboBox
+class KDE4ATTIC_EXPORT KTimeComboBox : public QComboBox
 {
     Q_OBJECT
 
