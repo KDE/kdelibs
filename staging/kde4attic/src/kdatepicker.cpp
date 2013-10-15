@@ -22,7 +22,6 @@
 #include "kdatepicker.h"
 #include "kdatepicker_p.h"
 #include "kdatetable.h"
-#include <kdatevalidator.h>
 #include <kpopupframe.h>
 
 #include <QApplication>
@@ -40,6 +39,31 @@
 
 #include "moc_kdatepicker.cpp"
 #include "moc_kdatepicker_p.cpp"
+
+class DatePickerValidator : public QValidator
+{
+public:
+    DatePickerValidator(KDatePicker *parent)
+        : QValidator(parent), picker(parent) {}
+
+    virtual State validate(QString &text, int&) const
+    {
+        QLocale::FormatType formats[] = { QLocale::LongFormat, QLocale::ShortFormat, QLocale::NarrowFormat };
+        QLocale locale = picker->locale();
+
+        for (int i = 0; i < 3; i++) {
+            QDate tmp = locale.toDate(text, formats[i]);
+            if (tmp.isValid()) {
+                return Acceptable;
+            }
+        }
+
+        return QValidator::Intermediate;
+    }
+
+private:
+    KDatePicker *picker;
+};
 
 // Week numbers are defined by ISO 8601
 // See http://www.merlyn.demon.co.uk/weekinfo.htm for details
@@ -128,7 +152,7 @@ public:
     /// the line edit to enter the date directly
     QLineEdit *line;
     /// the validator for the line edit:
-    KDateValidator *val;
+    DatePickerValidator *val;
     /// the date table
     KDateTable *table;
     /// the widest month string in pixels:
@@ -252,7 +276,7 @@ void KDatePicker::initWidget( const QDate &date_ )
     d->navigationLayout->addStretch();
 
     d->line = new QLineEdit( this );
-    d->val = new KDateValidator( this );
+    d->val = new DatePickerValidator( this );
     d->table = new KDateTable( this );
     setFocusProxy( d->table );
 
