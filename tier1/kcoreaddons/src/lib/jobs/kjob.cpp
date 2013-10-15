@@ -60,7 +60,7 @@ KJob::KJob(KJobPrivate &dd, QObject *parent)
 KJob::~KJob()
 {
     if (!d_ptr->isFinished) {
-        emit finished(this);
+        emit finished(this, QPrivateSignal());
     }
 
     delete d_ptr->speedTimer;
@@ -113,7 +113,7 @@ bool KJob::kill( KillVerbosity verbosity )
         {
             // If we are displaying a progress dialog, remove it first.
             d->isFinished = true;
-            emit finished(this);
+            emit finished(this, QPrivateSignal());
 
             if ( isAutoDelete() )
                 deleteLater();
@@ -135,7 +135,7 @@ bool KJob::suspend()
         if ( doSuspend() )
         {
             d->suspended = true;
-            emit suspended(this);
+            emit suspended(this, QPrivateSignal());
 
             return true;
         }
@@ -152,7 +152,7 @@ bool KJob::resume()
         if ( doResume() )
         {
             d->suspended = false;
-            emit resumed(this);
+            emit resumed(this, QPrivateSignal());
 
             return true;
         }
@@ -306,9 +306,9 @@ void KJob::emitResult()
     }
 
     // If we are displaying a progress dialog, remove it first.
-    emit finished( this );
+    emit finished( this, QPrivateSignal() );
 
-    emit result( this );
+    emit result( this, QPrivateSignal() );
 
     if ( isAutoDelete() )
         deleteLater();

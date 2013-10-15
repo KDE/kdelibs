@@ -348,9 +348,6 @@ public:
     bool isAutoDelete() const;
 
 Q_SIGNALS:
-#if !defined(Q_MOC_RUN) && !defined(DOXYGEN_SHOULD_SKIP_THIS) && !defined(IN_IDE_PARSER)
-private: // don't tell moc, doxygen or kdevelop, but those signals are in fact private
-#endif
     /**
      * Emitted when the job is finished, in any case. It is used to notify
      * observers that the job is terminated and that progress can be hidden.
@@ -368,7 +365,11 @@ private: // don't tell moc, doxygen or kdevelop, but those signals are in fact p
      *
      * @see result
      */
-    void finished(KJob *job);
+    void finished(KJob *job
+                 #if !defined(DOXYGEN_SHOULD_SKIP_THIS)
+                 , QPrivateSignal
+                 #endif
+                 );
 
     /**
      * Emitted when the job is suspended.
@@ -378,7 +379,11 @@ private: // don't tell moc, doxygen or kdevelop, but those signals are in fact p
      *
      * @param job the job that emitted this signal
      */
-    void suspended(KJob *job);
+    void suspended(KJob *job
+                  #if !defined(DOXYGEN_SHOULD_SKIP_THIS)
+                  , QPrivateSignal
+                  #endif
+                  );
 
     /**
      * Emitted when the job is resumed.
@@ -388,7 +393,11 @@ private: // don't tell moc, doxygen or kdevelop, but those signals are in fact p
      *
      * @param job the job that emitted this signal
      */
-    void resumed(KJob *job);
+    void resumed(KJob *job
+                #if !defined(DOXYGEN_SHOULD_SKIP_THIS)
+                , QPrivateSignal
+                #endif
+                );
 
     /**
      * Emitted when the job is finished (except when killed with KJob::Quietly).
@@ -404,9 +413,12 @@ private: // don't tell moc, doxygen or kdevelop, but those signals are in fact p
      *
      * @see kill
      */
-    void result(KJob *job);
+    void result(KJob *job
+               #if !defined(DOXYGEN_SHOULD_SKIP_THIS)
+               , QPrivateSignal
+               #endif
+               );
 
-Q_SIGNALS:
     /**
      * Emitted to display general description of this job. A description has
      * a title and two optional fields which can be used to complete the
