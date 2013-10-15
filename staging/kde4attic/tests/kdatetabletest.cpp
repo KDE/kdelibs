@@ -1,8 +1,6 @@
 #include <QApplication>
 
-#include <klocalizedstring.h>
-
-#include "kdatetable.h"
+#include "kdatetable_p.h"
 
 int main( int argc, char** argv )
 {

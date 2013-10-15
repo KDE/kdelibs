@@ -22,8 +22,6 @@
 #ifndef KDATETABLE_H
 #define KDATETABLE_H
 
-#include <kde4attic_export.h>
-
 #include <QLineEdit>
 #include <QtCore/QDateTime>
 
@@ -43,7 +41,7 @@ class QMenu;
  * @internal
  * @author Tim Gilman, Mirko Boehm
  */
-class KDE4ATTIC_EXPORT KDateTable : public QWidget
+class KDateTable : public QWidget
 {
     Q_OBJECT
     Q_PROPERTY( QDate date READ date WRITE setDate )

@@ -114,7 +114,6 @@ install(TARGETS KDE4Attic EXPORT KDE4AtticTargets ${INSTALL_TARGETS_DEFAULT_ARGS
 install(FILES
   kdatecombobox.h
   kdatepicker.h
-  kdatetable.h
   kdatetimeedit.h
   kdatetimewidget.h
   kdatewidget.h

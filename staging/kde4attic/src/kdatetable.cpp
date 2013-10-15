@@ -19,7 +19,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "kdatetable.h"
+#include "kdatetable_p.h"
 
 #include <QAction>
 #include <QFontDatabase>
@@ -700,4 +700,4 @@ void KDateTable::unsetCustomDatePainting( const QDate &date )
     update();
 }
 
-#include "moc_kdatetable.cpp"
+#include "moc_kdatetable_p.cpp"

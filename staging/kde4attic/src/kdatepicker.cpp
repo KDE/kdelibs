@@ -21,7 +21,7 @@
 
 #include "kdatepicker.h"
 #include "kdatepicker_p.h"
-#include "kdatetable.h"
+#include "kdatetable_p.h"
 #include <kpopupframe.h>
 
 #include <QApplication>
