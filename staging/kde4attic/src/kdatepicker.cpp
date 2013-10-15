@@ -40,7 +40,6 @@
 #include <klocalizedstring.h>
 #include <kcombobox.h>
 #include <klineedit.h>
-#include <knotification.h>
 
 #include "moc_kdatepicker.cpp"
 #include "moc_kdatepicker_p.cpp"
@@ -74,7 +73,7 @@ void KDatePickerPrivateYearSelector::yearEnteredSlot()
     // check if entered value is a number
     newYear = text().toInt( &ok );
     if( !ok ) {
-        KNotification::beep();
+        QApplication::beep();
         return;
     }
 
@@ -83,7 +82,7 @@ void KDatePickerPrivateYearSelector::yearEnteredSlot()
         result = newYear;
         emit( closeMe( 1 ) );
     } else {
-        KNotification::beep();
+        QApplication::beep();
     }
 
 }
@@ -391,7 +390,7 @@ bool KDatePicker::setDate( const QDate &date_ )
 void KDatePicker::monthForwardClicked()
 {
     if ( ! setDate( date().addMonths( 1 ) ) ) {
-        KNotification::beep();
+        QApplication::beep();
     }
     d->table->setFocus();
 }
@@ -399,7 +398,7 @@ void KDatePicker::monthForwardClicked()
 void KDatePicker::monthBackwardClicked()
 {
     if ( ! setDate( date().addMonths( -1 ) ) ) {
-        KNotification::beep();
+        QApplication::beep();
     }
     d->table->setFocus();
 }
@@ -407,7 +406,7 @@ void KDatePicker::monthBackwardClicked()
 void KDatePicker::yearForwardClicked()
 {
     if ( ! setDate( d->table->date().addYears( 1 ) ) ) {
-        KNotification::beep();
+        QApplication::beep();
     }
     d->table->setFocus();
 }
@@ -415,7 +414,7 @@ void KDatePicker::yearForwardClicked()
 void KDatePicker::yearBackwardClicked()
 {
     if ( ! setDate( d->table->date().addYears( -1 ) ) ) {
-        KNotification::beep();
+        QApplication::beep();
     }
     d->table->setFocus();
 }
@@ -425,7 +424,7 @@ void KDatePicker::weekSelected( int index )
     QDate targetDay = d->selectWeek->itemData( index ).toDateTime().date();
 
     if ( ! setDate( targetDay ) ) {
-        KNotification::beep();
+        QApplication::beep();
     }
     d->table->setFocus();
 }
@@ -464,7 +463,7 @@ void KDatePicker::selectMonthClicked()
 
     // Set the date, if it's invalid in any way then alert user and don't update
     if ( ! setDate( newDate ) ) {
-        KNotification::beep();
+        QApplication::beep();
     }
 }
 
@@ -495,7 +494,7 @@ void KDatePicker::selectYearClicked()
 
         // Set the date, if it's invalid in any way then alert user and don't update
         if ( ! setDate( newDate ) ) {
-            KNotification::beep();
+            QApplication::beep();
         }
     }
     delete popup;
@@ -541,7 +540,7 @@ void KDatePicker::lineEnterPressed()
         setDate( newDate );
         d->table->setFocus();
     } else {
-        KNotification::beep();
+        QApplication::beep();
     }
 }
 
