@@ -80,7 +80,8 @@ AutoStart::loadAutoStartList()
     QStringList files;
     QStringList dirs = QStandardPaths::locateAll(QStandardPaths::ConfigLocation, QStringLiteral("autostart"), QStandardPaths::LocateDirectory);
     Q_FOREACH (const QString& dir, dirs) {
-        Q_FOREACH (const QString& file, QDir(dir).entryList(QStringList() << QStringLiteral("*.desktop"))) {
+        const QStringList fileNames = QDir(dir).entryList(QStringList() << QStringLiteral("*.desktop"));
+        Q_FOREACH (const QString& file, fileNames) {
             if (!files.contains(file))
                 files.append(file);
         }

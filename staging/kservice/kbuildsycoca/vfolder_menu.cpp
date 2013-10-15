@@ -643,7 +643,8 @@ VFolderMenu::mergeMenus(QDomElement &docElem, QString &name)
 
          QStringList fileList;
          Q_FOREACH(const QString& menuDir, dirs) {
-             Q_FOREACH(const QString& file, QDir(menuDir).entryList(QStringList() << QStringLiteral("*.menu"))) {
+             const QStringList fileNames = QDir(menuDir).entryList(QStringList() << QStringLiteral("*.menu"));
+             Q_FOREACH(const QString& file, fileNames) {
                  const QString fileToAdd = relative ? dir + file : menuDir + file;
                  if (!fileList.contains(fileToAdd))
                      fileList.append(fileToAdd);

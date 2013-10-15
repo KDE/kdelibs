@@ -317,7 +317,8 @@ void DialogPrivate::createDialogFromServices()
 
     const QStringList dirs = QStandardPaths::locateAll(QStandardPaths::DataLocation, QStringLiteral("ksettingsdialog"),  QStandardPaths::LocateDirectory);
     Q_FOREACH(const QString& dir, dirs) {
-        Q_FOREACH(const QString& file, QDir(dir).entryList(QStringList() << QStringLiteral("*.setdlg"))) {
+        const QStringList fileNames = QDir(dir).entryList(QStringList() << QStringLiteral("*.setdlg"));
+        Q_FOREACH(const QString& file, fileNames) {
             parseGroupFile(dir + QLatin1Char('/') + file);
         }
     }

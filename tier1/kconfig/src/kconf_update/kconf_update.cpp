@@ -201,7 +201,8 @@ QStringList KonfUpdate::findUpdateFiles(bool dirtyOnly)
 
     const QStringList dirs = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "kconf_update", QStandardPaths::LocateDirectory);
     Q_FOREACH(const QString& dir, dirs) {
-        Q_FOREACH(const QString& fileName, QDir(dir).entryList(QStringList() << QStringLiteral("*.upd"))) {
+        const QStringList fileNames = QDir(dir).entryList(QStringList() << QStringLiteral("*.upd"));
+        Q_FOREACH(const QString& fileName, fileNames) {
             const QString file = dir + '/' + fileName;
             QFileInfo info(file);
 
