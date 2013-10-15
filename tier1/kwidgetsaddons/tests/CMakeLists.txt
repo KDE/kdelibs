@@ -13,6 +13,7 @@ endmacro()
 
 kwidgetsaddons_executable_tests(
   kanimatedbuttontest
+  kdatepicktest
   kledtest
   kmessageboxtest
   kmessageboxwidtest
@@ -37,3 +38,8 @@ kwidgetsaddons_executable_tests(
   kpixmapsequenceoverlaypaintertest
   kmimetypechoosertest
 )
+
+add_executable(kdatetabletest kdatetabletest.cpp ../src/kdatetable.cpp)
+target_include_directories(kdatetabletest PRIVATE ../src)
+target_link_libraries(kdatetabletest Qt5::Widgets)
+ecm_mark_as_test(kdatetabletest)

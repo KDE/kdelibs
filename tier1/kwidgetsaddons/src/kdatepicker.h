@@ -22,7 +22,7 @@
 #ifndef KDATEPICKER_H
 #define KDATEPICKER_H
 
-#include <kde4attic_export.h>
+#include <kwidgetsaddons_export.h>
 
 #include <QtCore/QDateTime>
 #include <QFrame>
@@ -49,7 +49,7 @@ class KDateTable;
  *     @author Tim Gilman, Mirko Boehm
  *
  **/
-class KDE4ATTIC_EXPORT KDatePicker: public QFrame
+class KWIDGETSADDONS_EXPORT KDatePicker: public QFrame
 {
     Q_OBJECT
     Q_PROPERTY( QDate date READ date WRITE setDate NOTIFY dateChanged USER true )

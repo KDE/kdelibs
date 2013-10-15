@@ -10,8 +10,6 @@ configure_file(localization/config-localization.h.cmake ${CMAKE_CURRENT_BINARY_D
 
 set(kde4attic_SRCS
   kdatecombobox.cpp
-  kdatepicker.cpp
-  kdatetable.cpp
   kdatetimeedit.cpp
   kdatetimewidget.cpp
   kdatewidget.cpp
@@ -113,7 +111,6 @@ install(TARGETS KDE4Attic EXPORT KDE4AtticTargets ${INSTALL_TARGETS_DEFAULT_ARGS
 
 install(FILES
   kdatecombobox.h
-  kdatepicker.h
   kdatetimeedit.h
   kdatetimewidget.h
   kdatewidget.h

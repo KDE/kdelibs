@@ -13,14 +13,8 @@ endmacro()
 
 kde4attic_executable_tests(
   kcharselecttest
-  kdatepicktest
   kdatetimeedittestapp
   kdatetimewidgettest
   kdatewidgettest
 )
-
-add_executable(kdatetabletest kdatetabletest.cpp ../src/kdatetable.cpp)
-target_include_directories(kdatetabletest PRIVATE ../src)
-target_link_libraries(kdatetabletest Qt5::Widgets)
-ecm_mark_as_test(kdatetabletest)
 

@@ -190,7 +190,7 @@ void KDatePicker::KDatePickerPrivate::fillWeeksCombo()
 
         // show that this is a week from a different year
         if ( weekYear != thisYear ) {
-            weekString += '*';
+            weekString += QLatin1Char('*');
         }
 
         // when the week is selected, go to the same weekday as the one
@@ -290,7 +290,7 @@ void KDatePicker::initWidget( const QDate &date_ )
     d->selectWeek = new QComboBox( this );  // read only week selection
     d->selectWeek->setFocusPolicy( Qt::NoFocus );
     d->todayButton = new QToolButton( this );
-    d->todayButton->setIcon( QIcon::fromTheme( "go-jump-today" ) );
+    d->todayButton->setIcon( QIcon::fromTheme( QLatin1String("go-jump-today") ) );
 
     d->yearForward->setToolTip( tr( "Next year" ) );
     d->yearBackward->setToolTip( tr( "Previous year" ) );
@@ -385,7 +385,7 @@ void KDatePicker::dateChangedSlot( const QDate &date_ )
     // the earliestValidDate as the first day.
     // In particular covers the case of Gregorian where 1/1/-4713 is not a valid QDate
     d->selectWeek->setCurrentIndex( ( date_.dayOfYear() + firstDay.dayOfWeek() - 2 ) / 7 );
-    d->selectYear->setText( QString::number(date_.year()).rightJustified(4, '0') );
+    d->selectYear->setText( QString::number(date_.year()).rightJustified(4, QLatin1Char('0')) );
 
     emit( dateChanged( date_ ) );
 }
@@ -651,7 +651,7 @@ void KDatePicker::setCloseButton( bool enable )
         d->navigationLayout->addSpacing( spacingHint );
         d->navigationLayout->addWidget( d->closeButton );
         d->closeButton->setToolTip( tr( "Close", "@action:button" ) );
-        d->closeButton->setIcon( QIcon::fromTheme( "window-close" ) );
+        d->closeButton->setIcon( QIcon::fromTheme( QLatin1String("window-close") ) );
         connect( d->closeButton, SIGNAL(clicked()),
                  topLevelWidget(), SLOT(close()) );
     } else {

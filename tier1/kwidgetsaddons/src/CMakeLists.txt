@@ -5,6 +5,8 @@ set(kwidgetsaddons_SRCS
   kcharselect.cpp
   kcharselectdata.cpp
   kcolorbutton.cpp
+  kdatepicker.cpp
+  kdatetable.cpp
   kfontaction.cpp
   fonthelpers.cpp
   kfontsizeaction.cpp
@@ -91,6 +93,7 @@ install(FILES
   kanimatedbutton.h
   kcharselect.h
   kcolorbutton.h
+  kdatepicker.h
   kdragwidgetdecorator.h
   kdualaction.h
   kfontaction.h

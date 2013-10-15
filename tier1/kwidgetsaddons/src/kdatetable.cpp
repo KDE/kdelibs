@@ -173,7 +173,7 @@ void KDateTable::initAccels()
     connect( beginWeek, SIGNAL(triggered(bool)), SLOT(beginningOfWeek()) );
 
     QAction* endWeek = new QAction(this);
-    endWeek->setObjectName( "endWeek" );
+    endWeek->setObjectName( QLatin1String( "endWeek" ) );
     endWeek->setShortcuts( QKeySequence::keyBindings(QKeySequence::MoveToEndOfLine) );
     endWeek->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     connect( endWeek, SIGNAL(triggered(bool)), SLOT(endOfWeek()) );
@@ -303,7 +303,7 @@ void KDateTable::paintCell( QPainter *painter, int row, int col )
         if ( validDay ) {
             cellText = QString::number(cellDate.day());
         } else {
-            cellText = "";
+            cellText = QLatin1String("");
         }
 
         if( ! validDay || cellDate.month() != d->m_date.month() ) {

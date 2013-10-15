@@ -4,7 +4,7 @@
 
 int main( int argc, char** argv )
 {
-  QApplication::setApplicationName("test");
+  QApplication::setApplicationName(QLatin1String("test"));
   QApplication app(argc, argv);
 
   KDateTable widget;

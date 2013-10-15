@@ -4,7 +4,7 @@
 
 int main(int argc, char** argv)
 {
-  QApplication::setApplicationName("KDatePickertest");
+  QApplication::setApplicationName(QLatin1String("KDatePickertest"));
 
   QApplication app(argc, argv);
 
