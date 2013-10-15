@@ -27,8 +27,6 @@
 #include <QtCore/QDateTime>
 #include <QFrame>
 
-#include <klocale.h>
-
 class QLineEdit;
 class KDateTable;
 

@@ -37,7 +37,6 @@
 #include <QDoubleValidator>
 #include <QFontDatabase>
 
-#include <klocalizedstring.h>
 #include <kcombobox.h>
 #include <klineedit.h>
 
@@ -165,7 +164,7 @@ void KDatePicker::KDatePickerPrivate::fillWeeksCombo()
         // e.g. 1st day of this year may fall in week 53 of previous year
         int weekYear = thisYear;
         const int week = day.weekNumber( &weekYear );
-        QString weekString = i18n( "Week %1", QString::number(week) );
+        QString weekString = tr( "Week %1" ).arg( QString::number(week) );
 
         // show that this is a week from a different year
         if ( weekYear != thisYear ) {
@@ -271,14 +270,14 @@ void KDatePicker::initWidget( const QDate &date_ )
     d->todayButton = new QToolButton( this );
     d->todayButton->setIcon( QIcon::fromTheme( "go-jump-today" ) );
 
-    d->yearForward->setToolTip( i18n( "Next year" ) );
-    d->yearBackward->setToolTip( i18n( "Previous year" ) );
-    d->monthForward->setToolTip( i18n( "Next month" ) );
-    d->monthBackward->setToolTip( i18n( "Previous month" ) );
-    d->selectWeek->setToolTip( i18n( "Select a week" ) );
-    d->selectMonth->setToolTip( i18n( "Select a month" ) );
-    d->selectYear->setToolTip( i18n( "Select a year" ) );
-    d->todayButton->setToolTip( i18n( "Select the current day" ) );
+    d->yearForward->setToolTip( tr( "Next year" ) );
+    d->yearBackward->setToolTip( tr( "Previous year" ) );
+    d->monthForward->setToolTip( tr( "Next month" ) );
+    d->monthBackward->setToolTip( tr( "Previous month" ) );
+    d->selectWeek->setToolTip( tr( "Select a week" ) );
+    d->selectMonth->setToolTip( tr( "Select a month" ) );
+    d->selectYear->setToolTip( tr( "Select a year" ) );
+    d->todayButton->setToolTip( tr( "Select the current day" ) );
 
     // -----
     setFontSize( d->fontsize );
@@ -629,7 +628,7 @@ void KDatePicker::setCloseButton( bool enable )
         const int spacingHint = style()->pixelMetric(QStyle::PM_DefaultLayoutSpacing);
         d->navigationLayout->addSpacing( spacingHint );
         d->navigationLayout->addWidget( d->closeButton );
-        d->closeButton->setToolTip( i18nc( "@action:button", "Close" ) );
+        d->closeButton->setToolTip( tr( "Close", "@action:button" ) );
         d->closeButton->setIcon( QIcon::fromTheme( "window-close" ) );
         connect( d->closeButton, SIGNAL(clicked()),
                  topLevelWidget(), SLOT(close()) );
