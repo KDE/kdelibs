@@ -1939,7 +1939,7 @@ inline QString xi18ndcp(const char *domain, const char *context, const char *sin
     #define kxi18nc(...) kxi18ndc(TRANSLATION_DOMAIN, __VA_ARGS__)
     #define kxi18np(...) kxi18ndp(TRANSLATION_DOMAIN, __VA_ARGS__)
     #define kxi18ncp(...) kxi18ndcp(TRANSLATION_DOMAIN, __VA_ARGS__)
-    #define tr2xi18n(...) tr2i18nd(TRANSLATION_DOMAIN, __VA_ARGS__)
+    #define tr2xi18n(...) tr2xi18nd(TRANSLATION_DOMAIN, __VA_ARGS__)
 #else
     #undef i18n
     #undef i18nc
