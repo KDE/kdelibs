@@ -22,8 +22,6 @@
 #ifndef KDATEPICKER_P_H
 #define KDATEPICKER_P_H
 
-#include <kcalendarsystem.h>
-
 #include <QtCore/QDate>
 #include <QLineEdit>
 #include <QValidator>
@@ -38,7 +36,7 @@ class KDatePickerPrivateYearSelector : public QLineEdit
     Q_OBJECT
 
 public:
-    KDatePickerPrivateYearSelector( const KCalendarSystem *calendar, const QDate &currentDate, QWidget *parent = 0 );
+    KDatePickerPrivateYearSelector( const QDate &currentDate, QWidget *parent = 0 );
     int year();
     void setYear( int year );
 
@@ -53,7 +51,6 @@ protected:
     int result;
 
 private:
-    const KCalendarSystem *calendar;
     QDate oldDate;
 
     Q_DISABLE_COPY( KDatePickerPrivateYearSelector )

@@ -27,10 +27,7 @@
 #include <QLineEdit>
 #include <QtCore/QDateTime>
 
-#include <klocale.h>
-
 class QMenu;
-class KCalendarSystem;
 class KColorScheme;
 
 /**
@@ -51,7 +48,6 @@ class KDE4ATTIC_EXPORT KDateTable : public QWidget
 {
     Q_OBJECT
     Q_PROPERTY( QDate date READ date WRITE setDate )
-//FIXME    Q_PROPERTY( KCalendarSystem calendar READ calendar WRITE setCalendar USER true )
     Q_PROPERTY( bool popupMenu READ popupMenuEnabled WRITE setPopupMenuEnabled )
 
 public:
@@ -94,32 +90,6 @@ public:
      * @returns the selected date.
      */
     const QDate &date() const;
-
-    /**
-     * Returns the currently selected calendar system.
-     * 
-     * @return a KCalendarSystem object
-     */
-    const KCalendarSystem *calendar() const;
-
-    /**
-     * Changes the calendar system to use.  Can use its own local locale if set.
-     * 
-     * @param calendar the calendar system object to use, defaults to global
-     * 
-     * @return @c true if the calendar system was successfully set, @c false otherwise
-     */
-    bool setCalendar( KCalendarSystem *calendar = 0 );
-
-    /**
-     * @since 4.6
-     *
-     * Changes the calendar system to use.  Will always use global locale.
-     *
-     * @param calendarSystem the calendar system to use
-     * @return @c true if the calendar system was successfully set, @c false otherwise
-     */
-    bool setCalendarSystem( KLocale::CalendarSystem calendarSystem );
 
     /**
      * Enables a popup menu when right clicking on a date.
