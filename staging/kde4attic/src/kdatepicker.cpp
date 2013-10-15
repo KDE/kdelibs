@@ -26,6 +26,7 @@
 #include <kpopupframe.h>
 
 #include <QApplication>
+#include <QComboBox>
 #include <QFont>
 #include <QFontDatabase>
 #include <QLayout>
@@ -36,9 +37,6 @@
 #include <QToolButton>
 #include <QDoubleValidator>
 #include <QFontDatabase>
-
-#include <kcombobox.h>
-#include <klineedit.h>
 
 #include "moc_kdatepicker.cpp"
 #include "moc_kdatepicker_p.cpp"
@@ -111,7 +109,7 @@ public:
     KDatePicker *q;
 
     QToolButton *closeButton;
-    KComboBox *selectWeek;
+    QComboBox *selectWeek;
     QToolButton *todayButton;
     QBoxLayout *navigationLayout;
 
@@ -253,7 +251,7 @@ void KDatePicker::initWidget( const QDate &date_ )
     d->navigationLayout->addWidget( d->yearForward );
     d->navigationLayout->addStretch();
 
-    d->line = new KLineEdit( this );
+    d->line = new QLineEdit( this );
     d->val = new KDateValidator( this );
     d->table = new KDateTable( this );
     setFocusProxy( d->table );
@@ -265,7 +263,7 @@ void KDatePicker::initWidget( const QDate &date_ )
 
     d->fontsize++; // Make a little bigger
 
-    d->selectWeek = new KComboBox( this );  // read only week selection
+    d->selectWeek = new QComboBox( this );  // read only week selection
     d->selectWeek->setFocusPolicy( Qt::NoFocus );
     d->todayButton = new QToolButton( this );
     d->todayButton->setIcon( QIcon::fromTheme( "go-jump-today" ) );
