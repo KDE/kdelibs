@@ -2,15 +2,30 @@ cmake_minimum_required(VERSION 2.8.12)
 
 project(FooBar)
 
-# Dependencies
+# ECM setup
 find_package(ECM 0.0.9 REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
-set(REQUIRED_QT_VERSION "5.2.0")
+include(FeatureSummary)
+include(ECMSetupVersion)
+include(CMakePackageConfigHelpers)
+
 set(KF5_VERSION "5.0.0")
+
+ecm_setup_version(
+  ${KF5_VERSION}
+  VARIABLE_PREFIX FOOBAR
+  VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/foobar_version.h"
+  PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/FooBarConfigVersion.cmake"
+)
+
+# Dependencies
+set(REQUIRED_QT_VERSION "5.2.0")
 
 # Required Qt5 components to build this framework
 find_package(Qt5 ${REQUIRED_QT_VERSION} NO_MODULE REQUIRED Core)
+
+# TODO: Add all required find_package() calls here
 
 if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
   # Content of this block is only executed when building the framework
@@ -20,19 +35,6 @@ if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
   # For example:
   # find_package(KCoreAddons ${KF5_VERSION} REQUIRED)
 endif()
-
-# Includes
-include(FeatureSummary)
-include(ECMSetupVersion)
-include(CMakePackageConfigHelpers)
-
-# ECM setup
-ecm_setup_version(
-  ${KF5_VERSION}
-  VARIABLE_PREFIX FOOBAR
-  VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/foobar_version.h"
-  PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/FooBarConfigVersion.cmake"
-)
 
 # Subdirectories
 add_subdirectory(src)
