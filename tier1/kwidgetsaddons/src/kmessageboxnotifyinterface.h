@@ -17,18 +17,28 @@
  *  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  *  Boston, MA 02110-1301, USA.
  */
-#ifndef KMESSAGEBOX_P_H
-#define KMESSAGEBOX_P_H
 
-#include <kmessageboxdontaskagaininterface.h>
-#include <kmessageboxnotifyinterface.h>
+#ifndef KMESSAGEBOXNOTIFYINTERFACE_H
+#define KMESSAGEBOXNOTIFYINTERFACE_H
 
-namespace KMessageBox {
+#include "kmessagebox.h"
+#include <qmetatype.h>
 
-KMessageBoxDontAskAgainInterface *dontAskAgainInterface();
+/**
+ * @internal
+ * Used internally by KMessageBox, implemented by plugin, for dynamic dependency on KNotification.
+ */
+class KMessageBoxNotifyInterface
+{
+public:
+    KMessageBoxNotifyInterface() {}
+    virtual ~KMessageBoxNotifyInterface() {}
 
-KMessageBoxNotifyInterface *notifyInterface();
+    virtual void sendNotification(QMessageBox::Icon notificationType, const QString &message, QWidget *parent) = 0;
+};
 
-} // KMessageBox
+Q_DECLARE_METATYPE(KMessageBoxNotifyInterface *)
 
-#endif /* KMESSAGEBOX_P_H */
+#define KMESSAGEBOXNOTIFY_PROPERTY "KMessageBoxNotify"
+
+#endif

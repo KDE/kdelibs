@@ -61,8 +61,15 @@ private:
     QHash<QString, KMessageBox::ButtonCode> m_saved;
 };
 
+class KMessageBoxNotifyDummy : public KMessageBoxNotifyInterface
+{
+public:
+    void sendNotification(QMessageBox::Icon /*notificationType*/, const QString &/*message*/, QWidget */*parent*/) {}
+};
+
 // TODO should we use QSharedPointer here?
 static KMessageBoxDontAskAgainInterface* s_dontAskAgainInterface = 0;
+static KMessageBoxNotifyInterface* s_notifyInterface = 0;
 
 static void loadKMessageBoxPlugin()
 {
@@ -74,11 +81,15 @@ static void loadKMessageBoxPlugin()
         QObject *rootObj = lib.instance();
         if (rootObj) {
             s_dontAskAgainInterface = rootObj->property(KMESSAGEBOXDONTASKAGAIN_PROPERTY).value<KMessageBoxDontAskAgainInterface *>();
+            s_notifyInterface = rootObj->property(KMESSAGEBOXNOTIFY_PROPERTY).value<KMessageBoxNotifyInterface *>();
         }
     }
     // TODO use Qt-5.1's Q_GLOBAL_STATIC
     if (!s_dontAskAgainInterface) {
         s_dontAskAgainInterface = new KMessageBoxDontAskAgainMemoryStorage;
+    }
+    if (!s_notifyInterface) {
+        s_notifyInterface = new KMessageBoxNotifyDummy;
     }
 }
 
@@ -90,11 +101,25 @@ KMessageBoxDontAskAgainInterface *dontAskAgainInterface()
     return s_dontAskAgainInterface;
 }
 
+KMessageBoxNotifyInterface *notifyInterface()
+{
+    if (!s_notifyInterface) {
+        loadKMessageBoxPlugin();
+    }
+    return s_notifyInterface;
+}
+
 void setDontShowAgainInterface(KMessageBoxDontAskAgainInterface* dontAskAgainInterface)
 {
     Q_ASSERT(dontAskAgainInterface != 0);
     // FIXME should we delete s_dontAskAgainInterface before? Or perhaps use smart pointers to avoid problems?
     s_dontAskAgainInterface = dontAskAgainInterface;
+}
+
+void setNotifyInterface(KMessageBoxNotifyInterface *notifyInterface)
+{
+    Q_ASSERT(notifyInterface != 0);
+    s_notifyInterface = notifyInterface;
 }
 
 } // KMessageBox namespace

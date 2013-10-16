@@ -31,6 +31,7 @@
 #include <kwidgetsaddons_export.h>
 
 class KMessageBoxDontAskAgainInterface;
+class KMessageBoxNotifyInterface;
 class QDialog;
 class QDialogButtonBox;
 class QWidget;
@@ -793,6 +794,13 @@ namespace KMessageBox
      * @since 5.0
      */
     KWIDGETSADDONS_EXPORT void setDontShowAgainInterface(KMessageBoxDontAskAgainInterface* dontAskAgainInterface);
+
+    /**
+     * Use @p notifyInterface to send notifications
+     *
+     * @since 5.0
+     */
+    KWIDGETSADDONS_EXPORT void setNotifyInterface(KMessageBoxNotifyInterface *notifyInterface);
 
     /**
      * Create content and layout of a standard dialog

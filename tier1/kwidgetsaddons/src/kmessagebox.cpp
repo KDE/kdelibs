@@ -117,43 +117,6 @@ static QIcon themedMessageBoxIcon(QMessageBox::Icon icon)
    }
 }
 
-static void sendNotification( QString message, //krazy:exclude=passbyvalue
-                              const QStringList& strlist,
-                              QMessageBox::Icon icon,
-                              WId parent_id )
-{
-    // create the message for KNotify
-    QString messageType;
-    switch (icon) {
-    case QMessageBox::Warning:
-        messageType = QStringLiteral("messageWarning");
-        break;
-    case QMessageBox::Critical:
-        messageType = QStringLiteral("messageCritical");
-        break;
-    case QMessageBox::Question:
-        messageType = QStringLiteral("messageQuestion");
-        break;
-    default:
-        messageType = QStringLiteral("messageInformation");
-        break;
-    }
-
-    if ( !strlist.isEmpty() ) {
-        for ( QStringList::ConstIterator it = strlist.begin(); it != strlist.end(); ++it ) {
-            message += QLatin1Char('\n') + *it;
-        }
-    }
-
-#if 0
-    // NOTE waiting for the notification framework plan
-    if ( !message.isEmpty() ) {
-        KNotification::event( messageType, message, QPixmap(), QWidget::find( parent_id ),
-                              KNotification::DefaultEvent | KNotification::CloseOnTimeout );
-    }
-#endif
-}
-
 static void applyOptions( QDialog* dialog, KMessageBox::Options options )
 {
     if ( options & KMessageBox::WindowModal ) {
@@ -412,7 +375,11 @@ QDialogButtonBox::StandardButton createKMessageBox(QDialog *dialog, QDialogButto
 
 #ifndef Q_OS_WIN // FIXME problems with KNotify on Windows
     if ((options & KMessageBox::Notify)) {
-        sendNotification(text, strlist, notifyType, dialog->topLevelWidget()->winId());
+        QString message = text;
+        if (!strlist.isEmpty()) {
+            message += QLatin1Char('\n') + strlist.join(QLatin1Char('\n'));
+        }
+        notifyInterface()->sendNotification(notifyType, message, dialog->topLevelWidget());
     }
 #endif
 
