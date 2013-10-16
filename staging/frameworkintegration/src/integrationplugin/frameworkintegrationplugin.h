@@ -20,6 +20,7 @@
 
 #include <QObject>
 #include <kmessageboxdontaskagaininterface.h>
+#include <kmessageboxnotifyinterface.h>
 
 class KConfig;
 
@@ -41,6 +42,12 @@ private:
     KConfig* KMessageBox_againConfig;
 };
 
+class KMessageBoxNotify : public KMessageBoxNotifyInterface
+{
+public:
+    void sendNotification(QMessageBox::Icon notificationType, const QString &message, QWidget *parent) Q_DECL_OVERRIDE;
+};
+
 class KFrameworkIntegrationPlugin : public QObject
 {
 #if QT_VERSION >= 0x050000
@@ -53,5 +60,6 @@ public:
 
 private:
     KMessageBoxDontAskAgainConfigStorage m_dontAskAgainConfigStorage;
+    KMessageBoxNotify m_notify;
 };
 

@@ -339,16 +339,16 @@ have to find an alternative</li>
     m_naturalSorting = g.readEntry("NaturalSorting", true);
 </pre>
 </li>
-<li>KMessageBox is no longer a class, but a namespace, as it only had static methods. The KMessageBox namespace spans now in two frameworks:
+<li>KMessageBox changes:
     <ul>
-    <li>Queued methods are now in kmessagebox_queued.h from kde4support framework</li>
-    <li>The remainder of the methods are now in kmessagebox.h from kwidgetsaddons
-        <ul>
-            <li>setDontShowAskAgainConfig was renamed to setDontShowAgainConfig</li>
-            <li>NOTE: KMessageBox no longer uses notifications</li>
-        </ul>
-    </li>
-    <li>KMessageBox methods now return enums instead of ints. While code using int will continue to build, you are encouraged to switch to enums for better type safety.</li>
+        <li>KMessageBox is no longer a class, but a namespace, as it only had static methods. The KMessageBox namespace spans now in two frameworks:
+            <ul>
+                <li>Queued methods are now in kmessagebox_queued.h from kde4support framework</li>
+                <li>The remainder of the methods are now in kmessagebox.h from kwidgetsaddons</li>
+            </ul>
+        </li>
+        <li>setDontShowAskAgainConfig was renamed to setDontShowAgainConfig</li>
+        <li>KMessageBox methods now return enums instead of ints. While code using int will continue to build, you are encouraged to switch to enums for better type safety.</li>
     </ul>
 </li>
 <li>KMessageBoxMessageHandler moved to kde4support</li>

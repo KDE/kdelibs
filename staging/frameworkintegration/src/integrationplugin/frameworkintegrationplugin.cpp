@@ -21,6 +21,8 @@
 #include "frameworkintegrationplugin.h"
 #include <kconfiggroup.h>
 #include <ksharedconfig.h>
+#include <knotification.h>
+
 #include <qplugin.h>
 #include <QDebug>
 
@@ -105,8 +107,31 @@ void KMessageBoxDontAskAgainConfigStorage::enableMessage(const QString &dontShow
    config->sync();
 }
 
+void KMessageBoxNotify::sendNotification(QMessageBox::Icon notificationType, const QString &message, QWidget *parent)
+{
+    QString messageType;
+    switch (notificationType) {
+    case QMessageBox::Warning:
+        messageType = QStringLiteral("messageWarning");
+        break;
+    case QMessageBox::Critical:
+        messageType = QStringLiteral("messageCritical");
+        break;
+    case QMessageBox::Question:
+        messageType = QStringLiteral("messageQuestion");
+        break;
+    default:
+        messageType = QStringLiteral("messageInformation");
+        break;
+    }
+
+    KNotification::event(messageType, message, QPixmap(), parent,
+        KNotification::DefaultEvent | KNotification::CloseOnTimeout);
+}
+
 KFrameworkIntegrationPlugin::KFrameworkIntegrationPlugin()
     : QObject()
 {
     setProperty(KMESSAGEBOXDONTASKAGAIN_PROPERTY, QVariant::fromValue<KMessageBoxDontAskAgainInterface *>(&m_dontAskAgainConfigStorage));
+    setProperty(KMESSAGEBOXNOTIFY_PROPERTY, QVariant::fromValue<KMessageBoxNotifyInterface *>(&m_notify));
 }
