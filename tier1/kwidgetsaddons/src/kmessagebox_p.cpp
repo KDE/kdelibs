@@ -70,7 +70,7 @@ static void loadKMessageBoxPlugin()
     if (!triedLoadingPlugin) {
         triedLoadingPlugin = true;
 
-        QPluginLoader lib(QStringLiteral("kf5/frameworkintegrationplugin"));
+        QPluginLoader lib(QStringLiteral("kf5/FrameworkIntegrationPlugin"));
         QObject *rootObj = lib.instance();
         if (rootObj) {
             s_dontAskAgainInterface = rootObj->property(KMESSAGEBOXDONTASKAGAIN_PROPERTY).value<KMessageBoxDontAskAgainInterface *>();
