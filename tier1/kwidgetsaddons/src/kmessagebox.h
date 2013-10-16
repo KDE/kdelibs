@@ -789,6 +789,8 @@ namespace KMessageBox
 
     /**
      * Use @p dontAskAgainInterface for all settings related to the donShowAgain feature
+     *
+     * @since 5.0
      */
     KWIDGETSADDONS_EXPORT void setDontShowAgainInterface(KMessageBoxDontAskAgainInterface* dontAskAgainInterface);
 

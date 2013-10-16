@@ -19,7 +19,7 @@
 */
 
 #include "kmessagebox.h"
-#include "kmessageboxdontaskagaininterface.h"
+#include "kmessagebox_p.h"
 
 #include <QtCore/QPointer>
 #include <QCheckBox>
@@ -34,7 +34,6 @@
 #include <QScrollArea>
 #include <QScrollBar>
 #include <QTextDocumentFragment>
-#include <QPluginLoader>
 #include <QTextBrowser>
 #include <QWindow>
 
@@ -449,72 +448,6 @@ ButtonCode questionYesNo(QWidget *parent, const QString &text,
     return questionYesNoList(parent, text, QStringList(), caption,
                             buttonYes, buttonNo, dontAskAgainName, options);
 }
-
-class KMessageBoxDontAskAgainMemoryStorage : public KMessageBoxDontAskAgainInterface
-{
-public:
-    KMessageBoxDontAskAgainMemoryStorage() {}
-    virtual ~KMessageBoxDontAskAgainMemoryStorage() {}
-
-    virtual bool shouldBeShownYesNo(const QString &dontShowAgainName, KMessageBox::ButtonCode &result) {
-        KMessageBox::ButtonCode code = m_saved.value(dontShowAgainName, KMessageBox::ButtonCode(0));
-        if (code == KMessageBox::Yes || code == KMessageBox::No) {
-            result = code;
-            return false;
-        }
-        return true;
-    }
-    virtual bool shouldBeShownContinue(const QString &dontShowAgainName) {
-        KMessageBox::ButtonCode code = m_saved.value(dontShowAgainName, KMessageBox::Yes);
-        return code == KMessageBox::Yes;
-    }
-    virtual void saveDontShowAgainYesNo(const QString &dontShowAgainName, KMessageBox::ButtonCode result) {
-        m_saved[dontShowAgainName] = result;
-    }
-    virtual void saveDontShowAgainContinue(const QString &dontShowAgainName) {
-        m_saved[dontShowAgainName] = KMessageBox::No;
-    }
-    virtual void enableAllMessages() {
-        m_saved.clear();
-    }
-    virtual void enableMessage(const QString& dontShowAgainName) {
-        m_saved.remove(dontShowAgainName);
-    }
-    virtual void setConfig(KConfig *) {}
-
-private:
-    QHash<QString, KMessageBox::ButtonCode> m_saved;
-};
-
-// TODO should we use QSharedPointer here?
-static KMessageBoxDontAskAgainInterface* s_dontAskAgainInterface = 0;
-static KMessageBoxDontAskAgainInterface* dontAskAgainInterface() {
-    if (!s_dontAskAgainInterface) {
-        static bool triedLoadingPlugin = false;
-        if (!triedLoadingPlugin) {
-            triedLoadingPlugin = true;
-
-            QPluginLoader lib(QStringLiteral("kf5/frameworkintegrationplugin"));
-            QObject* rootObj = lib.instance();
-            if (rootObj) {
-                s_dontAskAgainInterface = rootObj->property(KMESSAGEBOXDONTASKAGAIN_PROPERTY).value<KMessageBoxDontAskAgainInterface *>();
-            }
-        }
-        // TODO use Qt-5.1's Q_GLOBAL_STATIC
-        if (!s_dontAskAgainInterface) {
-            s_dontAskAgainInterface = new KMessageBoxDontAskAgainMemoryStorage;
-        }
-    }
-    return s_dontAskAgainInterface;
-}
-
-void setDontShowAgainInterface(KMessageBoxDontAskAgainInterface* dontAskAgainInterface)
-{
-    Q_ASSERT(dontAskAgainInterface != 0);
-    // FIXME should we delete s_dontAskAgainInterface before? Or perhaps use smart pointers to avoid problems?
-    s_dontAskAgainInterface = dontAskAgainInterface;
-}
-
 
 bool shouldBeShownYesNo(const QString &dontShowAgainName,
                                      ButtonCode &result)

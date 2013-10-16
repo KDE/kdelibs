@@ -18,6 +18,7 @@ set(kwidgetsaddons_SRCS
   kguiitem.cpp
   kled.cpp
   kmessagebox.cpp
+  kmessagebox_p.cpp
   kmultitabbar.cpp
   kstandardguiitem.cpp
   kurllabel.cpp # Not good enough quality. Needs to use QUrl instead of QString and should not inherit QLabel, but hold it as a member instead.
