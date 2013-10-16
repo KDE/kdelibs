@@ -2,14 +2,23 @@ cmake_minimum_required(VERSION 2.8.12)
 
 project(KWindowSystem)
 
+# ECM setup
 find_package(ECM 0.0.9 REQUIRED NO_MODULE)
-
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
-find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
+include(FeatureSummary)
+include(CMakePackageConfigHelpers)
+include(ECMSetupVersion)
 
+ecm_setup_version(5.0.0 VARIABLE_PREFIX KWINDOWSYSTEM
+                        VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kwindowsystem_version.h"
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KWindowSystemConfigVersion.cmake")
+
+# Dependencies
 set(REQUIRED_QT_VERSION 5.2.0)
 find_package(Qt5 ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE COMPONENTS Widgets)
+
+find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 
 if(NOT WIN32)
     find_package(Qt5 ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE COMPONENTS X11Extras)
@@ -30,14 +39,7 @@ if(X11_FOUND)
     set(HAVE_XFIXES ${X11_Xfixes_FOUND})
 endif()
 
-include(FeatureSummary)
-include(CMakePackageConfigHelpers)
-include(ECMSetupVersion)
-
-ecm_setup_version(5.0.0 VARIABLE_PREFIX KWINDOWSYSTEM
-                        VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kwindowsystem_version.h"
-                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KWindowSystemConfigVersion.cmake")
-
+# Subdirectories
 add_subdirectory(src)
 add_subdirectory(autotests)
 add_subdirectory(tests)

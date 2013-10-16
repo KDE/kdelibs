@@ -2,10 +2,19 @@ cmake_minimum_required(VERSION 2.8.12)
 
 project(KIdleTime)
 
+# ECM setup
 find_package(ECM 0.0.9 REQUIRED NO_MODULE)
-
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
+include(FeatureSummary)
+include(CMakePackageConfigHelpers)
+include(ECMSetupVersion)
+
+ecm_setup_version(5.0.0 VARIABLE_PREFIX KIDLETIME
+                        VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kidletime_version.h"
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KIdleTimeConfigVersion.cmake")
+
+# Dependencies
 find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 
 set(REQUIRED_QT_VERSION 5.2.0)
@@ -39,14 +48,7 @@ if(X11_FOUND)
     set(HAVE_XTEST ${X11_XTest_FOUND})
 endif()
 
-include(FeatureSummary)
-include(CMakePackageConfigHelpers)
-include(ECMSetupVersion)
-
-ecm_setup_version(5.0.0 VARIABLE_PREFIX KIDLETIME
-                        VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kidletime_version.h"
-                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KIdleTimeConfigVersion.cmake")
-
+# Subdirectories
 add_subdirectory(src)
 add_subdirectory(examples)
 

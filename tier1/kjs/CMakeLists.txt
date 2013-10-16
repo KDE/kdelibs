@@ -2,10 +2,19 @@ cmake_minimum_required(VERSION 2.8.12)
 
 project(KJS)
 
+# ECM setup
 find_package(ECM 0.0.9 REQUIRED NO_MODULE)
-
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
+include(FeatureSummary)
+include(CMakePackageConfigHelpers)
+include(ECMSetupVersion)
+
+ecm_setup_version(5.0.0 VARIABLE_PREFIX KJS
+                        VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kjs_version.h"
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KJSConfigVersion.cmake")
+
+# Dependencies
 find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 
 set(REQUIRED_QT_VERSION 5.2.0)
@@ -13,10 +22,6 @@ find_package(Qt5Core ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE)
 
 find_package(Perl)
 set_package_properties(Perl PROPERTIES URL "http://www.perl.org" TYPE REQUIRED PURPOSE "Needed for building kdelibs")
-
-include(FeatureSummary)
-include(CMakePackageConfigHelpers)
-include(ECMSetupVersion)
 
 #Do not make PCRE optional here. PCRE is a hard requirement for modern systems
 #but we give old systems some slack... that's why we don't specify "REQUIRED".
@@ -29,12 +34,6 @@ set_package_properties(PCRE PROPERTIES
                        PURPOSE "Without PCRE, KJS will have extremely poor regular expression support, breaking many webpages.")
 
 option(KJS_FORCE_DISABLE_PCRE "Force building of KJS without PCRE. Doing this will result in many webpage working incorrectly, due to extremely poor regular expression support")
-
-
-
-ecm_setup_version(5.0.0 VARIABLE_PREFIX KJS
-                        VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kjs_version.h"
-                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KJSConfigVersion.cmake")
 
 # TODO: Remove these
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
