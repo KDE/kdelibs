@@ -37,17 +37,5 @@ class KGlobalShortcutInfoPrivate
     QList<QKeySequence> defaultKeys;
     };
 
-XMLGUI_EXPORT QDBusArgument &operator<< (
-        QDBusArgument &argument,
-        const KGlobalShortcutInfo &shortcut);
-
-XMLGUI_EXPORT const QDBusArgument &operator>> (
-        const QDBusArgument &argument,
-        KGlobalShortcutInfo &shortcut);
-
-
-// these should be in kglobalaccel_interface.h. But this way it's easier to
-// regenerate that file.
-
 #endif /* #ifndef KGLOBALSHORTCUTINFO_P_H */
 

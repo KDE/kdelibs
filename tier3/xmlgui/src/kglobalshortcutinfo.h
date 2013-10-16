@@ -88,6 +88,15 @@ private:
     KGlobalShortcutInfoPrivate *d;
 };
 
+XMLGUI_EXPORT QDBusArgument &operator<< (
+        QDBusArgument &argument,
+        const KGlobalShortcutInfo &shortcut);
+
+XMLGUI_EXPORT const QDBusArgument &operator>> (
+        const QDBusArgument &argument,
+        KGlobalShortcutInfo &shortcut);
+
+
 Q_DECLARE_METATYPE(KGlobalShortcutInfo)
 
 #endif /* #ifndef KGLOBALSHORTCUTINFO_H */
