@@ -460,6 +460,14 @@ public:
      */
     void setInlinePreviewShown(bool show);
 
+    /**
+     * Provides a size hint, useful for dialogs that embed the widget.
+     *
+     * @return a QSize, calculated to be optimal for a dialog.
+     * @since 5.0
+     */
+    QSize dialogSizeHint() const;
+
 public Q_SLOTS:
     /**
      * Called when clicking ok (when this widget is used in KFileDialog)

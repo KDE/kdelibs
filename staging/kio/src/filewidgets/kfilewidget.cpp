@@ -56,6 +56,7 @@
 #include <ksharedconfig.h>
 
 #include <QCheckBox>
+#include <QDesktopWidget>
 #include <QDockWidget>
 #include <QLayout>
 #include <QLabel>
@@ -2797,6 +2798,16 @@ void KFileWidget::setConfirmOverwrite(bool enable)
 void KFileWidget::setInlinePreviewShown(bool show)
 {
     d->setInlinePreviewShown(show);
+}
+
+QSize KFileWidget::dialogSizeHint() const
+{
+    int fontSize = fontMetrics().height();
+    QSize goodSize(48 * fontSize, 30 * fontSize);
+    QSize screenSize = QApplication::desktop()->availableGeometry(this).size();
+    QSize minSize(screenSize / 2);
+    QSize maxSize(screenSize * qreal(0.9));
+    return (goodSize.expandedTo(minSize).boundedTo(maxSize));
 }
 
 #include "moc_kfilewidget.cpp"

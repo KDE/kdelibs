@@ -371,12 +371,7 @@ void KFileDialog::setInlinePreviewShown(bool show)
 // This is only used for the initial size when no configuration has been saved
 QSize KFileDialog::sizeHint() const
 {
-    int fontSize = fontMetrics().height();
-    QSize goodSize(48 * fontSize, 30 * fontSize);
-    QSize screenSize = QApplication::desktop()->availableGeometry(this).size();
-    QSize minSize(screenSize / 2);
-    QSize maxSize(screenSize * qreal(0.9));
-    return (goodSize.expandedTo(minSize).boundedTo(maxSize));
+    return d->w->dialogSizeHint();
 }
 
 // This slot still exists mostly for compat purposes; for subclasses which reimplement slotOk

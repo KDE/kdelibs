@@ -31,16 +31,23 @@
 #include <klocalizedstring.h>
 #include <kcharsets.h>
 #include <krecentdocument.h>
+#include <ksharedconfig.h>
+#include <kwindowconfig.h>
 
 #include <QBoxLayout>
 #include <QDialogButtonBox>
+#include <QPushButton>
 #include <QTextCodec>
 
 struct KEncodingFileDialogPrivate
 {
+    KEncodingFileDialogPrivate()
+        : cfgGroup(KSharedConfig::openConfig(), ConfigGroup)
+    {}
+
     KComboBox *encoding;
     KFileWidget *w;
-    QDialogButtonBox *buttons;
+    KConfigGroup cfgGroup;
 };
 
 
@@ -64,12 +71,17 @@ KEncodingFileDialog::KEncodingFileDialog(const QUrl &startDir,
     setWindowTitle(caption);
     //ops->clearHistory();
 
+    KWindowConfig::restoreWindowSize(windowHandle(), d->cfgGroup);
+
     QBoxLayout *mainLayout = new QVBoxLayout;
     setLayout(mainLayout);
     mainLayout->addWidget(d->w);
 
-    d->buttons = new QDialogButtonBox(this);
-    mainLayout->addWidget(d->buttons);
+    d->w->okButton()->show();
+    connect(d->w->okButton(), SIGNAL(clicked()), SLOT(slotOk()));
+    d->w->cancelButton()->show();
+    connect(d->w->cancelButton(), SIGNAL(clicked()), SLOT(slotCancel()));
+    connect(d->w, SIGNAL(accepted()), SLOT(accept()));
 
     d->encoding = new KComboBox(this);
     d->w->setCustomWidget(i18n("Encoding:"), d->encoding);
@@ -94,11 +106,11 @@ KEncodingFileDialog::KEncodingFileDialog(const QUrl &startDir,
             if ( (codecForEnc->name() == sEncoding) || (encoding == sEncoding) )
             {
                 d->encoding->setCurrentIndex(insert);
-                foundRequested=true;
+                foundRequested = true;
             }
 
             if ( (codecForEnc->name() == systemEncoding) || (encoding == systemEncoding) )
-                system=insert;
+                system = insert;
             insert++;
         }
     }
@@ -136,8 +148,8 @@ KEncodingFileDialog::Result KEncodingFileDialog::getOpenFileNameAndEncoding(cons
     dlg.exec();
 
     Result res;
-    res.fileNames<<dlg.d->w->selectedFile();
-    res.encoding=dlg.selectedEncoding();
+    res.fileNames << dlg.d->w->selectedFile();
+    res.encoding = dlg.selectedEncoding();
     return res;
 }
 
@@ -155,8 +167,8 @@ KEncodingFileDialog::Result KEncodingFileDialog::getOpenFileNamesAndEncoding(con
     dlg.exec();
 
     Result res;
-    res.fileNames=dlg.d->w->selectedFiles();
-    res.encoding=dlg.selectedEncoding();
+    res.fileNames = dlg.d->w->selectedFiles();
+    res.encoding = dlg.selectedEncoding();
     return res;
 }
 
@@ -174,8 +186,8 @@ KEncodingFileDialog::Result KEncodingFileDialog::getOpenUrlAndEncoding(const QSt
     dlg.exec();
 
     Result res;
-    res.URLs<<dlg.d->w->selectedUrl();
-    res.encoding=dlg.selectedEncoding();
+    res.URLs << dlg.d->w->selectedUrl();
+    res.encoding = dlg.selectedEncoding();
     return res;
 }
 
@@ -193,8 +205,8 @@ KEncodingFileDialog::Result KEncodingFileDialog::getOpenUrlsAndEncoding(const QS
     dlg.exec();
 
     Result res;
-    res.URLs=dlg.d->w->selectedUrls();
-    res.encoding=dlg.selectedEncoding();
+    res.URLs = dlg.d->w->selectedUrls();
+    res.encoding = dlg.selectedEncoding();
     return res;
 }
 
@@ -216,8 +228,8 @@ KEncodingFileDialog::Result KEncodingFileDialog::getSaveFileNameAndEncoding(cons
         KRecentDocument::add(filename);
 
     Result res;
-    res.fileNames<<filename;
-    res.encoding=dlg.selectedEncoding();
+    res.fileNames << filename;
+    res.encoding = dlg.selectedEncoding();
     return res;
 }
 
@@ -238,10 +250,39 @@ KEncodingFileDialog::Result KEncodingFileDialog::getSaveUrlAndEncoding(const QSt
         QUrl url = dlg.d->w->selectedUrl();
         if (url.isValid())
             KRecentDocument::add( url );
-        res.URLs<<url;
-        res.encoding=dlg.selectedEncoding();
+        res.URLs << url;
+        res.encoding = dlg.selectedEncoding();
     }
     return res;
+}
+
+QSize KEncodingFileDialog::sizeHint() const
+{
+    return d->w->dialogSizeHint();
+}
+
+void KEncodingFileDialog::hideEvent(QHideEvent *e)
+{
+    KWindowConfig::saveWindowSize(windowHandle(), d->cfgGroup, KConfigBase::Persistent);
+
+    QDialog::hideEvent(e);
+}
+
+void KEncodingFileDialog::accept()
+{
+    d->w->accept();
+    QDialog::accept();
+}
+
+void KEncodingFileDialog::slotOk()
+{
+    d->w->slotOk();
+}
+
+void KEncodingFileDialog::slotCancel()
+{
+    d->w->slotCancel();
+    reject();
 }
 
 #include "moc_kencodingfiledialog.cpp"
