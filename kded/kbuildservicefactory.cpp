@@ -267,7 +267,16 @@ void KBuildServiceFactory::populateServiceTypes()
                         continue;
                     }
                 } else {
-                    m_offerHash.addServiceOffer(mime->name(), offer); // mime->name so that we resolve aliases
+                    bool shouldAdd = true;
+                    foreach (const QString &otherType, service->serviceTypes()) {
+                        if (stName != otherType && mime->is(otherType)) {
+                            shouldAdd = false;
+                        }
+                    }
+                    if (shouldAdd) {
+                        //kDebug(7021) << "Adding service" << service->entryPath() << "to" << mime->name();
+                        m_offerHash.addServiceOffer(mime->name(), offer); // mime->name so that we resolve aliases
+                    }
                 }
             }
         }
