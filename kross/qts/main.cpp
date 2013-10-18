@@ -83,6 +83,7 @@ int main(int argc, char **argv)
 
     app = new KApplication( /* GUIenabled */ true );
     QScriptEngine* engine = new QScriptEngine();
+    engine->installTranslatorFunctions();
     QScriptValue global = engine->globalObject();
 
     //qDebug()<<"QLibraryInfo::PluginsPath="<<QLibraryInfo::location(QLibraryInfo::PluginsPath);
