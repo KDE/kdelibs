@@ -1,7 +1,5 @@
 configure_file(knotify-config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/knotify-config.h )
 
-find_package(Phonon4Qt5 4.6.60 NO_MODULE)
-
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
 set(HAVE_PHONON ${Phonon4Qt5_FOUND})
@@ -26,20 +24,19 @@ add_library(KNotifyConfig ${knotifyconfig_LIB_SRCS})
 generate_export_header(KNotifyConfig)
 add_library(KF5::KNotifyConfig ALIAS KNotifyConfig)
 
-# Needs KIO for KUrlRequester
 target_link_libraries(KNotifyConfig
         LINK_PUBLIC
             Qt5::Widgets
         LINK_PRIVATE
             KF5::KI18n
-            KF5::KIOWidgets
-            ${PHONON_LIBS}
+            KF5::KIOWidgets     # KUrlRequester
             KF5::KCoreAddons
+            ${PHONON_LIBS}
             Qt5::DBus)
 
 set_target_properties(KNotifyConfig PROPERTIES
-   VERSION ${GENERIC_LIB_VERSION}
-   SOVERSION ${GENERIC_LIB_SOVERSION}
+   VERSION      ${KNOTIFYCONFIG_VERSION_STRING}
+   SOVERSION    ${KNOTIFYCONFIG_SOVERSION}
 )
 install(TARGETS KNotifyConfig EXPORT KNotifyConfigTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 

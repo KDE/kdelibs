@@ -10,15 +10,14 @@ set(REQUIRED_QT_VERSION "5.2.0")
 set(KF5_VERSION "5.0.0")
 
 # Required Qt5 components to build this framework
-find_package(Qt5 ${REQUIRED_QT_VERSION} NO_MODULE REQUIRED Core Widgets DBus Test)
+find_package(Qt5 ${REQUIRED_QT_VERSION} NO_MODULE REQUIRED Widgets DBus Test)
+find_package(KF5 ${KF5_VERSION} MODULE REQUIRED CMake Compiler InstallDirs)
+find_package(Phonon4Qt5 4.6.60 NO_MODULE)
 
 if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
-  # Content of this block is only executed when building the framework
-  # standalone
-  find_package(KF5 ${KF5_VERSION} MODULE REQUIRED CMake Compiler InstallDirs)
-  # Required KF5 frameworks to build this framework
-  # For example:
   find_package(KCoreAddons ${KF5_VERSION} REQUIRED)
+  find_package(KIO ${KF5_VERSION} REQUIRED)
+  find_package(KI18n ${KF5_VERSION} REQUIRED)
 endif()
 
 # Includes
