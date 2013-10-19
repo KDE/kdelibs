@@ -269,8 +269,13 @@ void KBuildServiceFactory::populateServiceTypes()
                 } else {
                     bool shouldAdd = true;
                     foreach (const QString &otherType, service->serviceTypes()) {
+                        // Skip derived types if the base class is listed (#321706)
                         if (stName != otherType && mime->is(otherType)) {
-                            shouldAdd = false;
+                            // But don't skip aliases (they got resolved into mime->name() already, but don't let two aliases cancel out)
+                            if (KMimeTypeRepository::self()->canonicalName(otherType) != mime->name()) {
+                                //kDebug() << "Skipping" << mime->name() << "because of" << otherType << "(canonical" << KMimeTypeRepository::self()->canonicalName(otherType) << ") while parsing" << service->entryPath();
+                                shouldAdd = false;
+                            }
                         }
                     }
                     if (shouldAdd) {
