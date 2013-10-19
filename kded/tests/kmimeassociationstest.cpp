@@ -140,10 +140,12 @@ private Q_SLOTS:
         // This interacted badly with mimeapps.list listing another app for text/plain, but the
         // lookup found this app first, due to c-src. The fix: ignoring derived mimetypes when
         // the base mimetype is already listed.
+        //
+        // Also include aliases (msword), to check they don't cancel each other out.
         fakeCSrcApplication = m_localApps + "fakecsrcapplication.desktop";
         if (!QFile::exists(fakeCSrcApplication)) {
             mustUpdateKSycoca = true;
-            writeAppDesktopFile(fakeCSrcApplication, QStringList() << "text/plain" << "text/c-src", 8);
+            writeAppDesktopFile(fakeCSrcApplication, QStringList() << "text/plain" << "text/c-src" << "application/vnd.ms-word" << "application/msword", 8);
         }
 
         fakeJpegApplication = m_localApps + "fakejpegapplication.desktop";
@@ -200,6 +202,7 @@ private Q_SLOTS:
         preferredApps["text/plain"] << "faketextapplication.desktop" << "kde4-kwrite.desktop";
         preferredApps["text/x-csrc"] << "faketextapplication.desktop" << "kde4-kwrite.desktop";
         preferredApps["text/html"] << "fakehtmlapplication.desktop";
+        preferredApps["application/msword"] << "fakecsrcapplication.desktop";
         removedApps["image/jpeg"] << "firefox.desktop";
         removedApps["text/html"] << "kde4-dolphin.desktop" << "kde4-kwrite.desktop";
 
@@ -231,14 +234,17 @@ private Q_SLOTS:
         for (ExpectedResultsMap::const_iterator it = preferredApps.constBegin(),
                                                end = preferredApps.constEnd() ; it != end ; ++it) {
             const QString mime = it.key();
-            // Derived mimetypes are handled outside KMimeAssociations
-            if (mime == QLatin1String("text/x-csrc"))
+            // The data for derived types and aliases isn't for this test (which only looks at mimeapps.list)
+            if (mime == QLatin1String("text/x-csrc") || mime == QLatin1String("application/msword"))
                 continue;
             const QList<KServiceOffer> offers = offerHash.offersFor(mime);
             Q_FOREACH(const QString& service, it.value()) {
                 KService::Ptr serv = KService::serviceByStorageId(service);
                 if (serv && !offersContains(offers, serv)) {
-                    kDebug() << serv.data() << serv->entryPath() << "does not have" << mime;
+                    kDebug() << "expected offer" << serv->entryPath() << "not in offers for" << mime << ":";
+                    Q_FOREACH(const KServiceOffer& offer, offers) {
+                        kDebug() << offer.service()->storageId();
+                    }
                     QFAIL("offer does not have servicetype");
                 }
             }
