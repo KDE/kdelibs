@@ -95,7 +95,7 @@ void KServiceTest::initTestCase()
         group.writeEntry("X-KDE-Library", "fakepart");
         group.writeEntry("X-KDE-Protocols", "http,ftp");
         group.writeEntry("X-KDE-ServiceTypes", "KParts/ReadOnlyPart,Browser/View,KParts/ReadWritePart");
-        group.writeEntry("MimeType", "text/plain;");
+        group.writeEntry("MimeType", "text/plain;text/html;");
     }
 
     const QString fakePart2 = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QLatin1String("/kde5/services/") + "fakepart2.desktop";
@@ -245,6 +245,7 @@ void KServiceTest::testProperty()
     KService::Ptr fakePart = KService::serviceByDesktopPath("fakepart.desktop");
     QVERIFY(fakePart); // see initTestCase; it should be found.
     QVERIFY(fakePart->propertyNames().contains("X-KDE-Protocols"));
+    QCOMPARE(fakePart->mimeTypes(), QStringList() << "text/plain" << "text/html"); // okular relies on subclasses being kept here
     const QStringList protocols = fakePart->property("X-KDE-Protocols").toStringList();
     QCOMPARE(protocols, QStringList() << "http" << "ftp");
 }
@@ -440,7 +441,7 @@ void KServiceTest::testHasServiceType1() // with services constructed with a ful
     KService fakepart( fakepartPath );
     QVERIFY( fakepart.hasServiceType( "KParts/ReadOnlyPart" ) );
     QVERIFY( fakepart.hasServiceType( "KParts/ReadWritePart" ) );
-    QCOMPARE(fakepart.mimeTypes(), QStringList() << "text/plain");
+    QCOMPARE(fakepart.mimeTypes(), QStringList() << "text/plain" << "text/html");
 
     QString faketextPluginPath = QStandardPaths::locate(QStandardPaths::GenericDataLocation, QLatin1String("kde5/services/") + "faketextplugin.desktop" );
     QVERIFY( !faketextPluginPath.isEmpty() );
@@ -455,7 +456,7 @@ void KServiceTest::testHasServiceType2() // with services coming from ksycoca
     QVERIFY( fakepart );
     QVERIFY( fakepart->hasServiceType( "KParts/ReadOnlyPart" ) );
     QVERIFY( fakepart->hasServiceType( "KParts/ReadWritePart" ) );
-    QCOMPARE(fakepart->mimeTypes(), QStringList() << "text/plain");
+    QCOMPARE(fakepart->mimeTypes(), QStringList() << "text/plain" << "text/html");
 
     KService::Ptr faketextPlugin = KService::serviceByDesktopPath( "faketextplugin.desktop" );
     QVERIFY( faketextPlugin );

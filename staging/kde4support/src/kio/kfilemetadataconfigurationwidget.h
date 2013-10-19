@@ -27,6 +27,8 @@
 
 
 /**
+ * @deprecated Use Nepomuk2::FileMetaDataConfigurationWidget
+ *
  * @brief Widget which allows to configure which meta data should be shown
  *        in the KFileMetaDataWidget.
  *

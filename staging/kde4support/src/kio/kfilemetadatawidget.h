@@ -28,6 +28,8 @@
 #include <QWidget>
 
 /**
+ * @deprecated Use Nepomuk2::FileMetaDataWidget
+ *
  * @brief Shows the meta data of one or more file items.
  *
  * Meta data like name, size, rating, comment, ... are

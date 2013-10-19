@@ -65,7 +65,7 @@ public:
 private:
     QString  sourceOrigin;
     QString  targetOrigin;
-    JSValue* payload;
+    ProtectedPtr<JSValue> payload;
     QWeakPointer<KHTMLPart> source;
 };
 

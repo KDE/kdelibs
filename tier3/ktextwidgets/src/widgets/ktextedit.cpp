@@ -67,8 +67,8 @@ class KTextEdit::Private
         lastReplacedPosition(-1)
     {
         //Check the default sonnet settings to see if spellchecking should be enabled.
-        sonnetKConfig = new KConfig(QLatin1String("sonnetrc"));
-        KConfigGroup group(sonnetKConfig, "Spelling");
+        KConfig sonnetKConfig(QLatin1String("sonnetrc"));
+        KConfigGroup group(&sonnetKConfig, "Spelling");
         checkSpellingEnabled = group.readEntry("checkerEnabledByDefault", false);
 
         // i18n: Placeholder text in text edit widgets is the text appearing
@@ -87,7 +87,6 @@ class KTextEdit::Private
       delete find;
       delete replace;
       delete repDlg;
-      delete sonnetKConfig;
     }
 
     /**
@@ -148,7 +147,6 @@ class KTextEdit::Private
     KReplace *replace;
     int findIndex, repIndex;
     int lastReplacedPosition;
-    KConfig *sonnetKConfig;
 };
 
 void KTextEdit::Private::checkSpelling(bool force)

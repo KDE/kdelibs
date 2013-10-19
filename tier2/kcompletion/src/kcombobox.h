@@ -74,7 +74,7 @@ class QUrl;
  *
  * Beware: The completion object can be deleted on you, especially if a call
  * such as setEditable(false) is made.  Store the pointer at your own risk,
- * and consider using QGuardedPtr<KCompletion>.
+ * and consider using QPointer<KCompletion>.
  *
  * The default key-bindings for completion and rotation is determined from the
  * global settings in KStandardShortcut. These values, however, can be overridden

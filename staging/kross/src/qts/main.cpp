@@ -58,6 +58,7 @@ int main(int argc, char **argv)
     app->setOrganizationDomain("dipe.org");
 
     QScriptEngine* engine = new QScriptEngine();
+    engine->installTranslatorFunctions();
 
     /*K4AboutData about("kross",0,ki18n("Kross"),"0.1",
                      ki18n("KDE application to run Kross scripts."),
