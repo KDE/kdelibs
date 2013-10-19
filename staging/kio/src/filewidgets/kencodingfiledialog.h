@@ -1,7 +1,8 @@
 // -*- c++ -*-
 /* This file is part of the KDE libraries
     Copyright (C) 2003 Joseph Wenninger <jowenn@kde.org>
-		  2003 Andras Mantia <amantia@freemail.hu>
+                  2003 Andras Mantia <amantia@freemail.hu>
+                  2013 Teo Mrnjavac <teo@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -29,69 +30,22 @@
 struct KEncodingFileDialogPrivate;
 
 /**
- * Provides a user (and developer) friendly way to
- * select files with support for choosing encoding
+ * Provides a user (and developer) friendly way to select files with support for
+ * choosing encoding.
+ * This class comes with a private constructor, the only way to show a file dialog
+ * is through its static methods.
  */
-
 class KEncodingFileDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    class Result {
+    class KIOFILEWIDGETS_EXPORT Result {
 	public:
 		QStringList fileNames;
 		QList<QUrl> URLs;
 		QString encoding;
     };
-
-    /**
-     * Constructs a file dialog for text files with encoding selection possibility.
-     *
-     * @param startDir This can either be
-     *         @li The URL of the directory to start in.
-     *         @li QString() to start in the current working
-     *		    directory, or the last directory where a file has been
-     *		    selected.
-     *         @li ':&lt;keyword&gt;' to start in the directory last used
-     *             by a filedialog in the same application that specified
-     *             the same keyword.
-     *         @li '::&lt;keyword&gt;' to start in the directory last used
-     *             by a filedialog in any application that specified the
-     *             same keyword.
-     *
-     * @param encoding The encoding shown in the encoding combo. If it's
-     *		    QString(), the global default encoding will be shown.
-     *
-     * @param filter A shell glob or a mime-type-filter that specifies which files to display.
-     *    The preferred option is to set a list of mimetype names, see setMimeFilter() for details.
-     *    Otherwise you can set the text to be displayed for the each glob, and
-     *    provide multiple globs, see setFilter() for details.
-     *
-     * @param caption The caption of the dialog
-     *
-     * @param type This can either be
-     *		@li QFileDialog::AcceptOpen (open dialog, the default setting)
-     *		@li QFileDialog::AcceptSave
-     * @param parent The parent widget of this dialog
-     */
-    KEncodingFileDialog(const QUrl &startDir = QUrl(),
-                        const QString &encoding = QString(),
-                        const QString &filter = QString(),
-                        const QString &caption = QString(),
-                        QFileDialog::AcceptMode type = QFileDialog::AcceptOpen,
-                        QWidget *parent = 0);
-    /**
-     * Destructs the file dialog.
-     */
-    ~KEncodingFileDialog();
-
-
-    /**
-    * @returns The selected encoding if the constructor with the encoding parameter was used, otherwise QString().
-    */
-    QString selectedEncoding() const;
-
 
     /**
      * Creates a modal file dialog and return the selected
@@ -305,6 +259,53 @@ private Q_SLOTS:
     void slotCancel();
 
 private:
+    /**
+     * Constructs a file dialog for text files with encoding selection possibility.
+     *
+     * @param startDir This can either be
+     *         @li The URL of the directory to start in.
+     *         @li QString() to start in the current working
+     *		    directory, or the last directory where a file has been
+     *		    selected.
+     *         @li ':&lt;keyword&gt;' to start in the directory last used
+     *             by a filedialog in the same application that specified
+     *             the same keyword.
+     *         @li '::&lt;keyword&gt;' to start in the directory last used
+     *             by a filedialog in any application that specified the
+     *             same keyword.
+     *
+     * @param encoding The encoding shown in the encoding combo. If it's
+     *		    QString(), the global default encoding will be shown.
+     *
+     * @param filter A shell glob or a mime-type-filter that specifies which files to display.
+     *    The preferred option is to set a list of mimetype names, see setMimeFilter() for details.
+     *    Otherwise you can set the text to be displayed for the each glob, and
+     *    provide multiple globs, see setFilter() for details.
+     *
+     * @param caption The caption of the dialog
+     *
+     * @param type This can either be
+     *		@li QFileDialog::AcceptOpen (open dialog, the default setting)
+     *		@li QFileDialog::AcceptSave
+     * @param parent The parent widget of this dialog
+     */
+    KEncodingFileDialog(const QUrl &startDir = QUrl(),
+                        const QString &encoding = QString(),
+                        const QString &filter = QString(),
+                        const QString &caption = QString(),
+                        QFileDialog::AcceptMode type = QFileDialog::AcceptOpen,
+                        QWidget *parent = 0);
+    /**
+     * Destructs the file dialog.
+     */
+    ~KEncodingFileDialog();
+
+
+    /**
+    * @returns The selected encoding if the constructor with the encoding parameter was used, otherwise QString().
+    */
+    QString selectedEncoding() const;
+
     KEncodingFileDialogPrivate* const d;
 };
 
