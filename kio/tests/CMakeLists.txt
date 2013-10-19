@@ -26,7 +26,6 @@ KIO_EXECUTABLE_TESTS(
   ksycocatest
   speed
   kionetrctest
-  kpropsdlgtest
   ksycocaupdatetest
   kdbusservicestartertest
   kfiledialogtest

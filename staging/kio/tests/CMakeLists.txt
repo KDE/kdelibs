@@ -20,4 +20,5 @@ KIOWIDGETS_EXECUTABLE_TESTS(
   previewtest
   kurlrequestertest_gui
   kfiletreeviewtest
+  kpropertiesdialogtest
 )
