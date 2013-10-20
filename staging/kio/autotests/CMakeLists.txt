@@ -21,6 +21,7 @@ macro(KIOCORE_UNIT_TESTS)
 endmacro(KIOCORE_UNIT_TESTS)
 
 kiocore_unit_tests(
+ kacltest
  listdirtest
  kmountpointtest
  upurltest

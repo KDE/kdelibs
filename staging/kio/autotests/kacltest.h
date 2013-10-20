@@ -23,14 +23,14 @@
 #include <QtCore/QObject>
 #include <kacl.h>
 
-class KACLTest
+class KACLTest : public QObject
 {
+    Q_OBJECT
 public:
     KACLTest();
-    void setup();
-    void runAll();
-    void cleanup();
 
+private Q_SLOTS:
+    void initTestCase();
     void testAsString();
     void testSetACL();
     void testGetOwnerPermissions();
@@ -48,6 +48,7 @@ public:
 
 private:
     KACL m_acl;
+    KACL m_acl2;
 };
 
 #endif
