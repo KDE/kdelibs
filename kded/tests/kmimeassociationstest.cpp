@@ -78,7 +78,7 @@ static bool offerListHasService( const KService::List& offers,
     if (!found && expected) {
         qWarning() << "ERROR:" << entryPath << "not found in offer list. Here's the full list:";
         Q_FOREACH(const KService::Ptr &serv, offers) {
-            //qDebug() << serv->entryPath();
+            qDebug() << serv->entryPath();
         }
     }
     return found;
@@ -141,7 +141,7 @@ private Q_SLOTS:
         // the base mimetype is already listed.
         //
         // Also include aliases (msword), to check they don't cancel each other out.
-        fakeCSrcApplication = m_localApps + "fakecsrcapplication.desktop";
+        fakeCSrcApplication = m_localApps + "fakecsrcmswordapplication.desktop";
         if (!QFile::exists(fakeCSrcApplication)) {
             mustUpdateKSycoca = true;
             writeAppDesktopFile(fakeCSrcApplication, QStringList() << "text/plain" << "text/c-src" << "application/vnd.ms-word" << "application/msword", 8);
@@ -201,7 +201,7 @@ private Q_SLOTS:
         preferredApps["text/plain"] << "faketextapplication.desktop" << "kde4-kwrite.desktop";
         preferredApps["text/x-csrc"] << "faketextapplication.desktop" << "kde4-kwrite.desktop";
         preferredApps["text/html"] << "fakehtmlapplication.desktop";
-        preferredApps["application/msword"] << "fakecsrcapplication.desktop";
+        preferredApps["application/msword"] << "fakecsrcmswordapplication.desktop";
         removedApps["image/jpeg"] << "firefox.desktop";
         removedApps["text/html"] << "kde4-dolphin.desktop" << "kde4-kwrite.desktop";
 
@@ -324,19 +324,21 @@ private Q_SLOTS:
         // for each mimetype, check that the preferred apps are as specified
         for (ExpectedResultsMap::const_iterator it = preferredApps.constBegin(), end = preferredApps.constEnd() ; it != end ; ++it) {
             const QString mime = it.key();
-            //qDebug() << "offers for" << mime << ":";
             const KService::List offers = KMimeTypeTrader::self()->query(mime);
-            for (int i = 0; i < offers.count(); ++i) {
-                //qDebug() << "   " << i << ":" << offers[i]->storageId();
-            }
             const QStringList offerIds = assembleServices(offers, it.value().count());
-            //qDebug() << " Expected:" << it.value();
+            if (offerIds != it.value()) {
+                qDebug() << "offers for" << mime << ":";
+                for (int i = 0; i < offers.count(); ++i) {
+                    qDebug() << "   " << i << ":" << offers[i]->storageId();
+                }
+                qDebug() << " Expected:" << it.value();
+                const QStringList expectedPreferredServices = it.value();
+                for (int i = 0; i < expectedPreferredServices.count(); ++i) {
+                    qDebug() << mime << i << expectedPreferredServices[i];
+                    //QCOMPARE(expectedPreferredServices[i], offers[i]->storageId());
+                }
+            }
             QCOMPARE(offerIds, it.value());
-            //const QStringList expectedPreferredServices = it.value();
-            //for (int i = 0; i < expectedPreferredServices.count(); ++i) {
-                //qDebug() << mime << i << expectedPreferredServices[i];
-            //    QCOMPARE(expectedPreferredServices[i], offers[i]->storageId());
-            //}
         }
     }
 
