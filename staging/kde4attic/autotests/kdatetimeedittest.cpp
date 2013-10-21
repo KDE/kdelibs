@@ -23,7 +23,6 @@
 
 #include <QtTest/QtTest>
 #include "kdatetimeedit.h"
-#include "kcalendarsystem.h"
 #include "ksystemtimezone.h"
 
 QTEST_MAIN(KDateTimeEditTest)
@@ -35,14 +34,15 @@ void KDateTimeEditTest::testDefaults()
     QCOMPARE(m_edit->dateTime(), KDateTime(QDate::currentDate(), QTime(0, 0, 0)));
     QCOMPARE(m_edit->date(), QDate::currentDate());
     QCOMPARE(m_edit->time(), QTime(0, 0, 0));
-    QCOMPARE(m_edit->minimumDateTime(), KDateTime(KLocale::global()->calendar()->earliestValidDate(), QTime(0, 0, 0)));
-    QCOMPARE(m_edit->maximumDateTime(), KDateTime(KLocale::global()->calendar()->latestValidDate(), QTime(23, 59, 59, 999)));
+    // Missing support in QLocale
+    //QCOMPARE(m_edit->minimumDateTime(), KDateTime(KLocale::global()->calendar()->earliestValidDate(), QTime(0, 0, 0)));
+    //QCOMPARE(m_edit->maximumDateTime(), KDateTime(KLocale::global()->calendar()->latestValidDate(), QTime(23, 59, 59, 999)));
     QCOMPARE(m_edit->isValid(), true);
     QCOMPARE(m_edit->isNull(), false);
     QCOMPARE(m_edit->options(), KDateTimeEdit::ShowDate | KDateTimeEdit::EditDate | KDateTimeEdit::SelectDate | KDateTimeEdit::DatePicker | KDateTimeEdit::DateKeywords | KDateTimeEdit::ShowTime | KDateTimeEdit::EditTime | KDateTimeEdit::SelectTime);
-    QCOMPARE(m_edit->dateDisplayFormat(), KLocale::ShortDate);
+    QCOMPARE(m_edit->dateDisplayFormat(), QLocale::ShortFormat);
     QCOMPARE(m_edit->timeListInterval(), 15);
-    QCOMPARE(m_edit->timeDisplayFormat(), KLocale::TimeDefault);
+    QCOMPARE(m_edit->timeDisplayFormat(), QLocale::ShortFormat);
     delete m_edit;
 }
 
@@ -61,8 +61,9 @@ void KDateTimeEditTest::testDateTimeRange()
 {
     m_edit = new KDateTimeEdit(0);
     m_edit->setDateTime(KDateTime(QDate(2000, 1, 1), QTime(12, 0, 0)));
-    QCOMPARE(m_edit->minimumDateTime(), KDateTime(KLocale::global()->calendar()->earliestValidDate(), QTime(0, 0, 0)));
-    QCOMPARE(m_edit->maximumDateTime(), KDateTime(KLocale::global()->calendar()->latestValidDate(), QTime(23, 59, 59, 999)));
+    // Missing support in QLocale
+    //QCOMPARE(m_edit->minimumDateTime(), KDateTime(KLocale::global()->calendar()->earliestValidDate(), QTime(0, 0, 0)));
+    //QCOMPARE(m_edit->maximumDateTime(), KDateTime(KLocale::global()->calendar()->latestValidDate(), QTime(23, 59, 59, 999)));
     QCOMPARE(m_edit->isValid(), true);
 
     m_edit->setDateTimeRange(KDateTime(QDate(2001, 1, 1), QTime(10, 0, 0)),
@@ -130,9 +131,9 @@ void KDateTimeEditTest::testOptions()
 void KDateTimeEditTest::testDateDisplayFormat()
 {
     m_edit = new KDateTimeEdit(0);
-    KLocale::DateFormat format = KLocale::ShortDate;
+    QLocale::FormatType format = QLocale::ShortFormat;
     QCOMPARE(m_edit->dateDisplayFormat(), format);
-    format = KLocale::IsoDate;
+    format = QLocale::NarrowFormat;
     m_edit->setDateDisplayFormat(format);
     QCOMPARE(m_edit->dateDisplayFormat(), format);
     delete m_edit;
@@ -172,9 +173,9 @@ void KDateTimeEditTest::testTimeList()
 void KDateTimeEditTest::testTimeDisplayFormat()
 {
     m_edit = new KDateTimeEdit();
-    KLocale::TimeFormatOptions format = KLocale::TimeDefault;
+    QLocale::FormatType format = QLocale::ShortFormat;
     QCOMPARE(m_edit->timeDisplayFormat(), format);
-    format = KLocale::TimeWithoutSeconds;
+    format = QLocale::NarrowFormat;
     m_edit->setTimeDisplayFormat(format);
     QCOMPARE(m_edit->timeDisplayFormat(), format);
     delete m_edit;
@@ -183,23 +184,20 @@ void KDateTimeEditTest::testTimeDisplayFormat()
 void KDateTimeEditTest::testCalendarSystem()
 {
     m_edit = new KDateTimeEdit();
-    QList<KLocale::CalendarSystem> calendars = KCalendarSystem::calendarSystemsList();
+    QList<QLocale> calendars;
+    calendars << QLocale();
 
-    QCOMPARE(m_edit->calendarSystem(), KLocale::global()->calendarSystem());
-    QCOMPARE(m_edit->calendarSystemsList(), calendars);
+    QCOMPARE(m_edit->locale(), QLocale());
+    QCOMPARE(m_edit->calendarLocalesList(), calendars);
 
-    m_edit->setCalendarSystem(KLocale::JulianCalendar);
-    QCOMPARE(m_edit->calendarSystem(), KLocale::JulianCalendar);
+    m_edit->setLocale(QLocale(QLocale::Hebrew));
+    QCOMPARE(m_edit->locale(), QLocale(QLocale::Hebrew));
 
     calendars.clear();
-    calendars.append(KLocale::QDateCalendar);
-    calendars.append(KLocale::GregorianCalendar);
-    calendars.append(KLocale::JulianCalendar);
-    m_edit->setCalendarSystemsList(calendars);
-    QCOMPARE(m_edit->calendarSystemsList(), calendars);
-
-    m_edit->setCalendarSystem(KLocale::IslamicCivilCalendar);
-    QCOMPARE(m_edit->calendarSystem(), KLocale::JulianCalendar);
+    calendars.append(QLocale(QLocale::Hebrew));
+    calendars.append(QLocale(QLocale::Chinese));
+    m_edit->setCalendarLocalesList(calendars);
+    QCOMPARE(m_edit->calendarLocalesList(), calendars);
 
     delete m_edit;
 }

@@ -28,8 +28,6 @@
 #include "kdatetime.h"
 #include "klocalizedstring.h"
 #include "ksystemtimezone.h"
-#include "kcalendarsystem.h"
-#include "kcombobox.h"
 #include "kdatepicker.h"
 #include "kdatecombobox.h"
 #include "kmessagebox.h"
@@ -41,8 +39,6 @@ class KDateTimeEditPrivate
 public:
     KDateTimeEditPrivate(KDateTimeEdit *q);
     virtual ~KDateTimeEditPrivate();
-
-    const KCalendarSystem *calendar() const;
 
     KDateTime defaultMinDateTime();
     KDateTime defaultMaxDateTime();
@@ -72,7 +68,7 @@ public:
     QString m_minWarnMsg;
     QString m_maxWarnMsg;
 
-    QList<KLocale::CalendarSystem> m_calendarSystems;
+    QList<QLocale> m_calendarLocales;
     KTimeZones::ZoneMap m_zones;
 
     Ui::KDateTimeEdit ui;
@@ -86,7 +82,7 @@ KDateTimeEditPrivate::KDateTimeEditPrivate(KDateTimeEdit *q)
                 KDateTimeEdit::DatePicker | KDateTimeEdit::DateKeywords;
     m_dateTime = KDateTime::currentLocalDateTime();
     m_dateTime.setTime(QTime(0, 0, 0));
-    m_calendarSystems = KCalendarSystem::calendarSystemsList();
+    m_calendarLocales << q->locale();
     m_zones = KSystemTimeZones::zones();
 }
 
@@ -94,19 +90,18 @@ KDateTimeEditPrivate::~KDateTimeEditPrivate()
 {
 }
 
-const KCalendarSystem *KDateTimeEditPrivate::calendar() const
-{
-    return 0;
-}
-
 KDateTime KDateTimeEditPrivate::defaultMinDateTime()
 {
-    return KDateTime(calendar()->earliestValidDate(), QTime(0, 0, 0, 0));
+    // TODO: Find a way to get it from QLocale
+    //return KDateTime(calendar()->earliestValidDate(), QTime(0, 0, 0, 0));
+    return KDateTime();
 }
 
 KDateTime KDateTimeEditPrivate::defaultMaxDateTime()
 {
-    return KDateTime(calendar()->latestValidDate(), QTime(23, 59, 59, 999));
+    // TODO: Find a way to get it from QLocale
+    //return KDateTime(calendar()->latestValidDate(), QTime(23, 59, 59, 999));
+    return KDateTime();
 }
 
 void KDateTimeEditPrivate::initWidgets()
@@ -160,8 +155,8 @@ void KDateTimeEditPrivate::initCalendarWidget()
 {
     ui.m_calendarCombo->blockSignals(true);
     ui.m_calendarCombo->clear();
-    foreach (KLocale::CalendarSystem calendar, m_calendarSystems) {
-        ui.m_calendarCombo->addItem(KCalendarSystem::calendarLabel(calendar), calendar);
+    foreach (const QLocale calendarLocale, m_calendarLocales) {
+        ui.m_calendarCombo->addItem(calendarLocale.name(), calendarLocale);
     }
     ui.m_calendarCombo->setCurrentIndex(ui.m_calendarCombo->findData(q->locale()));
     ui.m_calendarCombo->setVisible((m_options &KDateTimeEdit::ShowCalendar) == KDateTimeEdit::ShowCalendar);
@@ -236,7 +231,7 @@ void KDateTimeEditPrivate::warnDateTime()
         if (!m_dateTime.isValid()) {
             //TODO Add missing string
             //warnMsg = i18n("The date or time you entered is invalid");
-        } else if (m_dateTime < m_minDateTime) {
+        } else if (m_minDateTime.isValid() && m_dateTime < m_minDateTime) {
             if (m_minWarnMsg.isEmpty()) {
                 //TODO Add datetime to string
                 //warnMsg = i18nc("@info", "Date and time cannot be earlier than %1", formatDate(m_minDate));
@@ -244,16 +239,16 @@ void KDateTimeEditPrivate::warnDateTime()
             } else {
                 warnMsg = m_minWarnMsg;
                 //TODO localize properly
-                warnMsg.replace("%1", KLocale::global()->formatDateTime(m_minDateTime));
+                warnMsg.replace("%1", q->locale().toString(m_minDateTime.dateTime()));
             }
-        } else if (m_dateTime > m_maxDateTime) {
+        } else if (m_maxDateTime.isValid() && m_dateTime > m_maxDateTime) {
             if (m_maxWarnMsg.isEmpty()) {
                 //TODO Add datetime to string
                 //warnMsg = i18nc("@info", "Date cannot be later than %1", formatDate(m_maxDate));
                 warnMsg = i18nc("@info", "The entered date and time is after the maximum allowed date and time.");
             } else {
                 warnMsg = m_maxWarnMsg;
-                warnMsg.replace("%1", KLocale::global()->formatDateTime(m_maxDateTime));
+                warnMsg.replace("%1", q->locale().toString(m_maxDateTime.dateTime()));
             }
         }
         KMessageBox::sorry(q, warnMsg);
@@ -310,8 +305,8 @@ KDateTime::Spec KDateTimeEdit::timeSpec() const
 bool KDateTimeEdit::isValid() const
 {
     return d->m_dateTime.isValid() &&
-           d->m_dateTime >= d->m_minDateTime &&
-           d->m_dateTime <= d->m_maxDateTime;
+           (!d->m_minDateTime.isValid() || d->m_dateTime >= d->m_minDateTime) &&
+           (!d->m_maxDateTime.isValid() || d->m_dateTime <= d->m_maxDateTime);
 }
 
 bool KDateTimeEdit::isNull() const
@@ -453,9 +448,7 @@ void KDateTimeEdit::setDateTimeRange(const KDateTime &minDateTime,
 {
     if (minDateTime.isValid() &&
         maxDateTime.isValid() &&
-        minDateTime <= maxDateTime &&
-        d->calendar()->isValid(minDateTime.date()) &&
-        d->calendar()->isValid(maxDateTime.date())) {
+        minDateTime <= maxDateTime) {
 
         d->m_minDateTime = minDateTime;
         d->m_minWarnMsg = minErrorMsg;
@@ -470,17 +463,17 @@ void KDateTimeEdit::resetDateTimeRange()
     setDateTimeRange(d->defaultMinDateTime(), d->defaultMaxDateTime());
 }
 
-void KDateTimeEdit::setCalendarSystemsList(QList<KLocale::CalendarSystem> calendars)
+void KDateTimeEdit::setCalendarLocalesList(const QList<QLocale> &calendarLocales)
 {
-    if (calendars != d->m_calendarSystems) {
-        d->m_calendarSystems = calendars;
+    if (calendarLocales != d->m_calendarLocales) {
+        d->m_calendarLocales = calendarLocales;
         d->updateCalendarWidget();
     }
 }
 
-QList<KLocale::CalendarSystem> KDateTimeEdit::calendarSystemsList() const
+QList<QLocale> KDateTimeEdit::calendarLocalesList() const
 {
-    return d->m_calendarSystems;
+    return d->m_calendarLocales;
 }
 
 void KDateTimeEdit::setDateDisplayFormat(QLocale::FormatType format)

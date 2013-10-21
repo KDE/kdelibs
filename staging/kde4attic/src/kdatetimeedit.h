@@ -25,12 +25,10 @@
 #include <QLocale>
 #include <QWidget>
 
-#include "klocale.h"
 #include "kdatetime.h"
 #include "ktimezone.h"
 
 class KDateTimeEditPrivate;
-class KCalendarSystem;
 
 class KDE4ATTIC_EXPORT KDateTimeEdit : public QWidget
 {
@@ -119,7 +117,7 @@ public:
      *
      * @param calendars the list of calendar systems to display
      */
-    QList<KLocale::CalendarSystem> calendarSystemsList() const;
+    QList<QLocale> calendarLocalesList() const;
 
     /**
      * Return the current minimum date and time
@@ -460,11 +458,11 @@ public Q_SLOTS:
     void setDateDisplayFormat(QLocale::FormatType format);
 
     /**
-     * Set the list of Calendar Systems to display.
+     * Set the list of Calendar Locales to display.
      *
-     * @param calendars the list of calendar systems to display
+     * @param calendarLocales the list of calendar locales to display
      */
-    void setCalendarSystemsList(QList<KLocale::CalendarSystem> calendars);
+    void setCalendarLocalesList(const QList<QLocale> &calendarLocales);
 
     /**
      * Set the list of dates able to be selected from the drop-down and the
