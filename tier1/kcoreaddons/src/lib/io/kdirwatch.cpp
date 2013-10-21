@@ -841,16 +841,22 @@ void KDirWatchPrivate::addEntry(KDirWatch *instance, const QString &_path,
   if (exists) {
     e->isDir = (stat_buf.st_mode & QT_STAT_MASK) == QT_STAT_DIR;
 
+#ifndef Q_OS_WIN
     if (e->isDir && !isDir) {
       if (QT_LSTAT(QFile::encodeName(path).constData(), &stat_buf) == 0) {
-        if ((stat_buf.st_mode & QT_STAT_MASK) == QT_STAT_LNK)
+        if ((stat_buf.st_mode & QT_STAT_MASK) == QT_STAT_LNK) {
           // if it's a symlink, don't follow it
           e->isDir = false;
-        else
-          qWarning() << "KDirWatch:" << path << "is a directory. Use addDir!";
+        }
       }
-    } else if (!e->isDir && isDir)
+    }
+#endif
+
+    if (e->isDir && !isDir) {
+      qWarning() << "KDirWatch:" << path << "is a directory. Use addDir!";
+    } else if (!e->isDir && isDir) {
       qWarning("KDirWatch: %s is a file. Use addFile!", qPrintable(path));
+    }
 
     if (!e->isDir && (watchModes != KDirWatch::WatchDirOnly)) {
       qWarning() << "KDirWatch:" << path << "is a file. You can't use recursive or "
