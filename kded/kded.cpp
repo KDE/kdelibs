@@ -20,7 +20,6 @@
 
 #include "kded.h"
 #include "kdedadaptor.h"
-#include "kdedmodule.h"
 
 #include <kcrash.h>
 
@@ -37,6 +36,7 @@
 #include <QtDBus/QtDBus>
 
 #include <kdbusservice.h>
+#include <kdedmodule.h>
 #include <qapplication.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
