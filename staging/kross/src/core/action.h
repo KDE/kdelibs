@@ -53,7 +53,7 @@ namespace Kross {
      * \code
      * # Create a new Kross::Action instance.
      * Kross::Action* action = new Kross::Action(0,"MyFirstScript");
-     * # Set the interpreter we like to use. This could be e.g. "python", "ruby" or "kjs".
+     * # Set the interpreter we like to use. This could be e.g. "python" or "ruby".
      * action->setInterpreter("python");
      * # Set the scripting code.
      * action->setCode("print \"Hello World.\"");

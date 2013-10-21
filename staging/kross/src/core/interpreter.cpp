@@ -39,7 +39,7 @@ namespace Kross {
     class InterpreterInfo::Private
     {
         public:
-            /// The name the interpreter has. Could be something like "python" or "kjs".
+            /// The name the interpreter has. Could be something like "python" or "ruby".
             QString interpretername;
             /// The function-pointer to the module factory function.
             void* funcPtr;

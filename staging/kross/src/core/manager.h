@@ -97,7 +97,7 @@ namespace Kross {
              * the interpretername.
              *
              * \param interpretername The name of the interpreter.
-             * e.g. "python" or "kjs".
+             * e.g. "python" or "ruby".
              * \return The Interpreter instance or NULL if there does not exists
              * an interpreter with such an interpretername.
              */
@@ -184,7 +184,7 @@ namespace Kross {
 
             /**
              * \return a list of names of all supported scripting interpreters.
-             * The list may contain for example "python", "ruby" and "kjs" depending
+             * The list may contain for example "python" and "ruby" depending
              * on what interpreter-plugins are installed.
              */
             QStringList interpreters() const;

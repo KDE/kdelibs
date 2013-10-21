@@ -107,7 +107,7 @@ namespace Kross {
             ~InterpreterInfo();
 
             /**
-             * \return the name of the interpreter. For example "python" or "kjs".
+             * \return the name of the interpreter. For example "python" or "ruby".
              */
             const QString interpreterName() const;
 

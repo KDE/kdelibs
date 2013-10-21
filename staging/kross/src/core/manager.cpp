@@ -157,18 +157,6 @@ Manager::Manager()
     }
 #endif
 
-#ifdef KROSS_KJS_LIBRARY
-    if( void* funcPtr = loadLibrary(KROSS_KJS_LIBRARY, "krossinterpreter") ) {
-        d->interpreterinfos.insert("javascript",
-            new InterpreterInfo("javascript",
-                funcPtr, // library
-                "*.js", // file filter-wildcard
-                QStringList() << "application/javascript" // mimetypes
-            )
-        );
-    }
-#endif
-
 #ifdef KROSS_FALCON_LIBRARY
     if( void* funcPtr = loadLibrary(KROSS_FALCON_LIBRARY, "krossinterpreter") ) {
         d->interpreterinfos.insert("falcon",

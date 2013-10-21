@@ -13,7 +13,6 @@ The main parts of %Kross:
 - @ref test "The unit and regression tests"
 
 The interpreter backends supported by %Kross:
-- @ref kjs "The KDE JavaScript interpreter backend"
 - @ref qts "The QtScript interpreter backend"
 
 Links:
@@ -111,12 +110,6 @@ cmake -DKDE4_BUILD_TESTS=1 ...
 /** @page backends Backends
 
 These are the interpreter backends provided by %Kross.
-
-@section kjs The KDE JavaScript interpreter backend
-
-The KDE JavaScript interpreter backend uses the kjs and kjsembed libraries
-(part of kdelibs) to provide a JavaScript backend.
-
 
 @section qts The QtScript interpreter backend
 
