@@ -40,7 +40,6 @@
 #include <errno.h>
 
 #include <assert.h>
-#include <kdirwatch.h>
 
 #include <kcrash.h>
 #include <kmemfile_p.h>

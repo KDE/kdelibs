@@ -13,10 +13,7 @@ set(kbuildsycoca_KDEINIT_SRCS
 kf5_add_kdeinit_executable( kbuildsycoca5 NOGUI ${kbuildsycoca_KDEINIT_SRCS})
 
 target_link_libraries(kdeinit_kbuildsycoca5
-<<<<<<< HEAD
-   KF5::KCoreAddons
    KF5::KService #KBuildMimeTypeFactory subclasses KMimeTypeFactory, KServiceGroupFactory and KService used as well
-   KF5::KI18n
    KF5::KCrash  #set a crash handler for ksycoca binary
    Qt5::Xml #vfolder menui QDomDocument and family
    Qt5::DBus #kbuildsycoca uses QDBus to talk with interested applications
