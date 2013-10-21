@@ -131,7 +131,7 @@ void Job::execute(JobPointer job, Thread *th)
 
 void Job::blockingExecute()
 {
-    execute(ManagedJobPointer(this), 0);
+    execute(ManagedJobPointer<Job>(this), 0);
 }
 
 Executor *Job::setExecutor(Executor *executor)

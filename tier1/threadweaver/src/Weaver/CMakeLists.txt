@@ -10,7 +10,6 @@ set(ThreadWeaver_LIB_SRCS
     Job.cpp
     IdDecorator.cpp
     QObjectDecorator.cpp
-    ManagedJobPointer.cpp
     Executor.cpp
     ExecuteWrapper.cpp
     State.cpp
@@ -67,6 +66,7 @@ install(FILES
     QueueInterface.h
     QueuePolicy.h
     JobPointer.h
+    ManagedJobPointer.h
     ${CMAKE_CURRENT_BINARY_DIR}/threadweaver_export.h
     DESTINATION ${INCLUDE_INSTALL_DIR}/threadweaver COMPONENT Devel
 )

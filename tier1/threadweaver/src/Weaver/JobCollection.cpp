@@ -142,7 +142,7 @@ void JobCollection::addJob(JobPointer job)
 
 void JobCollection::addRawJob(JobInterface *job)
 {
-    addJob(ManagedJobPointer(job));
+    addJob(ManagedJobPointer<JobInterface>(job));
 }
 
 void JobCollection::stop(JobPointer job)
@@ -151,7 +151,7 @@ void JobCollection::stop(JobPointer job)
     QMutexLocker l(mutex()); Q_UNUSED(l);
     if ( d->api != 0 ) {
         debug( 4, "JobCollection::stop: dequeueing %p.\n", (void*)this);
-        if (!d->api->dequeue(ManagedJobPointer(this))) {
+        if (!d->api->dequeue(ManagedJobPointer<JobCollection>(this))) {
             dequeueElements(false);
         }
     }

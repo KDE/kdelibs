@@ -100,5 +100,5 @@ void ResourceRestrictionPolicy::release(JobPointer job)
 
 void ResourceRestrictionPolicy::destructed(JobInterface *job)
 {
-    free(ManagedJobPointer(job));
+    free(ManagedJobPointer<JobInterface>(job));
 }

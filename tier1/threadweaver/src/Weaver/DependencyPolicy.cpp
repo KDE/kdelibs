@@ -192,7 +192,7 @@ void DependencyPolicy::release(JobPointer job)
 void DependencyPolicy::destructed(JobInterface *job)
 {
     REQUIRE(job != 0);
-    resolveDependencies(ManagedJobPointer(job));
+    resolveDependencies(ManagedJobPointer<JobInterface>(job));
 }
 
 //void DependencyPolicy::dumpJobDependencies()

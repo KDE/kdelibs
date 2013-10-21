@@ -229,7 +229,7 @@ void WeaverImpl::enqueue(JobPointer job)
 
 void WeaverImpl::enqueueRaw(JobInterface *job)
 {
-    enqueue(ManagedJobPointer(job));
+    enqueue(ManagedJobPointer<JobInterface>(job));
 }
 
 void WeaverImpl::enqueue_p(JobPointer job)
@@ -259,7 +259,7 @@ bool WeaverImpl::dequeue(JobPointer job)
 
 bool WeaverImpl::dequeueRaw(JobInterface *job)
 {
-    return dequeue(ManagedJobPointer(job));
+    return dequeue(ManagedJobPointer<JobInterface>(job));
 }
 
 bool WeaverImpl::dequeue_p(JobPointer job)
