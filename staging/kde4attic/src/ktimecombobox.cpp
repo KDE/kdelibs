@@ -23,7 +23,6 @@
 #include <QKeyEvent>
 #include <QLineEdit>
 
-#include "klocale.h"
 #include "klocalizedstring.h"
 #include "kmessagebox.h"
 
@@ -40,7 +39,6 @@ public:
     QString timeFormatToInputMask(const QString &format, bool nullMask = false);
     QTime nearestIntervalTime(const QTime &time);
     QString formatTime(const QTime &time);
-    QString convertDigits(const QString &digits);
 
     void initTimeWidget();
     void updateTimeWidget();
@@ -62,7 +60,7 @@ public:
     QString m_maxWarnMsg;
     QString m_nullString;
     bool m_warningShown;
-    KLocale::TimeFormatOptions m_displayFormat;
+    QLocale::FormatType m_displayFormat;
     int m_timeListInterval;
     QList<QTime> m_timeList;
 };
@@ -71,7 +69,7 @@ KTimeComboBoxPrivate::KTimeComboBoxPrivate(KTimeComboBox *q)
                      :q(q),
                       m_time(QTime(0, 0, 0)),
                       m_warningShown(false),
-                      m_displayFormat(KLocale::TimeDefault),
+                      m_displayFormat(QLocale::ShortFormat),
                       m_timeListInterval(15)
 {
     m_options = KTimeComboBox::EditTime | KTimeComboBox::SelectTime;
@@ -95,21 +93,23 @@ QTime KTimeComboBoxPrivate::defaultMaxTime()
 
 QString KTimeComboBoxPrivate::timeFormatToInputMask(const QString &format, bool nullMask)
 {
+    const QLocale locale;
+
     //TODO not sure this will always work, does it support DigitSets, am/pm is dodgy?
     QString mask = formatTime(QTime(12,34,56,789));
     QString null = mask;
-    mask.replace(convertDigits(QLatin1String("12")), QLatin1String("09"));
-    null.replace(convertDigits(QLatin1String("12")), QLatin1String(""));
-    mask.replace(convertDigits(QLatin1String("34")), QLatin1String("99"));
-    null.replace(convertDigits(QLatin1String("34")), QLatin1String(""));
-    mask.replace(convertDigits(QLatin1String("56")), QLatin1String("99"));
-    null.replace(convertDigits(QLatin1String("56")), QLatin1String(""));
-    mask.replace(convertDigits(QLatin1String("789")), QLatin1String("900"));
-    null.replace(convertDigits(QLatin1String("789")), QLatin1String(""));
-    if (format.contains(QLatin1String("%p")) ||
-        format.contains(QLatin1String("%P"))) {
-        QString am = KLocale::global()->dayPeriodText(QTime(0, 0, 0));
-        QString pm = KLocale::global()->dayPeriodText(QTime(12, 0, 0));
+    mask.replace(locale.toString(12), QLatin1String("09"));
+    null.replace(locale.toString(12), QLatin1String(""));
+    mask.replace(locale.toString(34), QLatin1String("99"));
+    null.replace(locale.toString(34), QLatin1String(""));
+    mask.replace(locale.toString(56), QLatin1String("99"));
+    null.replace(locale.toString(56), QLatin1String(""));
+    mask.replace(locale.toString(789), QLatin1String("900"));
+    null.replace(locale.toString(789), QLatin1String(""));
+    if (format.contains(QLatin1String("ap")) ||
+        format.contains(QLatin1String("AP"))) {
+        QString am = locale.amText();
+        QString pm = locale.pmText();
         int ampmLen = qMax(am.length(), pm.length());
         QString ampmMask;
         for (int i = 0; i < ampmLen; ++i) {
@@ -143,12 +143,7 @@ QTime KTimeComboBoxPrivate::nearestIntervalTime(const QTime &time)
 
 QString KTimeComboBoxPrivate::formatTime(const QTime &time)
 {
-    return KLocale::global()->formatTime(time, m_displayFormat);
-}
-
-QString KTimeComboBoxPrivate::convertDigits(const QString &digits)
-{
-    return KLocale::global()->convertDigits(digits, KLocale::global()->dateTimeDigitSet());
+    return QLocale().toString(time, m_displayFormat);
 }
 
 void KTimeComboBoxPrivate::initTimeWidget()
@@ -157,8 +152,9 @@ void KTimeComboBoxPrivate::initTimeWidget()
     q->clear();
 
     // Set the input mask from the current format
-    q->lineEdit()->setInputMask(timeFormatToInputMask(KLocale::global()->timeFormat()));
-    m_nullString = timeFormatToInputMask(KLocale::global()->timeFormat(), true);
+    const QLocale locale;
+    q->lineEdit()->setInputMask(timeFormatToInputMask(locale.timeFormat(m_displayFormat)));
+    m_nullString = timeFormatToInputMask(locale.timeFormat(m_displayFormat), true);
 
     // If EditTime then set the line edit
     q->lineEdit()->setReadOnly((m_options &KTimeComboBox::EditTime) != KTimeComboBox::EditTime);
@@ -233,12 +229,12 @@ void KTimeComboBoxPrivate::selectTime(int index)
 void KTimeComboBoxPrivate::editTime(const QString &text)
 {
     m_warningShown = false;
-    emit q->timeEdited(KLocale::global()->readTime(text));
+    emit q->timeEdited(q->locale().toTime(text, m_displayFormat));
 }
 
 void KTimeComboBoxPrivate::parseTime()
 {
-    m_time = KLocale::global()->readTime(q->lineEdit()->text());
+    m_time = q->locale().toTime(q->lineEdit()->text(), m_displayFormat);
 }
 
 void KTimeComboBoxPrivate::enterTime(const QTime &time)
@@ -403,12 +399,12 @@ void KTimeComboBox::resetTimeRange()
     setTimeRange(d->defaultMinTime(), d->defaultMaxTime(), QString(), QString());
 }
 
-KLocale::TimeFormatOptions KTimeComboBox::displayFormat() const
+QLocale::FormatType KTimeComboBox::displayFormat() const
 {
     return d->m_displayFormat;
 }
 
-void KTimeComboBox::setDisplayFormat(KLocale::TimeFormatOptions format)
+void KTimeComboBox::setDisplayFormat(QLocale::FormatType format)
 {
     if (format != d->m_displayFormat) {
         d->m_displayFormat = format;

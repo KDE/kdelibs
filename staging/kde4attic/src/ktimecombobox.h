@@ -23,8 +23,7 @@
 #include <kde4attic_export.h>
 
 #include <QComboBox>
-
-#include "klocale.h"
+#include <QLocale>
 
 class KTimeComboBoxPrivate;
 
@@ -99,11 +98,11 @@ public:
     /**
      * Return the currently set time format
      *
-     * By default this is the Short Time
+     * By default this is the Short Format
      *
      * @return the currently set time format
      */
-    KLocale::TimeFormatOptions displayFormat() const;
+    QLocale::FormatType displayFormat() const;
 
     /**
      * Return the current minimum time
@@ -221,11 +220,11 @@ public Q_SLOTS:
     /**
      * Sets the time format to display.
      *
-     * By default is the Short Time format.
+     * By default is the Short Format.
      *
      * @param format the time format to use
      */
-    void setDisplayFormat(KLocale::TimeFormatOptions formatOptions);
+    void setDisplayFormat(QLocale::FormatType formatOptions);
 
     /**
      * Set the minimum allowed time.

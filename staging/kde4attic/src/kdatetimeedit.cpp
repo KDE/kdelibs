@@ -531,12 +531,12 @@ QMap<QDate, QString> KDateTimeEdit::dateMap() const
     return d->ui.m_dateCombo->dateMap();
 }
 
-void KDateTimeEdit::setTimeDisplayFormat(KLocale::TimeFormatOptions formatOptions)
+void KDateTimeEdit::setTimeDisplayFormat(QLocale::FormatType formatOptions)
 {
     d->ui.m_timeCombo->setDisplayFormat(formatOptions);
 }
 
-KLocale::TimeFormatOptions KDateTimeEdit::timeDisplayFormat() const
+QLocale::FormatType KDateTimeEdit::timeDisplayFormat() const
 {
     return d->ui.m_timeCombo->displayFormat();
 }

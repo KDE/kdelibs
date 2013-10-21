@@ -37,7 +37,7 @@ void KTimeComboBoxTest::testDefaults()
     QCOMPARE(m_combo->isValid(), true);
     QCOMPARE(m_combo->options(), KTimeComboBox::EditTime | KTimeComboBox::SelectTime);
     QCOMPARE(m_combo->timeListInterval(), 15);
-    QCOMPARE(m_combo->displayFormat(), KLocale::TimeDefault);
+    QCOMPARE(m_combo->displayFormat(), QLocale::ShortFormat);
     delete m_combo;
 }
 
@@ -178,9 +178,9 @@ void KTimeComboBoxTest::testOptions()
 void KTimeComboBoxTest::testDisplayFormat()
 {
     m_combo = new KTimeComboBox();
-    KLocale::TimeFormatOptions format = KLocale::TimeDefault;
+    QLocale::FormatType format = QLocale::ShortFormat;
     QCOMPARE(m_combo->displayFormat(), format);
-    format = KLocale::TimeWithoutSeconds;
+    format = QLocale::NarrowFormat;
     m_combo->setDisplayFormat(format);
     QCOMPARE(m_combo->displayFormat(), format);
     delete m_combo;
