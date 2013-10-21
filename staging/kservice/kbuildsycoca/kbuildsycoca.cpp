@@ -22,8 +22,6 @@
 #include "ksycocaresourcelist.h"
 #include "vfolder_menu.h"
 
-#include <config-kded.h>
-
 #include <kservice.h>
 #include "kbuildservicetypefactory.h"
 #include "kbuildmimetypefactory.h"
@@ -42,12 +40,8 @@
 #include <errno.h>
 
 #include <assert.h>
-#include <kdirwatch.h>
-#include <klocalizedstring.h>
 
-#if !KBUILDSYCOCA_NO_KCRASH
 #include <kcrash.h>
-#endif
 #include <kmemfile_p.h>
 
 #include <stdlib.h>
@@ -657,13 +651,10 @@ extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
      qputenv("XDG_DATA_HOME", "-");
    }
 
-#if !KBUILDSYCOCA_NO_KCRASH
-   KCrash::setCrashHandler(KCrash::defaultCrashHandler);
-   KCrash::setEmergencySaveFunction(crashHandler);
-   KCrash::setApplicationName(QString::fromLatin1(KBUILDSYCOCA_EXENAME));
-#endif
+    KCrash::setCrashHandler(KCrash::defaultCrashHandler);
+    KCrash::setEmergencySaveFunction(crashHandler);
+    KCrash::setApplicationName(QString::fromLatin1(KBUILDSYCOCA_EXENAME));
 
-   KLocalizedString::setApplicationDomain("kdelibs5");
    // force generating of KLocale object. if not, the database will get
    // be translated
    QLocale::setDefault(QLocale::C);

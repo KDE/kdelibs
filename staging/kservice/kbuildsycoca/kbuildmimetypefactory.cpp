@@ -22,7 +22,6 @@
 #include "ksycocadict_p.h"
 #include "ksycocaresourcelist.h"
 
-#include <klocalizedstring.h>
 #include <assert.h>
 #include <QDebug>
 #include <QtCore/QHash>

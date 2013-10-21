@@ -19,3 +19,14 @@ kservice_executable_tests(
   startserviceby
 )
 
+set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
+
+######### kmimeassociationstest ########
+
+set(kmimeassociationstest_SRCS kmimeassociationstest.cpp ../kbuildsycoca/kmimeassociations.cpp)
+
+add_executable(kmimeassociationstest ${kmimeassociationstest_SRCS})
+ecm_mark_as_test(kmimeassociationstest)
+
+target_link_libraries(kmimeassociationstest KConfigCore KService Qt5::Test)
+target_include_directories(kmimeassociationstest PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../kbuildsycoca/")
