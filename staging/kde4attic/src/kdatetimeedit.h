@@ -94,30 +94,6 @@ public:
     KDateTime dateTime() const;
 
     /**
-     * Returns the Calendar System type used by the widget
-     *
-     * @see KLocale::CalendarSystem
-     * @see setCalendarSystem()
-     * @return the Calendar System currently used
-     */
-    KLocale::CalendarSystem calendarSystem() const;
-
-    /**
-     * Returns a pointer to the Calendar System object used by this widget
-     *
-     * Usually this will be the Global Calendar System using the Global Locale,
-     * but this may have been changed to a custom Calendar System possibly
-     * using a custom Locale.
-     *
-     * Normally you will not need to access this object.
-     *
-     * @see KCalendarSystem
-     * @see setCalendar
-     * @return the current calendar system instance
-     */
-    const KCalendarSystem *calendar() const;
-
-    /**
      * Return the currently selected date
      *
      * @return the currently selected date
@@ -162,11 +138,11 @@ public:
     /**
      * Return the currently set date display format
      *
-     * By default this is the Short Date
+     * By default this is the Short Format
      *
      * @return the currently set date format
      */
-    KLocale::DateFormat dateDisplayFormat() const;
+    QLocale::FormatType dateDisplayFormat() const;
 
     /**
      * Return the map of dates listed in the drop-down and their displayed
@@ -294,19 +270,19 @@ Q_SIGNALS:
     void dateTimeEdited(const KDateTime &dateTime);
 
     /**
-     * Signal if the Calendar System has been manually entered by the user.
+     * Signal if the Calendar Locale has been manually entered by the user.
      *
-     * @param calendarSystem the new calendar system
+     * @param calendarLocale the new calendar locale
      */
-    void calendarEntered(KLocale::CalendarSystem calendarSystem);
+    void calendarEntered(const QLocale &calendarLocale);
 
     /**
-     * Signal if the Calendar System has been changed either manually by the user
+     * Signal if the Calendar Locale has been changed either manually by the user
      * or programatically.
      *
-     * @param calendarSystem the new calendar system
+     * @param calendarLocale the new calendar locale
      */
-    void calendarChanged(KLocale::CalendarSystem calendarSystem);
+    void calendarChanged(const QLocale &calendarLocale);
 
     /**
      * Signal if the date has been manually entered by the user.
@@ -396,24 +372,6 @@ public Q_SLOTS:
     void setDateTime(const KDateTime &dateTime);
 
     /**
-     * Set the Calendar System used for this widget.  Uses the global locale.
-     *
-     * @see KLocale::CalendarSystem
-     * @see calendarSystem()
-     * @param calendarSystem the Calendar System to use
-     */
-    void setCalendarSystem(KLocale::CalendarSystem calendarSystem);
-
-    /**
-     * Changes the calendar system to use.  Can use its own local locale if set.
-     *
-     * You retain ownership of the calendar object, it will not be destroyed with the widget.
-     *
-     * @param calendar the calendar system object to use, defaults to global
-     */
-    void setCalendar(KCalendarSystem *calendar = 0);
-
-    /**
      * Set the currently selected date
      *
      * @param date the new date
@@ -495,11 +453,11 @@ public Q_SLOTS:
     /**
      * Sets the date format to display.
      *
-     * By default is the Short Date format.
+     * By default is the Short Format.
      *
      * @param format the date format to use
      */
-    void setDateDisplayFormat(KLocale::DateFormat format);
+    void setDateDisplayFormat(QLocale::FormatType format);
 
     /**
      * Set the list of Calendar Systems to display.
@@ -611,16 +569,6 @@ protected:
     virtual void assignDate(const QDate &date);
 
     /**
-     * Assign the calendar system for the widget.
-     *
-     * Virtual to allow sub-classes to apply extra validation rules,
-     * but reimplementations must call the parent method at the end.
-     *
-     * @param calendarSystem the new calendar system
-     */
-    void assignCalendarSystem(KLocale::CalendarSystem calendarSystem);
-
-    /**
      * Assign the time for the widget.
      *
      * Virtual to allow sub-classes to apply extra validation rules,
@@ -646,7 +594,7 @@ private:
     KDateTimeEditPrivate *const d;
 
     Q_PRIVATE_SLOT(d, void selectCalendar(int))
-    Q_PRIVATE_SLOT(d, void enterCalendar(KLocale::CalendarSystem))
+    Q_PRIVATE_SLOT(d, void enterCalendar(const QLocale&))
     Q_PRIVATE_SLOT(d, void selectTimeZone(int))
     Q_PRIVATE_SLOT(d, void enterTimeZone(const QString&))
 };

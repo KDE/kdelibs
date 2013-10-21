@@ -23,11 +23,9 @@
 #include <kde4attic_export.h>
 
 #include <QComboBox>
-
-#include "klocale.h"
+#include <QLocale>
 
 class KDateComboBoxPrivate;
-class KCalendarSystem;
 
 class KDE4ATTIC_EXPORT KDateComboBox : public QComboBox
 {
@@ -77,30 +75,6 @@ public:
     QDate date() const;
 
     /**
-     * Returns the Calendar System type used by the widget
-     *
-     * @see KLocale::CalendarSystem
-     * @see setCalendarSystem()
-     * @return the Calendar System currently used
-     */
-    KLocale::CalendarSystem calendarSystem() const;
-
-    /**
-     * Returns a pointer to the Calendar System object used by this widget
-     *
-     * Usually this will be the Global Calendar System using the Global Locale,
-     * but this may have been changed to a custom Calendar System possibly
-     * using a custom Locale.
-     *
-     * Normally you will not need to access this object.
-     *
-     * @see KCalendarSystem
-     * @see setCalendar
-     * @return the current calendar system instance
-     */
-    const KCalendarSystem *calendar() const;
-
-    /**
      * Return if the current user input is valid
      *
      * If the user input is null then it is not valid
@@ -128,11 +102,11 @@ public:
     /**
      * Return the currently set date display format
      *
-     * By default this is the Short Date
+     * By default this is the Short Format
      *
      * @return the currently set date format
      */
-    KLocale::DateFormat displayFormat() const;
+    QLocale::FormatType displayFormat() const;
 
     /**
      * Return the current minimum date
@@ -200,24 +174,6 @@ public Q_SLOTS:
     void setDate(const QDate &date);
 
     /**
-     * Set the Calendar System used for this widget.  Uses the global locale.
-     *
-     * @see KLocale::CalendarSystem
-     * @see calendarSystem()
-     * @param calendarSystem the Calendar System to use
-     */
-    void setCalendarSystem(KLocale::CalendarSystem calendarSystem);
-
-    /**
-     * Changes the calendar system to use.  Can use its own local locale if set.
-     *
-     * You retain ownership of the calendar object, it will not be destroyed with the widget.
-     *
-     * @param calendar the calendar system object to use, defaults to global
-     */
-    void setCalendar(KCalendarSystem *calendar = 0);
-
-    /**
      * Set the new widget options
      *
      * @param options the new widget options
@@ -227,11 +183,11 @@ public Q_SLOTS:
     /**
      * Sets the date format to display.
      *
-     * By default is the Short Date format.
+     * By default is the Short Format.
      *
      * @param format the date format to use
      */
-    void setDisplayFormat(KLocale::DateFormat format);
+    void setDisplayFormat(QLocale::FormatType format);
 
     /**
      * Set the valid date range to be applied by isValid().
@@ -332,15 +288,6 @@ protected:
      * @param date the new date
      */
     virtual void assignDate(const QDate &date);
-
-    /**
-     * Assign the calendar system for the widget.
-     *
-     * Virtual to allow sub-classes to apply extra validation rules.
-     *
-     * @param time the new time
-     */
-    virtual void assignCalendarSystem(KLocale::CalendarSystem calendarSystem);
 
 private:
 

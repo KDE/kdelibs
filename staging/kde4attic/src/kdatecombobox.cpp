@@ -28,10 +28,7 @@
 #include <QDesktopWidget>
 #include <QVector>
 
-#include "kcalendarsystem.h"
-#include "klocale.h"
 #include "klocalizedstring.h"
-#include "klocalizeddate.h"
 #include "kdatepicker.h"
 #include "kmessagebox.h"
 
@@ -42,9 +39,13 @@ public:
     KDateComboBoxPrivate(KDateComboBox *q);
     virtual ~KDateComboBoxPrivate();
 
+    // TODO: Find a way to get that from QLocale
+#if 0
     QDate defaultMinDate();
     QDate defaultMaxDate();
+#endif
 
+    QString dateFormat(QLocale::FormatType format);
     QString formatDate(const QDate &date);
 
     void initDateWidget();
@@ -66,14 +67,14 @@ public:
     KDatePicker *m_datePicker;
     QWidgetAction *m_datePickerAction;
 
-    KLocalizedDate m_date;
+    QDate m_date;
     KDateComboBox::Options m_options;
     QDate m_minDate;
     QDate m_maxDate;
     QString m_minWarnMsg;
     QString m_maxWarnMsg;
     bool m_warningShown;
-    KLocale::DateFormat m_displayFormat;
+    QLocale::FormatType m_displayFormat;
     QMap<QDate, QString> m_dateMap;
 };
 
@@ -83,12 +84,12 @@ KDateComboBoxPrivate::KDateComboBoxPrivate(KDateComboBox *q)
                       m_datePicker(new KDatePicker(q)),
                       m_datePickerAction(new QWidgetAction(q)),
                       m_warningShown(false),
-                      m_displayFormat(KLocale::ShortDate)
+                      m_displayFormat(QLocale::ShortFormat)
 {
     m_options = KDateComboBox::EditDate | KDateComboBox::SelectDate | KDateComboBox::DatePicker | KDateComboBox::DateKeywords;
-    m_date.setDate(QDate::currentDate());
-    m_minDate = defaultMinDate();
-    m_maxDate = defaultMaxDate();
+    m_date = QDate::currentDate();
+    //m_minDate = defaultMinDate();
+    //m_maxDate = defaultMaxDate();
     m_datePicker->setCloseButton(false);
     m_datePickerAction->setObjectName(QLatin1String("DatePicker"));
     m_datePickerAction->setDefaultWidget(m_datePicker);
@@ -98,6 +99,7 @@ KDateComboBoxPrivate::~KDateComboBoxPrivate()
 {
 }
 
+#if 0
 QDate KDateComboBoxPrivate::defaultMinDate()
 {
     return m_date.calendar()->earliestValidDate();
@@ -107,10 +109,22 @@ QDate KDateComboBoxPrivate::defaultMaxDate()
 {
     return m_date.calendar()->latestValidDate();
 }
+#endif
+
+QString KDateComboBoxPrivate::dateFormat(QLocale::FormatType format)
+{
+    // Clearly a workaround for QLocale using "yy" way too often for years
+    // and so you get no way to distinguish between 1913 and 2013 anymore...
+    // bummer.
+    QString res = q->locale().dateFormat(format);
+    res.replace("yy", "yyyy");
+    res.replace("yyyyyyyy", "yyyy");
+    return res;
+}
 
 QString KDateComboBoxPrivate::formatDate(const QDate &date)
 {
-    return m_date.calendar()->formatDate(date, m_displayFormat);
+    return q->locale().toString(date, dateFormat(m_displayFormat));
 }
 
 void KDateComboBoxPrivate::initDateWidget()
@@ -131,7 +145,7 @@ void KDateComboBoxPrivate::initDateWidget()
     }
 
     q->setSizeAdjustPolicy(QComboBox::AdjustToContents);
-    q->addItem(m_date.formatDate(m_displayFormat));
+    q->addItem(formatDate(m_date));
     q->setCurrentIndex(0);
     q->setSizeAdjustPolicy(QComboBox::AdjustToContentsOnFirstShow);
     q->blockSignals(false);
@@ -148,15 +162,15 @@ void KDateComboBoxPrivate::initDateWidget()
 
         if ((m_options & KDateComboBox::DateKeywords) == KDateComboBox::DateKeywords) {
             if (m_dateMap.isEmpty()) {
-                addMenuAction(i18nc("@option next year",  "Next Year" ), m_date.addYears(1).date());
-                addMenuAction(i18nc("@option next month", "Next Month"), m_date.addMonths(1).date());
-                addMenuAction(i18nc("@option next week",  "Next Week" ), m_date.addDays(m_date.daysInWeek()).date());
-                addMenuAction(i18nc("@option tomorrow",   "Tomorrow"  ), m_date.addDays(1).date());
-                addMenuAction(i18nc("@option today",      "Today"     ), m_date.date());
-                addMenuAction(i18nc("@option yesterday",  "Yesterday" ), m_date.addDays(-1).date());
-                addMenuAction(i18nc("@option last week",  "Last Week" ), m_date.addDays(-m_date.daysInWeek()).date());
-                addMenuAction(i18nc("@option last month", "Last Month"), m_date.addMonths(-1).date());
-                addMenuAction(i18nc("@option last year",  "Last Year" ), m_date.addYears(-1).date());
+                addMenuAction(i18nc("@option next year",  "Next Year" ), m_date.addYears(1));
+                addMenuAction(i18nc("@option next month", "Next Month"), m_date.addMonths(1));
+                addMenuAction(i18nc("@option next week",  "Next Week" ), m_date.addDays(7));
+                addMenuAction(i18nc("@option tomorrow",   "Tomorrow"  ), m_date.addDays(1));
+                addMenuAction(i18nc("@option today",      "Today"     ), m_date);
+                addMenuAction(i18nc("@option yesterday",  "Yesterday" ), m_date.addDays(-1));
+                addMenuAction(i18nc("@option last week",  "Last Week" ), m_date.addDays(-7));
+                addMenuAction(i18nc("@option last month", "Last Month"), m_date.addMonths(-1));
+                addMenuAction(i18nc("@option last year",  "Last Year" ), m_date.addYears(-1));
                 m_dateMenu->addSeparator();
                 addMenuAction(i18nc("@option do not specify a date", "No Date"), QDate());
             } else {
@@ -199,10 +213,10 @@ void KDateComboBoxPrivate::updateDateWidget()
 {
     q->blockSignals(true);
     m_datePicker->blockSignals(true);
-    m_datePicker->setDate(m_date.date());
+    m_datePicker->setDate(m_date);
     int pos = q->lineEdit()->cursorPosition();
-    q->setItemText(0, m_date.formatDate(m_displayFormat));
-    q->lineEdit()->setText(m_date.formatDate(m_displayFormat));
+    q->setItemText(0, formatDate(m_date));
+    q->lineEdit()->setText(formatDate(m_date));
     q->lineEdit()->setCursorPosition(pos);
     m_datePicker->blockSignals(false);
     q->blockSignals(false);
@@ -223,12 +237,13 @@ void KDateComboBoxPrivate::clickDate()
 void KDateComboBoxPrivate::editDate(const QString &text)
 {
     m_warningShown = false;
-    emit q->dateEdited(m_date.readDate(text).date());
+    m_date = q->locale().toDate(text, dateFormat(m_displayFormat));
+    emit q->dateEdited(m_date);
 }
 
 void KDateComboBoxPrivate::parseDate()
 {
-    m_date.setDate(m_date.readDate(q->lineEdit()->text()).date());
+    m_date = q->locale().toDate(q->lineEdit()->text(), dateFormat(m_displayFormat));
 }
 
 void KDateComboBoxPrivate::enterDate(const QDate &date)
@@ -238,14 +253,14 @@ void KDateComboBoxPrivate::enterDate(const QDate &date)
     q->blockSignals(true);
     q->clear();
     q->setSizeAdjustPolicy(QComboBox::AdjustToContents);
-    q->addItem(m_date.formatDate(m_displayFormat));
+    q->addItem(formatDate(m_date));
     q->setCurrentIndex(0);
     q->setSizeAdjustPolicy(QComboBox::AdjustToContentsOnFirstShow);
     q->blockSignals(false);
 
     m_dateMenu->hide();
     warnDate();
-    emit q->dateEntered(m_date.date());
+    emit q->dateEntered(m_date);
 }
 
 void KDateComboBoxPrivate::warnDate()
@@ -253,16 +268,16 @@ void KDateComboBoxPrivate::warnDate()
     if (!m_warningShown && !q->isValid() &&
         (m_options &KDateComboBox::WarnOnInvalid) == KDateComboBox::WarnOnInvalid) {
         QString warnMsg;
-        if (!m_date.date().isValid()) {
+        if (!m_date.isValid()) {
             warnMsg = i18nc("@info", "The date you entered is invalid");
-        } else if (m_date.date() < m_minDate) {
+        } else if (m_minDate.isValid() && m_date < m_minDate) {
             if (m_minWarnMsg.isEmpty()) {
                 warnMsg = i18nc("@info", "Date cannot be earlier than %1", formatDate(m_minDate));
             } else {
                 warnMsg = m_minWarnMsg;
                 warnMsg.replace("%1", formatDate(m_minDate));
             }
-        } else if (m_date.date() > m_maxDate) {
+        } else if (m_maxDate.isValid() && m_date > m_maxDate) {
             if (m_maxWarnMsg.isEmpty()) {
                 warnMsg = i18nc("@info", "Date cannot be later than %1", formatDate(m_maxDate));
             } else {
@@ -305,18 +320,18 @@ KDateComboBox::~KDateComboBox()
 QDate KDateComboBox::date() const
 {
     d->parseDate();
-    return d->m_date.date();
+    return d->m_date;
 }
 
 void KDateComboBox::setDate(const QDate &date)
 {
-    if (date == d->m_date.date()) {
+    if (date == d->m_date) {
         return;
     }
 
     assignDate(date);
     d->updateDateWidget();
-    emit dateChanged(d->m_date.date());
+    emit dateChanged(d->m_date);
 }
 
 void KDateComboBox::assignDate(const QDate &date)
@@ -324,39 +339,12 @@ void KDateComboBox::assignDate(const QDate &date)
     d->m_date = date;
 }
 
-KLocale::CalendarSystem KDateComboBox::calendarSystem() const
-{
-    return d->m_date.calendarSystem();
-}
-
-void KDateComboBox::setCalendarSystem(KLocale::CalendarSystem calendarSystem)
-{
-    if (calendarSystem != d->m_date.calendarSystem()) {
-        assignCalendarSystem(calendarSystem);
-    }
-}
-
-void KDateComboBox::assignCalendarSystem(KLocale::CalendarSystem calendarSystem)
-{
-    d->m_date.setCalendarSystem(calendarSystem);
-}
-
-const KCalendarSystem *KDateComboBox::calendar() const
-{
-    return d->m_date.calendar();
-}
-
-void KDateComboBox::setCalendar(KCalendarSystem *calendar)
-{
-    d->m_date = KLocalizedDate(d->m_date.date(), calendar);
-}
-
 bool KDateComboBox::isValid() const
 {
     d->parseDate();
     return d->m_date.isValid() &&
-           d->m_date >= d->m_minDate &&
-           d->m_date <= d->m_maxDate;
+           (!d->m_minDate.isValid() || d->m_date >= d->m_minDate) &&
+           (!d->m_maxDate.isValid() || d->m_date <= d->m_maxDate);
 }
 
 bool KDateComboBox::isNull() const
@@ -390,7 +378,8 @@ void KDateComboBox::setMinimumDate(const QDate &minDate, const QString &minWarnM
 
 void KDateComboBox::resetMinimumDate()
 {
-    setDateRange(d->defaultMinDate(), d->m_maxDate, QString(), d->m_maxWarnMsg);
+    //setDateRange(d->m_minDate, d->defaultMaxDate(), d->m_minWarnMsg, QString());
+    setDateRange(QDate(), d->m_maxDate, QString(), d->m_maxWarnMsg);
 }
 
 QDate KDateComboBox::maximumDate() const
@@ -405,7 +394,8 @@ void KDateComboBox::setMaximumDate(const QDate &maxDate, const QString &maxWarnM
 
 void KDateComboBox::resetMaximumDate()
 {
-    setDateRange(d->m_minDate, d->defaultMaxDate(), d->m_minWarnMsg, QString());
+    //setDateRange(d->m_minDate, d->defaultMaxDate(), d->m_minWarnMsg, QString());
+    setDateRange(d->m_minDate, QDate(), d->m_minWarnMsg, QString());
 }
 
 void KDateComboBox::setDateRange(const QDate &minDate,
@@ -429,15 +419,16 @@ void KDateComboBox::setDateRange(const QDate &minDate,
 
 void KDateComboBox::resetDateRange()
 {
-    setDateRange(d->defaultMinDate(), d->defaultMaxDate(), QString(), QString());
+    //setDateRange(d->defaultMinDate(), d->defaultMaxDate(), QString(), QString());
+    setDateRange(QDate(), QDate(), QString(), QString());
 }
 
-KLocale::DateFormat KDateComboBox::displayFormat() const
+QLocale::FormatType KDateComboBox::displayFormat() const
 {
     return d->m_displayFormat;
 }
 
-void KDateComboBox::setDisplayFormat(KLocale::DateFormat format)
+void KDateComboBox::setDisplayFormat(QLocale::FormatType format)
 {
     if (format != d->m_displayFormat) {
         d->m_displayFormat = format;
@@ -470,16 +461,16 @@ void KDateComboBox::keyPressEvent(QKeyEvent *keyEvent)
     QDate temp;
     switch (keyEvent->key()) {
     case Qt::Key_Down:
-        temp = d->m_date.addDays(-1).date();
+        temp = d->m_date.addDays(-1);
         break;
     case Qt::Key_Up:
-        temp = d->m_date.addDays(1).date();
+        temp = d->m_date.addDays(1);
         break;
     case Qt::Key_PageDown:
-        temp = d->m_date.addMonths(-1).date();
+        temp = d->m_date.addMonths(-1);
         break;
     case Qt::Key_PageUp:
-        temp = d->m_date.addMonths(1).date();
+        temp = d->m_date.addMonths(1);
         break;
     default:
         QComboBox::keyPressEvent(keyEvent);
@@ -506,7 +497,7 @@ void KDateComboBox::showPopup()
     }
 
     d->m_datePicker->blockSignals(true);
-    d->m_datePicker->setDate(d->m_date.date());
+    d->m_datePicker->setDate(d->m_date);
     d->m_datePicker->blockSignals(false);
 
     const QRect desk = QApplication::desktop()->screenGeometry(this);

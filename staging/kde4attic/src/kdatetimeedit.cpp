@@ -59,7 +59,7 @@ public:
 
 //private Q_SLOTS:
     void selectCalendar(int index);
-    void enterCalendar(KLocale::CalendarSystem calendarSystem);
+    void enterCalendar(const QLocale &calendarLocale);
     void selectTimeZone(int index);
     void enterTimeZone(const QString &zone);
 
@@ -96,7 +96,7 @@ KDateTimeEditPrivate::~KDateTimeEditPrivate()
 
 const KCalendarSystem *KDateTimeEditPrivate::calendar() const
 {
-    return ui.m_dateCombo->calendar();
+    return 0;
 }
 
 KDateTime KDateTimeEditPrivate::defaultMinDateTime()
@@ -163,7 +163,7 @@ void KDateTimeEditPrivate::initCalendarWidget()
     foreach (KLocale::CalendarSystem calendar, m_calendarSystems) {
         ui.m_calendarCombo->addItem(KCalendarSystem::calendarLabel(calendar), calendar);
     }
-    ui.m_calendarCombo->setCurrentIndex(ui.m_calendarCombo->findData(ui.m_dateCombo->calendarSystem()));
+    ui.m_calendarCombo->setCurrentIndex(ui.m_calendarCombo->findData(q->locale()));
     ui.m_calendarCombo->setVisible((m_options &KDateTimeEdit::ShowCalendar) == KDateTimeEdit::ShowCalendar);
     ui.m_calendarCombo->setEnabled((m_options &KDateTimeEdit::SelectCalendar) == KDateTimeEdit::SelectCalendar);
     ui.m_calendarCombo->setEditable(false);
@@ -173,19 +173,19 @@ void KDateTimeEditPrivate::initCalendarWidget()
 void KDateTimeEditPrivate::updateCalendarWidget()
 {
     ui.m_calendarCombo->blockSignals(true);
-    ui.m_calendarCombo->setCurrentIndex(ui.m_calendarCombo->findData(ui.m_dateCombo->calendarSystem()));
+    ui.m_calendarCombo->setCurrentIndex(ui.m_calendarCombo->findData(q->locale()));
     ui.m_calendarCombo->blockSignals(false);
 }
 
 void KDateTimeEditPrivate::selectCalendar(int index)
 {
-    enterCalendar((KLocale::CalendarSystem) ui.m_calendarCombo->itemData(index).toInt());
+    enterCalendar(ui.m_calendarCombo->itemData(index).toLocale());
 }
 
-void KDateTimeEditPrivate::enterCalendar(KLocale::CalendarSystem calendarSystem)
+void KDateTimeEditPrivate::enterCalendar(const QLocale &calendarLocale)
 {
-    q->setCalendarSystem(calendarSystem);
-    emit q->calendarEntered(ui.m_dateCombo->calendarSystem());
+    q->setLocale(calendarLocale);
+    emit q->calendarEntered(q->locale());
 }
 
 void KDateTimeEditPrivate::initTimeSpecWidget()
@@ -292,11 +292,6 @@ KDateTime KDateTimeEdit::dateTime() const
     return d->m_dateTime;
 }
 
-KLocale::CalendarSystem KDateTimeEdit::calendarSystem() const
-{
-   return d-> ui.m_dateCombo->calendarSystem();
-}
-
 QDate KDateTimeEdit::date() const
 {
     return d->m_dateTime.date();
@@ -387,29 +382,6 @@ void KDateTimeEdit::assignDate(const QDate &date)
 {
     d->m_dateTime.setDate(date);
     d->ui.m_dateCombo->setDate(date);
-}
-
-void KDateTimeEdit::setCalendarSystem(KLocale::CalendarSystem calendarSystem)
-{
-    if (calendarSystem == d->ui.m_dateCombo->calendarSystem() ||
-        !d->m_calendarSystems.contains(calendarSystem)) {
-        return;
-    }
-
-    assignCalendarSystem(calendarSystem);
-    emit calendarChanged(d->ui.m_dateCombo->calendarSystem());
-}
-
-void KDateTimeEdit::assignCalendarSystem(KLocale::CalendarSystem calendarSystem)
-{
-    d->ui.m_dateCombo->setCalendarSystem(calendarSystem);
-    d->updateCalendarWidget();
-}
-
-void KDateTimeEdit::setCalendar(KCalendarSystem *calendar)
-{
-    d->ui.m_dateCombo->setCalendar(calendar);
-    d->updateCalendarWidget();
 }
 
 void KDateTimeEdit::setTime(const QTime &time)
@@ -511,12 +483,12 @@ QList<KLocale::CalendarSystem> KDateTimeEdit::calendarSystemsList() const
     return d->m_calendarSystems;
 }
 
-void KDateTimeEdit::setDateDisplayFormat(KLocale::DateFormat format)
+void KDateTimeEdit::setDateDisplayFormat(QLocale::FormatType format)
 {
     d->ui.m_dateCombo->setDisplayFormat(format);
 }
 
-KLocale::DateFormat KDateTimeEdit::dateDisplayFormat() const
+QLocale::FormatType KDateTimeEdit::dateDisplayFormat() const
 {
     return d->ui.m_dateCombo->displayFormat();
 }

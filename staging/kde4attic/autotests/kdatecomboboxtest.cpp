@@ -23,7 +23,6 @@
 
 #include <QtTest/QtTest>
 #include "kdatecombobox.h"
-#include "kcalendarsystem.h"
 #include "klineedit.h"
 
 QTEST_MAIN(KDateComboBoxTest)
@@ -33,12 +32,13 @@ void KDateComboBoxTest::testDefaults()
 {
     m_combo = new KDateComboBox(0);
     QCOMPARE(m_combo->date(), QDate::currentDate());
-    QCOMPARE(m_combo->minimumDate(), KLocale::global()->calendar()->earliestValidDate());
-    QCOMPARE(m_combo->maximumDate(), KLocale::global()->calendar()->latestValidDate());
+    // Missing support in QLocale;
+    //QCOMPARE(m_combo->minimumDate(), KLocale::global()->calendar()->earliestValidDate());
+    //QCOMPARE(m_combo->maximumDate(), KLocale::global()->calendar()->latestValidDate());
     QCOMPARE(m_combo->isValid(), true);
     QCOMPARE(m_combo->isNull(), false);
     QCOMPARE(m_combo->options(), KDateComboBox::EditDate | KDateComboBox::SelectDate | KDateComboBox::DatePicker | KDateComboBox::DateKeywords);
-    QCOMPARE(m_combo->displayFormat(), KLocale::ShortDate);
+    QCOMPARE(m_combo->displayFormat(), QLocale::ShortFormat);
     delete m_combo;
 }
 
@@ -61,8 +61,9 @@ void KDateComboBoxTest::testDateRange()
 {
     m_combo = new KDateComboBox(0);
     m_combo->setDate(QDate(2000, 1, 1));
-    QCOMPARE(m_combo->minimumDate(), KLocale::global()->calendar()->earliestValidDate());
-    QCOMPARE(m_combo->maximumDate(), KLocale::global()->calendar()->latestValidDate());
+    // Missing support in QLocale;
+    //QCOMPARE(m_combo->minimumDate(), KLocale::global()->calendar()->earliestValidDate());
+    //QCOMPARE(m_combo->maximumDate(), KLocale::global()->calendar()->latestValidDate());
     QCOMPARE(m_combo->isValid(), true);
 
     m_combo->setDateRange(QDate(2001, 1, 1), QDate(2002, 1, 1));
@@ -132,9 +133,9 @@ void KDateComboBoxTest::testOptions()
 void KDateComboBoxTest::testDisplayFormat()
 {
     m_combo = new KDateComboBox(0);
-    KLocale::DateFormat format = KLocale::ShortDate;
+    QLocale::FormatType format = QLocale::ShortFormat;
     QCOMPARE(m_combo->displayFormat(), format);
-    format = KLocale::IsoDate;
+    format = QLocale::NarrowFormat;
     m_combo->setDisplayFormat(format);
     QCOMPARE(m_combo->displayFormat(), format);
     delete m_combo;
