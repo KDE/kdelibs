@@ -18,7 +18,7 @@ class THREADWEAVER_EXPORT IdDecorator : public JobInterface
 {
 public:
     explicit IdDecorator(JobInterface* job, bool autoDelete = true);
-    ~IdDecorator() Q_DECL_OVERRIDE;
+    ~IdDecorator();
     /** Retrieve the decorated job. */
     const JobInterface* job() const;
     /** Retrieve the decorated job. */
