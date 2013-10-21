@@ -44,7 +44,6 @@
 #include <kservicetypetrader.h>
 #include <ktoolinvocation.h>
 #include <kcoreaddons_version.h> // KCOREADDONS_VERSION_MAJOR
-#include "config-kded.h"
 
 #include <qstandardpaths.h>
 

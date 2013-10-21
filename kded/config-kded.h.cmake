@@ -1,2 +1,0 @@
-#cmakedefine01 KBUILDSYCOCA_NO_KCRASH
-#cmakedefine01 HAVE_X11

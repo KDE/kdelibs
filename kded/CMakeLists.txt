@@ -17,8 +17,6 @@ endif(NOT WIN32)
 
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config-kded.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kded.h)
-
 ########### next target ###############
 
 set(kded_KDEINIT_SRCS kded.cpp kdedadaptor.cpp
