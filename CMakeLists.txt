@@ -109,7 +109,6 @@ add_subdirectory( cmake )
 
 add_subdirectory( licenses   )
 add_subdirectory( kio )
-add_subdirectory( kded       )
 add_subdirectory( kioslave   )
 
 add_subdirectory( khtml  )
