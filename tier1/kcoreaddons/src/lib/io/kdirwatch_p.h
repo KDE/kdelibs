@@ -111,7 +111,7 @@ public:
 
 
   struct Client {
-    KDirWatch* instance;
+    KDirWatch *instance;
     int count;
     // did the instance stop watching
     bool watchingStopped;
@@ -146,8 +146,8 @@ public:
     int clientCount() const;
     bool isValid() { return m_clients.count() || m_entries.count(); }
 
-    Entry* findSubEntry(const QString& path) const {
-        Q_FOREACH(Entry* sub_entry, m_entries) {
+    Entry* findSubEntry(const QString &path) const {
+        Q_FOREACH(Entry *sub_entry, m_entries) {
             if (sub_entry->path == path)
                 return sub_entry;
         }
@@ -157,7 +157,7 @@ public:
     bool dirty;
     void propagate_dirty();
 
-    QList<Client *> clientsForFileOrDir(const QString& tpath, bool* isDir) const;
+    QList<Client *> clientsForFileOrDir(const QString &tpath, bool *isDir) const;
     QList<Client *> inotifyClientsForFileOrDir(bool isDir) const;
 
 #if HAVE_FAM
@@ -175,36 +175,36 @@ public:
 #endif
   };
 
-  typedef QMap<QString,Entry> EntryMap;
+  typedef QMap<QString, Entry> EntryMap;
 
   KDirWatchPrivate();
   ~KDirWatchPrivate();
 
-  void resetList (KDirWatch*,bool);
-  void useFreq(Entry* e, int newFreq);
-  void addEntry(KDirWatch* instance,const QString& _path, Entry* sub_entry,
+  void resetList(KDirWatch *instance, bool skippedToo);
+  void useFreq(Entry *e, int newFreq);
+  void addEntry(KDirWatch *instance, const QString &_path, Entry *sub_entry,
         bool isDir, KDirWatch::WatchModes watchModes = KDirWatch::WatchDirOnly);
-  void removeEntry(KDirWatch*,const QString&, Entry* sub_entry);
-  void removeEntry(KDirWatch*,Entry* e, Entry* sub_entry);
-  bool stopEntryScan(KDirWatch*, Entry*);
-  bool restartEntryScan(KDirWatch*, Entry*, bool );
-  void stopScan(KDirWatch*);
-  void startScan(KDirWatch*, bool, bool);
+  void removeEntry(KDirWatch *instance, const QString &path, Entry *sub_entry);
+  void removeEntry(KDirWatch *instance, Entry* e, Entry* sub_entry);
+  bool stopEntryScan(KDirWatch *instance, Entry *e);
+  bool restartEntryScan(KDirWatch* instance, Entry *e, bool notify);
+  void stopScan(KDirWatch *instance);
+  void startScan(KDirWatch *instance, bool notify, bool skippedToo);
 
-  void removeEntries(KDirWatch*);
+  void removeEntries(KDirWatch *instance);
   void statistics();
 
-  void addWatch(Entry* entry);
-  void removeWatch(Entry* entry);
-  Entry* entry(const QString&);
-  int scanEntry(Entry* e);
+  void addWatch(Entry *entry);
+  void removeWatch(Entry *entry);
+  Entry* entry(const QString &_path);
+  int scanEntry(Entry *e);
   void emitEvent(const Entry* e, int event, const QString &fileName = QString());
 
   // Memory management - delete when last KDirWatch gets deleted
   void ref() { m_ref++; }
   bool deref() { return ( --m_ref == 0 ); }
 
- static bool isNoisyFile( const char *filename );
+ static bool isNoisyFile(const char *filename);
 
 public Q_SLOTS:
   void slotRescan();
@@ -222,7 +222,7 @@ public:
   int statEntries;
   int m_nfsPollInterval, m_PollInterval;
   int m_ref;
-  bool useStat(Entry*);
+  bool useStat(Entry *e);
 
   // removeList is allowed to contain any entry at most once
   QSet<Entry *> removeList;
@@ -236,8 +236,8 @@ public:
   FAMConnection fc;
   bool use_fam;
 
-  void checkFAMEvent(FAMEvent*);
-  bool useFAM(Entry*);
+  void checkFAMEvent(FAMEvent *fe);
+  bool useFAM(Entry *e);
 #endif
 
 #if HAVE_SYS_INOTIFY_H
@@ -245,11 +245,11 @@ public:
   bool supports_inotify;
   int m_inotify_fd;
 
-  bool useINotify(Entry*);
+  bool useINotify(Entry *e);
 #endif
 #if HAVE_QFILESYSTEMWATCHER
   KFileSystemWatcher *fsWatcher;
-  bool useQFSWatch(Entry* e);
+  bool useQFSWatch(Entry *e);
 #endif
 
   bool _isStopped;

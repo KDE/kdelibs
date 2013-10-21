@@ -84,7 +84,7 @@ class KCOREADDONS_EXPORT KDirWatch : public QObject
     * is added.
     * @param parent the parent of the QObject (or 0 for parent-less KDataTools)
     */
-   KDirWatch(QObject* parent = 0);
+   KDirWatch(QObject *parent = 0);
 
    /**
     * Destructor.
@@ -112,21 +112,21 @@ class KCOREADDONS_EXPORT KDirWatch : public QObject
     *
     * @sa  KDirWatch::WatchMode
     */
-   void addDir(const QString& path, WatchModes watchModes = WatchDirOnly);
+   void addDir(const QString &path, WatchModes watchModes = WatchDirOnly);
 
    /**
     * Adds a file to be watched.
     * If it's a symlink to a directory, it watches the symlink itself.
     * @param file the file to watch
     */
-   void addFile(const QString& file);
+   void addFile(const QString &file);
 
    /**
     * Returns the time the directory/file was last changed.
     * @param path the file to check
     * @return the date of the last modification
     */
-   QDateTime ctime(const QString& path) const;
+   QDateTime ctime(const QString &path) const;
 
    /**
     * Removes a directory from the list of scanned directories.
@@ -134,7 +134,7 @@ class KCOREADDONS_EXPORT KDirWatch : public QObject
     * If specified path is not in the list this does nothing.
     * @param path the path of the dir to be removed from the list
     */
-   void removeDir(const QString& path);
+   void removeDir(const QString &path);
 
    /**
     * Removes a file from the list of watched files.
@@ -142,7 +142,7 @@ class KCOREADDONS_EXPORT KDirWatch : public QObject
     * If specified path is not in the list this does nothing.
     * @param file the file to be removed from the list
     */
-   void removeFile(const QString& file);
+   void removeFile(const QString &file);
 
    /**
     * Stops scanning the specified path.
@@ -156,7 +156,7 @@ class KCOREADDONS_EXPORT KDirWatch : public QObject
     * @return true if the @p path is being watched, otherwise false
     * @see restartDirScanning()
     */
-   bool stopDirScan(const QString& path);
+   bool stopDirScan(const QString &path);
 
    /**
     * Restarts scanning for specified path.
@@ -171,7 +171,7 @@ class KCOREADDONS_EXPORT KDirWatch : public QObject
     * @return true if the @p path is being watched, otherwise false
     * @see stopDirScanning()
     */
-   bool restartDirScan(const QString& path);
+   bool restartDirScan(const QString &path);
 
    /**
     * Starts scanning of all dirs in list.
@@ -189,7 +189,7 @@ class KCOREADDONS_EXPORT KDirWatch : public QObject
     * for change. Otherwise, stopped directories will continue to be
     * unnotified.
     */
-   void startScan( bool notify=false, bool skippedToo=false );
+   void startScan(bool notify = false, bool skippedToo = false);
 
    /**
     * Stops scanning of all directories in internal list.
@@ -210,7 +210,7 @@ class KCOREADDONS_EXPORT KDirWatch : public QObject
     * @param path the directory to check
     * @return true if the directory is being watched
     */
-   bool contains( const QString& path ) const;
+   bool contains(const QString &path) const;
 
    void deleteQFSWatcher();
 
@@ -253,19 +253,19 @@ public Q_SLOTS:
     * Emits created().
     * @param path the path of the file or directory
     */
-   void setCreated( const QString &path );
+   void setCreated(const QString &path);
 
    /**
     * Emits dirty().
     * @param path the path of the file or directory
     */
-   void setDirty( const QString &path );
+   void setDirty(const QString &path);
 
    /**
     * Emits deleted().
     * @param path the path of the file or directory
     */
-   void setDeleted( const QString &path );
+   void setDeleted(const QString &path);
 
  Q_SIGNALS:
 
