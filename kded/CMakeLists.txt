@@ -32,7 +32,12 @@ if (APPLE)
     set_target_properties(kded5 PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "KDE Daemon")
 endif (APPLE)
 
-target_link_libraries(kdeinit_kded5 ${KDE4_KIO_LIBS} KF5::KCoreAddons KF5::KDBusAddons KF5::KCrash)
+target_link_libraries(kdeinit_kded5
+    ${KDE4_KIO_LIBS} # Needed for ksycoca.h, should be replaced with KF5::KService
+    KF5::KCoreAddons # Needed for KCOREADDONS_VERSION_MAJOR to check if the desktop running has the same version of the daemon
+    KF5::KDBusAddons # Needed for kdedmodule.h
+    KF5::KCrash # Sets it as autostart
+)
 
 install(TARGETS kdeinit_kded5 ${INSTALL_TARGETS_DEFAULT_ARGS})
 
