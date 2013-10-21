@@ -24,15 +24,18 @@ set(REQUIRED_QT_VERSION "5.2.0")
 
 # Required Qt5 components to build this framework
 find_package(Qt5 ${REQUIRED_QT_VERSION} NO_MODULE REQUIRED Core)
+find_package(KF5 ${KF5_VERSION} MODULE REQUIRED CMake Compiler InstallDirs)
 
 # TODO: Add all required find_package() calls here
 
 if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
+  # KF5 frameworks
+  #
   # Content of this block is only executed when building the framework
-  # standalone
-  find_package(KF5 ${KF5_VERSION} MODULE REQUIRED CMake Compiler InstallDirs)
-  # Required KF5 frameworks to build this framework
-  # For example:
+  # standalone. KF5 frameworks required to build this framework should be added
+  # here. It is done this way to avoid chicken-and-egg problem when building
+  # KF5 as a whole: one cannot depend on packages which have not been installed
+  # yet. For example:
   # find_package(KCoreAddons ${KF5_VERSION} REQUIRED)
 endif()
 
