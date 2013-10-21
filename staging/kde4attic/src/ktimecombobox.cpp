@@ -23,7 +23,6 @@
 #include <QKeyEvent>
 #include <QLineEdit>
 
-#include "klocalizedstring.h"
 #include "kmessagebox.h"
 
 class KTimeComboBoxPrivate
@@ -93,7 +92,7 @@ QTime KTimeComboBoxPrivate::defaultMaxTime()
 
 QString KTimeComboBoxPrivate::timeFormatToInputMask(const QString &format, bool nullMask)
 {
-    const QLocale locale;
+    const QLocale locale = q->locale();
 
     //TODO not sure this will always work, does it support DigitSets, am/pm is dodgy?
     QString mask = formatTime(QTime(12,34,56,789));
@@ -143,7 +142,7 @@ QTime KTimeComboBoxPrivate::nearestIntervalTime(const QTime &time)
 
 QString KTimeComboBoxPrivate::formatTime(const QTime &time)
 {
-    return QLocale().toString(time, m_displayFormat);
+    return q->locale().toString(time, m_displayFormat);
 }
 
 void KTimeComboBoxPrivate::initTimeWidget()
@@ -152,7 +151,7 @@ void KTimeComboBoxPrivate::initTimeWidget()
     q->clear();
 
     // Set the input mask from the current format
-    const QLocale locale;
+    const QLocale locale = q->locale();
     q->lineEdit()->setInputMask(timeFormatToInputMask(locale.timeFormat(m_displayFormat)));
     m_nullString = timeFormatToInputMask(locale.timeFormat(m_displayFormat), true);
 
@@ -250,17 +249,17 @@ void KTimeComboBoxPrivate::warnTime()
         (m_options &KTimeComboBox::WarnOnInvalid) == KTimeComboBox::WarnOnInvalid) {
         QString warnMsg;
         if (!m_time.isValid()) {
-            warnMsg = i18nc("@info", "The time you entered is invalid");
+            warnMsg = q->tr("The time you entered is invalid", "@info");
         } else if (m_time < m_minTime) {
             if (m_minWarnMsg.isEmpty()) {
-                warnMsg = i18nc("@info", "Time cannot be earlier than %1", formatTime(m_minTime));
+                warnMsg = q->tr("Time cannot be earlier than %1", "@info").arg(formatTime(m_minTime));
             } else {
                 warnMsg = m_minWarnMsg;
                 warnMsg.replace("%1", formatTime(m_minTime));
             }
         } else if (m_time > m_maxTime) {
             if (m_maxWarnMsg.isEmpty()) {
-                warnMsg = i18nc("@info", "Time cannot be later than %1", formatTime(m_maxTime));
+                warnMsg = q->tr("Time cannot be later than %1", "@info").arg(formatTime(m_maxTime));
             } else {
                 warnMsg = m_maxWarnMsg;
                 warnMsg.replace("%1", formatTime(m_maxTime));
