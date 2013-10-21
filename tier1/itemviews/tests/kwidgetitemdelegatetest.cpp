@@ -149,6 +149,7 @@ public:
     void paint(QPainter *painter, const QStyleOptionViewItem &option,
                const QModelIndex &index) const
     {
+        Q_UNUSED(index);
         painter->save();
 
         itemView()->style()->drawPrimitive(QStyle::PE_PanelItemViewItem, &option, painter, 0);

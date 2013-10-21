@@ -132,6 +132,7 @@ void KWidgetItemDelegatePrivate::_k_slotSelectionChanged(const QItemSelection &s
 
 void KWidgetItemDelegatePrivate::_k_sizeHintChanged(const QModelIndex &idx)
 {
+    Q_UNUSED(idx);
     //we need to call the initializeModel() directly, or some widgets will not be created/updated
     QTimer::singleShot(0, this, SLOT(initializeModel()));
 }

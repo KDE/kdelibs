@@ -34,7 +34,7 @@
 class KDirSortFilterProxyModel::KDirSortFilterProxyModelPrivate
 {
 public:
-    KDirSortFilterProxyModelPrivate(KDirSortFilterProxyModel* q);
+    KDirSortFilterProxyModelPrivate();
 
     int compare(const QString&, const QString&, Qt::CaseSensitivity caseSensitivity  = Qt::CaseSensitive);
     void slotNaturalSortingChanged();
@@ -44,7 +44,7 @@ public:
     QCollator m_collator;
 };
 
-KDirSortFilterProxyModel::KDirSortFilterProxyModelPrivate::KDirSortFilterProxyModelPrivate(KDirSortFilterProxyModel* q) :
+KDirSortFilterProxyModel::KDirSortFilterProxyModelPrivate::KDirSortFilterProxyModelPrivate() :
     m_sortFoldersFirst(true)
 {
     slotNaturalSortingChanged();
@@ -78,7 +78,7 @@ void KDirSortFilterProxyModel::KDirSortFilterProxyModelPrivate::slotNaturalSorti
 }
 
 KDirSortFilterProxyModel::KDirSortFilterProxyModel(QObject* parent)
-    : KCategorizedSortFilterProxyModel(parent), d(new KDirSortFilterProxyModelPrivate(this))
+    : KCategorizedSortFilterProxyModel(parent), d(new KDirSortFilterProxyModelPrivate)
 {
     setDynamicSortFilter(true);
 

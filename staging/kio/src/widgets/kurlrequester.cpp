@@ -192,9 +192,7 @@ public:
                  m & KFile::ExistingOnly) {
             fileMode = QFileDialog::ExistingFile;
         }
-        else if ((m & KFile::File ||
-                  m & KFile::Files) &&
-                 ((m & KFile::ExistingOnly) == 0)) {
+        else {
             fileMode = QFileDialog::AnyFile;
         }
 

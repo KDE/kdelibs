@@ -51,6 +51,7 @@ void ShuttingDownState::resume()
 
 JobPointer ShuttingDownState::applyForWork(Thread*, JobPointer previous)
 {
+    Q_UNUSED(previous) // except in Q_ASSERT
     Q_ASSERT(previous==0);
     return JobPointer();  // tell threads to exit
 }

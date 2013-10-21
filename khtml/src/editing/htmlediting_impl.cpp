@@ -503,15 +503,11 @@ void CompositeEditCommandImpl::setNodeAttribute(ElementImpl *element, int attrib
 
 ElementImpl *CompositeEditCommandImpl::createTypingStyleElement() const
 {
-    int exceptionCode = 0;
     ElementImpl *styleElement = document()->createHTMLElement("SPAN");
-//     assert(exceptionCode == 0);
 
     styleElement->setAttribute(ATTR_STYLE, document()->part()->editor()->typingStyle()->cssText().implementation());
-//     assert(exceptionCode == 0);
 
     styleElement->setAttribute(ATTR_CLASS, styleSpanClassString());
-    assert(exceptionCode == 0);
 
     return styleElement;
 }

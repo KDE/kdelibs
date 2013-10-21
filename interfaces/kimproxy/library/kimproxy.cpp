@@ -575,7 +575,7 @@ void KIMProxy::pollAll( const QString &uid )
 void KIMProxy::pollApp( const QString & appId )
 {
 	//qDebug() ;
-	OrgKdeKIMInterface * appStub = m_im_client_stubs.value( appId );
+	//OrgKdeKIMInterface * appStub = m_im_client_stubs.value( appId );
 	QStringList contacts = m_im_client_stubs.value( appId )->allContacts();
 	QStringList::iterator it = contacts.begin();
 	QStringList::iterator end = contacts.end();

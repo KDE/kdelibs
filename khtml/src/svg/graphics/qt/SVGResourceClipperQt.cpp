@@ -45,14 +45,11 @@ void SVGResourceClipper::applyClip(/*GraphicsContext* context*/QPainter* painter
 
     QPainterPath newPath;
 
-    bool heterogenousClipRules = false;
     WindRule clipRule = m_clipData.clipData()[0].windRule;
 
     unsigned int clipDataCount = m_clipData.clipData().size();
     for (unsigned int x = 0; x < clipDataCount; x++) {
         ClipData clipData = m_clipData.clipData()[x];
-        if (clipData.windRule != clipRule)
-            heterogenousClipRules = true;
 
         QPainterPath path = *(clipData.path.platformPath());
         if (path.isEmpty())

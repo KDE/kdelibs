@@ -61,5 +61,10 @@ int main(int, char**)
     globalA2.destroy();
     Q_ASSERT(globalA2.isDestroyed());
 
+    // silence warnings
+    Q_UNUSED(globalB)
+    Q_UNUSED(a)
+    Q_UNUSED(x)
+
     return 0;
 }

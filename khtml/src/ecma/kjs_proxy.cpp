@@ -251,6 +251,8 @@ void KJSProxy::setDebugEnabled(bool enabled)
   // see the entire session
   if (enabled)
     m_debugWindow = DebugWindow::window();
+#else
+  Q_UNUSED(enabled)
 #endif
 }
 

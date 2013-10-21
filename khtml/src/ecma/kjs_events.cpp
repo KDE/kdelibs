@@ -1134,7 +1134,7 @@ bool DOMHashChangeEvent::getOwnPropertySlot(ExecState *exec, const Identifier& p
   return getStaticValueSlot<DOMHashChangeEvent, DOMEvent>(exec,&DOMHashChangeEventTable,this,propertyName,slot);
 }
 
-JSValue *DOMHashChangeEvent::getValueProperty(ExecState *exec, int token) const
+JSValue *DOMHashChangeEvent::getValueProperty(ExecState * /*exec*/, int token) const
 {
   DOM::HashChangeEventImpl& event = *impl();
   switch (token) {

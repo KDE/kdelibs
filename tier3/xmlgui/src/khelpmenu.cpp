@@ -400,9 +400,9 @@ void KHelpMenu::menuDestroyed()
 void KHelpMenu::contextHelpActivated()
 {
   QWhatsThis::enterWhatsThisMode();
-  QWidget* w = QApplication::widgetAt( QCursor::pos() );
 #pragma message("Revive QX11EmbedWidget in Qt5")
 #if 0
+  QWidget* w = QApplication::widgetAt( QCursor::pos() );
   while ( w && !w->isTopLevel() && !qobject_cast<QX11EmbedWidget*>(w)  )
       w = w->parentWidget();
 #ifdef __GNUC__

@@ -1271,6 +1271,7 @@ QModelIndex KSelectionProxyModelPrivate::mapParentFromSource(const QModelIndex &
 
 static bool indexIsValid(bool startWithChildTrees, int row, const QList<QPersistentModelIndex> &rootIndexList, const SourceIndexProxyRowMapping &mappedFirstChildren)
 {
+#ifndef QT_NO_DEBUG
     if (!startWithChildTrees) {
         Q_ASSERT(rootIndexList.size() > row);
         Q_UNUSED(rootIndexList);
@@ -1288,6 +1289,7 @@ static bool indexIsValid(bool startWithChildTrees, int row, const QList<QPersist
         Q_ASSERT(sourceFirstChild.parent().isValid());
         Q_ASSERT(row <= proxyFirstRow + sourceFirstChild.model()->rowCount(sourceFirstChild.parent()));
     }
+#endif
     return true;
 }
 
@@ -1499,6 +1501,7 @@ void KSelectionProxyModelPrivate::updateInternalIndexes(const QModelIndex &paren
 bool KSelectionProxyModelPrivate::parentAlreadyMapped(const QModelIndex &parent) const
 {
     Q_Q(const KSelectionProxyModel);
+    Q_UNUSED(q) // except in Q_ASSERT
     Q_ASSERT(parent.model() == q->sourceModel());
     return m_mappedParents.leftContains(parent);
 }
@@ -1506,6 +1509,7 @@ bool KSelectionProxyModelPrivate::parentAlreadyMapped(const QModelIndex &parent)
 bool KSelectionProxyModelPrivate::firstChildAlreadyMapped(const QModelIndex &firstChild) const
 {
     Q_Q(const KSelectionProxyModel);
+    Q_UNUSED(q) // except in Q_ASSERT
     Q_ASSERT(firstChild.model() == q->sourceModel());
     return m_mappedFirstChildren.leftContains(firstChild);
 }

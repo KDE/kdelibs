@@ -63,6 +63,7 @@ void KDragWidgetDecoratorBase::setDragEnabled(bool enable)
 
 bool KDragWidgetDecoratorBase::eventFilter(QObject *watched, QEvent *event)
 {
+    Q_UNUSED(watched) // except in Q_ASSERT
     Q_ASSERT(watched == d->decoratedWidget);
 
     if (!d->dragEnabled) {

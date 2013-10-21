@@ -147,7 +147,7 @@ LinearGradientAttributes SVGLinearGradientElement::collectGradientProperties() c
         Node* refNode = ownerDocument()->getElementById(SVGURIReference::getTarget(current->href()));
         if (refNode && (refNode->hasTagName(SVGNames::linearGradientTag) || refNode->hasTagName(SVGNames::radialGradientTag))) {
             current = static_cast<const SVGGradientElement*>(const_cast<const Node*>(refNode));
-            int ec;
+            // int ec;
             // qDebug() << "take attributes from" << current->getAttributeNS("", "id", ec) << endl;
 
             // Cycle detection

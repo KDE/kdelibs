@@ -136,6 +136,7 @@ public:
         connectToHostImplementation(address.toString(), port, mode);
     }
     virtual void connectToHost(const QString &hostName, quint16 port, OpenMode mode = ReadWrite, NetworkLayerProtocol protocol = AnyIPProtocol) {
+        Q_UNUSED(protocol)
         connectToHostImplementation(hostName, port, mode);
     }
     virtual void disconnectFromHost() {

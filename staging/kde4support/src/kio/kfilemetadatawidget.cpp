@@ -334,7 +334,9 @@ KFileMetaDataWidget::~KFileMetaDataWidget()
 
 void KFileMetaDataWidget::setItems(const KFileItemList& items)
 {
-#if ! KIO_NO_NEPOMUK
+#if KIO_NO_NEPOMUK
+    Q_UNUSED(items)
+#else
     d->m_provider->setItems(items);
 #endif
 }
@@ -350,7 +352,9 @@ KFileItemList KFileMetaDataWidget::items() const
 
 void KFileMetaDataWidget::setReadOnly(bool readOnly)
 {
-#if ! KIO_NO_NEPOMUK
+#if KIO_NO_NEPOMUK
+    Q_UNUSED(readOnly)
+#else
     d->m_provider->setReadOnly(readOnly);
 #endif
 }

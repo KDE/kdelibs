@@ -693,6 +693,7 @@ void KArchiveFile::copyTo(const QString& dest) const
       while ( remainingSize > 0 ) {
           const qint64 currentChunkSize = qMin( chunkSize, remainingSize );
           const qint64 n = inputDev->read( array.data(), currentChunkSize );
+          Q_UNUSED(n) // except in Q_ASSERT
           Q_ASSERT( n == currentChunkSize );
           f.write( array.data(), currentChunkSize );
           remainingSize -= currentChunkSize;

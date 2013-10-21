@@ -171,16 +171,15 @@ void KAction::setGlobalShortcut( const KShortcut & shortcut, ShortcutTypes type,
                                  GlobalShortcutLoading load )
 {
   Q_ASSERT(type);
-  bool changed = false;
 
   if ((type & DefaultShortcut) && globalShortcut(DefaultShortcut) != shortcut) {
-    changed = KGlobalAccel::self()->setDefaultShortcut(this, shortcut,
-                                                       static_cast<KGlobalAccel::GlobalShortcutLoading>(load));
+    KGlobalAccel::self()->setDefaultShortcut(this, shortcut,
+                                             static_cast<KGlobalAccel::GlobalShortcutLoading>(load));
   }
 
   if ((type & ActiveShortcut) && globalShortcut(ActiveShortcut) != shortcut) {
-    changed = KGlobalAccel::self()->setShortcut(this, shortcut,
-                                                static_cast<KGlobalAccel::GlobalShortcutLoading>(load));
+    KGlobalAccel::self()->setShortcut(this, shortcut,
+                                      static_cast<KGlobalAccel::GlobalShortcutLoading>(load));
   }
 }
 

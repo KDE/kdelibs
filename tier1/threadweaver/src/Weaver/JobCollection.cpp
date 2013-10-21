@@ -195,6 +195,7 @@ void JobCollection::run(JobPointer, Thread*)
 
 void JobCollection::elementStarted(JobPointer job, Thread* thread)
 {
+    Q_UNUSED(job) // except in Q_ASSERT
     Q_ASSERT(!d->self.isNull());
     Q_ASSERT(job.data() == d->self || std::find(d->elements.begin(), d->elements.end(), job) != d->elements.end());
     if (d->jobsStarted.fetchAndAddOrdered(1) == 0) {
@@ -205,6 +206,7 @@ void JobCollection::elementStarted(JobPointer job, Thread* thread)
 
 void JobCollection::elementFinished(JobPointer job, Thread *thread)
 {
+    Q_UNUSED(job) // except in Q_ASSERT
     Q_ASSERT(!d->self.isNull());
     Q_ASSERT(job.data() == d->self || std::find(d->elements.begin(), d->elements.end(), job) != d->elements.end());
     QMutexLocker l(mutex()); Q_UNUSED(l);

@@ -375,9 +375,9 @@ void KDirModelPrivate::_k_slotNewItems(const QUrl& directoryUrl, const KFileItem
         qWarning() << "Items emitted in directory" << directoryUrl
                      << "but that directory isn't in KDirModel!"
                      << "Root directory:" << urlForNode(m_rootNode);
-        Q_FOREACH(const KFileItem& item, items) {
-            //qDebug() << "Item:" << item.url();
-        }
+        /*Q_FOREACH(const KFileItem& item, items) {
+            qDebug() << "Item:" << item.url();
+        }*/
 #ifndef NDEBUG
         dump();
 #endif

@@ -3696,6 +3696,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
                         break;
                     default:
                         assert(false);
+                        quote = NO_QUOTE;
                 }
                 style->addContent(quote);
             } else {

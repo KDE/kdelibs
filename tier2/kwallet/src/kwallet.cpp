@@ -528,6 +528,8 @@ void Wallet::slotCollectionStatusChanged(int status)
             emitWalletAsyncOpenError();
             break;
     }
+#else
+    Q_UNUSED(status)
 #endif
 }
 

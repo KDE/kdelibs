@@ -161,7 +161,6 @@ bool PluginTest::loadFromMetaData(const QString& serviceType)
 bool PluginTest::findPlugins()
 {
     QElapsedTimer timer;
-    int runs = 1;
     QList<qint64> timings;
     const QString pluginDir("/media/storage/testdata/");
     const QStringList sizes = QStringList() << "50"

@@ -78,6 +78,7 @@ main(int argc, char *argv[])
    QFile file(QLatin1String("a:b"));
 #ifndef Q_OS_WIN
    bool ok = file.open(QIODevice::WriteOnly);
+   Q_UNUSED(ok) // silence warnings
    assert(ok);
 #endif
    u = KCmdLineArgs::makeURL(QByteArray("a:b"));

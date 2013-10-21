@@ -223,6 +223,8 @@ public:
                                       const QVariantList &args = QVariantList(),
                                       QString *error = 0)
     {
+        Q_UNUSED(parentWidget)
+        Q_UNUSED(args)
         if (error) {
             error->clear();
         }

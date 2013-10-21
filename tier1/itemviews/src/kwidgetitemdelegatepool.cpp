@@ -138,7 +138,6 @@ QList<QWidget*> KWidgetItemDelegatePool::invalidIndexesWidgets() const
 {
     QList<QWidget*> result;
     foreach (QWidget *widget, d->widgetInIndex.keys()) {
-        const QAbstractProxyModel *proxyModel = qobject_cast<const QAbstractProxyModel*>(d->delegate->d->model);
         QModelIndex index = d->widgetInIndex[widget];
         if (!index.isValid()) {
             result << widget;

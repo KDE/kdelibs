@@ -385,6 +385,7 @@ bool s_kuniqueapplication_startCalled = false;
 
 void KApplicationPrivate::init(bool GUIenabled)
 {
+  Q_UNUSED(GUIenabled)
   if ((getuid() != geteuid()) ||
       (getgid() != getegid()))
   {

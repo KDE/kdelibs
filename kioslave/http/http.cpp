@@ -2628,9 +2628,9 @@ bool HTTPProtocol::sendQuery()
   }
 
   // qDebug() << "============ Sending Header:";
-  Q_FOREACH (const QString &s, header.split(QLatin1String("\r\n"), QString::SkipEmptyParts)) {
+  //Q_FOREACH (const QString &s, header.split(QLatin1String("\r\n"), QString::SkipEmptyParts)) {
     // qDebug() << s;
-  }
+  //}
 
   // End the header iff there is no payload data. If we do have payload data
   // sendBody() will add another field to the header, Content-Length.

@@ -53,6 +53,8 @@ ItemsGridViewDelegate::~ItemsGridViewDelegate()
 
 QList<QWidget*> ItemsGridViewDelegate::createItemWidgets(const QModelIndex &index) const
 {
+    Q_UNUSED(index)
+
     QList<QWidget*> m_widgetList;
     KSqueezedTextLabel * titleLabel = new KSqueezedTextLabel();
     titleLabel->setOpenExternalLinks(true);

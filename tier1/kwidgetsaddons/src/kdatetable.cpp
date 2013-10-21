@@ -248,7 +248,6 @@ void KDateTable::paintCell( QPainter *painter, int row, int col )
     QFont cellFont = QFontDatabase::systemFont(QFontDatabase::GeneralFont);
     bool workingDay = false;
     int cellWeekDay, pos;
-    BackgroundMode cellBackgroundMode = RectangleMode;
 
     //Calculate the position of the cell in the grid
     pos = d->m_numDayColumns * ( row - 1 ) + col;
@@ -360,7 +359,6 @@ void KDateTable::paintCell( QPainter *painter, int row, int col )
             if ( customDay ) {
                 KDateTablePrivate::DatePaintingMode mode = d->m_customPaintingModes[cellDate.toJulianDay()];
                 if ( mode.bgMode != NoBgMode ) {
-                        cellBackgroundMode = mode.bgMode;
                         if (!selectedDay) cellBackgroundColor = mode.bgColor;
                 }
                 cellTextColor = mode.fgColor;

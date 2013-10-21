@@ -535,9 +535,9 @@ TCPSlaveBase::SslResult TCPSlaveBase::TcpSlaveBasePrivate::startTLSInternal (KTc
                      << ", the socket says:" << socket.errorString()
                      << "and the list of SSL errors contains"
                      << socket.sslErrors().count() << "items.";*/
-        Q_FOREACH(const KSslError& sslError, socket.sslErrors()) {
-            //qDebug() << "SSL ERROR: (" << sslError.error() << ")" << sslError.errorString();
-        }
+        /*Q_FOREACH(const KSslError& sslError, socket.sslErrors()) {
+            qDebug() << "SSL ERROR: (" << sslError.error() << ")" << sslError.errorString();
+        }*/
         return ResultFailed | ResultFailedEarly;
     }
 

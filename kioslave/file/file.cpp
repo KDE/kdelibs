@@ -22,7 +22,9 @@
    Boston, MA 02110-1301, USA.
 */
 
+#ifndef QT_NO_CAST_FROM_ASCII
 #define QT_NO_CAST_FROM_ASCII
+#endif
 
 #include "file.h"
 

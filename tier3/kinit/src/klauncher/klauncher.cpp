@@ -17,7 +17,9 @@
   Boston, MA 02110-1301, USA.
 */
 
+#ifndef QT_NO_CAST_FROM_ASCII
 #define QT_NO_CAST_FROM_ASCII
+#endif
 
 #include "klauncher.h"
 #include "klauncher_cmds.h"
@@ -369,8 +371,7 @@ void KLauncher::processRequestReturn(int status, const QByteArray &requestData)
      long *request_data;
      request_data = (long *) requestData.data();
      lastRequest->pid = (pid_t) (*request_data);
-     // qDebug().nospace() << lastRequest->name << " (pid " << lastRequest->pid <<
-        ") up and running.";
+     // qDebug().nospace() << lastRequest->name << " (pid " << lastRequest->pid << ") up and running.";
      switch(lastRequest->dbus_startup_type)
      {
        case KService::DBusNone:
@@ -994,6 +995,7 @@ KLauncher::kdeinit_exec(const QString &app, const QStringList &args,
                         const QString& workdir, const QStringList &envs,
                         const QString &startup_id, bool wait, const QDBusMessage &msg)
 {
+   Q_UNUSED(wait)
    KLaunchRequest *request = new KLaunchRequest;
    request->autoStart = false;
    request->arg_list = args;

@@ -620,8 +620,6 @@ struct KDebugPrivate
     QDebug stream(QtMsgType type, unsigned int area, const char *debugFile, int line,
                   const char *funcinfo)
     {
-        static bool env_colored = (!qgetenv("KDE_COLOR_DEBUG").isEmpty());
-        static bool env_colors_on_any_fd = (!qgetenv("KDE_COLOR_DEBUG_ALWAYS").isEmpty());
         Cache::Iterator it = areaData(type, area);
         OutputMode mode = it->mode[level(type)];
         Q_ASSERT(mode != Unknown);

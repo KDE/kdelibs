@@ -88,9 +88,9 @@ void RenderSVGRoot::layout()
     //FIXME vtokarev: view()->disableLayoutState();
 	//canvas()->disableLayoutState();
 
-    IntRect oldBounds = m_absoluteBounds;
+    /*IntRect oldBounds = m_absoluteBounds;
     IntRect oldOutlineBox;
-    /*bool checkForRepaint = checkForRepaintDuringLayout() && selfNeedsLayout();
+    bool checkForRepaint = checkForRepaintDuringLayout() && selfNeedsLayout();
     if (checkForRepaint)
         oldOutlineBox = absoluteOutlineBox();*/
 

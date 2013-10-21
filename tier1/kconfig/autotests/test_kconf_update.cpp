@@ -38,6 +38,7 @@ static void writeFile(const QString &path, const QString &content)
 {
     QFile file(path);
     bool ok = file.open(QIODevice::WriteOnly);
+    Q_UNUSED(ok) // silence warnings
     Q_ASSERT(ok);
     file.write(content.toUtf8());
 }
@@ -46,6 +47,7 @@ static QString readFile(const QString &path)
 {
     QFile file(path);
     bool ok = file.open(QIODevice::ReadOnly);
+    Q_UNUSED(ok) // silence warnings
     Q_ASSERT(ok);
     return QString::fromUtf8(file.readAll());
 }
@@ -54,6 +56,7 @@ static QTemporaryFile* writeUpdFile(const QString &content)
 {
     QTemporaryFile* file = new QTemporaryFile(QDir::tempPath() + QLatin1String("/test_kconf_update_XXXXXX.upd"));
     bool ok = file->open();
+    Q_UNUSED(ok) // silence warnings
     Q_ASSERT(ok);
     file->write(content.toUtf8());
     file->flush();

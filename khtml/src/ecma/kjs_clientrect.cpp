@@ -43,7 +43,7 @@ ClientRect::ClientRect(ExecState* /*exec*/, float left, float top, float width, 
 {
 }
 
-ClientRect::ClientRect(ExecState* exec, const QRectF& rect)
+ClientRect::ClientRect(ExecState* /*exec*/, const QRectF& rect)
     : JSObject(),
       m_rect(rect)
 {
