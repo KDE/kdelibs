@@ -18,7 +18,7 @@ endif(NOT WIN32)
 
 ADD_LIBRARY( xslt_kde STATIC xslt.cpp xslt_kde.cpp)
 
-target_link_libraries(xslt_kde Qt5::Core KArchive)
+target_link_libraries(xslt_kde Qt5::Core KF5::KArchive)
 
 ########### next target ###############
 
@@ -34,7 +34,7 @@ else ()
         add_definitions(-DMEINPROC_NO_KARCHIVE) #we don't have saveToCache when compiling without KArchive, which is used in xslt_kde.cpp
     else ()
         set(meinproc_additional_SRCS xslt_kde.cpp)
-        set(meinproc_additional_LIBS KArchive)
+        set(meinproc_additional_LIBS KF5::KArchive)
     endif()
 
     add_executable(meinproc5 meinproc.cpp meinproc_common.cpp xslt.cpp ${meinproc_additional_SRCS})
