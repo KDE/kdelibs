@@ -139,7 +139,7 @@ If the resource is available in QStandardPaths (i.e. for all of the above), then
 <pre>
     KStandardDirs::locate("data", "kmyapp/my-data") -&gt; QStandardPaths::locate(QStandardPaths::GenericDataLocation, "kmyapp/my-data")
     KStandardDirs::locate("services", "foo.desktop") -&gt; QStandardPaths::locate(QStandardPaths::GenericDataLocation, "kde5/services/foo.desktop")
-    dirs.findResource("data", relPath -&gt; QStandardPaths::locate(QStandardPaths::GenericDataLocation, "kmyapp/my-data")
+    dirs.findResource("data", relPath) -&gt; QStandardPaths::locate(QStandardPaths::GenericDataLocation, "kmyapp/my-data")
     dirs.findDirs("data", "kconf_update") -&gt; QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "kconf_update", QStandardPaths::LocateDirectory)
     saveLocation -&gt; writableLocation (note that you might have to mkpath it if it doesn't exist)
     locateLocal(type, file) -&gt; writableLocation(type) + '/' + file (you might have to mkpath the directory)
@@ -173,7 +173,8 @@ becomes:
     QStringList files;
     const QStringList dirs = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "foo/bar", QStandardPaths::LocateDirectory);
     Q_FOREACH (const QString&amp; dir, dirs) {
-        Q_FOREACH (const QString&amp; file, QDir(dir).entryList(QStringList() &lt;&lt; QStringLiteral("*.desktop"))) {
+        const QStringList fileNames = QDir(dir).entryList(QStringList() &lt;&lt; QStringLiteral("*.desktop"));
+        Q_FOREACH (const QString&amp; file, fileNames) {
             files.append(dir + '/' + file);
         }
     }
@@ -192,9 +193,9 @@ Example using QDirIterator:
 On the other hand, findAllResources("locale", "*/entry.desktop") requires
 <pre>
     const QStringList localeDirs = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, QStringLiteral("locale"), QStandardPaths::LocateDirectory);
-    Q_FOREACH (const QString&amp; localeDir, localeDirs) {
+    Q_FOREACH (const QString &amp;localeDir, localeDirs) {
         const QStringList entries = QDir(localeDir).entryList(QDir::Dirs);
-        Q_FOREACH (const QString&amp; d, entries) {
+        Q_FOREACH (const QString &amp;d, entries) {
             if (QFile::exists(localeDir + '/' + d + "/entry.desktop")) {
                 // ...
             }
