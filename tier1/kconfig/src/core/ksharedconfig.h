@@ -74,6 +74,7 @@ public:
     virtual ~KSharedConfig();
 
 private:
+    Q_DISABLE_COPY(KSharedConfig)
     virtual KConfigGroup groupImpl(const QByteArray& aGroup);
     virtual const KConfigGroup groupImpl(const QByteArray& aGroup) const;
 
