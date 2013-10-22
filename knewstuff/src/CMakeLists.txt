@@ -77,7 +77,6 @@ target_link_libraries(knewstuff3
   LINK_PRIVATE
     KIOCore                    # For network fetching operations
     KIOWidgets                 # For KUrlRequester
-    kio                        # For KImageIO
     KF5::KArchive              # For decompressing archives
     KF5::KI18n                 # For translations
     ItemViews                  # For buttons on download dialog

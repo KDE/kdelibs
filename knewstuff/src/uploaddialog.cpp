@@ -23,6 +23,7 @@
 
 #include <QDialogButtonBox>
 #include <QFileDialog>
+#include <QImageReader>
 #include <QLabel>
 #include <QLayout>
 #include <QDoubleSpinBox>
@@ -40,7 +41,6 @@
 #include <QDebug>
 #include <kconfig.h>
 #include <kconfiggroup.h>
-#include <kimageio.h>
 #include <qstandardpaths.h>
 
 using namespace KNS3;
@@ -657,30 +657,45 @@ void UploadDialog::Private::_k_startUpload()
 
 void UploadDialog::Private::_k_changePreview1()
 {
-    const QString filter = KImageIO::pattern( KImageIO::Reading ).replace( '\n', ";;" );
-    QUrl url = QFileDialog::getOpenFileUrl(q, i18n("Select preview image"), QUrl(), filter);
-    previewFile1 = url;
-    // qDebug() << "preview is: " << url.url();
-    QPixmap preview(url.toLocalFile());
-    ui.previewImage1->setPixmap(preview.scaled(ui.previewImage1->size()));
+    const QStringList filters = _supportedMimeTypes();
+    QFileDialog dialog(q, i18n("Select preview image"));
+    dialog.setMimeTypeFilters(filters);
+    if (dialog.exec() == QDialog::Accepted)
+    {
+        QUrl url = dialog.selectedUrls().first();
+        previewFile1 = url;
+        // qDebug() << "preview is: " << url.url();
+        QPixmap preview(url.toLocalFile());
+        ui.previewImage1->setPixmap(preview.scaled(ui.previewImage1->size()));
+    }
 }
 
 void UploadDialog::Private::_k_changePreview2()
 {
-    const QString filter = KImageIO::pattern( KImageIO::Reading ).replace( '\n', ";;" );
-    QUrl url = QFileDialog::getOpenFileUrl(q, i18n("Select preview image"), QUrl(), filter);
-    previewFile2 = url;
-    QPixmap preview(url.toLocalFile());
-    ui.previewImage2->setPixmap(preview.scaled(ui.previewImage1->size()));
+    const QStringList filters = _supportedMimeTypes();
+    QFileDialog dialog(q, i18n("Select preview image"));
+    dialog.setMimeTypeFilters(filters);
+    if (dialog.exec() == QDialog::Accepted)
+    {
+        QUrl url = dialog.selectedUrls().first();
+        previewFile2 = url;
+        QPixmap preview(url.toLocalFile());
+        ui.previewImage2->setPixmap(preview.scaled(ui.previewImage1->size()));
+    }
 }
 
 void UploadDialog::Private::_k_changePreview3()
 {
-    const QString filter = KImageIO::pattern( KImageIO::Reading ).replace( '\n', ";;" );
-    QUrl url = QFileDialog::getOpenFileUrl(q, i18n("Select preview image"), QUrl(), filter);
-    previewFile3 = url;
-    QPixmap preview(url.toLocalFile());
-    ui.previewImage3->setPixmap(preview.scaled(ui.previewImage1->size()));
+    const QStringList filters = _supportedMimeTypes();
+    QFileDialog dialog(q, i18n("Select preview image"));
+    dialog.setMimeTypeFilters(filters);
+    if (dialog.exec() == QDialog::Accepted)
+    {
+        QUrl url = dialog.selectedUrls().first();
+        previewFile3 = url;
+        QPixmap preview(url.toLocalFile());
+        ui.previewImage3->setPixmap(preview.scaled(ui.previewImage1->size()));
+    }
 }
 
 void UploadDialog::Private::_k_contentAdded(Attica::BaseJob* baseJob)
@@ -817,6 +832,16 @@ void UploadDialog::Private::_k_detailsLinkLoaded(const QUrl& url)
     ui.contentWebsiteLink->setText(QLatin1String("<a href=\"") + url.toString() + QLatin1String("\">")
                                        + i18nc("A link to the website where the get hot new stuff upload can be seen", "Visit website") + QLatin1String("</a>"));
     ui.fetchContentLinkImageLabel->setPixmap(QIcon::fromTheme("dialog-ok").pixmap(16));
+}
+
+QStringList UploadDialog::Private::_supportedMimeTypes() const
+{
+    QStringList mimeTypes;
+    QList<QByteArray> supported = QImageReader::supportedMimeTypes();
+    Q_FOREACH(QByteArray mimeType, supported) {
+        mimeTypes.append(QString(mimeType));
+    }
+    return mimeTypes;
 }
 
 #include "moc_uploaddialog.cpp"

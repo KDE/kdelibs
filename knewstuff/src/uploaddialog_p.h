@@ -138,6 +138,8 @@ namespace KNS3 {
         void _k_accountBalanceFetched(Attica::BaseJob* baseJob);
 
         void _k_openRegisterAccountWebpage(QString);
+
+        QStringList _supportedMimeTypes() const;
     };
 }
 
