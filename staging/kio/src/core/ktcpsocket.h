@@ -24,7 +24,7 @@
 #include <QtNetwork/QSslSocket>
 #include <QtNetwork/QSslConfiguration>
 
-#include <kde4attic_export.h>
+#include <kio/kiocore_export.h>
 
 /*
   Notes on QCA::TLS compatibility
@@ -38,7 +38,7 @@
 
 class KSslKeyPrivate;
 
-class KDE4ATTIC_EXPORT KSslKey {
+class KIOCORE_EXPORT KSslKey {
 public:
     enum Algorithm {
         Rsa = 0,
@@ -67,7 +67,7 @@ private:
 
 class KSslCipherPrivate;
 
-class KDE4ATTIC_EXPORT KSslCipher {
+class KIOCORE_EXPORT KSslCipher {
 public:
     KSslCipher();
     KSslCipher(const KSslCipher &other);
@@ -95,7 +95,7 @@ private:
 class KSslErrorPrivate;
 class KTcpSocket;
 
-class KDE4ATTIC_EXPORT KSslError
+class KIOCORE_EXPORT KSslError
 {
 public:
     enum Error {
@@ -140,7 +140,7 @@ private:
 class KTcpSocketPrivate;
 class QHostAddress;
 
-class KDE4ATTIC_EXPORT KTcpSocket: public QIODevice
+class KIOCORE_EXPORT KTcpSocket: public QIODevice
 {
     Q_OBJECT
 public:
@@ -393,7 +393,7 @@ private:
  *
  * @see: KSslCertificateManager::askIgnoreSslErrors()
  */
-class KDE4ATTIC_EXPORT KSslErrorUiData
+class KIOCORE_EXPORT KSslErrorUiData
 {
 public:
     /**

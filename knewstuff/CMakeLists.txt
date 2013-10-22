@@ -14,7 +14,7 @@ find_package(KF5 REQUIRED MODULE COMPONENTS
   CMake Compiler InstallDirs KCoreAddons KConfig KI18n KGuiAddons KCodecs 
   KWidgetsAddons KAuth ItemViews KConfigWidgets KArchive KCompletion
   KIconThemes KWindowSystem KDBusAddons KService KJobWidgets KIO Sonnet 
-  KTextWidgets XmlGui KCrash KNotifications KUnitConversion KDE4Attic 
+  KTextWidgets XmlGui KCrash KNotifications KUnitConversion
   Solid KWallet KBookmarks)
 
 # Part of kdelibs

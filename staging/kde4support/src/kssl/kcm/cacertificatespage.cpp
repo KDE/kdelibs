@@ -20,10 +20,9 @@
 #include "cacertificatespage.h"
 #include "displaycertdialog_p.h"
 
-#include <kio_ksslcertificatemanager.h>
-#include <kio_ksslcertificatemanager_p.h>
+#include <ksslcertificatemanager.h>
+#include <ksslcertificatemanager_p.h>
 #include <klocalizedstring.h>
-using namespace KIO;
 
 #include <QDebug>
 

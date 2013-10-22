@@ -278,7 +278,6 @@ target_link_libraries(KDE4Support
    KF5::KI18n
    ${X11_LIBRARIES}
    KCompletion
-   KDE4Attic
    KNotifications
    KF5::KIconThemes
    KF5::KWindowSystem

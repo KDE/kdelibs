@@ -17,6 +17,7 @@ macro(KDE4SUPPORT_UNIT_TESTS)
     add_test(kde4support-${_testname} ${_testname})
     target_link_libraries(${_testname}
        KDE4Support
+       Qt5::DBus
        Qt5::Widgets
        Qt5::Test
        Qt5::Network
@@ -24,7 +25,6 @@ macro(KDE4SUPPORT_UNIT_TESTS)
        KF5::KCoreAddons
        KF5::KI18n
        KCrash
-       KDE4Attic
        KIOCore
        KIOWidgets
     )

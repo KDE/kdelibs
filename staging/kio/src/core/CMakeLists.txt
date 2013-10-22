@@ -72,8 +72,8 @@ set(kiocore_SRCS
   kmountpoint.cpp
   kcoredirlister.cpp
 
-  kio_ksslcertificatemanager.cpp # temporary (used by ktcpsocket)
-  kio_ktcpsocket.cpp             # temporary (port to Qt API once it has hooks for users approving invalid certificates)
+  ksslcertificatemanager.cpp
+  ktcpsocket.cpp
   kssl/ksslsettings.cpp          # temporary (used by tcpslavebase)
   kssl/kopenssl.cpp              # temporary (used by ksslsettings)
 )
@@ -183,4 +183,7 @@ install(FILES
   kprotocolinfo.h
   kprotocolmanager.h
   krecentdocument.h
+  ksslcertificatemanager.h
+  ksslcertificatemanager_p.h
+  ktcpsocket.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)

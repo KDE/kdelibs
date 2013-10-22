@@ -52,7 +52,7 @@ if(Qt5Designer_FOUND)
 
   add_library(kdewidgets MODULE ${kdewidgets_PART_SRCS})
 
-  target_link_libraries(kdewidgets ${KDE4_KIO_LIBS} KF5::KIOFileWidgets KF5::KPlotting KF5::KDE4Attic KF5::KDE4Support KF5::KWidgetsAddons KF5::KI18n KF5::KIconThemes KF5::KTextWidgets KF5::ItemViews)
+  target_link_libraries(kdewidgets ${KDE4_KIO_LIBS} KF5::KIOFileWidgets KF5::KPlotting KF5::KDE4Support KF5::KWidgetsAddons KF5::KI18n KF5::KIconThemes KF5::KTextWidgets KF5::ItemViews)
   if(NOT WIN32)
     set_target_properties(kdewidgets PROPERTIES
                                      INSTALL_RPATH_USE_LINK_PATH TRUE
@@ -83,7 +83,7 @@ if(Qt5Designer_FOUND)
 
     add_library(kdedeprecated MODULE ${kdedeprecated_PART_SRCS})
 
-    target_link_libraries(kdedeprecated KDE4Support ${KDE4_KIO_LIBS} KDE4Attic)
+    target_link_libraries(kdedeprecated KDE4Support KF5::KAuth ${KDE4_KIO_LIBS})
     if(NOT WIN32)
       set_target_properties(kdedeprecated PROPERTIES
                                           INSTALL_RPATH_USE_LINK_PATH TRUE

@@ -30,6 +30,7 @@ kiocore_unit_tests(
  jobremotetest
  kfileitemtest
  kprotocolinfotest
+ ktcpsockettest
 )
 
 if(UNIX)

@@ -27,10 +27,10 @@
 #include "tcpslavebase.h"
 
 #include <kconfiggroup.h>
-#include <kio_ksslcertificatemanager.h>
+#include <ksslcertificatemanager.h>
 #include <ksslsettings.h>
 #include <klocalizedstring.h>
-#include <kio_ktcpsocket.h>
+#include <ktcpsocket.h>
 
 #include <QtCore/QDataStream>
 #include <QtCore/QTime>

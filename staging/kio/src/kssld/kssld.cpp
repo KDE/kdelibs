@@ -22,6 +22,7 @@
 
 #include "kssld.h"
 
+#include "ksslcertificatemanager.h"
 #include "kssld_adaptor.h"
 
 #include <kconfig.h>
@@ -31,8 +32,6 @@
 #include <QtCore/QDate>
 #include <kpluginfactory.h>
 #include <kpluginloader.h>
-
-using namespace KIO;
 
 K_PLUGIN_FACTORY(KSSLDFactory, registerPlugin<KSSLD>();)
 //KDECORE_EXPORT void *__kde_do_unload; // TODO re-add support for this?

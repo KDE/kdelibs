@@ -23,10 +23,9 @@
 #define KSSLD_DBUSMETATYPES_H
 
 #include <qglobal.h>
-#include <kio_ksslcertificatemanager.h>
 
-Q_DECLARE_METATYPE(KIO::KSslCertificateRule)
-Q_DECLARE_METATYPE(KIO::KSslError::Error)
+Q_DECLARE_METATYPE(KSslCertificateRule)
+Q_DECLARE_METATYPE(KSslError::Error)
 
 
 QDBusArgument &operator<<(QDBusArgument &argument, const QSslCertificate &cert)
@@ -48,7 +47,6 @@ const QDBusArgument &operator>>(const QDBusArgument &argument, QSslCertificate &
     return argument;
 }
 
-using namespace KIO;
 
 QDBusArgument &operator<<(QDBusArgument &argument, const KSslCertificateRule &rule)
 {

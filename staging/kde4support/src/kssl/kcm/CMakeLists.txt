@@ -8,6 +8,7 @@ qt5_wrap_ui(kcmssl_SRCS cacertificates.ui displaycert.ui)
 add_library(kcm_ssl ${kcmssl_SRCS})
 target_link_libraries(kcm_ssl
    Qt5::Network
+   KF5::KIOCore
    KF5::KIOWidgets
    KF5::KCoreAddons
    KF5::KConfigWidgets   # KCModule

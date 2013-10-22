@@ -34,7 +34,7 @@ class KSslCertificateRulePrivate;
 class KSslCertificateManagerPrivate;
 
 //### document this... :/
-class KDE4ATTIC_EXPORT KSslCertificateRule
+class KIOCORE_EXPORT KSslCertificateRule
 {
 public:
     KSslCertificateRule(const QSslCertificate &cert = QSslCertificate(),
@@ -61,7 +61,7 @@ private:
 
 
 //### document this too... :/
-class KDE4ATTIC_EXPORT KSslCertificateManager
+class KIOCORE_EXPORT KSslCertificateManager
 {
 public:
     static KSslCertificateManager *self();
@@ -72,7 +72,7 @@ public:
 
     // use caCertificates() instead
 #ifndef KDE_NO_DEPRECATED
-    KDE4ATTIC_DEPRECATED QList<QSslCertificate> rootCertificates() const
+    KIOCORE_DEPRECATED QList<QSslCertificate> rootCertificates() const
         { return caCertificates(); }
 #endif
 

@@ -28,10 +28,7 @@
 class QString;
 class QSslCertificate;
 
-namespace KIO {
 class KSslCertificateRule;
-}
-using namespace KIO;
 
 class KSSLDPrivate;
 class KSSLD : public KDEDModule

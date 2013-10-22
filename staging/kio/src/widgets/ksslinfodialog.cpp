@@ -34,7 +34,7 @@
 #include <klocalizedstring.h>
 #include <kiconloader.h> // BarIcon
 
-#include "kio_ktcpsocket.h"
+#include "ktcpsocket.h"
 
 
 class KSslInfoDialog::KSslInfoDialogPrivate
