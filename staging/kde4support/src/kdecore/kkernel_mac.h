@@ -45,17 +45,17 @@ QString convert_CFString_to_QString(CFStringRef str);
 /**
  * Fork and reexec to work around CoreFoundation issues.
   */
-KDE4SUPPORT_EXPORT void mac_fork_and_reexec_self();
+KDE4SUPPORT_DEPRECATED_EXPORT void mac_fork_and_reexec_self();
 
 /**
   * Initialize D-Bus Mac-specific stuff if necessary.
   */
-KDE4SUPPORT_EXPORT void mac_initialize_dbus();
+KDE4SUPPORT_DEPRECATED_EXPORT void mac_initialize_dbus();
 
 /**
   * Get the application name.
   */
-KDE4SUPPORT_EXPORT QString mac_app_filename();
+KDE4SUPPORT_DEPRECATED_EXPORT QString mac_app_filename();
 
 #endif  // Q_OS_MACX
 #endif  // KKERNEL_MAC_H

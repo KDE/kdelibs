@@ -25,7 +25,7 @@
 
 #include <QStyle>
 
-class KDE4SUPPORT_EXPORT KdeUiProxyStyle : public QStyle
+class KDE4SUPPORT_DEPRECATED_EXPORT KdeUiProxyStyle : public QStyle
 {
     Q_OBJECT
 public:

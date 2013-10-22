@@ -36,7 +36,7 @@
  *
  * @author Michaël Larouche <michael.larouche@kdemail.net>
  */
-class KDE4SUPPORT_EXPORT KDeviceListModel : public QAbstractItemModel
+class KDE4SUPPORT_DEPRECATED_EXPORT KDeviceListModel : public QAbstractItemModel
 {
     Q_OBJECT
 public:

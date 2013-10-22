@@ -28,7 +28,7 @@ class KFileMetaInfoItem;
  * 'MetaProps plugin
  * In this plugin you can modify meta information like id3 tags of mp3 files
  */
-class KDE4SUPPORT_EXPORT KFileMetaPropsPlugin : public KPropertiesDialogPlugin
+class KDE4SUPPORT_DEPRECATED_EXPORT KFileMetaPropsPlugin : public KPropertiesDialogPlugin
 {
   Q_OBJECT
 public:

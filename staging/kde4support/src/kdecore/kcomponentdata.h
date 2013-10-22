@@ -43,7 +43,7 @@ class KComponentDataPrivate;
  * @author Torben Weis
  * @author Matthias Kretz <kretz@kde.org>
  */
-class KDE4SUPPORT_EXPORT KComponentData // krazy:exclude=dpointer (implicitly shared)
+class KDE4SUPPORT_DEPRECATED_EXPORT KComponentData // krazy:exclude=dpointer (implicitly shared)
 {
 public:
     /**

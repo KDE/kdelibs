@@ -30,7 +30,7 @@ class QVariant;
 class PredicateProperties;
 
 class KFileMetaInfoItemPrivate;
-class KDE4SUPPORT_EXPORT KFileMetaInfoItem {
+class KDE4SUPPORT_DEPRECATED_EXPORT KFileMetaInfoItem {
 friend class KFileMetaInfo;
 friend class KFileMetaInfoPrivate;
 friend class KMetaInfoWriter;

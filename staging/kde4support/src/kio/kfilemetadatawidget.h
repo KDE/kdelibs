@@ -41,7 +41,7 @@
  *
  * @since 4.5
  */
-class KDE4SUPPORT_EXPORT KFileMetaDataWidget : public QWidget
+class KDE4SUPPORT_DEPRECATED_EXPORT KFileMetaDataWidget : public QWidget
 {
     Q_OBJECT
     Q_PROPERTY(bool readOnly READ isReadOnly WRITE setReadOnly)

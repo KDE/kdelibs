@@ -48,7 +48,7 @@ class QWidget;
  *
  * @author David Faure \<faure@kde.org\>
  */
-class KDE4SUPPORT_EXPORT KGlobalSettings : public QObject
+class KDE4SUPPORT_DEPRECATED_EXPORT KGlobalSettings : public QObject
 {
     Q_OBJECT
 

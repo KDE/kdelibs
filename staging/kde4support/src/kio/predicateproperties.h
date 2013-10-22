@@ -33,7 +33,7 @@ class QValidator;
  *
  * @deprecated use Nepomuk::Types::Property instead
  **/
-class KDE4SUPPORT_EXPORT PredicateProperties {
+class KDE4SUPPORT_DEPRECATED_EXPORT PredicateProperties {
 friend class PredicatePropertyProvider;
 public:
 #ifndef KDE_NO_DEPRECATED

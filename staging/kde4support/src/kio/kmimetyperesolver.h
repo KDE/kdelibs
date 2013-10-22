@@ -42,7 +42,7 @@ class KAbstractViewAdapter;
  * (actually, it rather does one or the other), and with better performance
  * (it batches the updates rather than doing them one by one)
  */
-class KDE4SUPPORT_EXPORT KMimeTypeResolver : public QObject
+class KDE4SUPPORT_DEPRECATED_EXPORT KMimeTypeResolver : public QObject
 {
     Q_OBJECT
 public:

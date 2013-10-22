@@ -25,7 +25,7 @@
 
 class QUrl;
 
-class KDE4SUPPORT_EXPORT KFileWritePlugin : public QObject {
+class KDE4SUPPORT_DEPRECATED_EXPORT KFileWritePlugin : public QObject {
     Q_OBJECT
     friend class KFileWriterProvider;
 public:

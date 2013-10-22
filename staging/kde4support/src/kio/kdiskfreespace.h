@@ -31,7 +31,7 @@
 /**
  * \deprecated Use KDiskFreeSpaceInfo
  */
-class KDE4SUPPORT_EXPORT KDiskFreeSpace : public QObject
+class KDE4SUPPORT_DEPRECATED_EXPORT KDiskFreeSpace : public QObject
 {
     Q_OBJECT
 

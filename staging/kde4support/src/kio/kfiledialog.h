@@ -71,7 +71,7 @@ class KFileDialogPrivate;
  * Note that when the KDE QPA theme plugin is installed, the KFileWidget will then
  * be used automatically.
  */
-class KDE4SUPPORT_EXPORT KFileDialog : public QDialog
+class KDE4SUPPORT_DEPRECATED_EXPORT KFileDialog : public QDialog
 {
     Q_OBJECT
 

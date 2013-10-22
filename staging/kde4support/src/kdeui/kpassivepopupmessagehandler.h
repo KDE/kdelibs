@@ -30,7 +30,7 @@ class QWidget;
  *
  * @author Michaël Larouche <michael.larouche@kdemail.net>
  */
-class KDE4SUPPORT_EXPORT KPassivePopupMessageHandler : public QObject, public KMessageHandler
+class KDE4SUPPORT_DEPRECATED_EXPORT KPassivePopupMessageHandler : public QObject, public KMessageHandler
 {
     Q_OBJECT
 public:

@@ -29,7 +29,7 @@ class KFileMetaPreview;
  * PreviewProps plugin
  * This plugin displays a preview of the given file
  */
-class KDE4SUPPORT_EXPORT KPreviewPropsPlugin : public KPropertiesDialogPlugin
+class KDE4SUPPORT_DEPRECATED_EXPORT KPreviewPropsPlugin : public KPropertiesDialogPlugin
 {
   Q_OBJECT
 
