@@ -124,6 +124,8 @@ set(libkde4support_SRCS
     kio/kfilemetainfowidget.cpp
     kio/kdiskfreespace.cpp
     kio/metainfojob.cpp
+    kio/kdevicelistmodel.cpp
+    kio/kdevicelistitem.cpp
     kio/kfiledialog.cpp
     kssl/ksslx509v3.cpp
     kssl/kssl.cpp
@@ -323,6 +325,7 @@ install(FILES
     kio/kdirselectdialog.h
     kio/kfiledialog.h
     kio/kpropsdialog.h
+    kio/kdevicelistmodel.h
     kssl/ksslcertificate.h
     kssl/ksslx509v3.h
     kssl/kssl.h

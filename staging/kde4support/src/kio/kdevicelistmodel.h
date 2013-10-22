@@ -20,7 +20,7 @@
 #ifndef KDEVICELISTMODEL_H
 #define KDEVICELISTMODEL_H
 
-#include <kio/kio_export.h>
+#include <kde4support_export.h>
 
 #include <QtCore/QAbstractItemModel>
 
@@ -36,7 +36,7 @@
  *
  * @author Michaël Larouche <michael.larouche@kdemail.net>
  */
-class KIO_EXPORT KDeviceListModel : public QAbstractItemModel
+class KDE4SUPPORT_EXPORT KDeviceListModel : public QAbstractItemModel
 {
     Q_OBJECT
 public:

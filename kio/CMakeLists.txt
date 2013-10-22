@@ -70,17 +70,6 @@ if(UNIX)
    )
 endif(UNIX)
 
-set(kfile_STAT_SRCS
-)
-
-if(NOT KIO_NO_SOLID)
-  set(kfile_STAT_SRCS
-    ${kfile_STAT_SRCS}
-    kfile/kdevicelistitem.cpp
-    kfile/kdevicelistmodel.cpp
-    )
-endif(NOT KIO_NO_SOLID)
-
 
 ########### next target ###############
 
@@ -88,7 +77,6 @@ endif(NOT KIO_NO_SOLID)
 
 set(kio_LIB_SRCS
    ${kiocore_STAT_SRCS}
-   ${kfile_STAT_SRCS}
 )
 
 add_library(kio ${kio_LIB_SRCS})
@@ -159,7 +147,6 @@ install( FILES
 
 if(NOT KIO_NO_SOLID)
 install( FILES
-  kfile/kdevicelistmodel.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
 endif(NOT KIO_NO_SOLID)
 
