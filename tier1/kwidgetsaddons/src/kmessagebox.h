@@ -789,14 +789,16 @@ namespace KMessageBox
     KWIDGETSADDONS_EXPORT void setDontShowAgainConfig(KConfig* cfg);
 
     /**
-     * Use @p dontAskAgainInterface for all settings related to the donShowAgain feature
+     * Use @p dontAskAgainInterface for all settings related to the donShowAgain feature.
+     * This method does not take ownership of @p dontAskAgainInterface.
      *
      * @since 5.0
      */
     KWIDGETSADDONS_EXPORT void setDontShowAgainInterface(KMessageBoxDontAskAgainInterface* dontAskAgainInterface);
 
     /**
-     * Use @p notifyInterface to send notifications
+     * Use @p notifyInterface to send notifications.
+     * This method does not take ownership of @p notifyInterface.
      *
      * @since 5.0
      */
