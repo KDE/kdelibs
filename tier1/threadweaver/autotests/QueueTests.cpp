@@ -180,4 +180,3 @@ void QueueTests::DeleteCollectionOnDoneTest()
 
 QTEST_MAIN ( QueueTests )
 
-#include "QueueTests.moc"

@@ -230,4 +230,3 @@ QMutex* Job::mutex() const
 }
 
 #include "ManagedJobPointer.h"
-#include "moc_Job.cpp"

@@ -127,4 +127,3 @@ void Thread::requestAbort ()
     }
 }
 
-#include "Thread.moc"

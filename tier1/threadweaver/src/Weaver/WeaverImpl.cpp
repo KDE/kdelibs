@@ -585,4 +585,3 @@ void WeaverImpl::dumpJobs()
     }
 }
 
-#include "WeaverImpl.moc"

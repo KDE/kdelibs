@@ -85,4 +85,3 @@ void JobSequence::elementFinished(JobPointer job, Thread *thread)
 
 }
 
-#include "JobSequence.moc"

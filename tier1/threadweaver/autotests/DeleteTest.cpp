@@ -76,4 +76,3 @@ QMutex s_GlobalMutex;
 
 QTEST_MAIN(DeleteTest)
 
-#include "DeleteTest.moc"

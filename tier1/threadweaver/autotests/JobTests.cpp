@@ -856,4 +856,3 @@ void JobTests::IdDecoratorSingleAllocationTest()
 
 QTEST_MAIN ( JobTests )
 
-#include "JobTests.moc"

@@ -282,4 +282,3 @@ void JobCollection::dequeueElements(bool queueApiIsLocked)
 
 }
 
-#include "moc_JobCollection.cpp"
