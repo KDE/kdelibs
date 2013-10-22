@@ -26,17 +26,18 @@
 
 class KButtonGroupTest : public QObject
 {
-  Q_OBJECT
+Q_OBJECT
 
-  private Q_SLOTS:
+private Q_SLOTS:
     void initTestCase();
     void directSelectionTestCase();
     void cleanupTestCase();
 
+    void testEmptyGroup();
+    void testId();
     void testClicks();
     void testManualSelection();
     void testSignals();
-
 };
 
 #endif

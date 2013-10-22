@@ -38,18 +38,18 @@ class QAbstractButton;
  *
  * @author Pino Toscano <toscano.pino@tiscali.it>
  */
-class KDEUI_EXPORT KButtonGroup
-  : public QGroupBox
+class KDEUI_EXPORT KButtonGroup : public QGroupBox
 {
-  Q_OBJECT
+    Q_OBJECT
 
-  Q_PROPERTY(int current READ selected WRITE setSelected NOTIFY changed USER true)
+    Q_PROPERTY(int current READ selected WRITE setSelected NOTIFY changed USER true)
 
-  public:
+public:
     /**
      * Construct a new empty KGroupBox.
      */
-    explicit KButtonGroup( QWidget* parent = 0 );
+    explicit KButtonGroup(QWidget* parent = 0);
+
     /**
      * Destroys the widget.
      */
@@ -66,44 +66,43 @@ class KDEUI_EXPORT KButtonGroup
      * @return the index of @p button.
      * @since 4.3
      */
-    int id( QAbstractButton* button ) const;
+    int id(QAbstractButton* button) const;
 
-  public Q_SLOTS:
+public Q_SLOTS:
     /**
      * Select the \p id -th button
      */
-    void setSelected( int id );
+    void setSelected(int id);
 
-  Q_SIGNALS:
+Q_SIGNALS:
     /**
      * The button with index \p id was clicked
      */
-    void clicked( int id );
+    void clicked(int id);
     /**
      * The button with index \p id was pressed
      */
-    void pressed( int id );
+    void pressed(int id);
     /**
      * The button with index \p id was released
      */
-    void released( int id );
+    void released(int id);
     /**
      * Emitted when anything (a click on a button, or calling setSelected())
      * change the id of the current selected. \p id is the index of the new
      * selected button.
      */
-    void changed( int id );
+    void changed(int id);
 
-  protected:
+protected:
     /**
      * Reimplemented from QGroupBox.
      */
-    virtual void childEvent( QChildEvent* event );
+    virtual void childEvent(QChildEvent* event);
 
-  private:
-    Q_PRIVATE_SLOT(d, void slotClicked( int id ))
+private:
+    Q_PRIVATE_SLOT(d, void slotClicked(int id))
 
-  private:
     class Private;
     friend class Private;
     Private * const d;
