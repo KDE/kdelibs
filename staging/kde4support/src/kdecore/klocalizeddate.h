@@ -23,7 +23,7 @@
 #include <QtCore/QString>
 #include <QtCore/QDate>
 
-#include <kde4attic_export.h>
+#include <kde4support_export.h>
 #include "klocale.h"
 
 class KLocalizedDatePrivate;
@@ -134,7 +134,7 @@ class KLocalizedDatePrivate;
  *
  */
 
-class KDE4ATTIC_EXPORT KLocalizedDate
+class KDE4SUPPORT_EXPORT KLocalizedDate
 {
 public:
 
@@ -1152,9 +1152,9 @@ public:
 
 private:
 
-    friend QDataStream KDE4ATTIC_EXPORT &operator<<(QDataStream &out, const KLocalizedDate &date);
-    friend QDataStream KDE4ATTIC_EXPORT &operator>>(QDataStream &in, KLocalizedDate &date);
-    friend QDebug KDE4ATTIC_EXPORT operator<<(QDebug, const KLocalizedDate &);
+    friend QDataStream KDE4SUPPORT_EXPORT &operator<<(QDataStream &out, const KLocalizedDate &date);
+    friend QDataStream KDE4SUPPORT_EXPORT &operator>>(QDataStream &in, KLocalizedDate &date);
+    friend QDebug KDE4SUPPORT_EXPORT operator<<(QDebug, const KLocalizedDate &);
 
     QSharedDataPointer<KLocalizedDatePrivate> d;
 };
@@ -1167,7 +1167,7 @@ Q_DECLARE_METATYPE(KLocalizedDate)
  * @param out the datastream to write to
  * @param date the date to write to the stream
  */
-QDataStream KDE4ATTIC_EXPORT &operator<<(QDataStream &out, const KLocalizedDate &date);
+QDataStream KDE4SUPPORT_EXPORT &operator<<(QDataStream &out, const KLocalizedDate &date);
 
 /**
  * Data stream input operator
@@ -1175,7 +1175,7 @@ QDataStream KDE4ATTIC_EXPORT &operator<<(QDataStream &out, const KLocalizedDate 
  * @param in the datastream to read from
  * @param date the date to read from the stream
  */
-QDataStream KDE4ATTIC_EXPORT &operator>>(QDataStream &in, KLocalizedDate &date);
+QDataStream KDE4SUPPORT_EXPORT &operator>>(QDataStream &in, KLocalizedDate &date);
 
 /**
  * Debug stream output operator
@@ -1183,6 +1183,6 @@ QDataStream KDE4ATTIC_EXPORT &operator>>(QDataStream &in, KLocalizedDate &date);
  * @param debug the debug datastream to write to
  * @param date the date to write to the stream
  */
-QDebug KDE4ATTIC_EXPORT operator<<(QDebug debug, const KLocalizedDate &date);
+QDebug KDE4SUPPORT_EXPORT operator<<(QDebug debug, const KLocalizedDate &date);
 
 #endif // KLOCALIZEDDATE_H

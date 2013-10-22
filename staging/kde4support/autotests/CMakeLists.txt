@@ -35,6 +35,11 @@ endmacro(KDE4SUPPORT_UNIT_TESTS)
 kde4support_unit_tests(
   globalcleanuptest
   kaccelgentest
+  kcalendartest
+  kdatetimetest
+  klocaletimeformattest
+  ktimezonestest
+  ktimezonewidget_unittest
   kdebugtest
   kbuttongrouptest
   kdialog_unittest
@@ -71,6 +76,8 @@ kde4support_executable_tests(
   kglobalsettingsclient      # Helper for kglobalsettingstest
 )
 
+target_include_directories(ktimezonestest PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/../src/kdecore")
+
 ########### module for klibloadertest ###############
 
 if(NOT KDE_NO_DEPRECATED)
@@ -94,4 +101,23 @@ set_target_properties(klibloadertestmodule4 PROPERTIES PREFIX "") # remove lib p
 target_link_libraries(klibloadertestmodule4 KDE4Support KF5::KI18n Qt5::Test KF5::KService KF5::KCoreAddons)
 
 set_target_properties(klibloadertestmodule4 PROPERTIES SKIP_BUILD_RPATH FALSE BUILD_WITH_INSTALL_RPATH FALSE)
+
+########### klocaletest ###############
+
+# compile into the test since it's not exported
+set(klocaletest_SRCS klocaletest.cpp ../src/kdecore/kdayperiod.cpp)
+add_executable(klocaletest ${klocaletest_SRCS})
+add_test(kde4support-klocaletest klocaletest)
+ecm_mark_as_test(klocaletest)
+target_link_libraries(klocaletest Qt5::Test Qt5::DBus KF5::KI18n KDE4Support KConfigCore)
+
+########### kdatetimeformattertest ###############
+
+# compile KDateTimeFormatter and KDayPeriod into the test since it's not exported
+set(kdatetimeformattertest_SRCS kdatetimeformattertest.cpp ../src/kdecore/kdatetimeformatter.cpp ../src/kdecore/kdayperiod.cpp)
+add_executable(kdatetimeformattertest ${kdatetimeformattertest_SRCS})
+add_test(kde4support-kdatetimeformattertest kdatetimeformattertest)
+ecm_mark_as_test(kdatetimeformattertest)
+target_link_libraries(kdatetimeformattertest Qt5::Test KF5::KI18n KDE4Support KConfigCore)
+
 

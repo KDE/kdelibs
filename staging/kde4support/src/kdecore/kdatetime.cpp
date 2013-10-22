@@ -86,8 +86,8 @@ int findString(const QString &string, const char array[][disp], int count, int &
 static const int NO_NUMBER = std::numeric_limits<int>::min();   // indicates that no number is present in string conversion functions
 
 #ifdef COMPILING_TESTS
-KDE4ATTIC_EXPORT int KDateTime_utcCacheHit  = 0;
-KDE4ATTIC_EXPORT int KDateTime_zoneCacheHit = 0;
+KDE4SUPPORT_EXPORT int KDateTime_utcCacheHit  = 0;
+KDE4SUPPORT_EXPORT int KDateTime_zoneCacheHit = 0;
 #endif
 
 /*----------------------------------------------------------------------------*/

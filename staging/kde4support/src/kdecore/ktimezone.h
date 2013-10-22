@@ -28,7 +28,7 @@
 #ifndef _KTIMEZONES_H
 #define _KTIMEZONES_H
 
-#include <kde4attic_export.h>
+#include <kde4support_export.h>
 
 #include <sys/time.h>
 #include <ctime>
@@ -305,7 +305,7 @@ class KTimeZoneLeapSecondsPrivate;
  * @author David Jarvie <djarvie@kde.org>.
  * @author S.R.Haque <srhaque@iee.org>.
  */
-class KDE4ATTIC_EXPORT KTimeZones
+class KDE4SUPPORT_EXPORT KTimeZones
 {
 public:
     KTimeZones();
@@ -413,7 +413,7 @@ private:
  * @author David Jarvie <djarvie@kde.org>.
  * @author S.R.Haque <srhaque@iee.org>.
  */
-class KDE4ATTIC_EXPORT KTimeZone  //krazy:exclude=dpointer (has non-const d-pointer to Backend class)
+class KDE4SUPPORT_EXPORT KTimeZone  //krazy:exclude=dpointer (has non-const d-pointer to Backend class)
 {
 public:
 
@@ -426,7 +426,7 @@ public:
      * @short Time zone phase
      * @author David Jarvie <djarvie@kde.org>.
      */
-    class KDE4ATTIC_EXPORT Phase
+    class KDE4SUPPORT_EXPORT Phase
     {
     public:
         /**
@@ -510,7 +510,7 @@ public:
      * @short Time zone transition
      * @author David Jarvie <djarvie@kde.org>.
      */
-    class KDE4ATTIC_EXPORT Transition
+    class KDE4SUPPORT_EXPORT Transition
     {
     public:
         Transition();
@@ -557,7 +557,7 @@ public:
      * @ingroup timezones
      * @author David Jarvie <djarvie@kde.org>.
      */
-    class KDE4ATTIC_EXPORT LeapSeconds
+    class KDE4SUPPORT_EXPORT LeapSeconds
     {
     public:
         LeapSeconds();
@@ -1117,7 +1117,7 @@ private:
  * @ingroup timezones
  * @author David Jarvie <djarvie@kde.org>.
  */
-class KDE4ATTIC_EXPORT KTimeZoneBackend  //krazy:exclude=dpointer (non-const d-pointer for KTimeZoneBackend-derived classes)
+class KDE4SUPPORT_EXPORT KTimeZoneBackend  //krazy:exclude=dpointer (non-const d-pointer for KTimeZoneBackend-derived classes)
 {
 public:
     /** Implements KTimeZone::KTimeZone(). */
@@ -1227,7 +1227,7 @@ private:
  * @author David Jarvie <djarvie@kde.org>.
  * @author S.R.Haque <srhaque@iee.org>.
  */
-class KDE4ATTIC_EXPORT KTimeZoneSource
+class KDE4SUPPORT_EXPORT KTimeZoneSource
 {
 public:
     KTimeZoneSource();
@@ -1299,7 +1299,7 @@ private:
  * @ingroup timezones
  * @author David Jarvie <djarvie@kde.org>.
  */
-class KDE4ATTIC_EXPORT KTimeZoneData
+class KDE4SUPPORT_EXPORT KTimeZoneData
 {
     friend class KTimeZone;
 

@@ -21,7 +21,7 @@
 #ifndef KLOCALE_H
 #define KLOCALE_H
 
-#include <kde4attic_export.h>
+#include <kde4support_export.h>
 #include <ksharedconfig.h>
 
 #include <QtCore/QString>
@@ -63,7 +63,7 @@ class KLocalePrivate;
   * Hans Petter Bieker <bieker@kde.org>, Lukas Tinkl <lukas.tinkl@suse.cz>
   * @short class for supporting locale settings
   */
-class KDE4ATTIC_EXPORT KLocale
+class KDE4SUPPORT_EXPORT KLocale
 {
 public:
     /**
@@ -326,7 +326,7 @@ public:
      *
      * @return Default number of fractional digits used by locale.
      */
-    KDE4ATTIC_DEPRECATED int fracDigits() const;
+    KDE4SUPPORT_DEPRECATED int fracDigits() const;
 
     /**
      * @since 4.4
@@ -624,7 +624,7 @@ public:
      *
      * @return If nouns are declined
      */
-    KDE4ATTIC_DEPRECATED bool nounDeclension() const;
+    KDE4SUPPORT_DEPRECATED bool nounDeclension() const;
 
     //KDE5 move to KDateTime namespace
     /**
@@ -985,7 +985,7 @@ public:
      * @see calendarSystem()
      * @return the name of the calendar system
      */
-    KDE4ATTIC_DEPRECATED QString calendarType() const;
+    KDE4SUPPORT_DEPRECATED QString calendarType() const;
 
     /**
      * @since 4.6
@@ -1008,7 +1008,7 @@ public:
      * @see setCalendarSystem()
      * @param calendarType the name of the calendar type
      */
-    KDE4ATTIC_DEPRECATED void setCalendar(const QString & calendarType);
+    KDE4SUPPORT_DEPRECATED void setCalendar(const QString & calendarType);
 
     /**
      * @since 4.6
@@ -1552,7 +1552,7 @@ public:
      *
      * @param digits The default number of digits to use.
      */
-    KDE4ATTIC_DEPRECATED void setFracDigits(int digits);
+    KDE4SUPPORT_DEPRECATED void setFracDigits(int digits);
 
     /**
      * @since 4.4

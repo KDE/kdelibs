@@ -35,8 +35,8 @@
 
 QTEST_MAIN(KDateTimeTest)
 
-extern KDE4ATTIC_EXPORT int KDateTime_utcCacheHit;
-extern KDE4ATTIC_EXPORT int KDateTime_zoneCacheHit;
+extern KDE4SUPPORT_EXPORT int KDateTime_utcCacheHit;
+extern KDE4SUPPORT_EXPORT int KDateTime_zoneCacheHit;
 
 
 void KDateTimeTest::initTestCase()

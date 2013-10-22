@@ -20,7 +20,7 @@
 #ifndef KTIMEZONEWIDGET_H
 #define KTIMEZONEWIDGET_H
 
-#include <kde4attic_export.h>
+#include <kde4support_export.h>
 
 #include <QTreeWidget>
 
@@ -56,7 +56,7 @@ class KTimeZones;
  *
  * @author S.R.Haque <srhaque@iee.org>
  */
-class KDE4ATTIC_EXPORT KTimeZoneWidget : public QTreeWidget
+class KDE4SUPPORT_EXPORT KTimeZoneWidget : public QTreeWidget
 {
     Q_OBJECT
     Q_PROPERTY(bool itemsCheckable READ itemsCheckable WRITE setItemsCheckable)

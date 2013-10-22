@@ -71,6 +71,29 @@ set(libkde4support_SRCS
     kdecore/kcmdlineargs.cpp
     kdecore/kurl.cpp
     kdecore/kstringhandler_deprecated.cpp
+    kdecore/kcalendarera.cpp
+    kdecore/kcalendarsystem.cpp
+    kdecore/kcalendarsystemcoptic.cpp
+    kdecore/kcalendarsystemethiopian.cpp
+    kdecore/kcalendarsystemgregorian.cpp
+    kdecore/kcalendarsystemislamiccivil.cpp
+    kdecore/kcalendarsystemhebrew.cpp
+    kdecore/kcalendarsystemindiannational.cpp
+    kdecore/kcalendarsystemjalali.cpp
+    kdecore/kcalendarsystemjapanese.cpp
+    kdecore/kcalendarsystemjulian.cpp
+    kdecore/kcalendarsystemminguo.cpp
+    kdecore/kcalendarsystemthai.cpp
+    kdecore/kdatetime.cpp
+    kdecore/kdatetimeformatter.cpp
+    kdecore/kdatetimeparser.cpp
+    kdecore/kdayperiod.cpp
+    kdecore/klocalizeddate.cpp
+    kdecore/ktimezone.cpp
+    kdecore/ksystemtimezone.cpp
+    kdecore/ktzfiletimezone.cpp
+    kdecore/klocale.cpp
+    kdecore/klocale_kde.cpp
 
     kdeui/k3icon.cpp
     kdeui/k4style.cpp
@@ -120,6 +143,9 @@ set(libkde4support_SRCS
     kdeui/keditlistbox.cpp
     kdeui/knuminput.cpp
     kdeui/kglobalsettings.cpp
+    kdeui/kdatetimewidget.cpp
+    kdeui/kdatewidget.cpp
+    kdeui/ktimezonewidget.cpp
 
     kio/kfilemetainfowidget.cpp
     kio/kdiskfreespace.cpp
@@ -168,14 +194,39 @@ if (X11_FOUND)
 endif ()
 
 if (WIN32)
-    set(libkde4support_SRCS ${libkde4support_SRCS} kdecore/klockfile_win.cpp util/kde_file_win.cpp)
+    set(libkde4support_SRCS ${libkde4support_SRCS}
+                            kdecore/klockfile_win.cpp
+                            util/kde_file_win.cpp
+                            kdecore/ktimezone_win.cpp
+                            kdecore/klocale_win.cpp
+                            )
 else()
     set(libkde4support_SRCS ${libkde4support_SRCS} kdecore/klockfile_unix.cpp)
 endif ()
 
+if (APPLE)
+    set(libkde4support_SRCS ${libkde4support_SRCS}
+                            kdecore/klocale_mac.cpp
+                            )
+    set(libkde4support_OPTIONAL_LIBS ${CARBON_LIBRARY})
+endif()
+
+if (UNIX)
+    set(libkde4support_SRCS ${libkde4support_SRCS}
+                            kdecore/klocale_unix.cpp
+                            )
+endif()
+
 # Configure checks for io/
 include(kdecore/ConfigureChecks.cmake)
 configure_file(kdecore/config-io.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-io.h)
+
+# Configure checks for date/
+configure_file(kdecore/config-date.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-date.h)
+
+# Configure checks for localization
+configure_file(kdecore/config-localization.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-localization.h)
+
 
 # Configure checks for network/ but also for netsupp.*
 include(ConfigureChecks.cmake)
@@ -215,6 +266,7 @@ target_link_libraries(KDE4Support
    Qt5::Test
    Qt5::X11Extras
    Qt5::Svg
+   Qt5::PrintSupport
    KF5::KCoreAddons
    KCrash
    KF5::KWidgetsAddons
@@ -231,8 +283,10 @@ target_link_libraries(KDE4Support
    KF5::KIconThemes
    KF5::KWindowSystem
    KGuiAddons
+   KUnitConversion
    KTextWidgets
    KParts
+   ${libkde4support_OPTIONAL_LIBS}
 )
 
 # This flag is needed in order to be able to support files > 2GB even on
@@ -308,6 +362,13 @@ install(FILES
     kdecore/kurl.h
     kdecore/ksharedptr.h
     kdecore/kstringhandler_deprecated.h
+    kdecore/kcalendarsystem.h
+    kdecore/kdatetime.h
+    kdecore/klocalizeddate.h
+    kdecore/ksystemtimezone.h
+    kdecore/ktimezone.h
+    kdecore/ktzfiletimezone.h
+    kdecore/klocale.h
 
     kio/kdiskfreespace.h
     kio/kdatatool.h
@@ -378,6 +439,9 @@ install(FILES
     kdeui/kviewstatesaver.h
     kdeui/kxerrorhandler.h
     kdeui/kglobalsettings.h
+    kdeui/kdatetimewidget.h
+    kdeui/kdatewidget.h
+    kdeui/ktimezonewidget.h
     ${CMAKE_CURRENT_BINARY_DIR}/kde4support_export.h
     ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h
     ${CMAKE_CURRENT_BINARY_DIR}/kdeversion.h
@@ -388,6 +452,11 @@ configure_file(kssl/ksslconfig.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconf
 set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconfig.h )
 
 install( FILES kdebug.areas kdebugrc DESTINATION ${CONFIG_INSTALL_DIR} )
+
+configure_file(kdecore/all_languages.desktop ${CMAKE_CURRENT_BINARY_DIR}/all_languages @ONLY)
+install( FILES ${CMAKE_CURRENT_BINARY_DIR}/all_languages DESTINATION ${LOCALE_INSTALL_DIR}  )
+install( FILES kdecore/entry.desktop  DESTINATION  ${LOCALE_INSTALL_DIR}/en_US )
+
 
 install( FILES kdeui/40.colors kdeui/Oxygen.colors kdeui/Web.colors kdeui/Royal.colors kdeui/Rainbow.colors
          DESTINATION ${CONFIG_INSTALL_DIR}/colors)

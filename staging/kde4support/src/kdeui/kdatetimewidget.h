@@ -19,7 +19,7 @@
 #ifndef KDATETIMEWIDGET
 #define KDATETIMEWIDGET
 
-#include <kde4attic_export.h>
+#include <kde4support_export.h>
 
 #include <QWidget>
 #include <QDateTime>
@@ -35,7 +35,7 @@
  *
  * @author Hans Petter Bieker <bieker@kde.org>
  */
-class KDE4ATTIC_EXPORT KDateTimeWidget : public QWidget
+class KDE4SUPPORT_EXPORT KDateTimeWidget : public QWidget
 {
   Q_OBJECT
   Q_PROPERTY( QDateTime dateTime READ dateTime WRITE setDateTime NOTIFY valueChanged USER true )

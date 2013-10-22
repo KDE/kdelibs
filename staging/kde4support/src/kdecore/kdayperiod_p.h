@@ -23,7 +23,7 @@
 #include <QtCore/QSharedDataPointer>
 
 #include "klocale.h"
-#include <kde4attic_export.h>
+#include <kde4support_export.h>
 
 class QDate;
 class QString;

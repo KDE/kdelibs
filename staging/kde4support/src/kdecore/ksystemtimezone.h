@@ -27,7 +27,7 @@
 #ifndef _KSYSTEMTIMEZONE_H
 #define _KSYSTEMTIMEZONE_H
 
-#include <kde4attic_export.h>
+#include <kde4support_export.h>
 #include "ktimezone.h"
 
 #include <QtCore/QObject>
@@ -91,7 +91,7 @@ class KSystemTimeZoneDataPrivate;
  * @author David Jarvie <djarvie@kde.org>.
  * @author S.R.Haque <srhaque@iee.org>.
  */
-class KDE4ATTIC_EXPORT KSystemTimeZones : public QObject
+class KDE4SUPPORT_EXPORT KSystemTimeZones : public QObject
 {
     Q_OBJECT
 public:
@@ -279,7 +279,7 @@ private:
  * @ingroup timezones
  * @author David Jarvie <djarvie@kde.org>.
  */
-class KDE4ATTIC_EXPORT KSystemTimeZone : public KTimeZone  //krazy:exclude=dpointer (no d-pointer for KTimeZone derived classes)
+class KDE4SUPPORT_EXPORT KSystemTimeZone : public KTimeZone  //krazy:exclude=dpointer (no d-pointer for KTimeZone derived classes)
 {
 public:
 
@@ -318,7 +318,7 @@ private:
  * @ingroup timezones
  * @author David Jarvie <djarvie@kde.org>.
  */
-class KDE4ATTIC_EXPORT KSystemTimeZoneBackend : public KTimeZoneBackend  //krazy:exclude=dpointer (non-const d-pointer for KTimeZoneBackend-derived classes)
+class KDE4SUPPORT_EXPORT KSystemTimeZoneBackend : public KTimeZoneBackend  //krazy:exclude=dpointer (non-const d-pointer for KTimeZoneBackend-derived classes)
 {
 public:
     /** Implements KSystemTimeZone::KSystemTimeZone(). */
@@ -438,7 +438,7 @@ private:
  * @ingroup timezones
  * @author David Jarvie <djarvie@kde.org>.
  */
-class KDE4ATTIC_EXPORT KSystemTimeZoneSource : public KTimeZoneSource
+class KDE4SUPPORT_EXPORT KSystemTimeZoneSource : public KTimeZoneSource
 {
 public:
     /**

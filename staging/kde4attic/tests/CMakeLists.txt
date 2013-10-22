@@ -13,7 +13,5 @@ endmacro()
 
 kde4attic_executable_tests(
   kcharselecttest
-  kdatetimewidgettest
-  kdatewidgettest
 )
 

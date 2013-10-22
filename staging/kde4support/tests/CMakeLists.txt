@@ -36,6 +36,8 @@ kde4support_examples(
   netaccesstest
   kfstest
   kfiledialogtest
+  kdatetimewidgettest
+  kdatewidgettest
 )
 
 if (X11_FOUND)

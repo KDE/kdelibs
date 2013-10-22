@@ -119,7 +119,7 @@ void KTimeZonesTest::utc()
 /////////////////////////
 
 // Defined in ksystemtimezone.cpp for our benefit
-KDE4ATTIC_EXPORT void k_system_time_zone_private_reset_config();
+KDE4SUPPORT_EXPORT void k_system_time_zone_private_reset_config();
 
 void KTimeZonesTest::invalidLocal()
 {
