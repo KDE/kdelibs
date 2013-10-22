@@ -32,7 +32,6 @@ remove_definitions(-DQT_NO_CAST_FROM_BYTEARRAY)
 remove_definitions(-DQT_NO_KEYWORDS)
 
 add_subdirectory(src)
-add_subdirectory(tests)
 add_subdirectory(autotests)
 
 
