@@ -155,7 +155,6 @@ install(  FILES
 install( FILES
   kio/kdbusservicestarter.h
   kio/kimageio.h
-  kfile/kpropsdialog.h
 
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
 

@@ -322,6 +322,7 @@ install(FILES
     kio/kscan.h
     kio/kdirselectdialog.h
     kio/kfiledialog.h
+    kio/kpropsdialog.h
     kssl/ksslcertificate.h
     kssl/ksslx509v3.h
     kssl/kssl.h
