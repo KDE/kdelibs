@@ -124,6 +124,7 @@ set(libkde4support_SRCS
     kio/kfilemetainfowidget.cpp
     kio/kdiskfreespace.cpp
     kio/metainfojob.cpp
+    kio/kfiledialog.cpp
     kssl/ksslx509v3.cpp
     kssl/kssl.cpp
     kssl/ksslutils.cpp
@@ -320,6 +321,7 @@ install(FILES
     kio/kfileitemactionplugin.h
     kio/kscan.h
     kio/kdirselectdialog.h
+    kio/kfiledialog.h
     kssl/ksslcertificate.h
     kssl/ksslx509v3.h
     kssl/kssl.h

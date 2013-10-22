@@ -72,7 +72,6 @@ if(UNIX)
 endif(UNIX)
 
 set(kfile_STAT_SRCS
-  kfile/kfiledialog.cpp
 )
 
 if(NOT KIO_NO_SOLID)
@@ -157,7 +156,6 @@ install(  FILES
 install( FILES
   kio/kdbusservicestarter.h
   kio/kimageio.h
-  kfile/kfiledialog.h
   kfile/kpropsdialog.h
 
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)

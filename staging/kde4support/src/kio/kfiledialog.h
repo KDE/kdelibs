@@ -27,7 +27,7 @@
 #ifndef KFILEDIALOG_H
 #define KFILEDIALOG_H
 
-#include <kio/kio_export.h>
+#include <kde4support_export.h>
 #include <QDialog>
 #include <kfile.h>
 #include <qmimetype.h>
@@ -69,7 +69,7 @@ class KFileDialogPrivate;
  *
  * @author Richard J. Moore <rich@kde.org>, Carsten Pfeiffer <pfeiffer@kde.org>
  */
-class KIO_EXPORT KFileDialog : public QDialog
+class KDE4SUPPORT_EXPORT KFileDialog : public QDialog
 {
     Q_OBJECT
 
