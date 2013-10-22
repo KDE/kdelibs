@@ -3,6 +3,7 @@ project(KIOFileWidgets)
 configure_file(config-kiofilewidgets.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kiofilewidgets.h)
 
 set(kiofilewidgets_SRCS
+  kstatusbarofflineindicator.cpp
   kfilemetapreview.cpp
   kimagefilepreview.cpp
   kpreviewwidgetbase.cpp
@@ -64,14 +65,10 @@ set_target_properties(KIOFileWidgets PROPERTIES VERSION ${KIO_VERSION_STRING}
 install(TARGETS KIOFileWidgets EXPORT KIOTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install( FILES
-
-   ${CMAKE_CURRENT_BINARY_DIR}/kiofilewidgets_export.h
-   DESTINATION ${INCLUDE_INSTALL_DIR}/kio COMPONENT Devel)
-
-install( FILES
   kimagefilepreview.h
   kpreviewwidgetbase.h
   krecentdirs.h
+  kstatusbarofflineindicator.h
 
   kdiroperator.h
   kdirsortfilterproxymodel.h

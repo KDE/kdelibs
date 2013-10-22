@@ -24,7 +24,7 @@
 #define KDE_KSTATUSBAROFFLINEINDICATOR_H
 
 #include <QWidget>
-#include <kio/kio_export.h>
+#include <kio/kiofilewidgets_export.h>
 #include <solid/networking.h>
 
 class KStatusBarOfflineIndicatorPrivate;
@@ -39,7 +39,7 @@ class KStatusBarOfflineIndicatorPrivate;
  *
  * @author Will Stephenson <wstephenson@kde.org>
  */
-class KIO_EXPORT KStatusBarOfflineIndicator : public QWidget
+class KIOFILEWIDGETS_EXPORT KStatusBarOfflineIndicator : public QWidget
 {
 Q_OBJECT
 public:

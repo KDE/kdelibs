@@ -62,7 +62,6 @@ endif(NOT KDE_NO_DEPRECATED)
 if(NOT KIO_NO_SOLID)
   set(kiocore_STAT_SRCS
     ${kiocore_STAT_SRCS}
-    kio/kstatusbarofflineindicator.cpp
     )
 endif(NOT KIO_NO_SOLID)
 
@@ -163,7 +162,6 @@ install( FILES
 if(NOT KIO_NO_SOLID)
 install( FILES
   kfile/kdevicelistmodel.h
-  kio/kstatusbarofflineindicator.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
 endif(NOT KIO_NO_SOLID)
 
