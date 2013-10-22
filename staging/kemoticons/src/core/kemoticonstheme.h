@@ -166,8 +166,12 @@ public:
 
     /**
      * Saves the emoticon theme
+     *
+     * @deprecated since 5.0, subclass KEmoticonsProvider instead
      */
-    void save();
+#ifndef KDE_NO_DEPRECATED
+    KEMOTICONS_DEPRECATED void save();
+#endif
 
     /**
      * Returns the theme name

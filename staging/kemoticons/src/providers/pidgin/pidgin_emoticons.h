@@ -31,7 +31,7 @@ public:
 
     bool removeEmoticon(const QString &emo);
     bool addEmoticon(const QString &emo, const QString &text, AddEmoticonOption option = DoNotCopy);
-    void save();
+    void saveTheme();
 
     void createNew();
 

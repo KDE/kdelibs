@@ -105,7 +105,7 @@ bool PidginEmoticons::addEmoticon(const QString &emo, const QString &text, AddEm
     return true;
 }
 
-void PidginEmoticons::save()
+void PidginEmoticons::saveTheme()
 {
     QFile fp(themePath() + '/' + fileName());
 

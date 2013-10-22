@@ -49,6 +49,11 @@ KEmoticonsProvider::~KEmoticonsProvider()
 {
 }
 
+void KEmoticonsProvider::save()
+{
+    saveTheme();
+}
+
 QString KEmoticonsProvider::themeName() const
 {
     return d->m_themeName;

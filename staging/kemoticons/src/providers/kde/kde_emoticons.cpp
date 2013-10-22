@@ -87,7 +87,7 @@ bool KdeEmoticons::addEmoticon(const QString &emo, const QString &text, AddEmoti
     return true;
 }
 
-void KdeEmoticons::save()
+void KdeEmoticons::saveTheme()
 {
     QFile fp(themePath() + '/' + fileName());
 

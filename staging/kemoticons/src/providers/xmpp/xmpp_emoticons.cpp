@@ -108,7 +108,7 @@ bool XmppEmoticons::addEmoticon(const QString &emo, const QString &text, AddEmot
     return true;
 }
 
-void XmppEmoticons::save()
+void XmppEmoticons::saveTheme()
 {
     QFile fp(themePath() + '/' + fileName());
 

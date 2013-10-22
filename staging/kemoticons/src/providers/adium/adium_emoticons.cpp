@@ -113,7 +113,7 @@ bool AdiumEmoticons::addEmoticon(const QString &emo, const QString &text, AddEmo
     return true;
 }
 
-void AdiumEmoticons::save()
+void AdiumEmoticons::saveTheme()
 {
     QFile fp(themePath() + '/' + fileName());
 

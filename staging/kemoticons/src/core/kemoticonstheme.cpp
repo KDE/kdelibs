@@ -96,7 +96,7 @@ void KEmoticonsTheme::save()
         return;
     }
 
-    d->provider->save();
+    d->provider->saveTheme();
 }
 
 QString KEmoticonsTheme::themeName() const
