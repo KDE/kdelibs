@@ -67,7 +67,9 @@ class KFileDialogPrivate;
  *
  * @short A file selection dialog.
  *
- * @author Richard J. Moore <rich@kde.org>, Carsten Pfeiffer <pfeiffer@kde.org>
+ * @deprecated since 5.0, use the QFileDialog API instead.
+ * Note that when the KDE QPA theme plugin is installed, the KFileWidget will then
+ * be used automatically.
  */
 class KDE4SUPPORT_EXPORT KFileDialog : public QDialog
 {
