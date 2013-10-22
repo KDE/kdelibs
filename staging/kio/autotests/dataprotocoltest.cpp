@@ -322,4 +322,3 @@ void DataProtocolTest::runAllTests_data()
                     "%22%20stroke-width%3D%221%22%20fill%3D%22green%22%2F%3E%0A%3C%2Fsvg%3E%0A" );
 }
 
-#include "dataprotocoltest.moc"

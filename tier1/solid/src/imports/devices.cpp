@@ -211,5 +211,4 @@ QObject *Devices::device(const QString &udi, const QString &_type)
 }
 } // namespace Solid
 
-#include "devices.moc"
 

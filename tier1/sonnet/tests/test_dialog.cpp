@@ -20,7 +20,6 @@
  * 02110-1301  USA
  */
 #include "test_dialog.h"
-#include "test_dialog.moc"
 
 #include "backgroundchecker.h"
 #include "filter_p.h"

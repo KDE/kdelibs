@@ -38,5 +38,4 @@ void SolidExtensionPlugin::registerTypes(const char *uri)
     qmlRegisterType<Devices> (uri, 1, 0, "Devices");
 }
 
-#include "solidextensionplugin.moc"
 

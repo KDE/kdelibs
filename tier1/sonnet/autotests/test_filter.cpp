@@ -158,4 +158,3 @@ void SonnetFilterTest::testIndic()
     QCOMPARE( hitNumber, hits.count() );
 }
 
-#include "test_filter.moc"

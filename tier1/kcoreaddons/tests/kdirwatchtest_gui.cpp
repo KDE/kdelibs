@@ -138,4 +138,3 @@ void KDirWatchTest_GUI::slotDeleted(const QString& path)
     m_eventBrowser->append( QLatin1String("Deleted(") + sender()->objectName() + QLatin1String("): ") + path + QLatin1Char('\n') );
 }
 
-#include "kdirwatchtest_gui.moc"

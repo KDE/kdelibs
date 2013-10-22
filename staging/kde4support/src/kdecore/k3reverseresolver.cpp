@@ -262,4 +262,3 @@ bool ReverseThread::postprocess()
   return true;
 }
 
-#include "k3reverseresolver.moc"

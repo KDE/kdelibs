@@ -86,4 +86,3 @@ Action::AuthStatus FakeHelperProxy::authorizeAction(const QString& action, const
 
 }
 
-#include "FakeHelperProxy.moc"

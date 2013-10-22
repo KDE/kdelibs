@@ -1059,4 +1059,3 @@ void KResolver::virtual_hook( int, void* )
 //  RFC 3492 - Punycode: A Bootstring encoding of Unicode
 //          for Internationalized Domain Names in Applications (IDNA)
 
-#include "k3resolver.moc"

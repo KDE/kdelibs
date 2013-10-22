@@ -32,7 +32,6 @@
 #include "kconfig.h"
 #include "kconfigini_p.h"
 #include "kconfigdata.h"
-#include "kconfigbackend.moc"
 
 typedef QExplicitlySharedDataPointer<KConfigBackend> BackendPtr;
 

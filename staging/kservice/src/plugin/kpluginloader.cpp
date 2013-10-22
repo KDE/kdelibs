@@ -291,4 +291,3 @@ QString KPluginLoader::pluginName() const
     return d->name;
 }
 
-#include "kpluginloader.moc"

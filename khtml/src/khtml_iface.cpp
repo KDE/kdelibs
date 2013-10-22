@@ -232,4 +232,3 @@ void KHTMLPartIface::print( bool quick ) {
     part->view()->print( quick );
 }
 
-#include "khtml_iface.moc"

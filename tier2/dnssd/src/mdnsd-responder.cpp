@@ -82,4 +82,3 @@ QString DNSToDomain(const char* domain)
 }
 
 }
-#include "mdnsd-responder.moc"

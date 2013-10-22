@@ -388,4 +388,3 @@ void DynamicTreeWidget::setInsertSubTreePredefine(int index)
 }
 
 
-#include "dynamictreewidget.moc"

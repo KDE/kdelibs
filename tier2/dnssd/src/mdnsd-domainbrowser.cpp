@@ -128,4 +128,3 @@ void domain_callback(DNSServiceRef, DNSServiceFlags flags, uint32_t, DNSServiceE
 
 
 #include "moc_domainbrowser.cpp"
-#include "mdnsd-domainbrowser_p.moc"

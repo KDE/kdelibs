@@ -279,4 +279,3 @@ void KToolInvocation::ensureKdeinitRunning()
     KDEInitInterface::ensureKdeinitRunning();
 }
 
-#include "ktoolinvocation.moc"

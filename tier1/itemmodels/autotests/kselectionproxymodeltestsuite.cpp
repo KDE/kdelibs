@@ -21,4 +21,3 @@
 
 #include "kselectionproxymodeltestsuite.h"
 
-#include "kselectionproxymodeltestsuite.moc"

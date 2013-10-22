@@ -20,7 +20,6 @@
 
 #include "klibloadertest.h"
 
-#include "klibloadertest.moc"
 
 #include <QtTest>
 

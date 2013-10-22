@@ -354,4 +354,3 @@ QString KAutostart::startAfter() const
     return d->df->desktopGroup().readEntry("X-KDE-autostart-after");
 }
 
-#include "kautostart.moc"

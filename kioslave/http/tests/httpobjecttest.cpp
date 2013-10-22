@@ -23,7 +23,6 @@
 
 #include <QtCore/QByteArray>
 
-#include "httpobjecttest.moc"
 
 QTEST_MAIN(HeaderObjectTest)
 

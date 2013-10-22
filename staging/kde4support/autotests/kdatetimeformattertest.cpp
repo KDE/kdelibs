@@ -30,7 +30,6 @@
 #include "klocale.h"
 #include "kconfiggroup.h"
 
-#include "kdatetimeformattertest.moc"
 
 QTEST_MAIN(KDateTimeFormatterTest)
 

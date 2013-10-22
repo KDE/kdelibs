@@ -105,4 +105,3 @@ void KCompositeJobTest::testDeletionDuringExecution()
 
 QTEST_GUILESS_MAIN( KCompositeJobTest );
 
-#include "kcompositejobtest.moc"

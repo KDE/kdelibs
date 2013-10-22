@@ -31,7 +31,6 @@
 #include <QtCore/QDate>
 #include <QtDBus/QtDBus>
 
-#include "klocaletest.moc"
 
 
 void

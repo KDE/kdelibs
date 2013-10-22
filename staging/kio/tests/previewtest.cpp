@@ -11,7 +11,6 @@
 #include <kiconloader.h>
 #include <kio/previewjob.h>
 
-#include "previewtest.moc"
 
 PreviewTest::PreviewTest()
     :QWidget()

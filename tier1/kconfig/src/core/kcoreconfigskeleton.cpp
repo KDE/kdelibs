@@ -1342,4 +1342,3 @@ KConfigSkeletonItem *KCoreConfigSkeleton::findItem(const QString &name) const
   return d->mItemDict.value(name);
 }
 
-#include "kcoreconfigskeleton.moc"

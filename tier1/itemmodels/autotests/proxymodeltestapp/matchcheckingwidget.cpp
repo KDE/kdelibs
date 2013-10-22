@@ -94,4 +94,3 @@ qDebug() << matchData << id <<  DynamicTreeModel::DynamicTreeModelId;
   }
 }
 
-#include "matchcheckingwidget.moc"

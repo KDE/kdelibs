@@ -216,4 +216,3 @@ bool SpellCheckDecorator::isSpellCheckingEnabledForBlock(const QString &textBloc
 
 } // namespace
 
-#include <spellcheckdecorator.moc>

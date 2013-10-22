@@ -454,4 +454,3 @@ void KClientSocketBase::copyError()
   setError(socketDevice()->error());
 }
 
-#include "k3clientsocketbase.moc"

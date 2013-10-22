@@ -271,4 +271,3 @@ void KJavaAppletContext::derefObject( QStringList & args ) {
     server->derefObject( args );
 }
 
-#include <kjavaappletcontext.moc>

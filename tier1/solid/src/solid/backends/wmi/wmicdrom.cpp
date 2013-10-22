@@ -161,4 +161,3 @@ void Solid::Backends::Wmi::Cdrom::slotProcessFinished(int exitCode, QProcess::Ex
     delete m_process;
 }
 
-#include "backends/wmi/wmicdrom.moc"

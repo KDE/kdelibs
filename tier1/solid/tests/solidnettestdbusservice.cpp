@@ -162,6 +162,5 @@ int main( int argc, char** argv )
 //                 - request, delay, online until released
 //
 
-#include "solidnettestdbusservice.moc"
 
 

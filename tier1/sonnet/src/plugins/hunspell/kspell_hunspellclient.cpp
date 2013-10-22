@@ -57,4 +57,3 @@ QStringList HunspellClient::languages() const
     return lst;
 }
 
-#include "kspell_hunspellclient.moc"

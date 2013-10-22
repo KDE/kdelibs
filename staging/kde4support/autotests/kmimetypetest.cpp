@@ -897,4 +897,3 @@ void KMimeTypeTest::testProperties()
 #endif
 }
 
-#include "kmimetypetest.moc"

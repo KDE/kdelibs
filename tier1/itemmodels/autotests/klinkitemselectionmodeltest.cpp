@@ -106,4 +106,3 @@ void KLinkItemSelectionModelTest::testSubSetCurrent()
     QCOMPARE(mainIndex, m_mainModel->index(m_mainModel->rowCount() - 1, 0));
 }
 
-#include <klinkitemselectionmodeltest.moc>

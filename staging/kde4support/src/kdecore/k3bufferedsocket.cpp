@@ -386,4 +386,3 @@ void KBufferedSocket::slotWriteActivity()
     }
 }
 
-#include "k3bufferedsocket.moc"

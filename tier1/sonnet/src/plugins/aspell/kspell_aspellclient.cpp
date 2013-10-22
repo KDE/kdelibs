@@ -74,4 +74,3 @@ QStringList ASpellClient::languages() const
     return langs;
 }
 
-#include "kspell_aspellclient.moc"

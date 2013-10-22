@@ -416,4 +416,3 @@ bool KServerSocket::doListen()
 }
 
 
-#include "k3serversocket.moc"
