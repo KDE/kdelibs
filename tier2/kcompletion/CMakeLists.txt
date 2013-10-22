@@ -8,6 +8,11 @@ set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
 find_package(KF5 5.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 
+if(NOT kdelibs_SOURCE_DIR)
+    find_package(KWidgetsAddons 5.0 REQUIRED)
+    find_package(KConfig 5.0 REQUIRED)
+endif()
+
 set(REQUIRED_QT_VERSION "5.2.0")
 find_package(Qt5Widgets ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE)
 

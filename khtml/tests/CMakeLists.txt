@@ -33,7 +33,7 @@ include_directories(
   ${KHTML_BINARY_DIR}/css
 )
 
-add_subdirectory(java)
+# add_subdirectory(java)
 
 kde4_add_unit_test( khtmlparttest khtmlparttest.cpp )
 target_link_libraries( khtmlparttest Qt5::Test KHtml Qt5::Widgets XmlGui KTextWidgets KParts)

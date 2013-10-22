@@ -33,9 +33,7 @@
 #include <kconfiggroup.h>
 #include <kcursor.h>
 #include <kcompletionbox.h>
-#include <kstandardaction.h>
 #include <kstandardshortcut.h>
-#include <kurlmimedata.h>
 #include <lineediturldropeventfilter.h>
 
 #include <QtCore/QTimer>
@@ -1170,7 +1168,9 @@ QMenu* KLineEdit::createStandardContextMenu()
             separatorAction = actionList.at( idx );
         if ( separatorAction )
         {
-            QAction *clearAllAction = KStandardAction::clear( this, SLOT(clear()), popup) ;
+            QAction *clearAllAction = new QAction(QIcon::fromTheme("edit-clear"), tr("C&lear"), this);
+            clearAllAction->setShortcuts(QKeySequence::keyBindings(QKeySequence::DeleteCompleteLine));
+            connect(clearAllAction, SIGNAL(triggered(bool)), SLOT(clear()));
             if ( text().isEmpty() )
                 clearAllAction->setEnabled( false );
             popup->insertAction( separatorAction, clearAllAction );
