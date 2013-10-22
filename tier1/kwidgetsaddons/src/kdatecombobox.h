@@ -20,14 +20,14 @@
 #ifndef KDATECOMBOBOX_H
 #define KDATECOMBOBOX_H
 
-#include <kde4attic_export.h>
+#include <kwidgetsaddons_export.h>
 
 #include <QComboBox>
 #include <QLocale>
 
 class KDateComboBoxPrivate;
 
-class KDE4ATTIC_EXPORT KDateComboBox : public QComboBox
+class KWIDGETSADDONS_EXPORT KDateComboBox : public QComboBox
 {
     Q_OBJECT
 

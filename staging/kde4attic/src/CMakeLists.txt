@@ -9,13 +9,10 @@ include(localization/ConfigureChecks.cmake)
 configure_file(localization/config-localization.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/localization/config-localization.h)
 
 set(kde4attic_SRCS
-  kdatecombobox.cpp
-  kdatetimeedit.cpp
   kdatetimewidget.cpp
   kdatewidget.cpp
   kgesture.cpp
   kgesturemap.cpp
-  ktimecombobox.cpp
   ktimezonewidget.cpp
   ksslcertificatemanager.cpp
   ktcpsocket.cpp
@@ -67,12 +64,6 @@ if (UNIX)
    )
 endif (UNIX)
 
-set(kde4attic_UI
-  kdatetimeedit.ui
-)
-
-qt5_wrap_ui(kde4attic_SRCS ${kde4attic_UI} )
-
 add_library(KDE4Attic ${kde4attic_SRCS})
 generate_export_header(KDE4Attic)
 add_library(KF5::KDE4Attic ALIAS KDE4Attic)
@@ -110,12 +101,9 @@ set_target_properties(KDE4Attic PROPERTIES VERSION   ${KDE4ATTIC_VERSION_STRING}
 install(TARGETS KDE4Attic EXPORT KDE4AtticTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
-  kdatecombobox.h
-  kdatetimeedit.h
   kdatetimewidget.h
   kdatewidget.h
   kgesture.h
-  ktimecombobox.h
   ktimezonewidget.h
   ktcpsocket.h
 

@@ -22,8 +22,8 @@
 #include <QtCore/QDate>
 
 #include <QtTest/QtTest>
+#include <QLineEdit>
 #include "kdatecombobox.h"
-#include "klineedit.h"
 
 QTEST_MAIN(KDateComboBoxTest)
 
@@ -51,7 +51,7 @@ void KDateComboBoxTest::testValidNull()
     QCOMPARE(m_combo->isValid(), false);
     QCOMPARE(m_combo->isNull(), true);
     m_combo->setDate(QDate(2000, 1, 1));
-    m_combo->lineEdit()->setText("invalid");
+    m_combo->lineEdit()->setText(QStringLiteral("invalid"));
     QCOMPARE(m_combo->isValid(), false);
     QCOMPARE(m_combo->isNull(), false);
     delete m_combo;

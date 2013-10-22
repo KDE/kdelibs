@@ -20,7 +20,7 @@
 #ifndef KDATETIMEEDIT_H
 #define KDATETIMEEDIT_H
 
-#include <kde4attic_export.h>
+#include <kwidgetsaddons_export.h>
 
 #include <QLocale>
 #include <QTimeZone>
@@ -28,7 +28,7 @@
 
 class KDateTimeEditPrivate;
 
-class KDE4ATTIC_EXPORT KDateTimeEdit : public QWidget
+class KWIDGETSADDONS_EXPORT KDateTimeEdit : public QWidget
 {
     Q_OBJECT
 

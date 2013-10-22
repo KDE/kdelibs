@@ -14,6 +14,9 @@ endmacro()
 
 kwidgetsaddons_unit_tests(
   kcolorbuttontest
+  kdatecomboboxtest
+  kdatetimeedittest
   kdualactiontest
   kselectaction_unittest
+  ktimecomboboxtest
 )

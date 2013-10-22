@@ -189,7 +189,7 @@ void KDateTimeEditPrivate::initTimeZoneWidget()
     ui.m_timeZoneCombo->addItem(q->tr("UTC", "UTC time zone"), QByteArray("UTC"));
     ui.m_timeZoneCombo->addItem(q->tr("Floating", "No specific time zone"), QByteArray());
     foreach (const QTimeZone &zone, m_zones) {
-        ui.m_timeZoneCombo->addItem(zone.id(), zone.id());
+        ui.m_timeZoneCombo->addItem(QString::fromUtf8(zone.id()), zone.id());
     }
     ui.m_timeZoneCombo->setVisible((m_options &KDateTimeEdit::ShowTimeZone) == KDateTimeEdit::ShowTimeZone);
     ui.m_timeZoneCombo->setEnabled((m_options &KDateTimeEdit::SelectTimeZone) == KDateTimeEdit::SelectTimeZone);
@@ -231,7 +231,7 @@ void KDateTimeEditPrivate::warnDateTime()
             } else {
                 warnMsg = m_minWarnMsg;
                 //TODO localize properly
-                warnMsg.replace("%1", q->locale().toString(m_minDateTime));
+                warnMsg.replace(QStringLiteral("%1"), q->locale().toString(m_minDateTime));
             }
         } else if (m_maxDateTime.isValid() && m_dateTime > m_maxDateTime) {
             if (m_maxWarnMsg.isEmpty()) {
@@ -240,7 +240,7 @@ void KDateTimeEditPrivate::warnDateTime()
                 warnMsg = q->tr("The entered date and time is after the maximum allowed date and time.", "@info");
             } else {
                 warnMsg = m_maxWarnMsg;
-                warnMsg.replace("%1", q->locale().toString(m_maxDateTime));
+                warnMsg.replace(QStringLiteral("%1"), q->locale().toString(m_maxDateTime));
             }
         }
         KMessageBox::sorry(q, warnMsg);

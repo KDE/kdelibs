@@ -22,7 +22,7 @@
 #include <QtCore/QTime>
 
 #include <QtTest/QtTest>
-#include "klineedit.h"
+#include <QLineEdit>
 #include <ktimecombobox.h>
 
 QTEST_MAIN(KTimeComboBoxTest)
@@ -50,7 +50,7 @@ void KTimeComboBoxTest::testValidNull()
     QCOMPARE(m_combo->isValid(), false);
     QCOMPARE(m_combo->isNull(), true);
     m_combo->setTime(QTime(0, 0, 0));
-    m_combo->lineEdit()->setText("99:99");
+    m_combo->lineEdit()->setText(QStringLiteral("99:99"));
     QCOMPARE(m_combo->isValid(), false);
     QCOMPARE(m_combo->isNull(), false);
     delete m_combo;

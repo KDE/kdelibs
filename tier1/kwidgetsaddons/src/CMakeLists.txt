@@ -5,13 +5,16 @@ set(kwidgetsaddons_SRCS
   kcharselect.cpp
   kcharselectdata.cpp
   kcolorbutton.cpp
+  kdatecombobox.cpp
   kdatepicker.cpp
   kdatetable.cpp
+  kdatetimeedit.cpp
   kfontaction.cpp
   fonthelpers.cpp
   kfontsizeaction.cpp
   kpopupframe.cpp
   kselectaction.cpp
+  ktimecombobox.cpp
   kdragwidgetdecorator.cpp
   kdualaction.cpp
   kfontchooser.cpp
@@ -65,6 +68,7 @@ set(kwidgetsaddons_SRCS
 )
 
 set(kwidgetsaddon_UI
+   kdatetimeedit.ui
    knewpassworddialog.ui
    kpassworddialog.ui
 )
@@ -94,7 +98,9 @@ install(FILES
   kanimatedbutton.h
   kcharselect.h
   kcolorbutton.h
+  kdatecombobox.h
   kdatepicker.h
+  kdatetimeedit.h
   kdragwidgetdecorator.h
   kdualaction.h
   kfontaction.h
@@ -108,6 +114,7 @@ install(FILES
   kpopupframe.h
   kselectaction.h
   kstandardguiitem.h
+  ktimecombobox.h
   kurllabel.h
   kcapacitybar.h
   kfontrequester.h

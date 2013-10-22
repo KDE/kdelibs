@@ -14,13 +14,10 @@ endmacro()
 
 kde4attic_tests(
   kcalendartest
-  kdatecomboboxtest
-  kdatetimeedittest
   kdatetimetest
   klocaletimeformattest
   ktimezonestest
   ktimezonewidget_unittest
-  ktimecomboboxtest
   ktcpsockettest
 )
 

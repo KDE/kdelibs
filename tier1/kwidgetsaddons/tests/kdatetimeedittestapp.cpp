@@ -3,7 +3,7 @@
 
 int main(int argc, char** argv)
 {
-  QApplication::setApplicationName("test");
+  QApplication::setApplicationName(QStringLiteral("test"));
   QApplication app(argc, argv);
   KDateTimeEdit dateTimeEdit;
   dateTimeEdit.setOptions(dateTimeEdit.options()

@@ -116,8 +116,8 @@ QString KDateComboBoxPrivate::dateFormat(QLocale::FormatType format)
     // and so you get no way to distinguish between 1913 and 2013 anymore...
     // bummer.
     QString res = q->locale().dateFormat(format);
-    res.replace("yy", "yyyy");
-    res.replace("yyyyyyyy", "yyyy");
+    res.replace(QStringLiteral("yy"), QStringLiteral("yyyy"));
+    res.replace(QStringLiteral("yyyyyyyy"), QStringLiteral("yyyy"));
     return res;
 }
 
@@ -274,14 +274,14 @@ void KDateComboBoxPrivate::warnDate()
                 warnMsg = q->tr("Date cannot be earlier than %1", "@info").arg(formatDate(m_minDate));
             } else {
                 warnMsg = m_minWarnMsg;
-                warnMsg.replace("%1", formatDate(m_minDate));
+                warnMsg.replace(QStringLiteral("%1"), formatDate(m_minDate));
             }
         } else if (m_maxDate.isValid() && m_date > m_maxDate) {
             if (m_maxWarnMsg.isEmpty()) {
                 warnMsg = q->tr("Date cannot be later than %1", "@info").arg(formatDate(m_maxDate));
             } else {
                 warnMsg = m_maxWarnMsg;
-                warnMsg.replace("%1", formatDate(m_maxDate));
+                warnMsg.replace(QStringLiteral("%1"), formatDate(m_maxDate));
             }
         }
         m_warningShown = true;
