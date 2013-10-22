@@ -42,7 +42,7 @@
     </widget>
    </item>
    <item>
-    <widget class="KComboBox" name="m_timeSpecCombo">
+    <widget class="KComboBox" name="m_timeZoneCombo">
      <property name="sizePolicy">
       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
        <horstretch>0</horstretch>

@@ -23,10 +23,8 @@
 #include <kde4attic_export.h>
 
 #include <QLocale>
+#include <QTimeZone>
 #include <QWidget>
-
-#include "kdatetime.h"
-#include "ktimezone.h"
 
 class KDateTimeEditPrivate;
 
@@ -51,15 +49,15 @@ public:
         ShowCalendar     = 0x00001,  /**< If the Calendar System edit is displayed */
         ShowDate         = 0x00002,  /**< If the Date is displayed */
         ShowTime         = 0x00004,  /**< If the Time is displayed */
-        ShowTimeSpec     = 0x00008,  /**< If the Time Spec is displayed */
+        ShowTimeZone     = 0x00008,  /**< If the Time Zone is displayed */
         //EditCalendar     = 0x00010,  /**< Allow the user to manually edit the calendar */
         EditDate         = 0x00020,  /**< Allow the user to manually edit the date */
         EditTime         = 0x00040,  /**< Allow the user to manually edit the time */
-        //EditTimeSpec     = 0x00080,  /**< Allow the user to manually edit the time spec */
+        //EditTimeZone     = 0x00080,  /**< Allow the user to manually edit the time zone */
         SelectCalendar   = 0x00100,  /**< Allow the user to select a calendar */
         SelectDate       = 0x00200,  /**< Allow the user to select a date */
         SelectTime       = 0x00400,  /**< Allow the user to select a time */
-        SelectTimeSpec   = 0x00800,  /**< Allow the user to select a time spec */
+        SelectTimeZone   = 0x00800,  /**< Allow the user to select a time zone */
         DatePicker       = 0x01000,  /**< Show a date picker */
         DateKeywords     = 0x02000,  /**< Show date keywords */
         ForceTime        = 0x04000,  /**< The entered time can only be a selected time */
@@ -85,11 +83,11 @@ public:
     Options options() const;
 
     /**
-     * Return the currently selected date, time and time spec
+     * Return the currently selected date, time and time zone
      *
-     * @return the currently selected date, time and time spec
+     * @return the currently selected date, time and time zone
      */
-    KDateTime dateTime() const;
+    QDateTime dateTime() const;
 
     /**
      * Return the currently selected date
@@ -106,11 +104,11 @@ public:
     QTime time() const;
 
     /**
-     * Return the currently selected time spec
+     * Return the currently selected time zone
      *
-     * @return the currently selected time spec
+     * @return the currently selected time zone
      */
-    KDateTime::Spec timeSpec() const;
+    QTimeZone timeZone() const;
 
     /**
      * Returns the list of Calendar Systems displayed.
@@ -124,14 +122,14 @@ public:
      *
      * @return the current minimum date and time
      */
-    KDateTime minimumDateTime() const;
+    QDateTime minimumDateTime() const;
 
     /**
      * Return the current maximum date and time
      *
      * @return the current maximum date and time
      */
-    KDateTime maximumDateTime() const;
+    QDateTime maximumDateTime() const;
 
     /**
      * Return the currently set date display format
@@ -182,7 +180,7 @@ public:
      *
      * @param zones the time zones to display
      */
-    KTimeZones::ZoneMap timeZones() const;
+    QList<QTimeZone> timeZones() const;
 
     /**
      * Return if the current user input is valid
@@ -244,9 +242,9 @@ Q_SIGNALS:
      *
      * The returned date and time may be invalid.
      *
-     * @param dateTime the new date, time and time spec
+     * @param dateTime the new date, time and time zone
      */
-    void dateTimeEntered(const KDateTime &dateTime);
+    void dateTimeEntered(const QDateTime &dateTime);
 
     /**
      * Signal if the date or time has been changed either manually by the user
@@ -254,18 +252,18 @@ Q_SIGNALS:
      *
      * The returned date and time may be invalid.
      *
-     * @param dateTime the new date, time and time spec
+     * @param dateTime the new date, time and time zone
      */
-    void dateTimeChanged(const KDateTime &dateTime);
+    void dateTimeChanged(const QDateTime &dateTime);
 
     /**
      * Signal if the date or time is being manually edited by the user.
      *
      * The returned date and time may be invalid.
      *
-     * @param dateTime the new date, time and time spec
+     * @param dateTime the new date, time and time zone
      */
-    void dateTimeEdited(const KDateTime &dateTime);
+    void dateTimeEdited(const QDateTime &dateTime);
 
     /**
      * Signal if the Calendar Locale has been manually entered by the user.
@@ -339,19 +337,19 @@ Q_SIGNALS:
     void timeEdited(const QTime &time);
 
     /**
-     * Signal if the time spec has been changed manually by the user.
+     * Signal if the time zone has been changed manually by the user.
      *
-     * @param timeSpec the new time spec
+     * @param timeZone the new time zone
      */
-    void timeSpecEntered(const KDateTime::Spec &spec);
+    void timeZoneEntered(const QTimeZone &zone);
 
     /**
-     * Signal if the time spec has been changed either manually by the user
+     * Signal if the time zone has been changed either manually by the user
      * or programatically.
      *
-     * @param timeSpec the new time spec
+     * @param timeZone the new time zone
      */
-    void timeSpecChanged(const KDateTime::Spec &spec);
+    void timeZoneChanged(const QTimeZone &zone);
 
 public Q_SLOTS:
 
@@ -363,11 +361,11 @@ public Q_SLOTS:
     void setOptions(Options options);
 
     /**
-     * Set the currently selected date, time and time spec
+     * Set the currently selected date, time and time zone
      *
-     * @param dateTime the new date, time and time spec
+     * @param dateTime the new date, time and time zone
      */
-    void setDateTime(const KDateTime &dateTime);
+    void setDateTime(const QDateTime &dateTime);
 
     /**
      * Set the currently selected date
@@ -384,11 +382,11 @@ public Q_SLOTS:
     void setTime(const QTime &time);
 
     /**
-     * Set the current time spec
+     * Set the current time zone
      *
-     * @param spec the new spec
+     * @param zone the new zone
      */
-    void setTimeSpec(const KDateTime::Spec &spec);
+    void setTimeZone(const QTimeZone &zone);
 
     /**
      * Set the minimum and maximum date and time range
@@ -402,8 +400,8 @@ public Q_SLOTS:
      * @param minWarnMsg the minimum warning message
      * @param maxWarnMsg the maximum warning message
      */
-    void setDateTimeRange(const KDateTime &minDateTime,
-                          const KDateTime &maxDateTime,
+    void setDateTimeRange(const QDateTime &minDateTime,
+                          const QDateTime &maxDateTime,
                           const QString &minWarnMsg = QString(),
                           const QString &maxWarnMsg = QString());
 
@@ -423,7 +421,7 @@ public Q_SLOTS:
      * @param maxDate the minimum date
      * @param maxWarnMsg the minimum warning message
      */
-    void setMinimumDateTime(const KDateTime &minDateTime, const QString &minWarnMsg = QString());
+    void setMinimumDateTime(const QDateTime &minDateTime, const QString &minWarnMsg = QString());
 
     /**
      * Reset the minimum date and time to the default
@@ -441,7 +439,7 @@ public Q_SLOTS:
      * @param maxDate the maximum date
      * @param maxWarnMsg the maximum warning message
      */
-    void setMaximumDateTime(const KDateTime &maxDateTime, const QString &maxWarnMsg = QString());
+    void setMaximumDateTime(const QDateTime &maxDateTime, const QString &maxWarnMsg = QString());
 
     /**
      * Reset the minimum date and time to the default
@@ -537,7 +535,7 @@ public Q_SLOTS:
      *
      * @param zones the time zones to display
      */
-    void setTimeZones(const KTimeZones::ZoneMap &zones);
+    void setTimeZones(const QList<QTimeZone> &zones);
 
 protected:
 
@@ -547,14 +545,14 @@ protected:
     virtual void resizeEvent(QResizeEvent *event);
 
     /**
-     * Assign the date, time and time spec for the widget.
+     * Assign the date, time and time zone for the widget.
      *
      * Virtual to allow sub-classes to apply extra validation rules,
      * but reimplementations must call the parent method at the end.
      *
      * @param datetime the new date and time
      */
-    virtual void assignDateTime(const KDateTime &dateTime);
+    virtual void assignDateTime(const QDateTime &dateTime);
 
     /**
      * Assign the date for the widget.
@@ -577,14 +575,14 @@ protected:
     virtual void assignTime(const QTime &time);
 
     /**
-     * Assign the time spec for the widget.
+     * Assign the time zone for the widget.
      *
      * Virtual to allow sub-classes to apply extra validation rules,
      * but reimplementations must call the parent method at the end.
      *
-     * @param spec the new time spec
+     * @param zone the new time zone
      */
-    void assignTimeSpec(const KDateTime::Spec &spec);
+    void assignTimeZone(const QTimeZone &zone);
 
 private:
 
@@ -594,7 +592,7 @@ private:
     Q_PRIVATE_SLOT(d, void selectCalendar(int))
     Q_PRIVATE_SLOT(d, void enterCalendar(const QLocale&))
     Q_PRIVATE_SLOT(d, void selectTimeZone(int))
-    Q_PRIVATE_SLOT(d, void enterTimeZone(const QString&))
+    Q_PRIVATE_SLOT(d, void enterTimeZone(const QByteArray&))
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KDateTimeEdit::Options)

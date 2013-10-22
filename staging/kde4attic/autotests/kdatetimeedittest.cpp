@@ -23,7 +23,6 @@
 
 #include <QtTest/QtTest>
 #include "kdatetimeedit.h"
-#include "ksystemtimezone.h"
 
 QTEST_MAIN(KDateTimeEditTest)
 
@@ -31,7 +30,7 @@ QTEST_MAIN(KDateTimeEditTest)
 void KDateTimeEditTest::testDefaults()
 {
     m_edit = new KDateTimeEdit(0);
-    QCOMPARE(m_edit->dateTime(), KDateTime(QDate::currentDate(), QTime(0, 0, 0)));
+    QCOMPARE(m_edit->dateTime(), QDateTime(QDate::currentDate(), QTime(0, 0, 0)));
     QCOMPARE(m_edit->date(), QDate::currentDate());
     QCOMPARE(m_edit->time(), QTime(0, 0, 0));
     // Missing support in QLocale
@@ -51,7 +50,7 @@ void KDateTimeEditTest::testValidNull()
     m_edit = new KDateTimeEdit(0);
     QCOMPARE(m_edit->isValid(), true);
     QCOMPARE(m_edit->isNull(), false);
-    m_edit->setDateTime(KDateTime());
+    m_edit->setDateTime(QDateTime());
     QCOMPARE(m_edit->isValid(), false);
     QCOMPARE(m_edit->isNull(), true);
     delete m_edit;
@@ -60,39 +59,39 @@ void KDateTimeEditTest::testValidNull()
 void KDateTimeEditTest::testDateTimeRange()
 {
     m_edit = new KDateTimeEdit(0);
-    m_edit->setDateTime(KDateTime(QDate(2000, 1, 1), QTime(12, 0, 0)));
+    m_edit->setDateTime(QDateTime(QDate(2000, 1, 1), QTime(12, 0, 0)));
     // Missing support in QLocale
     //QCOMPARE(m_edit->minimumDateTime(), KDateTime(KLocale::global()->calendar()->earliestValidDate(), QTime(0, 0, 0)));
     //QCOMPARE(m_edit->maximumDateTime(), KDateTime(KLocale::global()->calendar()->latestValidDate(), QTime(23, 59, 59, 999)));
     QCOMPARE(m_edit->isValid(), true);
 
-    m_edit->setDateTimeRange(KDateTime(QDate(2001, 1, 1), QTime(10, 0, 0)),
-                             KDateTime(QDate(2002, 1, 1), QTime(20, 0, 0)));
-    QCOMPARE(m_edit->minimumDateTime(), KDateTime(QDate(2001, 1, 1), QTime(10, 0, 0)));
-    QCOMPARE(m_edit->maximumDateTime(), KDateTime(QDate(2002, 1, 1), QTime(20, 0, 0)));
+    m_edit->setDateTimeRange(QDateTime(QDate(2001, 1, 1), QTime(10, 0, 0)),
+                             QDateTime(QDate(2002, 1, 1), QTime(20, 0, 0)));
+    QCOMPARE(m_edit->minimumDateTime(), QDateTime(QDate(2001, 1, 1), QTime(10, 0, 0)));
+    QCOMPARE(m_edit->maximumDateTime(), QDateTime(QDate(2002, 1, 1), QTime(20, 0, 0)));
     QCOMPARE(m_edit->isValid(), false);
 
-    m_edit->setDateTime(KDateTime(QDate(2001, 1, 1), QTime(9, 59, 59, 999)));
+    m_edit->setDateTime(QDateTime(QDate(2001, 1, 1), QTime(9, 59, 59, 999)));
     QCOMPARE(m_edit->isValid(), false);
-    m_edit->setDateTime(KDateTime(QDate(2001, 1, 1), QTime(10, 0, 0)));
+    m_edit->setDateTime(QDateTime(QDate(2001, 1, 1), QTime(10, 0, 0)));
     QCOMPARE(m_edit->isValid(), true);
-    m_edit->setDateTime(KDateTime(QDate(2002, 1, 1), QTime(20, 0, 0, 1)));
+    m_edit->setDateTime(QDateTime(QDate(2002, 1, 1), QTime(20, 0, 0, 1)));
     QCOMPARE(m_edit->isValid(), false);
-    m_edit->setDateTime(KDateTime(QDate(2002, 1, 1), QTime(20, 0, 0, 0)));
+    m_edit->setDateTime(QDateTime(QDate(2002, 1, 1), QTime(20, 0, 0, 0)));
     QCOMPARE(m_edit->isValid(), true);
 
-    m_edit->setDateTimeRange(KDateTime(QDate(1995, 1, 1), QTime(10, 0, 0)),
-                             KDateTime(QDate(1990, 1, 1), QTime(20, 0, 0)));
-    QCOMPARE(m_edit->minimumDateTime(), KDateTime(QDate(2001, 1, 1), QTime(10, 0, 0)));
-    QCOMPARE(m_edit->maximumDateTime(), KDateTime(QDate(2002, 1, 1), QTime(20, 0, 0)));
+    m_edit->setDateTimeRange(QDateTime(QDate(1995, 1, 1), QTime(10, 0, 0)),
+                             QDateTime(QDate(1990, 1, 1), QTime(20, 0, 0)));
+    QCOMPARE(m_edit->minimumDateTime(), QDateTime(QDate(2001, 1, 1), QTime(10, 0, 0)));
+    QCOMPARE(m_edit->maximumDateTime(), QDateTime(QDate(2002, 1, 1), QTime(20, 0, 0)));
 
-    m_edit->setMinimumDateTime(KDateTime(QDate(2000, 1, 1), QTime(0, 0, 0)));
-    QCOMPARE(m_edit->minimumDateTime(), KDateTime(QDate(2000, 1, 1), QTime(0, 0, 0)));
-    QCOMPARE(m_edit->maximumDateTime(), KDateTime(QDate(2002, 1, 1), QTime(20, 0, 0)));
+    m_edit->setMinimumDateTime(QDateTime(QDate(2000, 1, 1), QTime(0, 0, 0)));
+    QCOMPARE(m_edit->minimumDateTime(), QDateTime(QDate(2000, 1, 1), QTime(0, 0, 0)));
+    QCOMPARE(m_edit->maximumDateTime(), QDateTime(QDate(2002, 1, 1), QTime(20, 0, 0)));
 
-    m_edit->setMaximumDateTime(KDateTime(QDate(2003, 1, 1), QTime(0, 0, 0)));
-    QCOMPARE(m_edit->minimumDateTime(), KDateTime(QDate(2000, 1, 1), QTime(0, 0, 0)));
-    QCOMPARE(m_edit->maximumDateTime(), KDateTime(QDate(2003, 1, 1), QTime(0, 0, 0)));
+    m_edit->setMaximumDateTime(QDateTime(QDate(2003, 1, 1), QTime(0, 0, 0)));
+    QCOMPARE(m_edit->minimumDateTime(), QDateTime(QDate(2000, 1, 1), QTime(0, 0, 0)));
+    QCOMPARE(m_edit->maximumDateTime(), QDateTime(QDate(2003, 1, 1), QTime(0, 0, 0)));
 
     delete m_edit;
 }
@@ -206,17 +205,20 @@ void KDateTimeEditTest::testTimeSpec()
 {
     m_edit = new KDateTimeEdit();
 
-    QCOMPARE(m_edit->timeSpec(), KDateTime::currentLocalDateTime().timeSpec());
-    QCOMPARE(m_edit->timeZones(), KSystemTimeZones::zones());
+    QCOMPARE(m_edit->timeZone(), QDateTime::currentDateTime().timeZone());
+    QList<QTimeZone> zones;
+    foreach (const QByteArray &zoneId, QTimeZone::availableTimeZoneIds()) {
+        zones << QTimeZone(zoneId);
+    }
+    QCOMPARE(m_edit->timeZones(), zones);
 
-    KDateTime::Spec spec = KDateTime::Spec::OffsetFromUTC(3600);
-    m_edit->setTimeSpec(spec);
-    QCOMPARE(m_edit->timeSpec(), spec);
+    QTimeZone zone(3600);
+    m_edit->setTimeZone(zone);
+    QCOMPARE(m_edit->timeZone(), zone);
 
-    KTimeZones::ZoneMap map;
-    map.insert("Africa/Cairo", KSystemTimeZones::zone("Africa/Cairo"));
-    m_edit->setTimeZones(map);
-    QCOMPARE(m_edit->timeZones(), map);
+    zones << zone;
+    m_edit->setTimeZones(zones);
+    QCOMPARE(m_edit->timeZones(), zones);
 
     delete m_edit;
 }

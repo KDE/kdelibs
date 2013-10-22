@@ -25,9 +25,7 @@
 #include <QLineEdit>
 #include <QWidgetAction>
 
-#include "kdatetime.h"
 #include "klocalizedstring.h"
-#include "ksystemtimezone.h"
 #include "kdatepicker.h"
 #include "kdatecombobox.h"
 #include "kmessagebox.h"
@@ -40,16 +38,16 @@ public:
     KDateTimeEditPrivate(KDateTimeEdit *q);
     virtual ~KDateTimeEditPrivate();
 
-    KDateTime defaultMinDateTime();
-    KDateTime defaultMaxDateTime();
+    QDateTime defaultMinDateTime();
+    QDateTime defaultMaxDateTime();
 
     void initWidgets();
     void initDateWidget();
     void initTimeWidget();
     void initCalendarWidget();
     void updateCalendarWidget();
-    void initTimeSpecWidget();
-    void updateTimeSpecWidget();
+    void initTimeZoneWidget();
+    void updateTimeZoneWidget();
 
     void warnDateTime();
 
@@ -57,19 +55,19 @@ public:
     void selectCalendar(int index);
     void enterCalendar(const QLocale &calendarLocale);
     void selectTimeZone(int index);
-    void enterTimeZone(const QString &zone);
+    void enterTimeZone(const QByteArray &zoneId);
 
     KDateTimeEdit *const q;
 
     KDateTimeEdit::Options m_options;
-    KDateTime m_dateTime;
-    KDateTime m_minDateTime;
-    KDateTime m_maxDateTime;
+    QDateTime m_dateTime;
+    QDateTime m_minDateTime;
+    QDateTime m_maxDateTime;
     QString m_minWarnMsg;
     QString m_maxWarnMsg;
 
     QList<QLocale> m_calendarLocales;
-    KTimeZones::ZoneMap m_zones;
+    QList<QTimeZone> m_zones;
 
     Ui::KDateTimeEdit ui;
 };
@@ -80,28 +78,30 @@ KDateTimeEditPrivate::KDateTimeEditPrivate(KDateTimeEdit *q)
     m_options = KDateTimeEdit::ShowDate | KDateTimeEdit::EditDate | KDateTimeEdit::SelectDate |
                 KDateTimeEdit::ShowTime | KDateTimeEdit::EditTime | KDateTimeEdit::SelectTime |
                 KDateTimeEdit::DatePicker | KDateTimeEdit::DateKeywords;
-    m_dateTime = KDateTime::currentLocalDateTime();
+    m_dateTime = QDateTime::currentDateTime();
     m_dateTime.setTime(QTime(0, 0, 0));
     m_calendarLocales << q->locale();
-    m_zones = KSystemTimeZones::zones();
+    foreach (const QByteArray &zoneId, QTimeZone::availableTimeZoneIds()) {
+        m_zones << QTimeZone(zoneId);
+    }
 }
 
 KDateTimeEditPrivate::~KDateTimeEditPrivate()
 {
 }
 
-KDateTime KDateTimeEditPrivate::defaultMinDateTime()
+QDateTime KDateTimeEditPrivate::defaultMinDateTime()
 {
     // TODO: Find a way to get it from QLocale
     //return KDateTime(calendar()->earliestValidDate(), QTime(0, 0, 0, 0));
-    return KDateTime();
+    return QDateTime();
 }
 
-KDateTime KDateTimeEditPrivate::defaultMaxDateTime()
+QDateTime KDateTimeEditPrivate::defaultMaxDateTime()
 {
     // TODO: Find a way to get it from QLocale
     //return KDateTime(calendar()->latestValidDate(), QTime(23, 59, 59, 999));
-    return KDateTime();
+    return QDateTime();
 }
 
 void KDateTimeEditPrivate::initWidgets()
@@ -109,7 +109,7 @@ void KDateTimeEditPrivate::initWidgets()
     initDateWidget();
     initTimeWidget();
     initCalendarWidget();
-    initTimeSpecWidget();
+    initTimeZoneWidget();
 }
 
 void KDateTimeEditPrivate::initDateWidget()
@@ -183,44 +183,37 @@ void KDateTimeEditPrivate::enterCalendar(const QLocale &calendarLocale)
     emit q->calendarEntered(q->locale());
 }
 
-void KDateTimeEditPrivate::initTimeSpecWidget()
+void KDateTimeEditPrivate::initTimeZoneWidget()
 {
-    ui.m_timeSpecCombo->blockSignals(true);
-    ui.m_timeSpecCombo->clear();
-    ui.m_timeSpecCombo->addItem(i18nc("UTC time zone", "UTC"), "UTC");
-    ui.m_timeSpecCombo->addItem(i18nc("No specific time zone", "Floating"), "Floating");
-    QStringList keys = m_zones.keys();
-    QMap<QString, QString> names;
-    foreach (const QString &key, keys) {
-        names.insert(i18nd("timezones4", key.toUtf8()).replace('_', ' '), key);
+    ui.m_timeZoneCombo->blockSignals(true);
+    ui.m_timeZoneCombo->clear();
+    ui.m_timeZoneCombo->addItem(i18nc("UTC time zone", "UTC"), QByteArray("UTC"));
+    ui.m_timeZoneCombo->addItem(i18nc("No specific time zone", "Floating"), QByteArray());
+    foreach (const QTimeZone &zone, m_zones) {
+        ui.m_timeZoneCombo->addItem(zone.id(), zone.id());
     }
-    QMapIterator<QString, QString> i(names);
-    while (i.hasNext()) {
-        i.next();
-        ui.m_timeSpecCombo->addItem(i.key(), i.value());
-    }
-    ui.m_timeSpecCombo->setVisible((m_options &KDateTimeEdit::ShowTimeSpec) == KDateTimeEdit::ShowTimeSpec);
-    ui.m_timeSpecCombo->setEnabled((m_options &KDateTimeEdit::SelectTimeSpec) == KDateTimeEdit::SelectTimeSpec);
-    ui.m_timeSpecCombo->setEditable(false);
-    ui.m_timeSpecCombo->blockSignals(false);
+    ui.m_timeZoneCombo->setVisible((m_options &KDateTimeEdit::ShowTimeZone) == KDateTimeEdit::ShowTimeZone);
+    ui.m_timeZoneCombo->setEnabled((m_options &KDateTimeEdit::SelectTimeZone) == KDateTimeEdit::SelectTimeZone);
+    ui.m_timeZoneCombo->setEditable(false);
+    ui.m_timeZoneCombo->blockSignals(false);
 }
 
-void KDateTimeEditPrivate::updateTimeSpecWidget()
+void KDateTimeEditPrivate::updateTimeZoneWidget()
 {
-    ui.m_timeSpecCombo->blockSignals(true);
-    ui.m_timeSpecCombo->blockSignals(false);
+    ui.m_timeZoneCombo->blockSignals(true);
+    ui.m_timeZoneCombo->blockSignals(false);
 }
 
 void KDateTimeEditPrivate::selectTimeZone(int index)
 {
-    enterTimeZone(ui.m_timeCombo->itemData(index).toString());
+    enterTimeZone(ui.m_timeCombo->itemData(index).toByteArray());
 }
 
-void KDateTimeEditPrivate::enterTimeZone(const QString &zone)
+void KDateTimeEditPrivate::enterTimeZone(const QByteArray &zoneId)
 {
-    q->setTimeSpec(m_zones.value(zone));
+    q->setTimeZone(QTimeZone(zoneId));
     emit q->dateTimeEntered(m_dateTime);
-    emit q->timeSpecEntered(m_dateTime.timeSpec());
+    emit q->timeZoneEntered(m_dateTime.timeZone());
 }
 
 void KDateTimeEditPrivate::warnDateTime()
@@ -239,7 +232,7 @@ void KDateTimeEditPrivate::warnDateTime()
             } else {
                 warnMsg = m_minWarnMsg;
                 //TODO localize properly
-                warnMsg.replace("%1", q->locale().toString(m_minDateTime.dateTime()));
+                warnMsg.replace("%1", q->locale().toString(m_minDateTime));
             }
         } else if (m_maxDateTime.isValid() && m_dateTime > m_maxDateTime) {
             if (m_maxWarnMsg.isEmpty()) {
@@ -248,7 +241,7 @@ void KDateTimeEditPrivate::warnDateTime()
                 warnMsg = i18nc("@info", "The entered date and time is after the maximum allowed date and time.");
             } else {
                 warnMsg = m_maxWarnMsg;
-                warnMsg.replace("%1", q->locale().toString(m_maxDateTime.dateTime()));
+                warnMsg.replace("%1", q->locale().toString(m_maxDateTime));
             }
         }
         KMessageBox::sorry(q, warnMsg);
@@ -268,12 +261,12 @@ KDateTimeEdit::KDateTimeEdit(QWidget *parent)
     d->ui.m_calendarCombo->installEventFilter(this);
     d->ui.m_dateCombo->installEventFilter(this);
     d->ui.m_timeCombo->installEventFilter(this);
-    d->ui.m_timeSpecCombo->installEventFilter(this);
+    d->ui.m_timeZoneCombo->installEventFilter(this);
     d->initWidgets();
 
     connect( d->ui.m_calendarCombo, SIGNAL(activated(int)),
              this,                      SLOT(selectCalendar(int)));
-    connect( d->ui.m_timeSpecCombo, SIGNAL(activated(int)),
+    connect( d->ui.m_timeZoneCombo, SIGNAL(activated(int)),
              this,                      SLOT(selectTimeZone(int)));
 }
 
@@ -282,7 +275,7 @@ KDateTimeEdit::~KDateTimeEdit()
     delete d;
 }
 
-KDateTime KDateTimeEdit::dateTime() const
+QDateTime KDateTimeEdit::dateTime() const
 {
     return d->m_dateTime;
 }
@@ -297,9 +290,9 @@ QTime KDateTimeEdit::time() const
     return d->m_dateTime.time();
 }
 
-KDateTime::Spec KDateTimeEdit::timeSpec() const
+QTimeZone KDateTimeEdit::timeZone() const
 {
-    return d->m_dateTime.timeSpec();
+    return d->m_dateTime.timeZone();
 }
 
 bool KDateTimeEdit::isValid() const
@@ -347,7 +340,7 @@ KDateTimeEdit::Options KDateTimeEdit::options() const
     return d->m_options;
 }
 
-void KDateTimeEdit::setDateTime(const KDateTime &dateTime)
+void KDateTimeEdit::setDateTime(const QDateTime &dateTime)
 {
     if (dateTime != d->m_dateTime) {
         assignDateTime(dateTime);
@@ -357,7 +350,7 @@ void KDateTimeEdit::setDateTime(const KDateTime &dateTime)
     }
 }
 
-void KDateTimeEdit::assignDateTime(const KDateTime &dateTime)
+void KDateTimeEdit::assignDateTime(const QDateTime &dateTime)
 {
     d->m_dateTime = dateTime;
     d->ui.m_dateCombo->setDate(dateTime.date());
@@ -394,29 +387,29 @@ void KDateTimeEdit::assignTime(const QTime &time)
     d->ui.m_timeCombo->setTime(time);
 }
 
-void KDateTimeEdit::setTimeSpec(const KDateTime::Spec &spec)
+void KDateTimeEdit::setTimeZone(const QTimeZone &zone)
 {
-    if (spec == d->m_dateTime.timeSpec() || !spec.isValid()) {
+    if (zone == d->m_dateTime.timeZone() || !zone.isValid()) {
         return;
     }
 
-    assignTimeSpec(spec);
+    assignTimeZone(zone);
     emit dateTimeChanged(d->m_dateTime);
-    emit timeSpecChanged(d->m_dateTime.timeSpec());
+    emit timeZoneChanged(d->m_dateTime.timeZone());
 }
 
-void KDateTimeEdit::assignTimeSpec(const KDateTime::Spec &spec)
+void KDateTimeEdit::assignTimeZone(const QTimeZone &zone)
 {
-    d->m_dateTime.setTimeSpec(spec);
-    d->updateTimeSpecWidget();
+    d->m_dateTime.setTimeZone(zone);
+    d->updateTimeZoneWidget();
 }
 
-void KDateTimeEdit::setMinimumDateTime(const KDateTime &minDateTime, const QString &minWarnMsg)
+void KDateTimeEdit::setMinimumDateTime(const QDateTime &minDateTime, const QString &minWarnMsg)
 {
     setDateTimeRange(minDateTime, maximumDateTime(), minWarnMsg, d->m_maxWarnMsg);
 }
 
-KDateTime KDateTimeEdit::minimumDateTime() const
+QDateTime KDateTimeEdit::minimumDateTime() const
 {
     return d->m_minDateTime;
 }
@@ -426,12 +419,12 @@ void KDateTimeEdit::resetMinimumDateTime()
     d->m_minDateTime = d->defaultMinDateTime();
 }
 
-void KDateTimeEdit::setMaximumDateTime(const KDateTime &maxDateTime, const QString &maxWarnMsg)
+void KDateTimeEdit::setMaximumDateTime(const QDateTime &maxDateTime, const QString &maxWarnMsg)
 {
     setDateTimeRange(minimumDateTime(), maxDateTime, d->m_minWarnMsg, maxWarnMsg);
 }
 
-KDateTime KDateTimeEdit::maximumDateTime() const
+QDateTime KDateTimeEdit::maximumDateTime() const
 {
     return d->m_maxDateTime;
 }
@@ -441,8 +434,8 @@ void KDateTimeEdit::resetMaximumDateTime()
     d->m_maxDateTime = d->defaultMaxDateTime();
 }
 
-void KDateTimeEdit::setDateTimeRange(const KDateTime &minDateTime,
-                                     const KDateTime &maxDateTime,
+void KDateTimeEdit::setDateTimeRange(const QDateTime &minDateTime,
+                                     const QDateTime &maxDateTime,
                                      const QString &minErrorMsg,
                                      const QString &maxErrorMsg)
 {
@@ -528,15 +521,15 @@ QList<QTime> KDateTimeEdit::timeList() const
     return d->ui.m_timeCombo->timeList();
 }
 
-void KDateTimeEdit::setTimeZones(const KTimeZones::ZoneMap &zones)
+void KDateTimeEdit::setTimeZones(const QList<QTimeZone> &zones)
 {
     if (zones != d->m_zones) {
         d->m_zones = zones;
-        d->updateTimeSpecWidget();
+        d->updateTimeZoneWidget();
     }
 }
 
-KTimeZones::ZoneMap KDateTimeEdit::timeZones() const
+QList<QTimeZone> KDateTimeEdit::timeZones() const
 {
     return d->m_zones;
 }
