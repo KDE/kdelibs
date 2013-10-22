@@ -135,6 +135,8 @@ install( FILES
    DESTINATION ${INCLUDE_INSTALL_DIR}/kio COMPONENT Devel)
 
 install( FILES
+  kacleditwidget.h
+  kpropertiesdialog.h
   kpropertiesdialog.h
   kurlrequesterdialog.h
   kurlcombobox.h
@@ -159,8 +161,6 @@ install( FILES
    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
 
 install( FILES
-  kacleditwidget.h
-  kpropertiesdialog.h
   kfileitemactionplugin.desktop
+  kpropertiesdialogplugin.desktop
    DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
-

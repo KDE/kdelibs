@@ -145,7 +145,6 @@ install( FILES
  kdatatool.desktop
  kfileplugin.desktop
  kurifilterplugin.desktop
- kfile/kpropertiesdialogplugin.desktop
 DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
 
 install(  FILES
