@@ -376,7 +376,7 @@ QVariant KConfigGroup::convertToQVariant(const char *pKey, const QByteArray& val
 static bool cleanHomeDirPath( QString &path, const QString &homeDir )
 {
 #ifdef Q_OS_WIN //safer
-   if (!QDir::convertSeparators(path).startsWith(QDir::convertSeparators(homeDir)))
+    if (!QDir::toNativeSeparators(path).startsWith(QDir::toNativeSeparators(homeDir)))
         return false;
 #else
    if (!path.startsWith(homeDir))
