@@ -52,8 +52,8 @@ bool AdiumEmoticons::removeEmoticon(const QString &emo)
             }
 
             fce.removeChild(de);
-            removeEmoticonsMap(emoticonsMap().key(emo.split(' ')));
-            removeEmoticonIndex(emoticon, emo.split(' '));
+            removeMapItem(emoticonsMap().key(emo.split(' ')));
+            removeIndexItem(emoticon, emo.split(' '));
             return true;
         }
     }
@@ -108,8 +108,8 @@ bool AdiumEmoticons::addEmoticon(const QString &emo, const QString &text, AddEmo
 
     fce.appendChild(dict);
 
-    addEmoticonIndex(emo, splitted);
-    addEmoticonsMap(emo, splitted);
+    addIndexItem(emo, splitted);
+    addMapItem(emo, splitted);
     return true;
 }
 
@@ -188,8 +188,8 @@ bool AdiumEmoticons::loadTheme(const QString &path)
                 }
             }
             if (!name.isEmpty()) {
-                addEmoticonIndex(name, sl);
-                addEmoticonsMap(name, sl);
+                addIndexItem(name, sl);
+                addMapItem(name, sl);
                 name.clear();
             }
         }

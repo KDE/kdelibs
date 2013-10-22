@@ -81,12 +81,22 @@ void KEmoticonsProvider::clearEmoticonsMap()
 
 void KEmoticonsProvider::addEmoticonsMap(QString key, QStringList value)
 {
+    addMapItem(key, value);
+}
+
+void KEmoticonsProvider::addMapItem(QString key, QStringList value)
+{
     if (!value.isEmpty()) {
         d->m_emoticonsMap.insert(key, value);
     }
 }
 
 void KEmoticonsProvider::removeEmoticonsMap(QString key)
+{
+    removeMapItem(key);
+}
+
+void KEmoticonsProvider::removeMapItem(QString key)
 {
     d->m_emoticonsMap.remove(key);
 }
@@ -119,6 +129,11 @@ bool KEmoticonsProvider::copyEmoticon(const QString &emo)
 
 void KEmoticonsProvider::addEmoticonIndex(const QString &path, const QStringList &emoList)
 {
+    addIndexItem(path, emoList);
+}
+
+void KEmoticonsProvider::addIndexItem(const QString &path, const QStringList &emoList)
+{
     foreach(const QString &s, emoList) {
         KEmoticonsProvider::Emoticon e;
         QPixmap p;
@@ -141,6 +156,11 @@ void KEmoticonsProvider::addEmoticonIndex(const QString &path, const QStringList
 }
 
 void KEmoticonsProvider::removeEmoticonIndex(const QString &path, const QStringList &emoList)
+{
+    removeIndexItem(path, emoList);
+}
+
+void KEmoticonsProvider::removeIndexItem(const QString &path, const QStringList &emoList)
 {
     foreach(const QString &s, emoList) {
         QString escaped = s.toHtmlEscaped();

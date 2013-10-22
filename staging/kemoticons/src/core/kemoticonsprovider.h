@@ -161,27 +161,72 @@ protected:
 
     /**
      * Inserts a new item in the emoticon map
+     *
+     * @deprecated since 5.0, use addMapItem() instead
      */
-    void addEmoticonsMap(QString key, QStringList value);
+#ifndef KDE_NO_DEPRECATED
+    KEMOTICONS_DEPRECATED void addEmoticonsMap(QString key, QStringList value);
+#endif
+
+    /**
+     * Inserts a new item in the emoticon map
+     * @since 5.0
+     * @see emoticonsMap()
+     */
+    void addMapItem(QString key, QStringList value);
 
     /**
      * Removes an item from the emoticon map
+     *
+     * @deprecated since 5.0, use removeMapItem() instead
      */
-    void removeEmoticonsMap(QString key);
+#ifndef KDE_NO_DEPRECATED
+    KEMOTICONS_DEPRECATED void removeEmoticonsMap(QString key);
+#endif
+    /**
+     * Removes an item from the emoticon map
+     * @since 5.0
+     * @see emoticonsMap()
+     */
+    void removeMapItem(QString key);
 
     /**
      * Adds an emoticon to the index
      * @param path path to the emoticon
      * @param emoList list of text associated with this emoticon
+     *
+     * @deprecated since 5.0, use addIndexItem() instead
      */
-    void addEmoticonIndex(const QString &path, const QStringList &emoList);
+#ifndef KDE_NO_DEPRECATED
+    KEMOTICONS_DEPRECATED void addEmoticonIndex(const QString &path, const QStringList &emoList);
+#endif
+    /**
+     * Adds an emoticon to the index
+     * @param path path to the emoticon
+     * @param emoList list of text associated with this emoticon
+     * @since 5.0
+     * @see emoticonsIndex()
+     */
+    void addIndexItem(const QString &path, const QStringList &emoList);
 
     /**
      * Removes an emoticon from the index
      * @param path path to the emoticon
      * @param emoList list of text associated with this emoticon
+     *
+     * @deprecated since 5.0, use removeIndexItem() instead
      */
-    void removeEmoticonIndex(const QString &path, const QStringList &emoList);
+#ifndef KDE_NO_DEPRECATED
+    KEMOTICONS_DEPRECATED void removeEmoticonIndex(const QString &path, const QStringList &emoList);
+#endif
+    /**
+     * Removes an emoticon from the index
+     * @param path path to the emoticon
+     * @param emoList list of text associated with this emoticon
+     * @since 5.0
+     * @see emoticonsIndex()
+     */
+    void removeIndexItem(const QString &path, const QStringList &emoList);
 
 private:
     /**

@@ -56,8 +56,8 @@ bool XmppEmoticons::removeEmoticon(const QString &emo)
 
                 if (!sde.isNull() && sde.tagName() == "object" && sde.text() == emoticon) {
                     fce.removeChild(de);
-                    removeEmoticonsMap(emoticonsMap().key(emo.split(' ')));
-                    removeEmoticonIndex(emoticon, emo.split(' '));
+                    removeMapItem(emoticonsMap().key(emo.split(' ')));
+                    removeIndexItem(emoticon, emo.split(' '));
                     return true;
                 }
             }
@@ -103,8 +103,8 @@ bool XmppEmoticons::addEmoticon(const QString &emo, const QString &text, AddEmot
     emoElement.appendChild(txt);
     emoticon.appendChild(emoElement);
 
-    addEmoticonIndex(emo, splitted);
-    addEmoticonsMap(emo, splitted);
+    addIndexItem(emo, splitted);
+    addMapItem(emo, splitted);
     return true;
 }
 
@@ -190,8 +190,8 @@ bool XmppEmoticons::loadTheme(const QString &path)
                 continue;
             }
 
-            addEmoticonIndex(emo, sl);
-            addEmoticonsMap(emo, sl);
+            addIndexItem(emo, sl);
+            addMapItem(emo, sl);
         }
     }
 

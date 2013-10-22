@@ -47,8 +47,8 @@ bool KdeEmoticons::removeEmoticon(const QString &emo)
         QDomElement de = nl.item(i).toElement();
         if (!de.isNull() && de.tagName() == "emoticon" && (de.attribute("file") == emoticon || de.attribute("file") == QFileInfo(emoticon).baseName())) {
             fce.removeChild(de);
-            removeEmoticonsMap(emoticonsMap().key(emo.split(' ')));
-            removeEmoticonIndex(emoticon, emo.split(' '));
+            removeMapItem(emoticonsMap().key(emo.split(' ')));
+            removeIndexItem(emoticon, emo.split(' '));
             return true;
         }
     }
@@ -82,8 +82,8 @@ bool KdeEmoticons::addEmoticon(const QString &emo, const QString &text, AddEmoti
         emoticon.appendChild(emoText);
     }
 
-    addEmoticonIndex(emo, splitted);
-    addEmoticonsMap(emo, splitted);
+    addIndexItem(emo, splitted);
+    addMapItem(emo, splitted);
     return true;
 }
 
@@ -174,8 +174,8 @@ bool KdeEmoticons::loadTheme(const QString &path)
                 }
             }
 
-            addEmoticonIndex(emo, sl);
-            addEmoticonsMap(emo, sl);
+            addIndexItem(emo, sl);
+            addMapItem(emo, sl);
         }
     }
 
