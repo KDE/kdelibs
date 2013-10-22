@@ -43,7 +43,7 @@ public:
     virtual Solid::Button::ButtonType type() const;
 
 Q_SIGNALS:
-    virtual void pressed(Solid::Button::ButtonType type, const QString& udi);
+    void pressed(Solid::Button::ButtonType type, const QString& udi);
 
 private:
     Solid::Button::ButtonType m_type;
