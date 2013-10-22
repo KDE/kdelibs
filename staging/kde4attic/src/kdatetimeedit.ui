@@ -12,7 +12,7 @@
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
-    <widget class="KComboBox" name="m_calendarCombo">
+    <widget class="QComboBox" name="m_calendarCombo">
      <property name="sizePolicy">
       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
        <horstretch>0</horstretch>
@@ -42,7 +42,7 @@
     </widget>
    </item>
    <item>
-    <widget class="KComboBox" name="m_timeZoneCombo">
+    <widget class="QComboBox" name="m_timeZoneCombo">
      <property name="sizePolicy">
       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
        <horstretch>0</horstretch>
@@ -54,11 +54,6 @@
   </layout>
  </widget>
  <customwidgets>
-  <customwidget>
-   <class>KComboBox</class>
-   <extends>QComboBox</extends>
-   <header>kcombobox.h</header>
-  </customwidget>
   <customwidget>
    <class>KDateComboBoxPrivate</class>
    <extends>KComboBox</extends>
