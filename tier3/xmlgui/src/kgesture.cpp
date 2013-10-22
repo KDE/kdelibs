@@ -17,7 +17,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "kgesture.h"
+#include "kgesture_p.h"
 #include <klocalizedstring.h>
 #include <math.h>
 #include <QStringList>
@@ -62,7 +62,7 @@ KShapeGesture::KShapeGesture(const QPolygon &shape)
 KShapeGesture::KShapeGesture(const QString &description)
     : d(new KShapeGesturePrivate)
 {
-    QStringList sl = description.split(',');
+    QStringList sl = description.split(QLatin1Char(','));
     d->m_friendlyName = sl.takeFirst();
 
     bool ok = true;
@@ -170,9 +170,9 @@ QString KShapeGesture::toString() const
 
     int i;
     for (i = 0; i < d->m_shape.size(); i++) {
-        ret.append(',');
+        ret.append(QLatin1Char(','));
         ret.append(QString::number(d->m_shape[i].x()));
-        ret.append(',');
+        ret.append(QLatin1Char(','));
         ret.append(QString::number(d->m_shape[i].y()));
     }
 
@@ -573,7 +573,7 @@ QString KRockerGesture::toString() const
         default:
             return QString();
         }
-        ret.append(desc);
+        ret.append(QLatin1Char(desc));
         button = d->m_thenPush;
     }
     return ret;

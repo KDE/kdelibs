@@ -17,7 +17,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "kgesturemap.h"
+#include "kgesturemap_p.h"
 
 #include <qapplication.h>
 #include <QAction>

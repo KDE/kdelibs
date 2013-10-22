@@ -35,6 +35,8 @@ set(xmlgui_SRCS
   kactionconflictdetector.cpp
   kbugreport.cpp
   kedittoolbar.cpp
+  kgesture.cpp
+  kgesturemap.cpp
   kglobalaccel.cpp
   kglobalshortcutinfo.cpp
   kglobalshortcutinfo_dbus.cpp
@@ -119,6 +121,8 @@ install(FILES
   kactioncollection.h
   kbugreport.h
   kedittoolbar.h
+  kgesture_p.h
+  kgesturemap_p.h
   kglobalaccel.h
   kglobalshortcutinfo.h
   khelpmenu.h

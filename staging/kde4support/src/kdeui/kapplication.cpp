@@ -46,7 +46,7 @@
 #include "klocalizedstring.h"
 #include "ksessionmanager.h"
 #include "ktoolinvocation.h"
-#include "kgesturemap.h"
+#include "kgesturemap_p.h"
 #include "kurl.h"
 #include "kmessage.h"
 #include "kmessageboxmessagehandler.h"

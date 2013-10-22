@@ -25,13 +25,13 @@
 #include <QTimer>
 #include <QPolygon>
 
-#include "kgesture.h"
+#include "kgesture_p.h"
 
 class QApplication;
 class QAction;
 class QEvent;
 
-class KDE4ATTIC_EXPORT KGestureMap : public QObject
+class XMLGUI_EXPORT KGestureMap : public QObject
 {
     Q_OBJECT
 public:

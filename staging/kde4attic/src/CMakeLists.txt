@@ -1,8 +1,6 @@
 configure_file(config-kde4attic.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kde4attic.h )
 
 set(kde4attic_SRCS
-  kgesture.cpp
-  kgesturemap.cpp
   ksslcertificatemanager.cpp
   ktcpsocket.cpp
 )
@@ -33,7 +31,6 @@ set_target_properties(KDE4Attic PROPERTIES VERSION   ${KDE4ATTIC_VERSION_STRING}
 install(TARGETS KDE4Attic EXPORT KDE4AtticTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
-  kgesture.h
   ktcpsocket.h
 
   ${CMAKE_CURRENT_BINARY_DIR}/kde4attic_export.h
