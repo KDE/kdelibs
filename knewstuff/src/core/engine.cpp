@@ -301,6 +301,11 @@ void Engine::reloadEntries()
                     ++m_currentRequest.page;
                     cache = m_cache->requestFromCache(m_currentRequest);
                 }
+
+                // Since the cache has no more pages, reset the request's page
+                if (m_currentPage >= 0)
+                    m_currentRequest.page = m_currentPage;
+
                 // if the cache was empty, request data from provider
                 if (m_currentPage == -1) {
                     // qDebug() << "From provider";
