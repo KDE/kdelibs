@@ -33,8 +33,8 @@ public:
         : QSharedData(other)
         , data(other.data)
         , errorCode(other.errorCode)
-        , errorDescription(errorDescription)
-        , type(type) {}
+        , errorDescription(other.errorDescription)
+        , type(other.type) {}
     ~ActionReplyData() {}
 
     QVariantMap data; // User-defined data for success and helper error replies, empty for kauth errors
