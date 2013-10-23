@@ -23,7 +23,7 @@ set(kdesu_LIB_SRCS
 
 
 add_library(KDESu ${kdesu_LIB_SRCS})
-generate_export_header(KDESu)
+generate_export_header(KDESu EXPORT_FILE_NAME kdesu/kdesu_export.h)
 add_library(KF5::KDESu ALIAS KDESu)
 
 target_include_directories(KDESu PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/..)
@@ -65,6 +65,6 @@ install(FILES
   ssh.h
   stub.h
   defaults.h
-  ${CMAKE_CURRENT_BINARY_DIR}/kdesu_export.h
+  ${CMAKE_CURRENT_BINARY_DIR}/kdesu/kdesu_export.h
   DESTINATION  ${INCLUDE_INSTALL_DIR}/kdesu COMPONENT Devel
 )
