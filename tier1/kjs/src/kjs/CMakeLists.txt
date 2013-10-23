@@ -251,6 +251,65 @@ add_subdirectory(api)
 #     ${CMAKE_CURRENT_BINARY_DIR}/global.h
 #
 #     DESTINATION  ${INCLUDE_INSTALL_DIR}/kjs COMPONENT Devel )
-
-
-
+install(FILES
+  array_instance.h
+  array_object.h
+  bool_object.h
+  collector.h
+  CommonIdentifiers.h
+  commonunicode.h
+  CompileState.h
+  completion.h
+  context.h
+  date_object.h
+  debugger.h
+  dtoa.h
+  error_object.h
+  ExecState.h
+  function.h
+  function_object.h
+  grammar.h
+  identifier.h
+  internal.h
+  interpreter.h
+  JSImmediate.h
+  JSLock.h
+  jsonlexer.h
+  json_object.h
+  jsonstringify.h
+  JSType.h
+  JSVariableObject.h
+  JSWrapperObject.h
+  lexer.h
+  list.h
+  LocalStorage.h
+  lookup.h
+  makenodes.h
+  math_object.h
+  nodes2bytecode.h
+  nodes.h
+  number_object.h
+  object.h
+  object_object.h
+  operations.h
+  package.h
+  Parser.h
+  propertydescriptor.h
+  property_map.h
+  PropertyNameArray.h
+  property_slot.h
+  protect.h
+  regexp.h
+  regexp_object.h
+  SavedBuiltins.h
+  scope_chain.h
+  scriptfunction.h
+  string_object.h
+  SymbolTable.h
+  types.h
+  ustring.h
+  value.h
+  ${CMAKE_CURRENT_BINARY_DIR}/global.h
+  DESTINATION ${INCLUDE_INSTALL_DIR}/kjs
+  COMPONENT Devel
+)
