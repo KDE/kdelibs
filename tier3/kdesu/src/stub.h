@@ -12,7 +12,7 @@
 
 #include "process.h"
 
-#include <kdesu_export.h>
+#include <kdesu/kdesu_export.h>
 
 #include <QtCore/QByteRef>
 #include <QtCore/QList>

@@ -10,7 +10,7 @@
 #ifndef KDESUSU_H
 #define KDESUSU_H
 
-#include <kdesu_export.h>
+#include <kdesu/kdesu_export.h>
 
 #include "stub.h"
 

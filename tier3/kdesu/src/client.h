@@ -12,7 +12,7 @@
 #ifndef KDESUCLIENT_H
 #define KDESUCLIENT_H
 
-#include <kdesu_export.h>
+#include <kdesu/kdesu_export.h>
 
 #include <QtCore/QList>
 #include <QtCore/QByteArray>

@@ -12,7 +12,7 @@
 
 #include "stub.h"
 
-#include <kdesu_export.h>
+#include <kdesu/kdesu_export.h>
 
 namespace KDESu {
 
