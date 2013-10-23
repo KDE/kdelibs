@@ -2,24 +2,36 @@ cmake_minimum_required(VERSION 2.8.12)
 
 project(KI18n)
 
+# ECM setup
 find_package(ECM 0.0.9 REQUIRED NO_MODULE)
-
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 include(FeatureSummary)
 include(CMakePackageConfigHelpers)
 include(ECMSetupVersion)
 
-find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
+set(KF5_VERSION "5.0.0")
+
+ecm_setup_version(
+  ${KF5_VERSION}
+  VARIABLE_PREFIX KI18N
+  VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/ki18n_version.h"
+  PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KI18nConfigVersion.cmake"
+)
+
+# Dependencies
 set(REQUIRED_QT_VERSION "5.2.0")
+
 find_package(Qt5 ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE COMPONENTS Core Test Concurrent)
+
+find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 
 find_package(Perl)
 set_package_properties(Perl PROPERTIES URL "http://www.perl.org" TYPE REQUIRED PURPOSE "Needed for building kdelibs")
 
-ecm_setup_version(5.0.0 VARIABLE_PREFIX KI18N
-                        VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/ki18n_version.h"
-                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KI18nConfigVersion.cmake")
+if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
+  find_package(KJS ${KF5_VERSION} REQUIRED)
+endif()
 
 remove_definitions(-DQT_NO_KEYWORDS)
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)

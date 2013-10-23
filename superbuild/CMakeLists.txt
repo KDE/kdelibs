@@ -25,6 +25,7 @@ sb_add_project(tier1/threadweaver )
 
 sb_add_project(tier2/kauth DEPENDS kcoreaddons)
 sb_add_project(tier2/kcrash DEPENDS kcoreaddons kwindowsystem)
+sb_add_project(tier2/ki18n DEPENDS kjs)
 
 # sb_add_project(tier3/kconfigwidgets DEPENDS kauth kcoreaddons kcodecs kconfig kguiaddons ki18n kwidgetsaddons)
 
