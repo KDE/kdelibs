@@ -23,7 +23,7 @@
 #ifndef WTF_VectorTraits_h
 #define WTF_VectorTraits_h
 
-#include "RefPtr.h"
+#include <wtf/RefPtr.h>
 #include <utility>
 
 using std::pair;

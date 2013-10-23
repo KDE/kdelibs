@@ -23,7 +23,7 @@
 #ifndef WTF_ListRefPtr_h
 #define WTF_ListRefPtr_h
 
-#include "RefPtr.h"
+#include <wtf/RefPtr.h>
 
 namespace WTF {
 

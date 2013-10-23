@@ -23,10 +23,10 @@
 #ifndef WTF_Vector_h
 #define WTF_Vector_h
 
-#include "Assertions.h"
-#include "FastMalloc.h"
-#include "Noncopyable.h"
-#include "VectorTraits.h"
+#include <wtf/Assertions.h>
+#include <wtf/FastMalloc.h>
+#include <wtf/Noncopyable.h>
+#include <wtf/VectorTraits.h>
 #include <limits>
 #include <stdlib.h>
 #include <cstring>

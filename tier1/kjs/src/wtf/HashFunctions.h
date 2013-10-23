@@ -22,7 +22,7 @@
 #ifndef WTF_HashFunctions_h
 #define WTF_HashFunctions_h
 
-#include "RefPtr.h"
+#include <wtf/RefPtr.h>
 #include <kjs/global.h>
 #if HAVE_STDINT_H
 #include <stdint.h>

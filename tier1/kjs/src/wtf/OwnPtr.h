@@ -23,8 +23,8 @@
 #define WTF_OwnPtr_h
 
 #include <algorithm>
-#include "Assertions.h"
-#include "Noncopyable.h"
+#include <wtf/Assertions.h>
+#include <wtf/Noncopyable.h>
 
 namespace WTF {
 

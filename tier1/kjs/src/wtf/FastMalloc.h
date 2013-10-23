@@ -23,7 +23,7 @@
 #ifndef WTF_FastMalloc_h
 #define WTF_FastMalloc_h
 
-#include "Platform.h"
+#include <wtf/Platform.h>
 #if USE(MULTIPLE_THREADS)
 #include <pthread.h>
 #endif

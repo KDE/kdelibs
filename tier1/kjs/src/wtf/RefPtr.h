@@ -23,8 +23,8 @@
 #define WTF_RefPtr_h
 
 #include <algorithm>
-#include "AlwaysInline.h"
-#include "PassRefPtr.h"
+#include <wtf/AlwaysInline.h>
+#include <wtf/PassRefPtr.h>
 
 namespace WTF {
 

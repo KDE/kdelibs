@@ -22,8 +22,8 @@
 #ifndef WTF_HashSet_h
 #define WTF_HashSet_h
 
-#include "HashTable.h"
-#include <CommonIdentifiers.h>
+#include <wtf/HashTable.h>
+#include <kjs/CommonIdentifiers.h>
 
 namespace WTF {
 
