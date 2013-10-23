@@ -15,11 +15,6 @@ ecm_setup_version(5.0.0 VARIABLE_PREFIX KCONFIG
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KConfigConfigVersion.cmake")
 
 
-if(WIN32)
-    find_package(KDEWin REQUIRED)
-    include_directories(${KDEWIN_INCLUDES})
-endif()
-
 # Needed for the tests or examples to build correctly
 set(KConfig_KCFGC_EXECUTABLE kconfig_compiler)
 include(KConfigMacros.cmake)
