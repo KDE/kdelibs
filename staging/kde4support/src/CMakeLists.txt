@@ -494,4 +494,5 @@ install( FILES
 
 install( FILES
     kio/kscan.desktop
+    kio/kdatatool.desktop
     DESTINATION  ${SERVICETYPES_INSTALL_DIR} )

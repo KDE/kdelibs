@@ -130,7 +130,6 @@ install( FILES
  application.desktop
  kcmodule.desktop
  kcmoduleinit.desktop
- kdatatool.desktop
  kfileplugin.desktop
  kurifilterplugin.desktop
 DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
