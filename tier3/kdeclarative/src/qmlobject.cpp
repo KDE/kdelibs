@@ -18,7 +18,7 @@
  */
 
 #include "qmlobject.h"
-#include "qmlobject_p.h"
+#include "private/qmlobject_p.h"
 
 #include <QQmlComponent>
 #include <QQmlEngine>

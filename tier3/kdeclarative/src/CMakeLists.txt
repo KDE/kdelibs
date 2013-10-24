@@ -18,6 +18,7 @@ set(kdeclarative_SRCS
   private/rootcontext.cpp
   private/kiconprovider.cpp
   private/kioaccessmanagerfactory.cpp
+  private/qmlobject_p.h
 )
 
 add_library(KDeclarative ${kdeclarative_SRCS})
