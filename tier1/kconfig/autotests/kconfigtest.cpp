@@ -860,6 +860,9 @@ void KConfigTest::testEmptyGroup()
 
 void KConfigTest::testCascadingWithLocale()
 {
+    // This test relies on XDG_CONFIG_DIRS, which only has effect on Unix.
+    // Cascading (more than two levels) isn't available at all on Windows.
+#ifdef Q_OS_UNIX
     QTemporaryDir middleDir;
     QTemporaryDir globalDir;
     qputenv("XDG_CONFIG_DIRS", qPrintable(middleDir.path() + QString(":") + globalDir.path()));
@@ -901,6 +904,7 @@ void KConfigTest::testCascadingWithLocale()
     QCOMPARE(group.readEntry("FromLocal"), QString("vrai"));
     QCOMPARE(group.readEntry("Name"), QString("FR"));
     QCOMPARE(group.readEntry("Other"), QString("English Only")); // Global_FR is locally overriden
+#endif
 }
 
 void KConfigTest::testMerge()
