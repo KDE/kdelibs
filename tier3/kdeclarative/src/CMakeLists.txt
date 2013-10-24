@@ -32,7 +32,7 @@ target_link_libraries(KDeclarative
     Qt5::Quick  #QQuickImageProvider
     KF5::KConfigCore # KCoreConfigSkeleton, in ConfigPropertyMap
     KF5::KI18n       #i18n bindings
-    KF5::KIOWidgets     #KIO::NetAccess
+    KF5::KIOWidgets     #KIO::AccessManager
     KF5::KIconThemes #KIconProvider
     KF5::KCoreAddons #qscriptnonguibookkeeping.cpp
 )
