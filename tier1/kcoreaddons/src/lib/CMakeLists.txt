@@ -98,6 +98,8 @@ target_link_libraries(KCoreAddons
 )
 if(NOT WIN32)
     target_link_libraries(KCoreAddons LINK_PRIVATE pthread)
+else(NOT WIN32)
+    target_link_libraries(KCoreAddons LINK_PRIVATE netapi32)
 endif()
 
 if(IS_ABSOLUTE "${INCLUDE_INSTALL_DIR}")
