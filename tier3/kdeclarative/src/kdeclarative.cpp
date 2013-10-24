@@ -21,6 +21,7 @@
 #include "private/kdeclarative_p.h"
 #include "private/rootcontext_p.h"
 #include "private/kiconprovider_p.h"
+#include "private/kioaccessmanagerfactory_p.h"
 
 #include <QCoreApplication>
 #include <QDebug>
@@ -72,6 +73,13 @@ void KDeclarative::initialize()
 
 void KDeclarative::setupBindings()
 {
+    //get rid of stock network access manager factory
+    QQmlNetworkAccessManagerFactory *factory = d->declarativeEngine.data()->networkAccessManagerFactory();
+    d->declarativeEngine.data()->setNetworkAccessManagerFactory(0);
+    delete factory;
+    d->declarativeEngine.data()->setNetworkAccessManagerFactory(new KIOAccessManagerFactory());
+
+
     /*Create a context object for the root qml context.
       in this way we can register global functions, in this case the i18n() family*/
     RootContext *contextObj = new RootContext(d->declarativeEngine.data());
