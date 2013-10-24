@@ -26,7 +26,9 @@
 #include <qtemporarydir.h>
 #include <QtTest>
 #include <sys/stat.h>
-#include <unistd.h>
+#ifdef Q_OS_UNIX
+#include <unistd.h> // ::link()
+#endif
 
 // Debugging notes: to see which inotify signals are emitted, either set s_verboseDebug=true
 // at the top of kdirwatch.cpp, or use the command-line tool "inotifywait -m /path"
