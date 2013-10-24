@@ -13,5 +13,6 @@ endmacro()
 
 ki18n_unit_tests(
     klocalizedstringtest
+    ktranscripttest
 )
 
