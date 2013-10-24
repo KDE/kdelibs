@@ -157,8 +157,7 @@ void KCharsetsTest::testEncodingNames()
          || encodingName == QString::fromLatin1("jis7")
          || encodingName == QString::fromLatin1("winsami2")) {
             qWarning() << "Pending fix in Qt, for now" << encodingName << "is missing";
-            singleton->codecForName(encodingName, ok);
-            QVERIFY(!ok);
+	    qWarning() << "availability of " << encodingName << "depends on if Qt is built with icu support. So skip it";
             continue;
         }
 #endif
