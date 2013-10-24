@@ -30,7 +30,7 @@ set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KPlotting")
 configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/KPlottingConfig.cmake.in"
                               "${CMAKE_CURRENT_BINARY_DIR}/KPlottingConfig.cmake"
                               INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
-                              PATH_VARS  INCLUDE_INSTALL_DIR CMAKE_INSTALL_PREFIX )
+                              )
 
 install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/KPlottingConfig.cmake"
                "${CMAKE_CURRENT_BINARY_DIR}/KPlottingConfigVersion.cmake"

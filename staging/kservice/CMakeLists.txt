@@ -33,7 +33,6 @@ include(CMakePackageConfigHelpers)
 configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/KServiceConfig.cmake.in"
                               "${CMAKE_CURRENT_BINARY_DIR}/KServiceConfig.cmake"
                               INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
-                              PATH_VARS  INCLUDE_INSTALL_DIR CMAKE_INSTALL_PREFIX
                              )
 
 install(EXPORT KServiceTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KServiceTargets.cmake NAMESPACE KF5:: )

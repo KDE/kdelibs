@@ -31,7 +31,7 @@ set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KDBusAddons")
 configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/KDBusAddonsConfig.cmake.in"
                               "${CMAKE_CURRENT_BINARY_DIR}/KDBusAddonsConfig.cmake"
                               INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
-                              PATH_VARS  INCLUDE_INSTALL_DIR CMAKE_INSTALL_PREFIX )
+                              )
 
 install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/KDBusAddonsConfig.cmake"
                "${CMAKE_CURRENT_BINARY_DIR}/KDBusAddonsConfigVersion.cmake"

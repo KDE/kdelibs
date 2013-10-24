@@ -34,7 +34,7 @@ include(CMakePackageConfigHelpers)
 configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/ThreadWeaverConfig.cmake.in"
                               "${CMAKE_CURRENT_BINARY_DIR}/ThreadWeaverConfig.cmake"
                               INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
-                              PATH_VARS  INCLUDE_INSTALL_DIR CMAKE_INSTALL_PREFIX )
+                              )
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/threadweaver_version.h
         DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )

@@ -31,7 +31,6 @@ include(CMakePackageConfigHelpers)
 configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/KTextWidgetsConfig.cmake.in"
                               "${CMAKE_CURRENT_BINARY_DIR}/KTextWidgetsConfig.cmake"
                               INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
-                              PATH_VARS  INCLUDE_INSTALL_DIR CMAKE_INSTALL_PREFIX
                              )
 
 install(EXPORT KTextWidgetsTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KTextWidgetsTargets.cmake NAMESPACE KF5:: )

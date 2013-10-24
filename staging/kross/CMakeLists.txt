@@ -30,7 +30,6 @@ configure_package_config_file(
   "${CMAKE_CURRENT_SOURCE_DIR}/KrossConfig.cmake.in"
   "${CMAKE_CURRENT_BINARY_DIR}/KrossConfig.cmake"
   INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
-  PATH_VARS  INCLUDE_INSTALL_DIR CMAKE_INSTALL_PREFIX
 )
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/kross_version.h

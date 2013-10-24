@@ -24,7 +24,7 @@ set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KStyle")
 configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/KStyleConfig.cmake.in"
                               "${CMAKE_CURRENT_BINARY_DIR}/KStyleConfig.cmake"
                               INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
-                              PATH_VARS  INCLUDE_INSTALL_DIR CMAKE_INSTALL_PREFIX)
+                              )
 
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 remove_definitions(-DQT_NO_KEYWORDS)
