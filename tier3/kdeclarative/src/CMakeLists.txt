@@ -18,10 +18,6 @@ set(kdeclarative_SRCS
   private/rootcontext.cpp
   private/kiconprovider.cpp
   private/kioaccessmanagerfactory.cpp
-  bindings/i18n.cpp
-  bindings/icon.cpp
-  bindings/qscriptnonguibookkeeping.cpp
-  bindings/url.cpp
 )
 
 add_library(KDeclarative ${kdeclarative_SRCS})
@@ -33,10 +29,9 @@ target_link_libraries(KDeclarative
     Qt5::Qml
   LINK_PRIVATE
     Qt5::Quick  #QQuickImageProvider
-    Qt5::Script #QScriptValue, QScriptEngine (see bindings/*.cpp)
     KF5::KConfigCore # KCoreConfigSkeleton, in ConfigPropertyMap
     KF5::KI18n       #i18n bindings
-    KF5::KIOWidgets     #qscriptnonguibookkeeping.cpp, KIO::NetAccess
+    KF5::KIOWidgets     #KIO::NetAccess
     KF5::KIconThemes #KIconProvider
     KF5::KCoreAddons #qscriptnonguibookkeeping.cpp
 )
