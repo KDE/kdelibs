@@ -1,6 +1,6 @@
 @PACKAGE_INIT@
 
-find_dependency(KJS "${PACKAGE_VERSION}")
+find_dependency(KJS "@KF5_VERSION@")
 
 
 include("${CMAKE_CURRENT_LIST_DIR}/KI18nTargets.cmake")

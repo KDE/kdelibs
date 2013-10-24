@@ -2,9 +2,9 @@
 
 # Any changes in this ".cmake" file will be overwritten by CMake, the source is the ".cmake.in" file.
 
-find_dependency(KJobWidgets "${PACKAGE_VERSION}")
-find_dependency(KService "${PACKAGE_VERSION}")
-find_dependency(KCompletion "${PACKAGE_VERSION}")
+find_dependency(KJobWidgets "@KF5_VERSION@")
+find_dependency(KService "@KF5_VERSION@")
+find_dependency(KCompletion "@KF5_VERSION@")
 find_dependency(Qt5Network "@QT_REQUIRED_VERSION@")
 
 

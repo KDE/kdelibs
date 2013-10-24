@@ -1,9 +1,9 @@
 @PACKAGE_INIT@
 
-find_dependency(KCodecs "${PACKAGE_VERSION}")
-find_dependency(KWidgetsAddons "${PACKAGE_VERSION}")
-find_dependency(KConfig "${PACKAGE_VERSION}")
-find_dependency(KAuth "${PACKAGE_VERSION}")
+find_dependency(KCodecs "@KF5_VERSION@")
+find_dependency(KWidgetsAddons "@KF5_VERSION@")
+find_dependency(KConfig "@KF5_VERSION@")
+find_dependency(KAuth "@KF5_VERSION@")
 
 
 include("${CMAKE_CURRENT_LIST_DIR}/KConfigWidgetsTargets.cmake")

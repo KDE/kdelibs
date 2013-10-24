@@ -1,8 +1,8 @@
 @PACKAGE_INIT@
 
-find_dependency(KConfigWidgets "${PACKAGE_VERSION}")
-find_dependency(KI18n "${PACKAGE_VERSION}")
-find_dependency(KWidgetsAddons "${PACKAGE_VERSION}")
+find_dependency(KConfigWidgets "@KF5_VERSION@")
+find_dependency(KI18n "@KF5_VERSION@")
+find_dependency(KWidgetsAddons "@KF5_VERSION@")
 
 include("${CMAKE_CURRENT_LIST_DIR}/KCompletionTargets.cmake")
 
