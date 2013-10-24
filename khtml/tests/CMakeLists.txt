@@ -33,10 +33,7 @@ include_directories(
   ${KHTML_BINARY_DIR}/css
 )
 
-# add_subdirectory(java)
-
-kde4_add_unit_test( khtmlparttest khtmlparttest.cpp )
-target_link_libraries( khtmlparttest Qt5::Test KHtml Qt5::Widgets XmlGui KTextWidgets KParts)
+add_subdirectory(java)
 
 # msvc linker doesn't like "#define protected public"
 if(NOT MSVC)
@@ -55,14 +52,6 @@ if(NOT MSVC)
     ########### next target ###############
 endif(NOT MSVC)
 
-set(kencodingdetector_SRCS
-    ${KHTML_SOURCE_DIR}/misc/kencodingdetector.cpp
-    ${KHTML_SOURCE_DIR}/misc/guess_ja.cpp
-)
-kde4_add_unit_test(kencodingdetectortest kencodingdetectortest.cpp ${kencodingdetector_SRCS})
-target_link_libraries(kencodingdetectortest KCodecs KF5::KI18n KHtml Qt5::Test)
-
-
 #######################################
 
 # msvc linker doesn't like "#define protected public"
@@ -76,7 +65,7 @@ if(NOT MSVC)
 
 
     add_executable(testkhtml ${testkhtml_SRCS})
-
+    ecm_mark_as_test(testkhtml)
     target_link_libraries(testkhtml KHtml XmlGui KTextWidgets KParts)
 
     ########### next target ###############
@@ -87,7 +76,7 @@ if(NOT MSVC)
 
 
     add_executable(testkhtml_static ${testkhtml_static_SRCS} )
-
+    ecm_mark_as_test(testkhtml_static)
     target_link_libraries(testkhtml_static KHtml XmlGui KTextWidgets KParts)
 
     ########### next target ###############
@@ -105,7 +94,7 @@ if (KHTML_BUILD_TESTREGRESSION)
     include_directories( ${QT_INCLUDE_DIR}/../src/3rdparty/harfbuzz/src )
 
     add_executable(testregression ${testregression_SRCS})
-
+    ecm_mark_as_test(testregression)
     target_link_libraries(testregression  ${X11_X11_LIB} KHtml)
 
     ########### next target ###############
@@ -121,7 +110,7 @@ if (KHTML_BUILD_TESTREGRESSION)
 
 
     add_executable(testregressiongui ${testregressiongui_SRCS})
-
+    ecm_mark_as_test(testregressiongui)
     target_link_libraries(testregressiongui KHtml)
 endif (KHTML_BUILD_TESTREGRESSION)
 

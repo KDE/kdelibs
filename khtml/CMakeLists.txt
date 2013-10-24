@@ -70,6 +70,7 @@ set(KHTML_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/src)
 
 add_subdirectory(src)
 add_subdirectory(tests)
+add_subdirectory(autotests)
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
 set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KHtml")
