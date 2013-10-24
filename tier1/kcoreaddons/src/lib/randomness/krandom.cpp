@@ -22,10 +22,16 @@
 #include "krandom.h"
 
 #include <stdlib.h>
+#ifdef Q_OS_WIN
+#include <process.h>
+#else // Q_OS_WIN
 #include <unistd.h>
+#endif // Q_OS_WIN
 #include <stdio.h>
 #include <time.h>
+#ifndef Q_OS_WIN
 #include <sys/time.h>
+#endif //  Q_OS_WIN
 #include <fcntl.h>
 
 #include <QtCore/QFile>
