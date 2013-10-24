@@ -7,4 +7,3 @@ find_dependency(Qt5Gui @REQUIRED_QT_VERSION@)
 
 include("${CMAKE_CURRENT_LIST_DIR}/KCrashTargets.cmake")
 
-set(KCrash_LIBRARIES KF5::KCrash)

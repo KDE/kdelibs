@@ -8,4 +8,3 @@ find_dependency(KService "${PACKAGE_VERSION}")
 # un-comment this once the dependencies have been cleaned:
 include("${CMAKE_CURRENT_LIST_DIR}/KEmoticonsTargets.cmake")
 
-set(KEmoticons_LIBRARIES KF5::KEmoticons)

@@ -6,7 +6,6 @@
 #   Solid_VERSION_MINOR - the minor version number of Solid
 #   Solid_VERSION_PATCH - the patch version number of Solid
 #   Solid_INCLUDE_DIRS  - the include directories to use
-#   Solid_LIBRARIES     - the libraries to link against
 #   Solid_HAVE_WINDOWS_WBEM - TRUE if WBEM is supported as backend under Windows
 #   Solid_HAVE_HerqqUPnP    - TRUE if UPnP via Herqq (http://www.herqq.org) is supported
 #   Solid_HAVE_UDev         - TRUE if device discovery via udev is supported
@@ -25,7 +24,6 @@ include("${CMAKE_CURRENT_LIST_DIR}/SolidTargets.cmake")
 
 # "public" variables:
 
-set(Solid_LIBRARIES KF5::Solid )
 
 set(Solid_HAVE_WINDOWS_WBEM @WBEM_FOUND@ )
 

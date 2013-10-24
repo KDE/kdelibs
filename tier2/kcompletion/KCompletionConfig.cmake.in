@@ -6,4 +6,3 @@ find_dependency(KWidgetAddons "${PACKAGE_VERSION}")
 
 include("${CMAKE_CURRENT_LIST_DIR}/KCompletionTargets.cmake")
 
-set(KCompletion_LIBRARIES KF5::KCompletion)

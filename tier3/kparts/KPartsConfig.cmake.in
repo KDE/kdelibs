@@ -7,4 +7,3 @@ find_dependency(KTextWidgets "${PACKAGE_VERSION}")
 
 include("${CMAKE_CURRENT_LIST_DIR}/KPartsTargets.cmake")
 
-set(KParts_LIBRARIES KF5::KParts)

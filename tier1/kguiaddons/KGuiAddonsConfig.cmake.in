@@ -7,4 +7,3 @@ find_dependency(Qt5Gui @REQUIRED_QT_VERSION@)
 
 include("${CMAKE_CURRENT_LIST_DIR}/KGuiAddonsTargets.cmake")
 
-set(KGuiAddons_LIBRARIES KF5::KGuiAddons)

@@ -7,4 +7,3 @@
 
 include("${CMAKE_CURRENT_LIST_DIR}/FooBarTargets.cmake")
 
-set(FooBar_LIBRARIES KF5::FooBar)

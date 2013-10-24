@@ -7,4 +7,3 @@ set(KJS_HAVE_PCRE_REGEX "@PCRE_FOUND@")
 
 include("${CMAKE_CURRENT_LIST_DIR}/KJSTargets.cmake")
 
-set(KJS_LIBRARIES KF5::KJS KF5::KJSApi)

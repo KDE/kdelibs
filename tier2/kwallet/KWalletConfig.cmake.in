@@ -6,4 +6,3 @@ find_dependency(Qt5Core @REQUIRED_QT_VERSION@)
 
 include("${CMAKE_CURRENT_LIST_DIR}/KWalletTargets.cmake")
 
-set(KWallet_LIBRARIES KF5::KWallet)

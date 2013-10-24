@@ -7,4 +7,3 @@ find_dependency(KCoreAddons "${PACKAGE_VERSION}")
 
 include("${CMAKE_CURRENT_LIST_DIR}/KJobWidgetsTargets.cmake")
 
-set(KJobWidgets_LIBRARIES KF5::KJobWidgets)
