@@ -1286,7 +1286,7 @@ int KDirWatchPrivate::scanEntry(Entry *e)
     if (s_verboseDebug) {
       struct tm *tmp = localtime(&e->m_ctime);
       char outstr[200];
-      strftime(outstr, sizeof(outstr), "%T", tmp);
+      strftime(outstr, sizeof(outstr), "%H:%M:%S", tmp);
       qDebug() << "e->m_ctime=" << e->m_ctime << outstr
                    << "stat_buf.st_ctime=" << stat_buf.st_ctime
                    << "e->m_nlink=" << e->m_nlink
