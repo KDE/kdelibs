@@ -714,67 +714,6 @@ target_link_libraries(khtmladaptorpart KParts KF5::KJS KF5::KI18n XmlGui)
 
 install(TARGETS khtmladaptorpart DESTINATION ${PLUGIN_INSTALL_DIR} )
 
-#######################################
-
-# msvc linker doesn't like "#define protected public"
-if(NOT MSVC)
-
-    ########### next target ###############
-
-    set(testkhtml_SRCS
-        testkhtml.cpp
-    )
-
-
-    add_executable(testkhtml ${testkhtml_SRCS})
-
-    target_link_libraries(testkhtml KHtml XmlGui KTextWidgets KParts)
-
-    ########### next target ###############
-
-    set(testkhtml_static_SRCS
-        testkhtml.cpp
-    )
-
-
-    add_executable(testkhtml_static ${testkhtml_static_SRCS} )
-
-    target_link_libraries(testkhtml_static KHtml XmlGui KTextWidgets KParts)
-
-    ########### next target ###############
-endif(NOT MSVC)
-
-# Note that testregression can't be compiled by default, it needs private Qt headers.
-# See also BUILDING-TESTREGRESSION
-if (KHTML_BUILD_TESTREGRESSION)
-
-    set(testregression_SRCS
-        test_regression.cpp
-        test_regression_fontoverload.cpp
-    )
-
-    include_directories( ${QT_INCLUDE_DIR}/../src/3rdparty/harfbuzz/src )
-
-    add_executable(testregression ${testregression_SRCS})
-
-    target_link_libraries(testregression  ${X11_X11_LIB} khtml)
-
-    ########### next target ###############
-
-    set(testregressiongui_SRCS
-        test_regression_gui_window.cpp
-        test_regression_gui_main.cpp
-    )
-
-    qt5_add_resources(testregressiongui_SRCS test_regression_gui.qrc)
-
-    kde4_add_ui_files(testregressiongui_SRCS test_regression_gui.ui)
-
-
-    add_executable(testregressiongui ${testregressiongui_SRCS})
-
-    target_link_libraries(testregressiongui khtml)
-endif (KHTML_BUILD_TESTREGRESSION)
 
 ########### install files ###############
 
