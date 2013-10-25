@@ -110,7 +110,8 @@ static QString htmlEscape(const QString &plain)
 
 static bool supportedProxyScheme(const QString& scheme)
 {
-    return (scheme.startsWith(QLatin1String("http"), Qt::CaseInsensitive)
+    // scheme is supposed to be lowercase
+    return (scheme.startsWith(QLatin1String("http"))
             || scheme == QLatin1String("socks"));
 }
 
@@ -2207,56 +2208,58 @@ bool HTTPProtocol::httpOpenConnection()
     } else {
         KUrl::List badProxyUrls;
         Q_FOREACH(const QString& proxyUrl, m_request.proxyUrls) {
-            const KUrl url (proxyUrl);
-            const QString scheme (url.protocol());
+            if (proxyUrl == QLatin1String("DIRECT")) {
+                connectError = connectToHost(m_request.url.host(), m_request.url.port(defaultPort()), &errorString);
+                if (connectError == 0) {
+                    kDebug(7113) << "Connected DIRECT: host=" << m_request.url.host() << "port=" << m_request.url.port(defaultPort());
+                    break;
+                } else {
+                    continue;
+                }
+            }
 
-            if (!supportedProxyScheme(scheme)) {
+            const KUrl url(proxyUrl);
+            const QString proxyScheme(url.protocol());
+            if (!supportedProxyScheme(proxyScheme)) {
                 connectError = ERR_COULD_NOT_CONNECT;
                 errorString = url.url();
+                badProxyUrls << url;
                 continue;
             }
 
-            const bool isDirectConnect = (proxyUrl == QLatin1String("DIRECT"));
             QNetworkProxy::ProxyType proxyType = QNetworkProxy::NoProxy;
-            if (url.protocol() == QLatin1String("socks")) {
+            if (proxyScheme == QLatin1String("socks")) {
                 proxyType = QNetworkProxy::Socks5Proxy;
-            } else if (!isDirectConnect && isAutoSsl()) {
+            } else if (isAutoSsl()) {
                 proxyType = QNetworkProxy::HttpProxy;
             }
 
             kDebug(7113) << "Connecting to proxy: address=" << proxyUrl << "type=" << proxyType;
 
             if (proxyType == QNetworkProxy::NoProxy) {
-                // Only way proxy url and request url are the same is when the
-                // proxy URL list contains a "DIRECT" entry. See resetSessionSettings().
-                if (isDirectConnect) {
-                    connectError = connectToHost(m_request.url.host(), m_request.url.port(defaultPort()), &errorString);
-                    kDebug(7113) << "Connected DIRECT: host=" << m_request.url.host() << "post=" << m_request.url.port(defaultPort());
-                } else {
-                    connectError = connectToHost(url.host(), url.port(), &errorString);
-                    if (connectError == 0) {
-                        m_request.proxyUrl = url;
-                        kDebug(7113) << "Connected to proxy: host=" << url.host() << "port=" << url.port();
-                    } else {
-                        if (connectError == ERR_UNKNOWN_HOST)
-                            connectError = ERR_UNKNOWN_PROXY_HOST;
-                        kDebug(7113) << "Failed to connect to proxy:" << proxyUrl;
-                        badProxyUrls << url;
-                    }
-                }
+                connectError = connectToHost(url.host(), url.port(), &errorString);
                 if (connectError == 0) {
+                    m_request.proxyUrl = url;
+                    kDebug(7113) << "Connected to proxy: host=" << url.host() << "port=" << url.port();
                     break;
+                } else {
+                    if (connectError == ERR_UNKNOWN_HOST) {
+                        connectError = ERR_UNKNOWN_PROXY_HOST;
+                    }
+                    kDebug(7113) << "Failed to connect to proxy:" << proxyUrl;
+                    badProxyUrls << url;
                 }
             } else {
-                QNetworkProxy proxy (proxyType, url.host(), url.port(), url.user(), url.pass());
+                QNetworkProxy proxy(proxyType, url.host(), url.port(), url.user(), url.pass());
                 QNetworkProxy::setApplicationProxy(proxy);
                 connectError = connectToHost(m_request.url.host(), m_request.url.port(defaultPort()), &errorString);
                 if (connectError == 0) {
                     kDebug(7113) << "Tunneling thru proxy: host=" << url.host() << "port=" << url.port();
                     break;
                 } else {
-                    if (connectError == ERR_UNKNOWN_HOST)
+                    if (connectError == ERR_UNKNOWN_HOST) {
                         connectError = ERR_UNKNOWN_PROXY_HOST;
+                    }
                     kDebug(7113) << "Failed to connect to proxy:" << proxyUrl;
                     badProxyUrls << url;
                     QNetworkProxy::setApplicationProxy(QNetworkProxy::NoProxy);
@@ -2270,7 +2273,7 @@ bool HTTPProtocol::httpOpenConnection()
     }
 
     if (connectError != 0) {
-        error (connectError, errorString);
+        error(connectError, errorString);
         return false;
     }
 
