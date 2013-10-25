@@ -71,7 +71,7 @@ void RenderCanvasImage::paint(PaintInfo& i, int _tx, int _ty)
     if (i.phase != PaintActionForeground && i.phase != PaintActionSelection)
         return;
 
-    bool isPrinting = (i.p->device()->devType() == QInternal::Printer);
+    //bool isPrinting = (i.p->device()->devType() == QInternal::Printer);
     //bool drawSelectionTint = (selectionState() != SelectionNone) && !isPrinting;
     if (i.phase == PaintActionSelection) {
         if (selectionState() == SelectionNone) {

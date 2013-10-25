@@ -1274,7 +1274,6 @@ static bool indexIsValid(bool startWithChildTrees, int row, const QList<QPersist
 #ifndef QT_NO_DEBUG
     if (!startWithChildTrees) {
         Q_ASSERT(rootIndexList.size() > row);
-        Q_UNUSED(rootIndexList);
     } else {
 
         Q_ASSERT(!mappedFirstChildren.isEmpty());
@@ -1289,6 +1288,11 @@ static bool indexIsValid(bool startWithChildTrees, int row, const QList<QPersist
         Q_ASSERT(sourceFirstChild.parent().isValid());
         Q_ASSERT(row <= proxyFirstRow + sourceFirstChild.model()->rowCount(sourceFirstChild.parent()));
     }
+#else
+    Q_UNUSED(startWithChildTrees)
+    Q_UNUSED(row)
+    Q_UNUSED(rootIndexList)
+    Q_UNUSED(mappedFirstChildren)
 #endif
     return true;
 }
