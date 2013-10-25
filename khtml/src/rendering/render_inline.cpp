@@ -307,20 +307,20 @@ inline static bool reduceSpike(QVector<QPoint> &pointArray)
 
     bool elide = false;
 
-    if (p0.x() == p1.x() && p1.x() == p2.x()
-        && (p1.y() < p0.y() && p0.y() < p2.y()
-            || p2.y() < p0.y() && p0.y() < p1.y()
-            || p1.y() < p2.y() && p2.y() < p0.y()
-            || p0.y() < p2.y() && p2.y() < p1.y()
-            || (elide = p2.y() == p0.y() && p0.y() < p1.y())
-            || (elide = p1.y() < p0.y() && p0.y() == p2.y()))
-        || p0.y() == p1.y() && p1.y() == p2.y()
-        && (p1.x() < p0.x() && p0.x() < p2.x()
-            || p2.x() < p0.x() && p0.x() < p1.x()
-            || p1.x() < p2.x() && p2.x() < p0.x()
-            || p0.x() < p2.x() && p2.x() < p1.x()
-            || (elide = p2.x() == p0.x() && p0.x() < p1.x())
-            || (elide = p1.x() < p0.x() && p0.x() == p2.x())))
+    if ((p0.x() == p1.x() && p1.x() == p2.x()
+         && ((p1.y() < p0.y() && p0.y() < p2.y())
+             || (p2.y() < p0.y() && p0.y() < p1.y())
+             || (p1.y() < p2.y() && p2.y() < p0.y())
+             || (p0.y() < p2.y() && p2.y() < p1.y())
+             || (elide = p2.y() == p0.y() && p0.y() < p1.y())
+             || (elide = p1.y() < p0.y() && p0.y() == p2.y())))
+        || (p0.y() == p1.y() && p1.y() == p2.y()
+            && ((p1.x() < p0.x() && p0.x() < p2.x())
+                || (p2.x() < p0.x() && p0.x() < p1.x())
+                || (p1.x() < p2.x() && p2.x() < p0.x())
+                || (p0.x() < p2.x() && p2.x() < p1.x())
+                || (elide = p2.x() == p0.x() && p0.x() < p1.x())
+                || (elide = p1.x() < p0.x() && p0.x() == p2.x()))))
     {
 //     qDebug() << "spikered p2" << (elide ? " (elide)" : "") << ": " << p2 << " p1: " << p1 << " p0: " << p0;
         pointArray.pop_back(); pointArray.pop_back();
@@ -372,12 +372,12 @@ inline static bool reduceSegmentSeparator(QVector<QPoint> &pointArray)
     QPoint p2 = *--it;
 //     qDebug() << "checking p2: " << p2 << " p1: " << p1 << " p0: " << p0;
 
-    if (p0.x() == p1.x() && p1.x() == p2.x()
-        && (p2.y() < p1.y() && p1.y() < p0.y()
-            || p0.y() < p1.y() && p1.y() < p2.y())
-        || p0.y() == p1.y() && p1.y() == p2.y()
-        && (p2.x() < p1.x() && p1.x() < p0.x()
-            || p0.x() < p1.x() && p1.x() < p2.x()))
+    if ((p0.x() == p1.x() && p1.x() == p2.x()
+         && ((p2.y() < p1.y() && p1.y() < p0.y())
+             || (p0.y() < p1.y() && p1.y() < p2.y())))
+        || (p0.y() == p1.y() && p1.y() == p2.y()
+            && ((p2.x() < p1.x() && p1.x() < p0.x())
+                || (p0.x() < p1.x() && p1.x() < p2.x()))))
     {
 //     qDebug() << "segred p2: " << p2 << " p1: " << p1 << " p0: " << p0;
         pointArray.pop_back(); pointArray.pop_back();
@@ -569,8 +569,8 @@ static QPoint *linkEndToBegin(QVector<QPoint> &pointArray)
     QPoint plast = pointArray.back();
 //     qDebug() << "linkcheck plast: " << plast << " pfirst: " << pfirst << " pnext: " << pnext;
 
-    if (plast.x() == pfirst.x() && pfirst.x() == pnext.x()
-        || plast.y() == pfirst.y() && pfirst.y() == pnext.y()) {
+    if ((plast.x() == pfirst.x() && pfirst.x() == pnext.x())
+        || (plast.y() == pfirst.y() && pfirst.y() == pnext.y())) {
 
         ++index;
         appendPoint(pointArray, pfirst); // ### do we really need this point?
@@ -677,13 +677,13 @@ inline RenderObject::BorderSide newBorderSide(RenderObject::BorderSide oldBS, in
         bool t = oldBS == RenderObject::BSTop;
         bool b = oldBS == RenderObject::BSBottom;
         if ((t || b) && last.y() != cur.y())
-            return (cur.y() < last.y()) ^ (t && below || b && !below)
+            return (cur.y() < last.y()) ^ ((t && below) || (b && !below))
                     ? RenderObject::BSLeft : RenderObject::BSRight;
     } else /*if (last.y() == cur.y())*/ {	// new segment is horizontal
         bool l = oldBS == RenderObject::BSLeft;
         bool r = oldBS == RenderObject::BSRight;
         if ((l || r) && last.x() != cur.x())
-            return (cur.x() < last.x()) ^ (l && below || r && !below)
+            return (cur.x() < last.x()) ^ ((l && below) || (r && !below))
                     ? RenderObject::BSTop : RenderObject::BSBottom;
     }
     return oldBS;			// same direction
