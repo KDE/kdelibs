@@ -38,7 +38,7 @@ enum tagStatus { OPTIONAL, REQUIRED, FORBIDDEN };
 bool checkIsScopeBoundary(ushort tagID);
 bool checkChild(ushort tagID, ushort childID, bool strict = false);
 
-extern const unsigned short tagPriorityArray[];
+extern const unsigned short KHTML_NO_EXPORT tagPriorityArray[];
 extern const tagStatus endTagArray[];
 
 inline unsigned short tagPriority(quint32 tagId)

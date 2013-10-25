@@ -43,7 +43,7 @@ using namespace DOM;
 // 10 body frameset head noembed noframes
 // 11 html
 
-const unsigned short KHTML_NO_EXPORT DOM::tagPriorityArray[] = {
+const unsigned short DOM::tagPriorityArray[] = {
     0, // 0
     1, // ID_A == 1
     1, // ID_ABBR
