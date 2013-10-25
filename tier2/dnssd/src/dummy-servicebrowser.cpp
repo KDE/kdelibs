@@ -58,6 +58,7 @@ void ServiceBrowser::virtual_hook(int, void*)
 
 QHostAddress ServiceBrowser::resolveHostName(const QString &hostname)
 {
+	Q_UNUSED(hostname);
 	return QHostAddress();
 }
 
