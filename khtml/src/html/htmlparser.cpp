@@ -62,11 +62,10 @@
 #include <QDebug>
 #include <klocalizedstring.h>
 
-// Turn off inlining to avoid warning with newer gcc.
-#undef __inline
-#define __inline
+// Turn off gnu90 inlining to avoid linker errors
+#undef __GNUC_STDC_INLINE__
+#undef __GNUC_GNU_INLINE__
 #include "doctypes.cpp"
-#undef __inline
 
 using namespace DOM;
 using namespace khtml;

@@ -51,14 +51,11 @@ using namespace DOM;
 // with 'props->id' a CSS property in the range from CSS_PROP_MIN to
 // (and including) CSS_PROP_TOTAL-1
 
-// turn off inlining to void warning with newer gcc
-#undef __inline
-#define __inline
-
+// Turn off gnu90 inlining to avoid linker errors
+#undef __GNUC_STDC_INLINE__
+#undef __GNUC_GNU_INLINE__
 #include "cssproperties.c"
 #include "cssvalues.c"
-
-#undef __inline
 
 static QHash<QString,int>* sCompatibleProperties = 0;
 
