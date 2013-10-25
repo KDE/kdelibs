@@ -26,6 +26,7 @@
 #include <QtCore/QMap>
 #include <QtCore/QList>
 #include <QtCore/QVariant>
+#include <QFile>  // for QFile::Permissions
 
 #include <kiconloader.h>
 #include <QtGui/QPixmap> // for pixmapForUrl
@@ -376,6 +377,18 @@ namespace KIO
 
   KIO_EXPORT KJobTrackerInterface *getJobTracker();
 
+  /**
+   * Converts KIO file permissions from mode_t to QFile::Permissions format.
+   *
+   * This is a convenience function for converting KIO permissions parameter from
+   * mode_t to QFile::Permissions.
+   *
+   * @param permissions KIO file permissions.
+   *
+   * @return -1 if @p permissions is -1, otherwise its OR'ed QFile::Permission equivalent.
+   * @since 4.12
+   */
+  KIO_EXPORT QFile::Permissions convertPermissions(int permissions);
 
 /**
  * MetaData is a simple map of key/value strings.

@@ -33,6 +33,7 @@ KIO_UNIT_TESTS(
   kfilemetainfotest
   dataprotocoltest
   clipboardupdatertest
+  globaltest
 )
 
 KIO_EXECUTABLE_TESTS(

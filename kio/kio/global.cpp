@@ -1248,6 +1248,46 @@ KJobTrackerInterface *KIO::getJobTracker()
     return globalJobTracker;
 }
 
+QFile::Permissions KIO::convertPermissions(int permissions)
+{
+  QFile::Permissions qPermissions(0);
+
+  if (permissions > 0) {
+    if (permissions & S_IRUSR) {
+      qPermissions |= QFile::ReadOwner;
+    }
+    if (permissions & S_IWUSR) {
+      qPermissions |= QFile::WriteOwner;
+    }
+    if (permissions & S_IXUSR) {
+      qPermissions |= QFile::ExeOwner;
+    }
+
+    if (permissions & S_IRGRP) {
+      qPermissions |= QFile::ReadGroup;
+    }
+    if (permissions & S_IWGRP) {
+      qPermissions |= QFile::WriteGroup;
+    }
+    if (permissions & S_IXGRP) {
+      qPermissions |= QFile::ExeGroup;
+    }
+
+    if (permissions & S_IROTH) {
+      qPermissions |= QFile::ReadOther;
+    }
+    if (permissions & S_IWOTH) {
+      qPermissions |= QFile::WriteOther;
+    }
+    if (permissions & S_IXOTH) {
+      qPermissions |= QFile::ExeOther;
+    }
+  }
+
+  return qPermissions;
+}
+
+
 
 /***************************************************************
  *
