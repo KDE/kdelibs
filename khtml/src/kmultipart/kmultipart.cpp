@@ -20,7 +20,6 @@
 #include "kmultipart.h"
 
 
-#include <kcomponentdata.h>
 #include <klocalizedstring.h>
 #include <kjobuidelegate.h>
 #include <kio/job.h>
