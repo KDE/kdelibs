@@ -106,7 +106,7 @@ if (KHTML_BUILD_TESTREGRESSION)
 
     qt5_add_resources(testregressiongui_SRCS test_regression_gui.qrc)
 
-    kde4_add_ui_files(testregressiongui_SRCS test_regression_gui.ui)
+    qt5_wrap_ui(testregressiongui_SRCS test_regression_gui.ui)
 
 
     add_executable(testregressiongui ${testregressiongui_SRCS})
