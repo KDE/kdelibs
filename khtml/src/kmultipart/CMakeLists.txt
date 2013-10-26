@@ -16,7 +16,6 @@ target_link_libraries(kmultipart
                         ${ZLIB_LIBRARY}
                         KF5::KParts
                         KF5::KArchive
-                        KF5::KDE4Support
                         KF5::KWidgetsAddons
                         KF5::XmlGui
                         KF5::KI18n
