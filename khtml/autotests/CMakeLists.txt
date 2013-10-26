@@ -2,12 +2,7 @@ set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 
 include(ECMMarkAsTest)
 
-include_directories(${KDE4_KPARTS_INCLUDES}
-  ${KHTML_SOURCE_DIR}
-  ${KHTML_BINARY_DIR}/..
-)
 include_directories(
-  ${KAuth_INCLUDE_DIRS}
   ${KHTML_SOURCE_DIR}/
   ${KHTML_SOURCE_DIR}/misc
   ${KHTML_SOURCE_DIR}/dom
