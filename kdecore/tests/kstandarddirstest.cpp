@@ -237,13 +237,6 @@ void KStandarddirsTest::testFindExe()
 #endif
 
 
-#ifdef Q_OS_UNIX
-    // findExe with a result in libexec
-    const QString lnusertemp = KGlobal::dirs()->findExe( "lnusertemp" );
-    QVERIFY( !lnusertemp.isEmpty() );
-    QVERIFY( lnusertemp.endsWith( "lib" KDELIBSUFF "/kde4/libexec/lnusertemp" EXT, PATH_SENSITIVITY ) );
-#endif
-
 #ifndef Q_OS_MAC // kdeinit4 is a bundle on Mac, so the below doesn't work
     // Check the "exe" resource too
     QString kdeinitPath1 = KGlobal::dirs()->realFilePath(kdeinit);
@@ -252,8 +245,14 @@ void KStandarddirsTest::testFindExe()
 #endif
 
 #ifdef Q_OS_UNIX
-    QCOMPARE_PATHS( KGlobal::dirs()->realFilePath(lnusertemp),
-              KGlobal::dirs()->locate( "exe", "lnusertemp" ) );
+    // findExe with a result in libexec
+    const QString lnusertemp = KGlobal::dirs()->findExe( "lnusertemp" );
+    QVERIFY( !lnusertemp.isEmpty() );
+    QVERIFY( lnusertemp.endsWith( "lib" KDELIBSUFF "/kde4/libexec/lnusertemp" EXT, PATH_SENSITIVITY ) );
+
+    // locate("exe") with a result in libexec
+    const QString locateExeResult = KGlobal::dirs()->locate("exe", "lnusertemp");
+    QVERIFY(locateExeResult.endsWith("lib" KDELIBSUFF "/kde4/libexec/lnusertemp" EXT, PATH_SENSITIVITY));
 
     // findExe with relative path
     const QString pwd = QDir::currentPath();
