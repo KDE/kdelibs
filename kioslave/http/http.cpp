@@ -98,7 +98,8 @@ static QString htmlEscape(const QString &plain)
 
 static bool supportedProxyScheme(const QString& scheme)
 {
-    return (scheme.startsWith(QLatin1String("http"), Qt::CaseInsensitive)
+    // scheme is supposed to be lowercase
+    return (scheme.startsWith(QLatin1String("http"))
             || scheme == QLatin1String("socks"));
 }
 
@@ -2181,56 +2182,58 @@ bool HTTPProtocol::httpOpenConnection()
     } else {
         QList<QUrl> badProxyUrls;
         Q_FOREACH(const QString& proxyUrl, m_request.proxyUrls) {
-            const QUrl url (proxyUrl);
-            const QString scheme (url.scheme());
+            if (proxyUrl == QLatin1String("DIRECT")) {
+                connectError = connectToHost(m_request.url.host(), m_request.url.port(defaultPort()), &errorString);
+                if (connectError == 0) {
+                    //qDebug() << "Connected DIRECT: host=" << m_request.url.host() << "port=" << m_request.url.port(defaultPort());
+                    break;
+                } else {
+                    continue;
+                }
+            }
 
-            if (!supportedProxyScheme(scheme)) {
+            const QUrl url(proxyUrl);
+            const QString proxyScheme(url.scheme());
+            if (!supportedProxyScheme(proxyScheme)) {
                 connectError = ERR_COULD_NOT_CONNECT;
                 errorString = url.toDisplayString();
+                badProxyUrls << url;
                 continue;
             }
 
-            const bool isDirectConnect = (proxyUrl == QLatin1String("DIRECT"));
             QNetworkProxy::ProxyType proxyType = QNetworkProxy::NoProxy;
-            if (url.scheme() == QLatin1String("socks")) {
+            if (proxyScheme == QLatin1String("socks")) {
                 proxyType = QNetworkProxy::Socks5Proxy;
-            } else if (!isDirectConnect && isAutoSsl()) {
+            } else if (isAutoSsl()) {
                 proxyType = QNetworkProxy::HttpProxy;
             }
 
             // qDebug() << "Connecting to proxy: address=" << proxyUrl << "type=" << proxyType;
 
             if (proxyType == QNetworkProxy::NoProxy) {
-                // Only way proxy url and request url are the same is when the
-                // proxy URL list contains a "DIRECT" entry. See resetSessionSettings().
-                if (isDirectConnect) {
-                    connectError = connectToHost(m_request.url.host(), m_request.url.port(defaultPort()), &errorString);
-                    // qDebug() << "Connected DIRECT: host=" << m_request.url.host() << "post=" << m_request.url.port(defaultPort());
-                } else {
-                    connectError = connectToHost(url.host(), url.port(), &errorString);
-                    if (connectError == 0) {
-                        m_request.proxyUrl = url;
-                        // qDebug() << "Connected to proxy: host=" << url.host() << "port=" << url.port();
-                    } else {
-                        if (connectError == ERR_UNKNOWN_HOST)
-                            connectError = ERR_UNKNOWN_PROXY_HOST;
-                        // qDebug() << "Failed to connect to proxy:" << proxyUrl;
-                        badProxyUrls << url;
-                    }
-                }
+                connectError = connectToHost(url.host(), url.port(), &errorString);
                 if (connectError == 0) {
+                    m_request.proxyUrl = url;
+                    //qDebug() << "Connected to proxy: host=" << url.host() << "port=" << url.port();
                     break;
+                } else {
+                    if (connectError == ERR_UNKNOWN_HOST) {
+                        connectError = ERR_UNKNOWN_PROXY_HOST;
+                    }
+                    //qDebug() << "Failed to connect to proxy:" << proxyUrl;
+                    badProxyUrls << url;
                 }
             } else {
-                QNetworkProxy proxy (proxyType, url.host(), url.port(), url.userName(), url.password());
+                QNetworkProxy proxy(proxyType, url.host(), url.port(), url.userName(), url.password());
                 QNetworkProxy::setApplicationProxy(proxy);
                 connectError = connectToHost(m_request.url.host(), m_request.url.port(defaultPort()), &errorString);
                 if (connectError == 0) {
                     // qDebug() << "Tunneling thru proxy: host=" << url.host() << "port=" << url.port();
                     break;
                 } else {
-                    if (connectError == ERR_UNKNOWN_HOST)
+                    if (connectError == ERR_UNKNOWN_HOST) {
                         connectError = ERR_UNKNOWN_PROXY_HOST;
+                    }
                     // qDebug() << "Failed to connect to proxy:" << proxyUrl;
                     badProxyUrls << url;
                     QNetworkProxy::setApplicationProxy(QNetworkProxy::NoProxy);
@@ -2244,7 +2247,7 @@ bool HTTPProtocol::httpOpenConnection()
     }
 
     if (connectError != 0) {
-        error (connectError, errorString);
+        error(connectError, errorString);
         return false;
     }
 
@@ -3024,79 +3027,78 @@ try_again:
 
     if (m_request.responseCode != 200 && m_request.responseCode != 304) {
         m_request.cacheTag.ioMode = NoCache;
-    }
 
-    if (m_request.responseCode >= 500 && m_request.responseCode <= 599) {
-        // Server side errors
-
-        if (m_request.method == HTTP_HEAD) {
-            ; // Ignore error
-        } else {
+        if (m_request.responseCode >= 500 && m_request.responseCode <= 599) {
+            // Server side errors
+            if (m_request.method == HTTP_HEAD) {
+                ; // Ignore error
+            } else {
+                if (!sendErrorPageNotification()) {
+                    error(ERR_INTERNAL_SERVER, m_request.url.toDisplayString());
+                    return false;
+                }
+            }
+        } else if (m_request.responseCode == 416) {
+            // Range not supported
+            m_request.offset = 0;
+            return false; // Try again.
+        } else if (m_request.responseCode == 426) {
+            // Upgrade Required
+            upgradeRequired = true;
+        } else if (m_request.responseCode >= 400 && m_request.responseCode <= 499 && !isAuthenticationRequired(m_request.responseCode)) {
+            // Any other client errors
+            // Tell that we will only get an error page here.
             if (!sendErrorPageNotification()) {
-                error(ERR_INTERNAL_SERVER, m_request.url.toDisplayString());
+                if (m_request.responseCode == 403)
+                    error(ERR_ACCESS_DENIED, m_request.url.toDisplayString());
+                else
+                    error(ERR_DOES_NOT_EXIST, m_request.url.toDisplayString());
                 return false;
             }
-        }
-    } else if (m_request.responseCode == 416) {
-        // Range not supported
-        m_request.offset = 0;
-        return false; // Try again.
-    } else if (m_request.responseCode == 426) {
-        // Upgrade Required
-        upgradeRequired = true;
-    } else if (!isAuthenticationRequired(m_request.responseCode) && m_request.responseCode >= 400 && m_request.responseCode <= 499) {
-        // Any other client errors
-        // Tell that we will only get an error page here.
-        if (!sendErrorPageNotification()) {
-            if (m_request.responseCode == 403)
-                error(ERR_ACCESS_DENIED, m_request.url.toDisplayString());
-            else
-                error(ERR_DOES_NOT_EXIST, m_request.url.toDisplayString());
-            return false;
-        }
-    } else if (m_request.responseCode >= 301 && m_request.responseCode<= 303) {
-        // 301 Moved permanently
-        if (m_request.responseCode == 301) {
-            setMetaData(QLatin1String("permanent-redirect"), QLatin1String("true"));
-        }
-        // 302 Found (temporary location)
-        // 303 See Other
-        // NOTE: This is wrong according to RFC 2616 (section 10.3.[2-4,8]).
-        // However, because almost all client implementations treat a 301/302
-        // response as a 303 response in violation of the spec, many servers
-        // have simply adapted to this way of doing things! Thus, we are
-        // forced to do the same thing. Otherwise, we loose compatibility and
-        // might not be able to correctly retrieve sites that redirect.
-        if (m_request.method != HTTP_HEAD) {
-            m_request.method = HTTP_GET; // Force a GET
-        }
-    } else if (m_request.responseCode == 204) {
-        // No content
+        } else if (m_request.responseCode >= 301 && m_request.responseCode<= 303) {
+            // 301 Moved permanently
+            if (m_request.responseCode == 301) {
+                setMetaData(QLatin1String("permanent-redirect"), QLatin1String("true"));
+            }
+            // 302 Found (temporary location)
+            // 303 See Other
+            // NOTE: This is wrong according to RFC 2616 (section 10.3.[2-4,8]).
+            // However, because almost all client implementations treat a 301/302
+            // response as a 303 response in violation of the spec, many servers
+            // have simply adapted to this way of doing things! Thus, we are
+            // forced to do the same thing. Otherwise, we loose compatibility and
+            // might not be able to correctly retrieve sites that redirect.
+            if (m_request.method != HTTP_HEAD) {
+                m_request.method = HTTP_GET; // Force a GET
+            }
+        } else if (m_request.responseCode == 204) {
+            // No content
 
-        // error(ERR_NO_CONTENT, i18n("Data have been successfully sent."));
-        // Short circuit and do nothing!
+            // error(ERR_NO_CONTENT, i18n("Data have been successfully sent."));
+            // Short circuit and do nothing!
 
-        // The original handling here was wrong, this is not an error: eg. in the
-        // example of a 204 No Content response to a PUT completing.
-        // m_iError = true;
-        // return false;
-    } else if (m_request.responseCode == 206) {
-        if (m_request.offset) {
-            bCanResume = true;
+            // The original handling here was wrong, this is not an error: eg. in the
+            // example of a 204 No Content response to a PUT completing.
+            // m_iError = true;
+            // return false;
+        } else if (m_request.responseCode == 206) {
+            if (m_request.offset) {
+                bCanResume = true;
+            }
+        } else if (m_request.responseCode == 102) {
+            // Processing (for WebDAV)
+            /***
+             * This status code is given when the server expects the
+             * command to take significant time to complete. So, inform
+             * the user.
+             */
+            infoMessage( i18n( "Server processing request, please wait..." ) );
+            cont = true;
+        } else if (m_request.responseCode == 100) {
+            // We got 'Continue' - ignore it
+            cont = true;
         }
-    } else if (m_request.responseCode == 102) {
-        // Processing (for WebDAV)
-        /***
-         * This status code is given when the server expects the
-         * command to take significant time to complete. So, inform
-         * the user.
-         */
-        infoMessage( i18n( "Server processing request, please wait..." ) );
-        cont = true;
-    } else if (m_request.responseCode == 100) {
-        // We got 'Continue' - ignore it
-        cont = true;
-    }
+    } // (m_request.responseCode != 200 && m_request.responseCode != 304)
 
 endParsing:
     bool authRequiresAnotherRoundtrip = false;

@@ -1294,12 +1294,10 @@ int KDirWatchPrivate::scanEntry(Entry *e)
           (qMax(stat_buf.st_ctime, stat_buf.st_mtime) != e->m_ctime ||
            stat_buf.st_ino != e->m_ino ||
            int(stat_buf.st_nlink) != int(e->m_nlink)))
-#ifdef Q_OS_WIN
           // we trust QFSW to get it right, the ctime comparisons above
           // fail for example when adding files to directories on Windows
           // which doesn't change the mtime of the directory
         || e->m_mode == QFSWatchMode
-#endif
     ) {
       e->m_ctime = qMax(stat_buf.st_ctime, stat_buf.st_mtime);
       e->m_nlink = stat_buf.st_nlink;
