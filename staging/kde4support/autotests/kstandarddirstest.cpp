@@ -282,14 +282,6 @@ void KStandarddirsTest::testFindExe()
     QVERIFY2(kdeinit.endsWith("bin/kdeinit5" EXT, PATH_SENSITIVITY), qPrintable(kdeinit));
 #endif
 
-
-#ifdef Q_OS_UNIX
-    // findExe with a result in libexec
-    const QString kioslave = KGlobal::dirs()->findExe( "kioslave" );
-    QVERIFY( !kioslave.isEmpty() );
-    QVERIFY( kioslave.endsWith( LIB_INSTALL_DIR "/kde5/libexec/kioslave" EXT, PATH_SENSITIVITY ) );
-#endif
-
 #ifndef Q_OS_MAC // kdeinit5 is a bundle on Mac, so the below doesn't work
     // Check the "exe" resource too
     QString kdeinitPath1 = KStandardDirs::realFilePath(kdeinit);
@@ -305,7 +297,14 @@ void KStandarddirsTest::testFindExe()
 #endif
 
 #ifdef Q_OS_UNIX
+    // findExe with a result in libexec
+    const QString kioslave = KGlobal::dirs()->findExe( "kioslave" );
+    QVERIFY( !kioslave.isEmpty() );
+    QVERIFY( kioslave.endsWith( LIB_INSTALL_DIR "/kde5/libexec/kioslave" EXT, PATH_SENSITIVITY ) );
+
     QCOMPARE_PATHS(KGlobal::dirs()->realFilePath(kioslave), KGlobal::dirs()->locate("exe", "kioslave"));
+    const QString findExeKioslave = KGlobal::dirs()->locate("exe", "kioslave");
+    QVERIFY(kioslave.endsWith(LIB_INSTALL_DIR "/kde5/libexec/kioslave" EXT, PATH_SENSITIVITY));
 
     // findExe with relative path
     const QString pwd = QDir::currentPath();
