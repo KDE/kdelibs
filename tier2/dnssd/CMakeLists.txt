@@ -8,7 +8,7 @@ set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake/modules) #TOD
 find_package(KF5 5.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 
 set(REQUIRED_QT_VERSION "5.2.0")
-find_package(Qt5 ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE COMPONENTS Widgets Network DBus)
+find_package(Qt5 ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE COMPONENTS Widgets Network)
 
 include(FeatureSummary)
 include(ECMSetupVersion)
@@ -28,6 +28,9 @@ set_package_properties(Avahi PROPERTIES DESCRIPTION "Facilities for service disc
                        TYPE OPTIONAL
                        PURPOSE "Either Avahi or DNSSD is required for KDE applications to make use of multicast DNS/DNS-SD service discovery"
                       )
+if(AVAHI_FOUND)
+	find_package(Qt5 ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE COMPONENTS DBus)
+endif()
 
 if(NOT AVAHI_FOUND)
     find_package(DNSSD)
