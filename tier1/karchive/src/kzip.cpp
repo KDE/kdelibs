@@ -35,9 +35,6 @@
 #include <zlib.h>
 #include <string.h>
 
-#ifndef _S_IFLNK
-#       define _S_IFLNK 0120000
-#endif // _S_IFLNK
 #ifndef QT_STAT_LNK
 #       define QT_STAT_LNK 0120000
 #endif // QT_STAT_LNK
@@ -1161,7 +1158,7 @@ bool KZip::doWriteSymLink(const QString &name, const QString &target,
                           mode_t perm, const QDateTime &atime, const QDateTime &mtime, const QDateTime &ctime) {
     // reassure that symlink flag is set, otherwise strange things happen on
     // extraction
-    perm |= S_IFLNK;
+    perm |= QT_STAT_LNK;
     Compression c = compression();
     setCompression(NoCompression);	// link targets are never compressed
 
