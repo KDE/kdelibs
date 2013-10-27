@@ -33,6 +33,7 @@ set(kservice_SRCS
    plugin/kpluginfactory.cpp
    plugin/kpluginloader.cpp
    plugin/kplugintrader.cpp
+   plugin/kdbusservicestarter.cpp
 )
 if (WIN32)
    LIST(APPEND kservice_SRCS

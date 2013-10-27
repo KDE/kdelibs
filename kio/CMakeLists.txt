@@ -49,7 +49,6 @@ include(ConfigureChecks.cmake)
 configure_file(kio/config-kio.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kio/config-kio.h )
 
 set(kiocore_STAT_SRCS
-  kio/kdbusservicestarter.cpp
   kio/kimageio.cpp
 )
 
@@ -139,7 +138,6 @@ install(  FILES
   DESTINATION ${INCLUDE_INSTALL_DIR}/kio COMPONENT Devel)
 
 install( FILES
-  kio/kdbusservicestarter.h
   kio/kimageio.h
 
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
