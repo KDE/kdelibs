@@ -623,8 +623,8 @@ void KArchiveTest::testTarMaxLength()
 
 void KArchiveTest::testTarGlobalHeader()
 {
-    KTar tar(QFINDTESTDATA(QLatin1String("global_header_test.tar.bz2")));
-    QVERIFY2(tar.open( QIODevice::ReadOnly ), "global_header_test.tar.bz2");
+    KTar tar(QFINDTESTDATA(QLatin1String("global_header_test.tar.gz")));
+    QVERIFY2(tar.open( QIODevice::ReadOnly ), "global_header_test.tar.gz");
 
     const KArchiveDirectory* dir = tar.directory();
     QVERIFY( dir != 0 );
@@ -642,8 +642,8 @@ void KArchiveTest::testTarGlobalHeader()
 
 void KArchiveTest::testTarPrefix()
 {
-    KTar tar(QFINDTESTDATA(QLatin1String("tar_prefix_test.tar.bz2")));
-    QVERIFY2(tar.open(QIODevice::ReadOnly), "tar_prefix_test.tar.bz2");
+    KTar tar(QFINDTESTDATA(QLatin1String("tar_prefix_test.tar.gz")));
+    QVERIFY2(tar.open(QIODevice::ReadOnly), "tar_prefix_test.tar.gz");
 
     const KArchiveDirectory* dir = tar.directory();
     QVERIFY( dir != 0 );
@@ -668,8 +668,8 @@ void KArchiveTest::testTarPrefix()
 
 void KArchiveTest::testTarDirectoryForgotten()
 {
-    KTar tar(QFINDTESTDATA(QLatin1String("tar_directory_forgotten.tar.bz2")));
-    QVERIFY2(tar.open(QIODevice::ReadOnly), "tar_directory_forgotten.tar.bz2");
+    KTar tar(QFINDTESTDATA(QLatin1String("tar_directory_forgotten.tar.gz")));
+    QVERIFY2(tar.open(QIODevice::ReadOnly), "tar_directory_forgotten.tar.gz");
 
     const KArchiveDirectory* dir = tar.directory();
     QVERIFY( dir != 0 );
@@ -686,7 +686,7 @@ void KArchiveTest::testTarDirectoryForgotten()
 
 void KArchiveTest::testTarRootDir() // bug 309463
 {
-    KTar tar(QFINDTESTDATA(QLatin1String("tar_rootdir.tar.bz2")));
+    KTar tar(QFINDTESTDATA(QLatin1String("tar_rootdir.tar.gz")));
     QVERIFY2(tar.open(QIODevice::ReadOnly), qPrintable(tar.fileName()));
 
     const KArchiveDirectory* dir = tar.directory();
@@ -704,7 +704,7 @@ void KArchiveTest::testTarRootDir() // bug 309463
 
 void KArchiveTest::testTarDirectoryTwice() // bug 206994
 {
-    KTar tar(QFINDTESTDATA(QLatin1String("tar_directory_twice.tar.bz2")));
+    KTar tar(QFINDTESTDATA(QLatin1String("tar_directory_twice.tar.gz")));
     QVERIFY(tar.open(QIODevice::ReadOnly));
 
     const KArchiveDirectory* dir = tar.directory();
