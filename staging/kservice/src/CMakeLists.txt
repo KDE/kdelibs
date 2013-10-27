@@ -46,7 +46,7 @@ if (UNIX)
    )
 endif()
 
-# Temporary until klauncher moves here and we can generate it from klauncher_adaptor.h
+# Temporary until we can depend on the kinit framework being installed and can generate it from klauncher_adaptor.h
 qt5_add_dbus_interface(kservice_SRCS kdeinit/org.kde.KLauncher.xml klauncher_iface)
 
 add_library(KService ${kservice_SRCS})
