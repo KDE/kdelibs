@@ -303,8 +303,8 @@ void KStandarddirsTest::testFindExe()
     QVERIFY( kioslave.endsWith( LIB_INSTALL_DIR "/kde5/libexec/kioslave" EXT, PATH_SENSITIVITY ) );
 
     QCOMPARE_PATHS(KGlobal::dirs()->realFilePath(kioslave), KGlobal::dirs()->locate("exe", "kioslave"));
-    const QString findExeKioslave = KGlobal::dirs()->locate("exe", "kioslave");
-    QVERIFY(kioslave.endsWith(LIB_INSTALL_DIR "/kde5/libexec/kioslave" EXT, PATH_SENSITIVITY));
+    const QString locateExeKioslave = KGlobal::dirs()->locate("exe", "kioslave");
+    QVERIFY(locateExeKioslave.endsWith(LIB_INSTALL_DIR "/kde5/libexec/kioslave" EXT, PATH_SENSITIVITY));
 
     // findExe with relative path
     const QString pwd = QDir::currentPath();
