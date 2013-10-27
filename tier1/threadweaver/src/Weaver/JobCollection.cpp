@@ -196,8 +196,11 @@ void JobCollection::run(JobPointer, Thread*)
 void JobCollection::elementStarted(JobPointer job, Thread* thread)
 {
     Q_UNUSED(job) // except in Q_ASSERT
+#ifndef NDEBUG // to avoid the mutex in release mode
     Q_ASSERT(!d->self.isNull());
+    QMutexLocker l(mutex()); Q_UNUSED(l);
     Q_ASSERT(job.data() == d->self || std::find(d->elements.begin(), d->elements.end(), job) != d->elements.end());
+#endif
     if (d->jobsStarted.fetchAndAddOrdered(1) == 0) {
         //emit started() signal on beginning of first job execution
         executor()->defaultBegin(d->self, thread);
@@ -208,8 +211,8 @@ void JobCollection::elementFinished(JobPointer job, Thread *thread)
 {
     Q_UNUSED(job) // except in Q_ASSERT
     Q_ASSERT(!d->self.isNull());
-    Q_ASSERT(job.data() == d->self || std::find(d->elements.begin(), d->elements.end(), job) != d->elements.end());
     QMutexLocker l(mutex()); Q_UNUSED(l);
+    Q_ASSERT(job.data() == d->self || std::find(d->elements.begin(), d->elements.end(), job) != d->elements.end());
     const int jobsStarted = d->jobsStarted.loadAcquire();
     Q_ASSERT(jobsStarted >=0); Q_UNUSED(jobsStarted);
     const int remainingJobs = d->jobCounter.fetchAndAddOrdered(-1) -1;
