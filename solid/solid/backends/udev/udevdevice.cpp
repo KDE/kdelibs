@@ -180,8 +180,17 @@ QString UDevDevice::description() const
     if (queryDeviceInterface(Solid::DeviceInterface::Processor)) {
         return QObject::tr("Processor");
     } else if (queryDeviceInterface(Solid::DeviceInterface::PortableMediaPlayer)) {
-        // TODO: check out special cases like iPod
-        return QObject::tr("Portable Media Player");
+        /*
+         * HACK: As Media player is very generic return the device product instead
+         *       until we can return the Name.
+         */
+        const PortableMediaPlayer *player = new PortableMediaPlayer(const_cast<UDevDevice *>(this));
+        if (player->supportedProtocols().contains("mtp")) {
+            return product();
+        } else {
+            // TODO: check out special cases like iPod
+            return QObject::tr("Portable Media Player");
+        }
     } else if (queryDeviceInterface(Solid::DeviceInterface::Camera)) {
         return QObject::tr("Camera");
     } else if (queryDeviceInterface(Solid::DeviceInterface::Video)) {
