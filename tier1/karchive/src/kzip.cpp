@@ -35,6 +35,13 @@
 #include <zlib.h>
 #include <string.h>
 
+#ifndef _S_IFLNK
+#       define _S_IFLNK 0120000
+#endif // _S_IFLNK
+#ifndef QT_STAT_LNK
+#       define QT_STAT_LNK 0120000
+#endif // QT_STAT_LNK
+
 static const int max_path_len = 4095;	// maximum number of character a path may contain
 
 static void transformToMsDos(const QDateTime& _dt, char* buffer)
