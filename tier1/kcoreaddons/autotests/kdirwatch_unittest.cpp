@@ -61,18 +61,8 @@ public:
     {
         m_path = m_tempDir.path() + QLatin1Char('/');
 
-        #pragma message("KDE5 TODO: Remove dependencies on Kconfig and KGlobal") 
-#if 0
-        KConfigGroup config(KSharedConfig::openConfig(), "DirWatch");
-        const QByteArray testMethod = qgetenv("KDIRWATCHTEST_METHOD");
-        if (!testMethod.isEmpty()) {
-            config.writeEntry("PreferredMethod", testMethod);
-        } else {
-            config.deleteEntry("PreferredMethod");
-        }
         // Speed up the test by making the kdirwatch timer (to compress changes) faster
-        config.writeEntry("PollInterval", 50);
-#endif
+        qputenv("KDIRWATCH_POLLINTERVAL", "50");
         KDirWatch foo;
         m_slow = (foo.internalMethod() == KDirWatch::FAM || foo.internalMethod() == KDirWatch::Stat);
         qDebug() << "Using method" << methodToString(foo.internalMethod());
@@ -427,7 +417,7 @@ void KDirWatch_UnitTest::watchNonExistentWithSingleton()
 {
     const QString file = QLatin1String("/root/.ssh/authorized_keys");
     KDirWatch::self()->addFile(file);
-    // When running this test in KDIRWATCHTEST_METHOD=QFSWatch, or when FAM is not available
+    // When running this test in KDIRWATCH_METHOD=QFSWatch, or when FAM is not available
     // and we fallback to qfswatch when inotify fails above, we end up creating the fsWatch
     // in the kdirwatch singleton. Bug 261541 discovered that Qt hanged when deleting fsWatch
     // once QCoreApp was gone, this is what this test is about.
