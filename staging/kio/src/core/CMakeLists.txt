@@ -187,3 +187,5 @@ install(FILES
   ksslcertificatemanager_p.h
   ktcpsocket.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
+
+install(FILES accept-languages.codes DESTINATION ${CONFIG_INSTALL_DIR})

@@ -147,4 +147,3 @@ install( FILES
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
 endif(NOT KIO_NO_SOLID)
 
-install(FILES kio/accept-languages.codes DESTINATION ${CONFIG_INSTALL_DIR})
