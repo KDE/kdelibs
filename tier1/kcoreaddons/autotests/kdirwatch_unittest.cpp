@@ -249,15 +249,17 @@ bool KDirWatch_UnitTest::waitForOneSignal(KDirWatch& watch, const char* sig, con
             }
             QTest::qWait(50);
         }
-        const QString got = spyDirty[0][0].toString();
-        if (got == expectedPath)
-            return true;
-        if (got.startsWith(expectedPath + QLatin1Char('/'))) {
-            qDebug() << "Ignoring (inotify) notification of" << sig << '(' << got << ')';
-            continue;
+        for (int i = 0; i < spyDirty.count(); ++i) {
+            const QString got = spyDirty[i][0].toString();
+            if (got == expectedPath)
+                return true;
+            if (got.startsWith(expectedPath + QLatin1Char('/'))) {
+                qDebug() << "Ignoring (inotify) notification of" << (sig+1) << '(' << got << ')';
+                continue;
+            }
+            qWarning() << "Expected" << sig << '(' << removeTrailingSlash(path) << ')' << "but got" << sig << '(' << got << ')';
+            return false;
         }
-        qWarning() << "Expected" << sig << '(' << removeTrailingSlash(path) << ')' << "but got" << sig << '(' << got << ')';
-        return false;
     }
 }
 
