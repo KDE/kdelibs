@@ -823,8 +823,8 @@ void KArchiveDirectory::copyTo(const QString& dest, bool recursiveCopy ) const
           QString linkName = curDirName+QLatin1Char('/')+curEntry->name();
           // To create a valid link on Windows, linkName must have a .lnk file extension.
 #ifdef Q_OS_WIN
-          if (!linkName.endsWith(".lnk")) {
-              linkName += ".lnk";
+          if (!linkName.endsWith(QStringLiteral(".lnk"))) {
+              linkName += QStringLiteral(".lnk");
           }
 #endif
           QFile symLinkTarget(curEntry->symLinkTarget());
