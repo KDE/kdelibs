@@ -95,12 +95,12 @@ static KDirWatchPrivate* createPrivate() {
 }
 
 // Convert a string into a watch Method
-static KDirWatch::Method methodFromString(const QString &method) {
-  if (method == QLatin1String("Fam")) {
+static KDirWatch::Method methodFromString(const QByteArray &method) {
+  if (method == "Fam") {
     return KDirWatch::FAM;
-  } else if (method == QLatin1String("Stat")) {
+  } else if (method == "Stat") {
     return KDirWatch::Stat;
-  } else if (method == QLatin1String("QFSWatch")) {
+  } else if (method == "QFSWatch") {
     return KDirWatch::QFSWatch;
   } else {
 #ifdef Q_OS_LINUX
@@ -131,6 +131,11 @@ static const char* methodToString(KDirWatch::Method method)
     }
 }
 #endif
+
+static const char s_envNfsPoll[] = "KDIRWATCH_NFSPOLLINTERVAL";
+static const char s_envPoll[] = "KDIRWATCH_POLLINTERVAL";
+static const char s_envMethod[] = "KDIRWATCH_METHOD";
+static const char s_envNfsMethod[] = "KDIRWATCH_NFSMETHOD";
 
 //
 // Class KDirWatchPrivate (singleton)
@@ -172,23 +177,12 @@ KDirWatchPrivate::KDirWatchPrivate()
   timer.setObjectName(QLatin1String("KDirWatchPrivate::timer"));
   connect (&timer, SIGNAL(timeout()), this, SLOT(slotRescan()));
 
-#pragma message("KDE5 TODO: Remove dependencies on Kconfig and KGlobal")
-#if 0
-  KConfigGroup config(KSharedConfig::openConfig(), "DirWatch");
-  m_nfsPollInterval = config.readEntry("NFSPollInterval", 5000);
-  m_PollInterval = config.readEntry("PollInterval", 500);
+  m_nfsPollInterval = qEnvironmentVariableIsSet(s_envNfsPoll) ? qgetenv(s_envNfsPoll).toInt() : 5000;
+  m_PollInterval = qEnvironmentVariableIsSet(s_envPoll) ? qgetenv(s_envPoll).toInt() : 500;
 
-  QString method = config.readEntry("PreferredMethod", "inotify");
-  m_preferredMethod = methodFromString(method);
-
+  m_preferredMethod = methodFromString(qEnvironmentVariableIsSet(s_envMethod) ? qgetenv(s_envMethod) : "inotify");
   // The nfs method defaults to the normal (local) method
-  m_nfsPreferredMethod = methodFromString(config.readEntry("nfsPreferredMethod", "Fam"));
-#endif
-#pragma message("KDE5 FIXME: We use the default values until the todo above is fixed")
-  m_nfsPollInterval = 5000;
-  m_PollInterval = 500;
-  m_preferredMethod = methodFromString(QLatin1String("inotify"));
-  m_nfsPreferredMethod = methodFromString(QLatin1String("Fam"));
+  m_nfsPreferredMethod = methodFromString(qEnvironmentVariableIsSet(s_envNfsMethod) ? qgetenv(s_envNfsMethod) : "Fam");
 
   QList<QByteArray> availableMethods;
 
