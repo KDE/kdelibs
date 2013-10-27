@@ -913,20 +913,20 @@ void RenderLayer::checkScrollbarsAfterLayout()
 
     bool haveHorizontalBar = m_hBar && m_hBar->isEnabled();
     bool haveVerticalBar = m_vBar && m_vBar->isEnabled();
-    
+
     bool hasOvf = m_object->hasOverflowClip();
 
     // overflow:scroll should just enable/disable.
-    if (hasOvf && m_object->style()->overflowX() == OSCROLL)
+    if (m_hBar && hasOvf && m_object->style()->overflowX() == OSCROLL)
         m_hBar->setEnabled(needHorizontalBar);
-    if (hasOvf && m_object->style()->overflowY() == OSCROLL)
+    if (m_vBar && hasOvf && m_object->style()->overflowY() == OSCROLL)
         m_vBar->setEnabled(needVerticalBar);
-        
+
     // Sometimes we originally had a scrolling overflow, but it got changed to 
     // hidden/visible. 
     bool deadScrollX = m_hBar && !m_object->scrollsOverflowX();
     bool deadScrollY = m_vBar && !m_object->scrollsOverflowY();
-        
+
     // overflow:auto may need to lay out again if scrollbars got added/removed.
     // Also remove now useless scrollbars for non-scrollable overflows
     bool scrollbarsChanged = (hasOvf && m_object->style()->overflowX() == OAUTO && haveHorizontalBar != needHorizontalBar)
