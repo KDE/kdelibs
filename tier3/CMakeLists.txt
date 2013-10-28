@@ -2,6 +2,7 @@ project(tier3)
 
 add_subdirectory(kbookmarks)
 add_subdirectory(kconfigwidgets)
+add_subdirectory(kservice)
 add_subdirectory(ktextwidgets)
 add_subdirectory(kunitconversion)
 add_subdirectory(kparts)
