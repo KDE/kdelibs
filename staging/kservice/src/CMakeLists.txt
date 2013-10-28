@@ -103,6 +103,7 @@ install(FILES
 
 install(FILES
    services/kplugininfo.desktop
+   services/application.desktop
    DESTINATION ${SERVICETYPES_INSTALL_DIR}
 )
 

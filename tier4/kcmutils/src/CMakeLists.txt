@@ -51,3 +51,7 @@ install(FILES
 
 install(TARGETS KCMUtils EXPORT KCMUtilsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
+install( FILES
+ kcmodule.desktop
+ kcmoduleinit.desktop
+DESTINATION  ${SERVICETYPES_INSTALL_DIR} )

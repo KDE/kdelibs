@@ -157,90 +157,14 @@ move: moves a file or directory, recursively if the latter
 
 del: deletes a file or directory, recursively if the latter
 
-PROGRESS DISPLAYING : [this is outdated, and describes the kde3 situation]
-=====================
-Taj brought up the idea of delegating all progress information to an extern
-GUI daemon which could be provided in several implementations - examples
-are popup dialogs (most are annoyed by them, like me :) or a kicker applet
-or something completely different. This would also remove the dependency on
-libkdeui (I hope).
-Conclusion: kuiserver is this single GUI daemon, but the dependency on
-libkdeui couldn't be removed (for many reasons, including rename/skip dialogs)
-
-A. progress handling
----------------------
-There will be two ways how the application can display progress :
-
-1. regular apps will use NetAccess for all kio operations and will not  care
-    about progress handling :
- - NetAccess creates Job
- - NetAccess creates JobObserver that will connect to the Job's signals and
-    pass them via dcop to the running GUI Progress Server
-
-2. apps that want to do some handling with progress dialogs like Caitoo or
-    KMail  :
- - app creates Job
- - app creates a progress dialog : this should be a ProgressBase descendant
-    e.g. StatusProgress or custom progress dialog
- - app calls progress->setJob( job ) in order to connect job's signals with
-    progress dialog slots
-
-B. customized progress dialogs
--------------------------------
- This will be similar to what we had before.
-
- - ProgressBase class that all other dialogs will inherit.
-    will contain an initialization method setJob( KIO::Job*) for apps of the
-    second class (see A.2 above), that will connect job's signals to dialog's
-    slots
-
- - DefaultProgress ( former KIOSimpleProgressDialog ) that will be used for    
-    regular progress dialogs created by GUI Progress Server
-
- - StatusProgress ( former KIOLittleProgressDialog ) that can be used for      
-    embedding in status bar
-
-C. GUI Progress Server
------------------------
- This is a special progress server.
- - createProgress() will either create a DefaultProgress dialog or add new entry
-    in a ListProgress ( an all-jobs-in-one progress dialog )
- - after receiving signals from the JobObserver via DBus it will call
-    appropriate method of progress dialog ( either in DefaultProgress or ListProgress )
- - ListProgres can be a Caitoo style dialog, kicker applet or both in one.
-
-D. Some notes
---------------
- 1. most of the apps will not care at all about the progress display
- 2. user will be able to choose whether he wants to see separate progress
-    dialogs or all-in-one ListProgress dialog
- 3. developers can create their custom progress dialogs that inherit
-    ProgressBase and do any manipulation with a dialog if they use a second
-    approach ( see A.2 above )
-
-
-Streaming [didn't work well, has been removed]
----------
-
- 1. We currently support a streaming "GET": e.g. file:/tmp/test.gz#gzip:/
-    works. The following should also work: file:/tmp/test.gz.gz#gzip:/#gzip:/
-    The current approach makes a TransferJob for gzip:/ and then adds a
-    subjob for "file:/tmp/test.gz.gz#gzip:/" which itself adds a subjob
-    for "file:/tmp/test.gz.gz".
- 2. This doesn't extend very well to PUT, because there the order should
-    basically be the other way around, but the "input" to the job as a whole
-    should go to the "gzip:/" job, not to the "file:/tmp/test.gz.gz."
-    It would probably be easier to implement such a job in the way the 
-    current "CopyJob" is done. Have a Job and make all sub-urls sub-jobs of
-    this Job.
- 3. As a result of 1. COPY FROM an url like file:/tmp/test.gz#gzip:/ should
-    work. COPY TO does not, because that would require PUT.
-    
-
 Resuming
 --------
+If a .part file exists, KIO offers to resume the download.
+This requires negociation between the kioslave that reads
+(handled by the get job) and the kioslave that writes
+(handled by the put job).
 
-A rough note for now, just to have this somewhere :
+Here's how the negociation goes.
 (PJ=put-job, GJ=get-job)
 
 PJ can't resume:

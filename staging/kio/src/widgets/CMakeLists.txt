@@ -163,4 +163,5 @@ install( FILES
 install( FILES
   kfileitemactionplugin.desktop
   kpropertiesdialogplugin.desktop
+  kurifilterplugin.desktop
    DESTINATION  ${SERVICETYPES_INSTALL_DIR} )

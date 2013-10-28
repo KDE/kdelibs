@@ -125,13 +125,6 @@ install( PROGRAMS useragent.pl proxytype.pl  DESTINATION ${KCONF_UPDATE_INSTALL_
 
 
 install( FILES data.protocol  DESTINATION  ${SERVICES_INSTALL_DIR} )
-install( FILES
- application.desktop
- kcmodule.desktop
- kcmoduleinit.desktop
- kfileplugin.desktop
- kurifilterplugin.desktop
-DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
 
 install(  FILES
   ${CMAKE_CURRENT_BINARY_DIR}/kio_export.h
