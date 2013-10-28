@@ -8,10 +8,11 @@ set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake )
 
 find_package(KF5 5.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 
-find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS Network Widgets DBus Test Svg Concurrent PrintSupport)
+set(QT_REQUIRED_VERSION 5.2.0)
+find_package(Qt5 ${QT_REQUIRED_VERSION} REQUIRED NO_MODULE COMPONENTS Network Widgets DBus Test Svg Concurrent PrintSupport)
 
 if(NOT WIN32)
-    find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS X11Extras)
+    find_package(Qt5 ${QT_REQUIRED_VERSION} REQUIRED NO_MODULE COMPONENTS X11Extras)
 endif(NOT WIN32)
 
 find_package(Strigi 0.6.3 QUIET)

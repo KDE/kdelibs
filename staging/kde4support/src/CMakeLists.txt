@@ -322,7 +322,7 @@ set_target_properties(KDE4Support PROPERTIES VERSION ${KDE4SUPPORT_VERSION_STRIN
                                   SOVERSION ${KDE4SUPPORT_SOVERSION} )
 
 install(TARGETS KDE4Support
-        EXPORT kdelibsLibraryTargets # KDE4SupportTargets <- cannot be moved to separate export set as long as kde4support depends on kdelibs and kdelibs depends on kde4support
+        EXPORT KDE4SupportTargets
         ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
