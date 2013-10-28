@@ -85,7 +85,6 @@ configure_file(${CMAKE_SOURCE_DIR}/CTestCustom.cmake ${CMAKE_BINARY_DIR}/CTestCu
 include(FindKDE4Internal)
 include(KDE4Macros)
 include(KDE4Defaults)
-include(MacroLibrary)
 
 ################# Disallow in-source build #################
 

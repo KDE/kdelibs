@@ -113,7 +113,11 @@ endif(WIN32)
 # This variable defines whether KPty::login/logout have been built with
 # utempter support so that they don't require special user permissions
 # in order to work properly. Used by kwrited.
-macro_bool_to_01(HAVE_UTEMPTER KDE4_KPTY_BUILT_WITH_UTEMPTER)
+if(HAVE_UTEMPTER)
+    set(KDE4_KPTY_BUILT_WITH_UTEMPTER 1)
+else()
+    set(KDE4_KPTY_BUILT_WITH_UTEMPTER 0)
+endif()
 file(APPEND "${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake" "set(KDE4_KPTY_BUILT_WITH_UTEMPTER ${KDE4_KPTY_BUILT_WITH_UTEMPTER})")
 
 # Append stuff needed by the KAuth framework
