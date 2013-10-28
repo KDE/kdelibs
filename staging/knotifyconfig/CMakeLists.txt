@@ -15,7 +15,6 @@ find_package(KF5 ${KF5_VERSION} MODULE REQUIRED CMake Compiler InstallDirs)
 find_package(Phonon4Qt5 4.6.60 NO_MODULE)
 
 if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
-  find_package(KCoreAddons ${KF5_VERSION} REQUIRED)
   find_package(KIO ${KF5_VERSION} REQUIRED)
   find_package(KI18n ${KF5_VERSION} REQUIRED)
 endif()

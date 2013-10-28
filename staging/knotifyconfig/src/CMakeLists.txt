@@ -30,7 +30,6 @@ target_link_libraries(KNotifyConfig
         LINK_PRIVATE
             KF5::KI18n
             KF5::KIOWidgets     # KUrlRequester
-            KF5::KCoreAddons
             ${PHONON_LIBS}
             Qt5::DBus)
 
