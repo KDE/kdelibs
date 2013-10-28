@@ -80,8 +80,6 @@ private Q_SLOTS:
 
     // should be last
     void testSyncOnExit();
-private:
-    QString m_xdgConfigHome;
 };
 Q_DECLARE_OPERATORS_FOR_FLAGS(KConfigTest::Flags)
 

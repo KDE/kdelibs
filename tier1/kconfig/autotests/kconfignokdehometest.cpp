@@ -20,6 +20,7 @@
 #include <QObject>
 
 #include <QtTest/QtTest>
+#include <QStandardPaths>
 #include <ksharedconfig.h>
 
 #include <kconfig.h>
@@ -36,29 +37,26 @@ private Q_SLOTS:
 
 void KConfigNoKdeHomeTest::testNoKdeHome()
 {
-    const QString xdgConfigHome = QDir::homePath() + "/.kde-unit-test-does-not-exist";
-    QDir xdgConfigHomeDir(xdgConfigHome);
-    qputenv("XDG_CONFIG_HOME", QFile::encodeName(xdgConfigHome));
-    xdgConfigHomeDir.removeRecursively();
-    QVERIFY(!QFile::exists(xdgConfigHome));
+    QStandardPaths::setTestModeEnabled(true);
+    QString configPath = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
+    QDir configDir(configPath);
+    configDir.removeRecursively();
+    QVERIFY(!QFile::exists(configPath));
 
-    // Do what kf5-config does, and ensure kdehome doesn't get created (#233892)
-    QVERIFY(!QFile::exists(xdgConfigHome));
+    // Do what kf5-config does, and ensure the config directory doesn't get created (#233892)
+    QVERIFY(!QFile::exists(configPath));
     KSharedConfig::openConfig();
-    QVERIFY(!QFile::exists(xdgConfigHome));
+    QVERIFY(!QFile::exists(configPath));
 
     // Now try to actually save something, see if it works.
     KConfigGroup group(KSharedConfig::openConfig(), "Group");
     group.writeEntry("Key", "Value");
     group.sync();
-    QVERIFY(QFile::exists(xdgConfigHome));
-    QVERIFY(QFile::exists(xdgConfigHome + "/kconfignokdehometestrc"));
+    QVERIFY(QFile::exists(configPath));
+    QVERIFY(QFile::exists(configPath + QStringLiteral("/kconfignokdehometestrc")));
 
     // Cleanup
-    xdgConfigHomeDir.removeRecursively();
-
-    // Restore XDG_CONFIG_HOME -- only when there were more tests...
-    //qputenv("XDG_CONFIG_HOME", QFile::encodeName(m_xdgConfigHome));
+    configDir.removeRecursively();
 }
 
 QTEST_MAIN(KConfigNoKdeHomeTest)

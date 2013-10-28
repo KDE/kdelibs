@@ -24,12 +24,11 @@
 
 #include <QtTest/QtTest>
 #include <qtemporarydir.h>
+#include <QStandardPaths>
 #include <kdesktopfile.h>
 
 #include <ksharedconfig.h>
 #include <kconfiggroup.h>
-
-#include <QtNetwork/QHostInfo>
 
 #ifdef Q_OS_UNIX
 #include <utime.h>
@@ -77,16 +76,12 @@ QTEST_MAIN( KConfigTest )
 
 void KConfigTest::initTestCase()
 {
-    const QString kdehome = QDir::home().canonicalPath() + "/.kde-unit-test";
+  // ensure we don't use files in the real config directory
+  QStandardPaths::setTestModeEnabled(true);
+  QString testConfigDir = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
 
-    // Use a different directory for the config files created by this test,
-    // so that cleanupTestCase doesn't delete kdebugrc
-    // This makes the save location for the config resource, "$HOME/.kde-unit-test/kconfigtestdir/"
-    m_xdgConfigHome = kdehome + "/kconfigtestdir";
-    qputenv("XDG_CONFIG_HOME", QFile::encodeName(m_xdgConfigHome));
-
-    // to make sure all files from a previous failed run are deleted
-    cleanupTestCase();
+  // to make sure all files from a previous failed run are deleted
+  cleanupTestCase();
 
 
   KConfig sc( "kconfigtest" );
@@ -178,8 +173,11 @@ void KConfigTest::initTestCase()
   QVERIFY(sc.sync());
   QVERIFY(!sc.isDirty());
 
-  QVERIFY(QFile::exists(kdehome + "/kconfigtestdir/kconfigtest"));
-  QVERIFY(QFile::exists(kdehome + "/kconfigtestdir/kdeglobals"));
+  QVERIFY2(QFile::exists(testConfigDir + QStringLiteral("/kconfigtest")),
+    qPrintable(testConfigDir + QStringLiteral("/kconfigtest must exist")));
+  QVERIFY2(QFile::exists(testConfigDir + QStringLiteral("/kdeglobals")),
+    qPrintable(testConfigDir + QStringLiteral("/kdeglobals must exist")));
+
 
   KConfig sc1("kdebugrc", KConfig::SimpleConfig);
   KConfigGroup sg0(&sc1, "0");
@@ -212,7 +210,9 @@ void KConfigTest::initTestCase()
 
 void KConfigTest::cleanupTestCase()
 {
-    QDir localConfig(m_xdgConfigHome);
+    //ensure we don't delete the real directory
+    QStandardPaths::setTestModeEnabled(true);
+    QDir localConfig(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation));
     //qDebug() << "Erasing" << localConfig;
     localConfig.removeRecursively();
     QVERIFY(!localConfig.exists());
@@ -1292,7 +1292,7 @@ void KConfigTest::testFailOnReadOnlyFileSync()
     cgLocal.writeEntry("someLocalString", "whatever");
     QVERIFY(cgLocal.sync());
 
-    QFile f(m_xdgConfigHome + "/" + sc.name());
+    QFile f(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + '/' + sc.name());
     QVERIFY(f.exists());
     QVERIFY(f.setPermissions(QFileDevice::ReadOwner));
 
