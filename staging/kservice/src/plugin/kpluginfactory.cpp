@@ -21,9 +21,6 @@
 
 #include "kpluginfactory.h"
 #include "kpluginfactory_p.h"
-#if 0 // TEMP_KF5_REENABLE
-#include <klocale.h>
-#endif
 
 #include <QObjectCleanupHandler>
 #include <QDebug>
