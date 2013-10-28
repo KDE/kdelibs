@@ -53,7 +53,9 @@ void KSharedDataCacheTest::simpleInsert()
         QVERIFY(file.remove());
     // insert something into it
     KSharedDataCache cache(cacheName, 5*1024*1024);
+ #ifndef Q_OS_WIN // the windows implementation is currently only memory based and not really shared
     QVERIFY(file.exists()); // make sure we got the cache filename right
+ #endif
     QByteArray data;
     data.resize(9228);
     strcpy(data.data(), "Hello world");

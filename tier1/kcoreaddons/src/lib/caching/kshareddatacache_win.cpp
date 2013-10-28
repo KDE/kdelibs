@@ -71,7 +71,9 @@ bool KSharedDataCache::find(const QString &key, QByteArray *destination) const
     QByteArray *value = d->cache.object(key);
 
     if (value) {
-        destination = value;
+        if (destination) {
+            *destination = *value;
+        }
         return true;
     }
     else {
