@@ -274,11 +274,11 @@ KDirModelNode* KDirModelPrivate::expandAllParentsUntil(const QUrl& _url) const /
 #ifndef NDEBUG
 void KDirModelPrivate::dump()
 {
-    //qDebug() << "Dumping contents of KDirModel" << q << "dirLister url:" << m_dirLister->url();
+    qDebug() << "Dumping contents of KDirModel" << q << "dirLister url:" << m_dirLister->url();
     QHashIterator<QUrl, KDirModelNode *> it(m_nodeHash);
     while (it.hasNext()) {
         it.next();
-        //qDebug() << it.key() << it.value();
+        qDebug() << it.key() << it.value();
     }
 }
 #endif
@@ -375,9 +375,9 @@ void KDirModelPrivate::_k_slotNewItems(const QUrl& directoryUrl, const KFileItem
         qWarning() << "Items emitted in directory" << directoryUrl
                      << "but that directory isn't in KDirModel!"
                      << "Root directory:" << urlForNode(m_rootNode);
-        /*Q_FOREACH(const KFileItem& item, items) {
+        Q_FOREACH(const KFileItem& item, items) {
             qDebug() << "Item:" << item.url();
-        }*/
+        }
 #ifndef NDEBUG
         dump();
 #endif
@@ -585,6 +585,7 @@ void KDirModelPrivate::_k_slotRefreshItems(const QList<QPair<KFileItem, KFileIte
     }
 #ifndef NDEBUG // debugIndex only defined in debug mode
     //qDebug() << "dataChanged(" << debugIndex(topLeft) << " - " << debugIndex(bottomRight);
+    Q_UNUSED(debugIndex(QModelIndex())); // fix compiler warning
 #endif
     bottomRight = bottomRight.sibling(bottomRight.row(), q->columnCount(QModelIndex())-1);
     emit q->dataChanged(topLeft, bottomRight);
