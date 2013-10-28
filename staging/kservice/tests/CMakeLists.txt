@@ -19,8 +19,6 @@ kservice_executable_tests(
   startserviceby
 )
 
-set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
-
 ######### kmimeassociationstest ########
 
 set(kmimeassociationstest_SRCS kmimeassociationstest.cpp ../kbuildsycoca/kmimeassociations.cpp)
