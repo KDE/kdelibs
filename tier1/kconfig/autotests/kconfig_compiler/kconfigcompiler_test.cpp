@@ -136,6 +136,10 @@ void KConfigCompiler_Test::testRunning()
 {
     QFETCH(QString, testName);
 
+#ifdef Q_OS_WIN
+    testName += QStringLiteral(".exe");
+#endif
+
     QString program = QFINDTESTDATA(testName);
     QVERIFY2(QFile::exists(program), qPrintable(program + QLatin1String(" must exist!")));
     QProcess process;
