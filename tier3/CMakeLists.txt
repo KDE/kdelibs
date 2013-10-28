@@ -14,6 +14,7 @@ add_subdirectory(kprintutils)
 add_subdirectory(kdeclarative)
 add_subdirectory(kinit)
 add_subdirectory(kjsembed)
+add_subdirectory(knotifyconfig)
 
 if(Qt5WebKitWidgets_FOUND)
     add_subdirectory(kdewebkit)
