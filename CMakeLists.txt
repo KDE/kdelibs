@@ -120,8 +120,6 @@ add_subdirectory( interfaces  )
 add_subdirectory( includes )
 add_subdirectory( doc )
 
-add_subdirectory( knewstuff )
-
 add_subdirectory( kdewidgets )
 
 ################# write dependency file which will be installed #################
