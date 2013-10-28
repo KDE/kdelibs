@@ -57,7 +57,7 @@ void KDesktopFileTest::testSuccessfulTryExec()
     QTextStream ts( &file );
     ts <<
         "[Desktop Entry]\n"
-        "TryExec=/bin/ls\n"
+        "TryExec=whoami\n"
         "\n";
     file.close();
     QVERIFY(QFile::exists(fileName));
