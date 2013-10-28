@@ -63,9 +63,9 @@ target_include_directories(KService PUBLIC "$<BUILD_INTERFACE:${kservice_include
 
 target_link_libraries(KService
   LINK_PUBLIC
-    KF5::KConfigCore
+    KF5::KConfigCore   # KConfig and friends
   LINK_PRIVATE
-    KF5::KCoreAddons
+    KF5::KCoreAddons   # KShell
     KF5::KI18n
     KF5::KDBusAddons   # KDEInitInterface
 )
