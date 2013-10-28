@@ -21,10 +21,10 @@ kservice_executable_tests(
 
 ######### kmimeassociationstest ########
 
-set(kmimeassociationstest_SRCS kmimeassociationstest.cpp ../kbuildsycoca/kmimeassociations.cpp)
+set(kmimeassociationstest_SRCS kmimeassociationstest.cpp ../src/kbuildsycoca/kmimeassociations.cpp)
 
 add_executable(kmimeassociationstest ${kmimeassociationstest_SRCS})
 ecm_mark_as_test(kmimeassociationstest)
 
 target_link_libraries(kmimeassociationstest KConfigCore KService Qt5::Test)
-target_include_directories(kmimeassociationstest PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../kbuildsycoca/")
+target_include_directories(kmimeassociationstest PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../src/kbuildsycoca/")
