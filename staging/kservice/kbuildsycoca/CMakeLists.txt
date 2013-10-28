@@ -1,4 +1,4 @@
-set(kbuildsycoca_KDEINIT_SRCS
+set(kbuildsycoca_SRCS
    kbuildsycoca.cpp
    kbuildmimetypefactory.cpp
    kmimeassociations.cpp
@@ -10,18 +10,15 @@ set(kbuildsycoca_KDEINIT_SRCS
    )
 
 # We need to add a '5' so that kde3/kde4 apps running kbuildsycoca don't run the kde4 one.
-kf5_add_kdeinit_executable( kbuildsycoca5 NOGUI ${kbuildsycoca_KDEINIT_SRCS})
+add_executable( kbuildsycoca5 ${kbuildsycoca_SRCS})
 
-target_link_libraries(kdeinit_kbuildsycoca5
+target_link_libraries(kbuildsycoca5
    KF5::KService #KBuildMimeTypeFactory subclasses KMimeTypeFactory, KServiceGroupFactory and KService used as well
    KF5::KCrash  #set a crash handler for ksycoca binary
    Qt5::Xml #vfolder menui QDomDocument and family
    Qt5::DBus #kbuildsycoca uses QDBus to talk with interested applications
 )
 
-install(TARGETS kdeinit_kbuildsycoca5 ${INSTALL_TARGETS_DEFAULT_ARGS})
-
-target_link_libraries( kbuildsycoca5 kdeinit_kbuildsycoca5 )
 install(TARGETS kbuildsycoca5 ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
 ########### install files ###############

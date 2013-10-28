@@ -614,7 +614,7 @@ QStringList KBuildSycoca::existingResourceDirs()
 static const char appFullName[] = "org.kde.kbuildsycoca";
 static const char appVersion[] = "5.0";
 
-extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
+int main(int argc, char **argv)
 {
    //K4AboutData d(KBUILDSYCOCA_EXENAME, "kdelibs4", ki18n("KBuildSycoca"), appVersion,
                 //ki18n("Rebuilds the system configuration cache."),
