@@ -1,6 +1,6 @@
 <RCC>
     <qresource prefix="/" >
-        <file>../src/pics/progress.gif</file>
+        <file>pics/progress.gif</file>
     </qresource>
 </RCC>
 
