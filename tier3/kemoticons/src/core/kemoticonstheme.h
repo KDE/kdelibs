@@ -136,8 +136,12 @@ public:
      * Loads the emoticon theme inside the directory @p path
      * @param path path to the directory
      * @return @c true if the emoticon is successfully loaded
+     *
+     * @deprecated since 5.0, subclass KEmoticonsProvider instead
      */
-    bool loadTheme(const QString &path);
+#ifndef KDE_NO_DEPRECATED
+    KEMOTICONS_DEPRECATED bool loadTheme(const QString &path);
+#endif
 
     /**
      * Removes the emoticon @p emo. This doesn't delete the image file.
@@ -147,8 +151,12 @@ public:
      * @endcode
      * @param emo the emoticon text to remove
      * @return @c true if the emoticon is successfully removed
+     *
+     * @deprecated since 5.0, subclass KEmoticonsProvider instead
      */
-    bool removeEmoticon(const QString &emo);
+#ifndef KDE_NO_DEPRECATED
+    KEMOTICONS_DEPRECATED bool removeEmoticon(const QString &emo);
+#endif
 
     /**
      * Adds the emoticon @p emo with text @p text
@@ -161,9 +169,14 @@ public:
      * use spaces to separate them.
      * @param copy whether or not to copy @p emo into the theme directory
      * @return @c true if the emoticon is successfully added
+     *
+     * @deprecated since 5.0, subclass KEmoticonsProvider instead
      */
-    bool addEmoticon(const QString &emo, const QString &text, KEmoticonsProvider::AddEmoticonOption option = KEmoticonsProvider::DoNotCopy);
-
+#ifndef KDE_NO_DEPRECATED
+    KEMOTICONS_DEPRECATED bool addEmoticon(const QString &emo,
+                                           const QString &text,
+                                           KEmoticonsProvider::AddEmoticonOption option = KEmoticonsProvider::DoNotCopy);
+#endif
     /**
      * Saves the emoticon theme
      *

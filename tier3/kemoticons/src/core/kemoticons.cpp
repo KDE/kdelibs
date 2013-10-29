@@ -102,7 +102,7 @@ KEmoticonsTheme KEmoticonsPrivate::loadTheme(const QString &name)
         if (QFile::exists(path)) {
             KEmoticonsProvider *provider = loadProvider(m_loaded.at(i));
             KEmoticonsTheme theme(provider);
-            theme.loadTheme(path);
+            provider->loadTheme(path);
             m_themes.insert(name, theme);
             m_fileWatcher.addPath(path);
             return theme;
