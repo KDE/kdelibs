@@ -36,7 +36,9 @@
 #include <qdebug.h>
 #include <qplatformdefs.h>
 
+#ifndef Q_OS_WIN
 #include <unistd.h> // getuid, close
+#endif
 #include <sys/types.h> // uid_t
 #include <fcntl.h> // open
 
@@ -419,6 +421,10 @@ bool KConfigIniBackend::writeConfig(const QByteArray& locale, KEntryMap& entryMa
     QFileInfo fi(filePath());
     if (fi.exists())
     {
+#ifdef Q_OS_WIN
+        //TODO: getuid does not exist on windows, use GetSecurityInfo and GetTokenInformation instead
+        createNew = false;
+#else
         if (fi.ownerId() == ::getuid())
         {
             // Preserve file mode if file exists and is owned by user.
@@ -430,6 +436,7 @@ bool KConfigIniBackend::writeConfig(const QByteArray& locale, KEntryMap& entryMa
             // Don't create new file but write to existing file instead.
             createNew = false;
         }
+#endif
     }
 
     if (createNew) {

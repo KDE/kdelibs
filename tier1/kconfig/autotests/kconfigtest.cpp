@@ -33,7 +33,9 @@
 #ifdef Q_OS_UNIX
 #include <utime.h>
 #endif
+#ifndef Q_OS_WIN
 #include <unistd.h> // gethostname
+#endif
 
 KCONFIGGROUP_DECLARE_ENUM_QOBJECT(KConfigTest,Testing)
 KCONFIGGROUP_DECLARE_FLAGS_QOBJECT(KConfigTest,Flags)

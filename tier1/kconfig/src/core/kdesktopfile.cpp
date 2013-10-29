@@ -24,7 +24,9 @@
 
 #include "kdesktopfile.h"
 
+#ifndef Q_OS_WIN
 #include <unistd.h>
+#endif
 
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>

@@ -28,8 +28,11 @@
 #include <QCoreApplication>
 #include <ksharedconfig.h>
 #include <stdlib.h> // srand(), rand()
+#ifndef Q_OS_WIN
 #include <unistd.h>
 #include <netdb.h>
+#endif
+
 #include <kconfiggroup.h>
 
 #include <QMutex>

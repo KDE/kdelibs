@@ -28,7 +28,13 @@
 
 #include <cstdlib>
 #include <fcntl.h>
+
+#ifdef Q_OS_WIN
+static inline FILE* popen(const char *cmd, const char *mode) { return _popen(cmd, mode); }
+static inline int pclose(FILE* stream) { return _pclose(stream); }
+#else
 #include <unistd.h>
+#endif
 
 #include "kconfigbackend.h"
 #include "kconfiggroup.h"
@@ -56,7 +62,7 @@ KConfigPrivate::KConfigPrivate(KConfig::OpenFlags flags,
 
     static int use_etc_kderc = -1;
     if (use_etc_kderc < 0)
-        use_etc_kderc = getenv("KDE_SKIP_KDERC") != 0 ? 0 : 1; // for unit tests
+        use_etc_kderc = !qEnvironmentVariableIsSet("KDE_SKIP_KDERC"); // for unit tests
     if (use_etc_kderc) {
 
         etc_kderc =
