@@ -3,7 +3,6 @@
 #include <kconfig.h>
 #include <kmacroexpander.h>
 #include <kconfiggroup.h>
-#include <klocalizedstring.h>
 #include <qcommandlineparser.h>
 #include <qcommandlineoption.h>
 #include <QtCore/QCoreApplication>
