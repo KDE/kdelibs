@@ -425,7 +425,6 @@ set(xpath_STAT_SRCS
 )
 
 add_subdirectory( css )
-add_subdirectory( pics )
 
 include_directories(
    ${PHONON_INCLUDE_DIR}
