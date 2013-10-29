@@ -321,6 +321,63 @@ endif(NOT KIO_NO_NEPOMUK)
 set_target_properties(KDE4Support PROPERTIES VERSION ${KDE4SUPPORT_VERSION_STRING}
                                   SOVERSION ${KDE4SUPPORT_SOVERSION} )
 
+
+########## Designer plugin
+
+include_directories(${Qt5Designer_INCLUDE_DIRS})
+
+if (WIN32)
+    # CMAKE_CFG_INTDIR is the output subdirectory created e.g. by XCode and MSVC
+    if (NOT WINCE)
+        set(KDEWIDGETS_MAKEKDEWIDGETS_EXECUTABLE          ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/makekdewidgets )
+    else (NOT WINCE)
+        set(KDEWIDGETS_MAKEKDEWIDGETS_EXECUTABLE          ${HOST_BINDIR}/${CMAKE_CFG_INTDIR}/makekdewidgets )
+    endif(NOT WINCE)
+
+    set(KDEWIDGETS_MAKEKDEWIDGETS_EXECUTABLE          ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/makekdewidgets )
+else (WIN32)
+    set(KDEWIDGETS_MAKEKDEWIDGETS_EXECUTABLE          ${CMAKE_BINARY_DIR}/tier3/kdewidgets/src/makekdewidgets${CMAKE_EXECUTABLE_SUFFIX} )
+endif (WIN32)
+
+add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/kdedeprecated.cpp
+  COMMAND "${KDEWIDGETS_MAKEKDEWIDGETS_EXECUTABLE}" -o ${CMAKE_CURRENT_BINARY_DIR}/kdedeprecated.cpp ${CMAKE_CURRENT_SOURCE_DIR}/kdedeprecated.widgets
+  MAIN_DEPENDENCY kdedeprecated.widgets DEPENDS makekdewidgets)
+
+qt5_generate_moc(${CMAKE_CURRENT_BINARY_DIR}/kdedeprecated.cpp ${CMAKE_CURRENT_BINARY_DIR}/kdedeprecated.moc)
+
+set(kdedeprecated_PART_SRCS
+   classpreviews.cpp
+   ${CMAKE_CURRENT_BINARY_DIR}/kdedeprecated.cpp
+   ${CMAKE_CURRENT_BINARY_DIR}/kdedeprecated.moc
+)
+
+qt5_add_resources(kdedeprecated_PART_SRCS kdedeprecated.qrc)
+
+add_library(kdedeprecated MODULE ${kdedeprecated_PART_SRCS})
+
+target_link_libraries(kdedeprecated KDE4Support
+                                    Qt5::Widgets
+                                    Qt5::Designer
+                                    KF5::KConfigCore
+                                    KF5::KCompletion
+                                    KF5::KWidgetsAddons
+                                    KF5::KAuth
+                                    )
+if(NOT WIN32)
+  set_target_properties(kdedeprecated PROPERTIES
+                                      INSTALL_RPATH_USE_LINK_PATH TRUE
+                                      SKIP_BUILD_RPATH TRUE
+                                      BUILD_WITH_INSTALL_RPATH TRUE
+                                      INSTALL_RPATH ${LIB_INSTALL_DIR}
+                       )
+endif(NOT WIN32)
+
+install(TARGETS kdedeprecated  DESTINATION ${QT_PLUGIN_INSTALL_DIR}/designer )
+
+##########
+
+add_subdirectory(pics)
+
 install(TARGETS KDE4Support
         EXPORT KDE4SupportTargets
         ${INSTALL_TARGETS_DEFAULT_ARGS})

@@ -57,38 +57,6 @@ if(Qt5Designer_FOUND)
 
   install(TARGETS kdewidgets  DESTINATION ${QT_PLUGIN_INSTALL_DIR}/designer )
 
-  # deprecated widgets
-  if(NOT KDE_NO_DEPRECATED)
-    add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/kdedeprecated.cpp
-      COMMAND "${MAKEKDEWIDGETS_EXECUTABLE}" -o ${CMAKE_CURRENT_BINARY_DIR}/kdedeprecated.cpp ${CMAKE_CURRENT_SOURCE_DIR}/kdedeprecated.widgets
-      MAIN_DEPENDENCY kdedeprecated.widgets DEPENDS makekdewidgets)
-
-    set(kdedeprecated_PART_SRCS
-       classpreviews.cpp
-       ${CMAKE_CURRENT_BINARY_DIR}/kdedeprecated.cpp
-       ${CMAKE_CURRENT_BINARY_DIR}/kdedeprecated.moc
-    )
-
-    qt5_generate_moc(${CMAKE_CURRENT_BINARY_DIR}/kdedeprecated.cpp ${CMAKE_CURRENT_BINARY_DIR}/kdedeprecated.moc)
-
-
-    qt5_add_resources(kdedeprecated_PART_SRCS kdedeprecated.qrc)
-
-    add_library(kdedeprecated MODULE ${kdedeprecated_PART_SRCS})
-
-    target_link_libraries(kdedeprecated KDE4Support KF5::KAuth ${KDE4_KIO_LIBS})
-    if(NOT WIN32)
-      set_target_properties(kdedeprecated PROPERTIES
-                                          INSTALL_RPATH_USE_LINK_PATH TRUE
-                                          SKIP_BUILD_RPATH TRUE
-                                          BUILD_WITH_INSTALL_RPATH TRUE
-                                          INSTALL_RPATH ${LIB_INSTALL_DIR}
-                           )
-    endif(NOT WIN32)
-
-    install(TARGETS kdedeprecated  DESTINATION ${QT_PLUGIN_INSTALL_DIR}/designer )
-  endif(NOT KDE_NO_DEPRECATED)
-
   if(Qt5WebKitWidgets_FOUND)
 
   add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/kdewebkitwidgets.cpp

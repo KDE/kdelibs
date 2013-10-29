@@ -3,20 +3,17 @@
 
 install( FILES
  klineedit.png
- ktextbrowser.png
  kpasswordedit.png
  kdatewidget.png
  kfontrequester.png
  kurlrequester.png
  kcombobox.png
  k3iconview.png
- kintspinbox.png
  kled.png
  ksqueezedtextlabel.png
  kurllabel.png
  kruler.png
  kcmodule.png
- kdoublenuminput.png
  klistbox.png
  k3listview.png
  kactivelabel.png
@@ -26,15 +23,10 @@ install( FILES
  kcolorbutton.png
  kgradientselector.png
  kdualcolorbutton.png
- kpushbutton.png
  kcharselect.png
  kdatepicker.png
- kdialog.png
- keditlistbox.png
  kfontcombo.png
  khistorycombo.png
- kintnuminput.png
- krestrictedline.png
  ktextedit.png
  kurlcomborequester.png
  kkeybutton.png
