@@ -13,7 +13,7 @@ endif (APPLE)
 target_link_libraries(kdeinit_kded5
     Qt5::Widgets # QApplication
     KF5::KService # Needed for ksycoca.h, should be replaced with KF5::KService
-    KF5::KCoreAddons # Needed for KCOREADDONS_VERSION_MAJOR to check if the desktop running has the same version of the daemon
+    KF5::KCoreAddons # Needed for KDirWatch
     KF5::KDBusAddons # Needed for kdedmodule.h
     KF5::KCrash # Sets it as autostart
 )

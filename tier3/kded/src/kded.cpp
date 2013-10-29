@@ -20,6 +20,7 @@
 
 #include "kded.h"
 #include "kdedadaptor.h"
+#include "kded_version.h"
 
 #include <kcrash.h>
 
@@ -43,7 +44,6 @@
 #include <kdirwatch.h>
 #include <kservicetypetrader.h>
 #include <ktoolinvocation.h>
-#include <kcoreaddons_version.h> // KCOREADDONS_VERSION_MAJOR
 
 #include <qstandardpaths.h>
 
@@ -214,7 +214,7 @@ void Kded::initModules()
 
         // not the same kde version as the current desktop
         const QByteArray kdeSession = qgetenv("KDE_SESSION_VERSION");
-        if (kdeSession.toInt() != KCOREADDONS_VERSION_MAJOR)
+        if (kdeSession.toInt() != KDED_VERSION_MAJOR)
             kde_running = false;
     }
 

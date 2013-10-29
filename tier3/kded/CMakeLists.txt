@@ -16,7 +16,7 @@ set(KF5_VERSION "5.0.0")
 ecm_setup_version(
   ${KF5_VERSION}
   VARIABLE_PREFIX KDED
-  VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kded_version.h"
+  VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/src/kded_version.h"
   PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KDEDConfigVersion.cmake"
 )
 
@@ -54,7 +54,7 @@ install(EXPORT
 )
 
 install(FILES
-  "${CMAKE_CURRENT_BINARY_DIR}/kded_version.h"
+  "${CMAKE_CURRENT_BINARY_DIR}/src/kded_version.h"
   DESTINATION "${INCLUDE_INSTALL_DIR}"
   COMPONENT Devel
 )
