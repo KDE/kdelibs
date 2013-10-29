@@ -17,6 +17,7 @@ add_subdirectory(kinit)
 add_subdirectory(kjsembed)
 add_subdirectory(knotifyconfig)
 add_subdirectory(kded)
+add_subdirectory(kross)
 
 if(Qt5WebKitWidgets_FOUND)
     add_subdirectory(kdewebkit)
