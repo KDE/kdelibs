@@ -91,11 +91,10 @@ include(KDE4Defaults)
 macro_ensure_out_of_source_build("kdelibs requires an out of source build. Please create a separate build directory and run 'cmake path_to_kdelibs [options]' there.")
 
 # ... and warn in case of an earlier in-source build
-set(generatedFileInSourceDir EXISTS ${kdelibs_SOURCE_DIR}/config.h OR EXISTS ${kdelibs_SOURCE_DIR}/config-prefix.h)
-if(${generatedFileInSourceDir})
+if(EXISTS ${kdelibs_SOURCE_DIR}/config.h OR EXISTS ${kdelibs_SOURCE_DIR}/config-prefix.h)
    message(STATUS "config.h or config-prefix.h exists in your source directory.")
    message(FATAL_ERROR "Please run git clean, it would seem that your source directory has generated files in it.")
-endif(${generatedFileInSourceDir})
+endif()
 #########################################################################
 
 add_definitions(${KDE4_DEFINITIONS})
