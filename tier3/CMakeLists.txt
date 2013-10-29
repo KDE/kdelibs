@@ -16,6 +16,7 @@ add_subdirectory(kdeclarative)
 add_subdirectory(kinit)
 add_subdirectory(kjsembed)
 add_subdirectory(knotifyconfig)
+add_subdirectory(kded)
 
 if(Qt5WebKitWidgets_FOUND)
     add_subdirectory(kdewebkit)

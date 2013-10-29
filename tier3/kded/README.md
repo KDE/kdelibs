@@ -6,27 +6,27 @@ Some of these tasks are built in, others are started on demand.
 
 Built in tasks
 ==============
-*) Checking for newly installed software and updating ksycoca when new
-software is detected. Updating of ksycoca is done by the program kbuildsycoca
-which gets started by kded. When kded is first started it always runs
-kbuildsycoca to ensure that ksycoca is up to date.
+* Checking for newly installed software and updating ksycoca when new
+  software is detected. Updating of ksycoca is done by the program kbuildsycoca
+  which gets started by kded. When kded is first started it always runs
+  kbuildsycoca to ensure that ksycoca is up to date.
 
-*) Checking for newly installed update files. Applications can install
-*.upd update files. These *.upd files are used to update configuration files 
-of users, primarily when new versions of applications are installed with
-(slightly) different configuration file formats. Updating of configuration
-files is done by kconf_update. kded starts kconf_update when it detects a 
-new update file. When kded is first started it always runs kconf_update to
-ensure that it has not missed any update files. kconf_update keeps track
-of which update files have been processed already in the config-file
-kconf_updaterc. It only performs a certain update once.
+* Checking for newly installed update files. Applications can install
+  *.upd update files. These *.upd files are used to update configuration files
+  of users, primarily when new versions of applications are installed with
+  (slightly) different configuration file formats. Updating of configuration
+  files is done by kconf_update. kded starts kconf_update when it detects a
+  new update file. When kded is first started it always runs kconf_update to
+  ensure that it has not missed any update files. kconf_update keeps track
+  of which update files have been processed already in the config-file
+  kconf_updaterc. It only performs a certain update once.
 
-*) Checking for hostname changes. It is a really bad idea to change the 
-hostname of a running system and it usually only happens with incorrectly
-configured dial-up connections. Never the less, kded will check for hostname
-changes and if it detects one it will make the necassery changes to the
-KDE environemnt and X-server to allow continued proper operation. The 
-program kdontchangethehostname is executed to make the actual changes.
+* Checking for hostname changes. It is a really bad idea to change the
+  hostname of a running system and it usually only happens with incorrectly
+  configured dial-up connections. Never the less, kded will check for hostname
+  changes and if it detects one it will make the necassery changes to the
+  KDE environemnt and X-server to allow continued proper operation. The
+  program kdontchangethehostname is executed to make the actual changes.
 
 Configuration of built in tasks.
 ================================
@@ -35,23 +35,23 @@ editing the kdedrc configuration file. Changes need to be made with a text-
 editor, there is no GUI available. All options are listed under the [General]
 group:
 
-HostnamePollInterval: This can be used to adjust the time interval at which
+**HostnamePollInterval**: This can be used to adjust the time interval at which
 the hostname is checked for changes. The time is specified in milliseconds
 and has a default of 5000 (5 seconds).
 
-CheckSycoca: This option can be used to disable checking for new software.
+**CheckSycoca**: This option can be used to disable checking for new software.
 ksycoca will still be built when kded starts up and when applications
 explicitly request a rebuild of the ksycoca database. The user can 
 also manually rebuild ksycoca by running the kbuildsycoca program.
 The default value of this option is "true". Checking can be disabled by 
 setting this option to "false".
 
-CheckUpdates: This option can be used to disable checking for update files.
+**CheckUpdates**: This option can be used to disable checking for update files.
 kconf_update will still be run when kded starts up.
 The default value of this option is "true". Checking can be disabled by 
 setting this option to "false".
 
-CheckHostname: This option can be used to disable checking for hostname 
+**CheckHostname**: This option can be used to disable checking for hostname
 changes. The default value of this option is "true". Checking can be 
 disabled by setting this option to "false".
 
@@ -68,11 +68,11 @@ DelayedCheck=false
 If FAM or DNOTIFY is not available, the filesystem will be polled at regular interval for any changes. Under the [DirWatch] group in the kdeglobals file
 the following options are available to adjust the polling frequency:
 
-PollInterval: This can be used to adjust the time interval at which the local
+**PollInterval**: This can be used to adjust the time interval at which the local
 filesystem is checked for new software or update files. The time is specified
 in milliseconds and has a default of 500 (0.5 seconds).
 
-NFSPollInterval: This can be used to adjust the time interval at which remote
+**NFSPollInterval**: This can be used to adjust the time interval at which remote
 filesystems, such as NFS or Samba, are ebing checked for new software or 
 update files. The time is specified in milliseconds and has a default of 5000
 (5 seconds).
@@ -97,4 +97,4 @@ central place. KDED has support for modules that will be demand-loaded
 whenever an application attempts to make DBus call to the module.
 This can be useful for central administration tasks.
 
-See kdelibs/kded/HOWTO.
+See kded/doc/HOWTO.

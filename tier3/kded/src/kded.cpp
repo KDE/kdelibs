@@ -20,7 +20,7 @@
 
 #include "kded.h"
 #include "kdedadaptor.h"
-#include "kdedmodule.h"
+#include "kded_version.h"
 
 #include <kcrash.h>
 
@@ -37,21 +37,13 @@
 #include <QtDBus/QtDBus>
 
 #include <kdbusservice.h>
+#include <kdedmodule.h>
 #include <qapplication.h>
-#include <klocalizedstring.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <kdirwatch.h>
 #include <kservicetypetrader.h>
 #include <ktoolinvocation.h>
-#include <kcoreaddons_version.h> // KCOREADDONS_VERSION_MAJOR
-#include "config-kded.h"
-
-#if HAVE_X11
-#include <qx11info_x11.h>
-#include <X11/Xlib.h>
-#include <fixx11h.h>
-#endif
 
 #include <qstandardpaths.h>
 
@@ -222,7 +214,7 @@ void Kded::initModules()
 
         // not the same kde version as the current desktop
         const QByteArray kdeSession = qgetenv("KDE_SESSION_VERSION");
-        if (kdeSession.toInt() != KCOREADDONS_VERSION_MAJOR)
+        if (kdeSession.toInt() != KDED_VERSION_MAJOR)
             kde_running = false;
     }
 
@@ -786,8 +778,6 @@ void KBuildsycocaAdaptor::enableTestMode()
 
 extern "C" Q_DECL_EXPORT int kdemain(int argc, char *argv[])
 {
-    KLocalizedString::setApplicationDomain("kdelibs4");
-
     //options.add("check", qi18n("Check Sycoca database only once"));
 
      // WABA: Make sure not to enable session management.
@@ -835,28 +825,29 @@ extern "C" Q_DECL_EXPORT int kdemain(int argc, char *argv[])
      if (bCheckUpdates)
          (void) new KUpdateD; // Watch for updates
 
-#if HAVE_X11
-     XEvent e;
-     e.xclient.type = ClientMessage;
-     e.xclient.message_type = XInternAtom( QX11Info::display(), "_KDE_SPLASH_PROGRESS", False );
-     e.xclient.display = QX11Info::display();
-     e.xclient.window = QX11Info::appRootWindow();
-     e.xclient.format = 8;
-     strcpy( e.xclient.data.b, "kded" );
-     XSendEvent( QX11Info::display(), QX11Info::appRootWindow(), False, SubstructureNotifyMask, &e );
-#endif
+//NOTE: We are going to change how KDE starts and this certanly doesn't fit on the new design.
+// #if HAVE_X11
+//      XEvent e;
+//      e.xclient.type = ClientMessage;
+//      e.xclient.message_type = XInternAtom( QX11Info::display(), "_KDE_SPLASH_PROGRESS", False );
+//      e.xclient.display = QX11Info::display();
+//      e.xclient.window = QX11Info::appRootWindow();
+//      e.xclient.format = 8;
+//      strcpy( e.xclient.data.b, "kded" );
+//      XSendEvent( QX11Info::display(), QX11Info::appRootWindow(), False, SubstructureNotifyMask, &e );
+// #endif
 
      runKonfUpdate(); // Run it once.
 
-#if HAVE_X11
-     e.xclient.type = ClientMessage;
-     e.xclient.message_type = XInternAtom( QX11Info::display(), "_KDE_SPLASH_PROGRESS", False );
-     e.xclient.display = QX11Info::display();
-     e.xclient.window = QX11Info::appRootWindow();
-     e.xclient.format = 8;
-     strcpy( e.xclient.data.b, "confupdate" );
-     XSendEvent( QX11Info::display(), QX11Info::appRootWindow(), False, SubstructureNotifyMask, &e );
-#endif
+// #if HAVE_X11
+//      e.xclient.type = ClientMessage;
+//      e.xclient.message_type = XInternAtom( QX11Info::display(), "_KDE_SPLASH_PROGRESS", False );
+//      e.xclient.display = QX11Info::display();
+//      e.xclient.window = QX11Info::appRootWindow();
+//      e.xclient.format = 8;
+//      strcpy( e.xclient.data.b, "confupdate" );
+//      XSendEvent( QX11Info::display(), QX11Info::appRootWindow(), False, SubstructureNotifyMask, &e );
+// #endif
 
      //if (bCheckHostname)
      //    (void) new KHostnameD(HostnamePollInterval); // Watch for hostname changes

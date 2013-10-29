@@ -1,33 +1,6 @@
-project(kded)
-
-find_package(ECM 0.0.9 REQUIRED NO_MODULE)
-set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
-
-set(REQUIRED_QT_VERSION "5.2")
-find_package(Qt5 "${REQUIRED_QT_VERSION}" REQUIRED NO_MODULE COMPONENTS Xml Widgets DBus Network Test)
-find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
-
-include(FeatureSummary)
-include(CMakePackageConfigHelpers)
-include(ECMSetupVersion)
-
-if(NOT WIN32)
-    find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS X11Extras)
-endif(NOT WIN32)
-
-remove_definitions(-DQT_NO_CAST_FROM_ASCII)
-
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config-kded.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kded.h)
-
-find_package(X11)
-set(HAVE_X11 ${X11_FOUND})
-
-########### next target ###############
-
 set(kded_KDEINIT_SRCS kded.cpp kdedadaptor.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/org.kde.kded5.xml # just so that it gets generated
 )
-
 
 kf5_add_kdeinit_executable(kded5 ${kded_KDEINIT_SRCS})
 
@@ -37,12 +10,18 @@ if (APPLE)
     set_target_properties(kded5 PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "KDE Daemon")
 endif (APPLE)
 
-target_link_libraries(kdeinit_kded5 Qt5::X11Extras ${KDE4_KIO_LIBS} ${X11_LIBRARIES} KF5::KCoreAddons KF5::KDBusAddons KF5::KI18n KF5::KCrash KF5::KWindowSystem)
+target_link_libraries(kdeinit_kded5
+    Qt5::Widgets # QApplication
+    KF5::KService # Needed for ksycoca.h, should be replaced with KF5::KService
+    KF5::KCoreAddons # Needed for KDirWatch
+    KF5::KDBusAddons # Needed for kdedmodule.h
+    KF5::KCrash # Sets it as autostart
+)
 
-install(TARGETS kdeinit_kded5 ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS kdeinit_kded5 EXPORT KDEDTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 target_link_libraries( kded5 kdeinit_kded5)
-install(TARGETS kded5 ${INSTALL_TARGETS_DEFAULT_ARGS} )
+install(TARGETS kded5 EXPORT KDEDTargets ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
 
 qt5_generate_dbus_interface( kdedadaptor.h org.kde.kded5.xml )
@@ -62,5 +41,3 @@ endmacro(dbus_add_activation_service _sources)
 dbus_add_activation_service(org.kde.kded5.service.in)
 
 install( FILES kdedmodule.desktop DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
-
-
