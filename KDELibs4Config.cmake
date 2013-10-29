@@ -438,11 +438,6 @@ set(KDE4_INCLUDE_DIR ${KDE4_INCLUDE_INSTALL_DIR} )
 # This setting is currently not recorded in KDELibsDependencies.cmake:
 find_file(KDE4_PLASMA_OPENGL_FOUND plasma/glapplet.h PATHS ${KDE4_INCLUDE_DIR} NO_DEFAULT_PATH)
 
-# Now include the file with the imported tools (executable targets).
-# This export-file is generated and installed by the toplevel CMakeLists.txt of kdelibs.
-# Having the libs and tools in two separate files should help with cross compiling.
-include(${CMAKE_CURRENT_LIST_DIR}/KDELibs4ToolsTargets.cmake)
-
 # get the build CONFIGURATIONS which were exported in this file, and use just the first
 # of them to get the location of the installed executables
 get_target_property(_importedConfigurations  ${KDE4_TARGET_PREFIX}meinproc5 IMPORTED_CONFIGURATIONS )

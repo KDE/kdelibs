@@ -142,11 +142,10 @@ install( FILES ${CMAKE_CURRENT_SOURCE_DIR}/KDELibs4Config.cmake
 # that this main file doesn't include older and different configuration specific exports files,
 # which might have a different set of targets or targets with different names.
 # The code for installing the exports files will soon go into a macro. Alex
-install(CODE "set(EXPORT_FILES KDELibs4LibraryTargets.cmake KDELibs4ToolsTargets.cmake)"
+install(CODE "set(EXPORT_FILES KDELibs4LibraryTargets.cmake)"
         CODE "set(EXPORT_INSTALL_DIR \"${CMAKECONFIG_INSTALL_DIR}\")"
         SCRIPT "${CMAKE_SOURCE_DIR}/cmake/modules/check_installed_exports_file.cmake" )
 install( EXPORT kdelibsLibraryTargets DESTINATION ${CMAKECONFIG_INSTALL_DIR} NAMESPACE ${KDE4_TARGET_PREFIX} FILE KDELibs4LibraryTargets.cmake  COMPONENT Devel)
-install( EXPORT kdelibsToolsTargets   DESTINATION ${CMAKECONFIG_INSTALL_DIR} NAMESPACE ${KDE4_TARGET_PREFIX} FILE KDELibs4ToolsTargets.cmake  COMPONENT Devel)
 
 feature_summary(WHAT ALL
                      INCLUDE_QUIET_PACKAGES
