@@ -24,6 +24,7 @@ sb_add_project(tier1/sonnet )
 sb_add_project(tier1/threadweaver )
 
 sb_add_project(tier2/kauth DEPENDS kcoreaddons)
+sb_add_project(tier2/kcompletion DEPENDS kconfig kwidgetsaddons)
 sb_add_project(tier2/kcrash DEPENDS kcoreaddons kwindowsystem)
 sb_add_project(tier2/kdoctools DEPENDS karchive)
 sb_add_project(tier2/ki18n DEPENDS kjs)
