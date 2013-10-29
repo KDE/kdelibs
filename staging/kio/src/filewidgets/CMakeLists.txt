@@ -82,6 +82,9 @@ install( FILES
   knewfilemenu.h
   knameandurlinputdialog.h
 
-  ${CMAKE_CURRENT_BINARY_DIR}/kiofilewidgets_export.h
-   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
+  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
 
+install(FILES
+  ${CMAKE_CURRENT_BINARY_DIR}/kiofilewidgets_export.h
+  DESTINATION ${INCLUDE_INSTALL_DIR}/kio
+  COMPONENT Devel)
