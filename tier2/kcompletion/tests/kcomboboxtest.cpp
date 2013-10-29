@@ -3,7 +3,6 @@
 #include <assert.h>
 
 #include <kconfiggroup.h>
-#include <kiconloader.h>
 #include <kconfig.h>
 
 #include <QApplication>
@@ -141,7 +140,8 @@ KComboBoxTest::KComboBoxTest(QWidget* widget)
   s_pCompletion->setCompletionMode( KCompletion::CompletionPopup );
   m_konqc->setCompletionObject( s_pCompletion );
 
-  QPixmap pix = SmallIcon("www");
+  QPixmap pix(16, 16);
+  pix.fill(Qt::blue);
   m_konqc->addItem( pix, "http://www.kde.org" );
   m_konqc->setCurrentIndex( m_konqc->count()-1 );
 
