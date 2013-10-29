@@ -55,9 +55,6 @@ kconfiggui_unit_tests(
    kconfigskeletontest
    kstandardshortcuttest
 )
-if(WIN32)
-    target_link_libraries(kconfigguitest ${KDEWIN_LIBRARIES})
-endif()
 
 add_subdirectory(kconfig_compiler)
 
