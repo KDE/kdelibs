@@ -327,8 +327,27 @@ void KArchiveTest::initTestCase()
         QVERIFY(false);
     }
 #endif
+}
 
-    QVERIFY(QFileInfo(":/qt-project.org/qmime/freedesktop.org.xml").exists());
+void KArchiveTest::testEmptyFilename()
+{
+    QTest::ignoreMessage(QtWarningMsg, "KArchive: No file name specified");
+    KTar tar(QLatin1String(""));
+    QVERIFY(!tar.open(QIODevice::ReadOnly));
+}
+
+void KArchiveTest::testNullDevice()
+{
+    QIODevice* nil = 0;
+    QTest::ignoreMessage(QtWarningMsg, "KArchive: Null device specified");
+    KTar tar(nil);
+    QVERIFY(!tar.open(QIODevice::ReadOnly));
+}
+
+void KArchiveTest::testNonExistentFile()
+{
+    KTar tar(QLatin1String("nonexistant.tar.gz"));
+    QVERIFY(!tar.open(QIODevice::ReadOnly));
 }
 
 void KArchiveTest::testCreateTar_data()

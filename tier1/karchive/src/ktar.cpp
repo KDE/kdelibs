@@ -80,7 +80,6 @@ KTar::KTar( const QString& fileName, const QString & _mimetype )
 KTar::KTar( QIODevice * dev )
     : KArchive( dev ), d(new KTarPrivate(this))
 {
-    Q_ASSERT( dev );
 }
 
 // Only called when a filename was given

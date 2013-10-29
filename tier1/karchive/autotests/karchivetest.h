@@ -34,6 +34,9 @@ class KArchiveTest : public QObject
 private Q_SLOTS:
     void initTestCase();
 
+    void testEmptyFilename();
+    void testNullDevice();
+    void testNonExistentFile();
     void testCreateTar_data();
     void testCreateTar();
     void testCreateTarXXX_data(){ setupData(); }

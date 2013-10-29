@@ -56,7 +56,8 @@
 KArchive::KArchive( const QString& fileName )
     : d(new KArchivePrivate)
 {
-    Q_ASSERT( !fileName.isEmpty() );
+    if (fileName.isEmpty())
+        qWarning("KArchive: No file name specified");
     d->fileName = fileName;
     // This constructor leaves the device set to 0.
     // This is for the use of QSaveFile, see open().
@@ -65,6 +66,8 @@ KArchive::KArchive( const QString& fileName )
 KArchive::KArchive( QIODevice * dev )
     : d(new KArchivePrivate)
 {
+    if (!dev)
+        qWarning("KArchive: Null device specified");
     d->dev = dev;
 }
 
@@ -90,7 +93,8 @@ bool KArchive::open( QIODevice::OpenMode mode )
             return false;
     }
 
-    Q_ASSERT( d->dev );
+    if (!d->dev)
+        return false;
 
     if ( !d->dev->isOpen() && !d->dev->open( mode ) )
         return false;
