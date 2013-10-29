@@ -34,7 +34,7 @@ public:
     bool removeEmoticon(const QString &emo);
     bool addEmoticon(const QString &emo, const QString &text, AddEmoticonOption option = DoNotCopy);
     void saveTheme();
-    void createNew();
+    void newTheme();
 
 private:
     QDomDocument m_themeXml;

@@ -111,6 +111,11 @@ QHash<QChar, QList<KEmoticonsProvider::Emoticon> > KEmoticonsProvider::emoticons
     return d->m_emoticonsIndex;
 }
 
+void KEmoticonsProvider::createNew()
+{
+    newTheme();
+}
+
 void KEmoticonsProvider::setThemePath(const QString &path)
 {
     QFileInfo info(path);

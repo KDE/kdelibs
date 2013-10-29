@@ -198,7 +198,7 @@ bool XmppEmoticons::loadTheme(const QString &path)
     return true;
 }
 
-void XmppEmoticons::createNew()
+void XmppEmoticons::newTheme()
 {
     QString path = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/emoticons/" + themeName();
     QDir().mkpath(path);

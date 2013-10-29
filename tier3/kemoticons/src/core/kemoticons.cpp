@@ -175,7 +175,7 @@ KEmoticonsTheme KEmoticons::newTheme(const QString &name, const KService::Ptr &s
     KEmoticonsTheme theme(provider);
     theme.setThemeName(name);
 
-    theme.createNew();
+    provider->newTheme();
 
     return theme;
 }

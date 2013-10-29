@@ -182,7 +182,7 @@ bool KdeEmoticons::loadTheme(const QString &path)
     return true;
 }
 
-void KdeEmoticons::createNew()
+void KdeEmoticons::newTheme()
 {
     QString path = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/emoticons/" + themeName();
     QDir().mkpath(path);

@@ -199,7 +199,7 @@ bool PidginEmoticons::loadTheme(const QString &path)
     return true;
 }
 
-void PidginEmoticons::createNew()
+void PidginEmoticons::newTheme()
 {
     QString path = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/emoticons/" + themeName();
     QDir().mkpath(path);

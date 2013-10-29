@@ -201,8 +201,12 @@ public:
 
     /**
      * Creates a new theme
+     *
+     * @deprecated since 5.0, subclass KEmoticonsProvider instead
      */
-    void createNew();
+#ifndef KDE_NO_DEPRECATED
+    KEMOTICONS_DEPRECATED void createNew();
+#endif
 
     /**
      * Checks if the emoticon theme has a valid provider

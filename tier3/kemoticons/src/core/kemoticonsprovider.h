@@ -135,8 +135,18 @@ public:
 
     /**
      * Creates a new theme
+     *
+     * @deprecated since 5.0, use newTheme() instead
      */
-    virtual void createNew() = 0;
+#ifndef KDE_NO_DEPRECATED
+    KEMOTICONS_DEPRECATED void createNew();
+#endif
+
+    /**
+     * Creates a new theme
+     * @since 5.0
+     */
+    virtual void newTheme() = 0;
 
 protected:
     /**

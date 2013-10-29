@@ -509,6 +509,9 @@ toolbar->setProperty("otherToolbar", true);</pre>
 
 <ul>
     <li> KEmoticonsProvider::save is deprecated, instead you should use KEmoticonsProvider::saveTheme
+    <li> KEmoticonsTheme::save is deprecated, instead you should subclass KEmoticonsProvider and implement the pure virtual method KEmoticonsProvider::saveTheme
+    <li> KEmoticonsProvider::createNew is deprecated, instead you should use KEmoticonsProvider::newTheme
+    <li> KEmoticonsTheme::createNew is deprecated, instead you should subclass KEmoticonsProvider and implement the pure virtual method KEmoticonsProvider::newTheme
     <li> KEmoticonsProvider::addEmoticonsMap is deprecated, instead you should use KEmoticonsProvider::addMapItem
     <li> KEmoticonsProvider::removeEmoticonsMap is deprecated, instead you should use KEmoticonsProvider::removeMapItem
     <li> KEmoticonsProvider::addEmoticonIndex is deprecated, instead you should use KEmoticonsProvider::addIndexItem

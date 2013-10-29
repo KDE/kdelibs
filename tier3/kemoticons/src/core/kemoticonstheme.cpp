@@ -150,7 +150,7 @@ void KEmoticonsTheme::createNew()
         return;
     }
 
-    d->provider->createNew();
+    d->provider->newTheme();
 }
 
 QString KEmoticonsTheme::parseEmoticons(const QString &text, ParseMode mode, const QStringList &exclude) const

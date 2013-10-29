@@ -35,7 +35,7 @@ public:
     bool addEmoticon(const QString &emo, const QString &text, AddEmoticonOption option = DoNotCopy);
     void saveTheme();
 
-    void createNew();
+    void newTheme();
 
 private:
     QDomDocument m_themeXml;

@@ -198,7 +198,7 @@ bool AdiumEmoticons::loadTheme(const QString &path)
     return true;
 }
 
-void AdiumEmoticons::createNew()
+void AdiumEmoticons::newTheme()
 {
     QString path = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/emoticons/" + themeName();
     QDir().mkpath(path);
