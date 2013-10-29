@@ -124,7 +124,6 @@ JobCollection::~JobCollection()
         if (d->api != 0) // still queued
             dequeueElements(false);
     }
-    // QObject cleanup takes care of the job runners
     delete d;
 }
 
@@ -209,9 +208,9 @@ void JobCollection::elementStarted(JobPointer job, Thread* thread)
 
 void JobCollection::elementFinished(JobPointer job, Thread *thread)
 {
-    Q_UNUSED(job) // except in Q_ASSERT
-    Q_ASSERT(!d->self.isNull());
     QMutexLocker l(mutex()); Q_UNUSED(l);
+    Q_ASSERT(!d->self.isNull());
+    Q_UNUSED(job) // except in Q_ASSERT
     Q_ASSERT(job.data() == d->self || std::find(d->elements.begin(), d->elements.end(), job) != d->elements.end());
     const int jobsStarted = d->jobsStarted.loadAcquire();
     Q_ASSERT(jobsStarted >=0); Q_UNUSED(jobsStarted);
@@ -219,11 +218,11 @@ void JobCollection::elementFinished(JobPointer job, Thread *thread)
     Q_ASSERT(remainingJobs >=0);
     if (remainingJobs == 0 ) {
         // all elements can only be done if self has been executed:
-        Q_ASSERT(!d->self.isNull());
         // there is a small chance that (this) has been dequeued in the
         // meantime, in this case, there is nothing left to clean up
         finalCleanup();
         executor()->defaultEnd(d->self, thread);
+        l.unlock();
         d->self.clear();
     }
 }
