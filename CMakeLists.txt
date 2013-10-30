@@ -15,6 +15,8 @@ cmake_minimum_required(VERSION ${reqd_cmake})
 
 project(kdelibs)
 
+add_subdirectory(superbuild)
+
 # Make CPack available to easy generate binary packages
 include(CPack)
 

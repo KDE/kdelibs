@@ -72,8 +72,6 @@ set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
              PROPERTY EP_BASE ${CMAKE_CURRENT_BINARY_DIR}
             )
 
-set(SB_EVERYTHING_DISABLED TRUE)
-
 macro(sb_add_project _subdir )
 
   set(oneValueArgs ) #CVS_REPOSITORY GIT_REPOSITORY SVN_REPOSITORY SOURCE_DIR SUBDIR)
@@ -85,101 +83,62 @@ macro(sb_add_project _subdir )
     set(name "${CMAKE_MATCH_2}")
   endif()
 
-  option(BUILD_${name} "Build subproject ${name}" FALSE)
+  set(GET_SOURCES_ARGS SOURCE_DIR ${CMAKE_SOURCE_DIR}/${_subdir}
+                       DOWNLOAD_COMMAND "")
 
-  if (BUILD_${name})
+  message(STATUS "superbuild: Adding project ${_subdir}")
 
-    set(GET_SOURCES_ARGS SOURCE_DIR ${CMAKE_SOURCE_DIR}/../${_subdir}
-                         DOWNLOAD_COMMAND "")
+  set(DEPENDS_ARGS)
+  if(_SB_DEPENDS)
+    set(existingDepends)
 
-    message(STATUS "Adding project ${_subdir}")
-    set(SB_EVERYTHING_DISABLED FALSE)
-
-    set(DEPENDS_ARGS)
-    if(_SB_DEPENDS)
-      set(existingDepends)
-
-      foreach(dep ${_SB_DEPENDS})
-        if(TARGET ${dep})
-          list(APPEND existingDepends ${dep} )
-        else()
-          message(STATUS "HINT: ${_name}: Dependency ${dep} is disabled, trying to use system one.")
-        endif()
-      endforeach(dep)
-
-      if(existingDepends)
-        set(DEPENDS_ARGS DEPENDS ${existingDepends} )
+    foreach(dep ${_SB_DEPENDS})
+      if(NOT TARGET sb_${dep})
+        message(FATAL_ERROR "'${dep}' is not defined as a superbuild project")
+        return()
       endif()
+      list(APPEND existingDepends sb_${dep} )
+    endforeach(dep)
 
+    if(existingDepends)
+      set(DEPENDS_ARGS DEPENDS ${existingDepends} )
     endif()
 
-    externalproject_add(${name}
-                        ${_SB_UNPARSED_ARGUMENTS}
-                        ${GET_SOURCES_ARGS}
-                        TMP_DIR ${CMAKE_BINARY_DIR}/CMakeFiles/SuperBuild/tmpfiles/${name}
-                        STAMP_DIR ${CMAKE_BINARY_DIR}/CMakeFiles/SuperBuild/stampfiles/${name}
-                        DOWNLOAD_DIR ${CMAKE_BINARY_DIR}/CMakeFiles/SuperBuild/download/${name}
-                        BINARY_DIR ${CMAKE_BINARY_DIR}/${name}
-                        INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
-#                        INSTALL_COMMAND ${CMAKE_MAKE_PROGRAM} -C${CMAKE_BINARY_DIR}/${_name}/build install DESTDIR=${CMAKE_BINARY_DIR}/Install
-                        CMAKE_ARGS --no-warn-unused-cli
-                                   -DQT_QMAKE_EXECUTABLE=${QT_QMAKE_EXECUTABLE}
-                                   -DCMAKE_PREFIX_PATH=${SB_INITIAL_DESTDIR}${CMAKE_INSTALL_PREFIX}
-                                   -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
-                                   -DCMAKE_SKIP_RPATH="${CMAKE_SKIP_RPATH}"
-                                   -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-                                   -DLIB_SUFFIX=${LIB_SUFFIX}
-                                   ${SB_CMAKE_ARGS}
-                                   ${SB_CMAKE_ARGS_${name}}
-                        STEP_TARGETS update configure
-                        ${DEPENDS_ARGS}
-                        )
-#    externalproject_add_step(${_name}  package
-#                             COMMAND  ${CMAKE_MAKE_PROGRAM} package
-#                             WORKING_DIRECTORY <BINARY_DIR>
-#                             DEPENDEES build)
-#
-#    externalProject_Add_StepTargets(${_name} package)
-    if(SB_ONE_PACKAGE_PER_PROJECT)
-      set(SRC_INSTALL_DIR ".")
-    else()
-      set(SRC_INSTALL_DIR "src")
-    endif()
-
-    install(DIRECTORY ${CMAKE_BINARY_DIR}/${_subdir}  DESTINATION ${SRC_INSTALL_DIR}  COMPONENT ${name}
-            PATTERN .git EXCLUDE
-            PATTERN .svn EXCLUDE
-            PATTERN CVS EXCLUDE
-           )
-
-#    add_dependencies(PackageAll ${_name}-package )
-    add_dependencies(${name} AlwaysCheckDESTDIR)
-  else()
-    if(NOT SB_SILENT_SKIPPED_PROJECTS)
-      message(STATUS "Skipping ${_subdir}")
-    endif()
-    list(APPEND _SB_SKIPPED_PROJECTS ${_subdir} )
-    execute_process(COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/${name}
-#                    COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/Download/${_name}
-#                    COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/Stamp/${_name}
-#                    COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/tmp/${_name}
-                    COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/CMakeFiles/SuperBuild/tmpfiles/${name}
-                    COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/CMakeFiles/SuperBuild/stampfiles/${name}
-                    COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/CMakeFiles/SuperBuild/download/${name}
-                    OUTPUT_QUIET ERROR_QUIET )
   endif()
+
+  externalproject_add(sb_${name}
+                      ${_SB_UNPARSED_ARGUMENTS}
+                      ${GET_SOURCES_ARGS}
+                      TMP_DIR ${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/SuperBuild/tmpfiles/${name}
+                      STAMP_DIR ${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/SuperBuild/stampfiles/${name}
+                      DOWNLOAD_DIR ${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/SuperBuild/download/${name}
+                      BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/${name}
+                      INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
+                      CMAKE_ARGS --no-warn-unused-cli
+                                 -DQT_QMAKE_EXECUTABLE=${QT_QMAKE_EXECUTABLE}
+                                 -DCMAKE_PREFIX_PATH=${SB_INITIAL_DESTDIR}${CMAKE_INSTALL_PREFIX}
+                                 -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
+                                 -DCMAKE_SKIP_RPATH="${CMAKE_SKIP_RPATH}"
+                                 -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+                                 -DLIB_SUFFIX=${LIB_SUFFIX}
+                                 ${SB_CMAKE_ARGS}
+                                 ${SB_CMAKE_ARGS_${name}}
+                      STEP_TARGETS update configure
+                      ${DEPENDS_ARGS}
+                      )
+  set_target_properties(sb_${name} PROPERTIES EXCLUDE_FROM_ALL TRUE)
+
+  add_dependencies(sb_${name} AlwaysCheckDESTDIR)
+  add_dependencies(sb_all sb_${name})
 endmacro(sb_add_project)
-
-
-function(sb_print_skipped_projects)
-  message(STATUS "Skipped projects: ${_SB_SKIPPED_PROJECTS}" )
-endfunction()
-
 
 #file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/ThisIsASourcePackage.in "This is a generated source package.")
 
 #install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ThisIsASourcePackage.in DESTINATION src RENAME ThisIsASourcePackage.valid  COMPONENT SuperBuild )
 #install(FILES CMakeLists.txt DESTINATION src  COMPONENT SuperBuild )
 #install(FILES ${CMAKE_CURRENT_LIST_FILE} DESTINATION .  COMPONENT SuperBuild )
+
+add_custom_target(sb_all)
+set_target_properties(sb_all PROPERTIES EXCLUDE_FROM_ALL TRUE)
 
 set(CMAKE_SKIP_INSTALL_ALL_DEPENDENCY TRUE)

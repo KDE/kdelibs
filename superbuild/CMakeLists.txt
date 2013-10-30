@@ -59,7 +59,3 @@ sb_add_project(tier3/kdewidgets DEPENDS kio kdoctools kwidgetsaddons ki18n kicon
 sb_add_project(tier3/kded DEPENDS kcoreaddons kdbusaddons kservice kcrash)
 
 sb_add_project(tier4/kcmutils DEPENDS itemviews kconfigwidgets kcoreaddons ki18n kiconthemes kservice xmlgui)
-
-if(SB_EVERYTHING_DISABLED)
-  message(STATUS "All projects are disabled. You may consider running make edit_cache or cmake-gui to enable some.")
-endif()
