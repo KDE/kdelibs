@@ -45,9 +45,9 @@ public:
     Queue* implementation;
 };
 
-Weaver::Weaver ( QObject* parent )
-    : Queue( parent )
-    , d (new Private)
+Weaver::Weaver(QObject* parent)
+    : Queue(parent)
+    , d(new Private)
 {
     d->implementation = makeWeaverImpl();
     //FIXME move to makeWeaverImpl(), so that implementations can be replaced
@@ -98,6 +98,9 @@ public:
         , instance_(instance)
     {
         Q_ASSERT_X(app!=0, Q_FUNC_INFO, "Calling ThreadWeaver::Weaver::instance() requires a QCoreApplication!");
+        QObject* impl = instance.load()->findChild<Queue*>();
+        Q_ASSERT(impl);
+        impl->setObjectName(tr("GlobalQueue"));
         qAddPostRoutine(shutDownGlobalQueue);
     }
 
