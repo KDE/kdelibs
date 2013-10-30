@@ -60,10 +60,8 @@ public:
 
     static unsigned int makeId()
     {
-        static unsigned int s_id;
-        static QMutex sm_mutex;
-        QMutexLocker l (&sm_mutex);
-        return ++s_id;
+        static QAtomicInt s_id(1);
+        return s_id.fetchAndAddRelease(1);
     }
 };
 
