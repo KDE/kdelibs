@@ -70,6 +70,10 @@ Thread::Thread (WeaverImpl *parent)
                  // does not have a parent (see QObject::pushToThread)
     , d(new Private(parent))
 {
+    const QString queueName = parent->objectName().isEmpty()
+            ? tr("Queue(0x%1)").arg(quintptr(parent), 0, 16, QChar::fromLatin1('0'))
+            : parent->objectName();
+    setObjectName(tr("%1[%2]").arg(queueName).arg(QString::number(id()), 2, QChar::fromLatin1('0')));
 }
 
 Thread::~Thread()
