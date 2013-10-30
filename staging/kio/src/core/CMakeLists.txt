@@ -74,8 +74,8 @@ set(kiocore_SRCS
 
   ksslcertificatemanager.cpp
   ktcpsocket.cpp
-  kssl/ksslsettings.cpp          # temporary (used by tcpslavebase)
-  kssl/kopenssl.cpp              # temporary (used by ksslsettings)
+  kssl/ksslsettings.cpp
+  kssl/kopenssl.cpp
 )
 
 if (UNIX)
@@ -162,6 +162,7 @@ install( FILES
   jobclasses.h
   authinfo.h
   davjob.h
+  kssl/ksslsettings.h
   ${CMAKE_CURRENT_BINARY_DIR}/kiocore_export.h
 
    DESTINATION ${INCLUDE_INSTALL_DIR}/kio COMPONENT Devel)
