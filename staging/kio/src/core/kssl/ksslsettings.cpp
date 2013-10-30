@@ -77,6 +77,14 @@ class KSSLSettingsPrivate {
 		QString m_EGDPath;
 		bool m_bSendX509;
 		bool m_bPromptX509;
+
+                KConfig *m_cfg;
+                bool m_bWarnOnEnter, m_bWarnOnUnencrypted, m_bWarnOnLeave, m_bWarnOnMixed;
+                bool m_bWarnSelfSigned, m_bWarnRevoked, m_bWarnExpired;
+
+                QStringList m_v3ciphers;
+                QStringList m_v3selectedciphers;
+                QList<int>  m_v3bits;
 };
 
 //
@@ -88,7 +96,7 @@ class KSSLSettingsPrivate {
 KSSLSettings::KSSLSettings(bool readConfig)
 	:d(new KSSLSettingsPrivate)
 {
-        m_cfg = new KConfig("cryptodefaults", KConfig::NoGlobals);
+        d->m_cfg = new KConfig("cryptodefaults", KConfig::NoGlobals);
 
 	if (readConfig) load();
 }
@@ -96,7 +104,7 @@ KSSLSettings::KSSLSettings(bool readConfig)
 
 // we don't save settings incase it was a temporary object
 KSSLSettings::~KSSLSettings() {
-	delete m_cfg;
+	delete d->m_cfg;
 	delete d;
 }
 
@@ -109,25 +117,25 @@ QString KSSLSettings::getCipherList() {
 
 // FIXME - sync these up so that we can use them with the control module!!
 void KSSLSettings::load() {
-	m_cfg->reparseConfiguration();
+	d->m_cfg->reparseConfiguration();
 
-        KConfigGroup cfg(m_cfg, "Warnings");
-	m_bWarnOnEnter = cfg.readEntry("OnEnter", false);
-	m_bWarnOnLeave = cfg.readEntry("OnLeave", true);
-	m_bWarnOnUnencrypted = cfg.readEntry("OnUnencrypted", false);
-	m_bWarnOnMixed = cfg.readEntry("OnMixed", true);
+        KConfigGroup cfg(d->m_cfg, "Warnings");
+	d->m_bWarnOnEnter = cfg.readEntry("OnEnter", false);
+	d->m_bWarnOnLeave = cfg.readEntry("OnLeave", true);
+	d->m_bWarnOnUnencrypted = cfg.readEntry("OnUnencrypted", false);
+	d->m_bWarnOnMixed = cfg.readEntry("OnMixed", true);
 
-	cfg = KConfigGroup(m_cfg, "Validation");
-	m_bWarnSelfSigned = cfg.readEntry("WarnSelfSigned", true);
-	m_bWarnExpired = cfg.readEntry("WarnExpired", true);
-	m_bWarnRevoked = cfg.readEntry("WarnRevoked", true);
+	cfg = KConfigGroup(d->m_cfg, "Validation");
+	d->m_bWarnSelfSigned = cfg.readEntry("WarnSelfSigned", true);
+	d->m_bWarnExpired = cfg.readEntry("WarnExpired", true);
+	d->m_bWarnRevoked = cfg.readEntry("WarnRevoked", true);
 
-	cfg = KConfigGroup(m_cfg, "EGD");
+	cfg = KConfigGroup(d->m_cfg, "EGD");
 	d->m_bUseEGD = cfg.readEntry("UseEGD", false);
 	d->m_bUseEFile = cfg.readEntry("UseEFile", false);
 	d->m_EGDPath = cfg.readPathEntry("EGDPath", QString());
 
-	cfg = KConfigGroup(m_cfg, "Auth");
+	cfg = KConfigGroup(d->m_cfg, "Auth");
 	d->m_bSendX509 = ("send" == cfg.readEntry("AuthMethod", ""));
 	d->m_bPromptX509 = ("prompt" == cfg.readEntry("AuthMethod", ""));
 
@@ -140,13 +148,13 @@ void KSSLSettings::load() {
 
 
 void KSSLSettings::defaults() {
-	m_bWarnOnEnter = false;
-	m_bWarnOnLeave = true;
-	m_bWarnOnUnencrypted = true;
-	m_bWarnOnMixed = true;
-	m_bWarnSelfSigned = true;
-	m_bWarnExpired = true;
-	m_bWarnRevoked = true;
+	d->m_bWarnOnEnter = false;
+	d->m_bWarnOnLeave = true;
+	d->m_bWarnOnUnencrypted = true;
+	d->m_bWarnOnMixed = true;
+	d->m_bWarnSelfSigned = true;
+	d->m_bWarnExpired = true;
+	d->m_bWarnRevoked = true;
 	d->m_bUseEGD = false;
 	d->m_bUseEFile = false;
 	d->m_EGDPath = "";
@@ -154,23 +162,23 @@ void KSSLSettings::defaults() {
 
 
 void KSSLSettings::save() {
-        KConfigGroup cfg(m_cfg, "Warnings");
-	cfg.writeEntry("OnEnter", m_bWarnOnEnter);
-	cfg.writeEntry("OnLeave", m_bWarnOnLeave);
-	cfg.writeEntry("OnUnencrypted", m_bWarnOnUnencrypted);
-	cfg.writeEntry("OnMixed", m_bWarnOnMixed);
+        KConfigGroup cfg(d->m_cfg, "Warnings");
+	cfg.writeEntry("OnEnter", d->m_bWarnOnEnter);
+	cfg.writeEntry("OnLeave", d->m_bWarnOnLeave);
+	cfg.writeEntry("OnUnencrypted", d->m_bWarnOnUnencrypted);
+	cfg.writeEntry("OnMixed", d->m_bWarnOnMixed);
 
-	cfg = KConfigGroup(m_cfg, "Validation");
-	cfg.writeEntry("WarnSelfSigned", m_bWarnSelfSigned);
-	cfg.writeEntry("WarnExpired", m_bWarnExpired);
-	cfg.writeEntry("WarnRevoked", m_bWarnRevoked);
+	cfg = KConfigGroup(d->m_cfg, "Validation");
+	cfg.writeEntry("WarnSelfSigned", d->m_bWarnSelfSigned);
+	cfg.writeEntry("WarnExpired", d->m_bWarnExpired);
+	cfg.writeEntry("WarnRevoked", d->m_bWarnRevoked);
 
-	cfg = KConfigGroup(m_cfg, "EGD");
+	cfg = KConfigGroup(d->m_cfg, "EGD");
 	cfg.writeEntry("UseEGD", d->m_bUseEGD);
 	cfg.writeEntry("UseEFile", d->m_bUseEFile);
 	cfg.writePathEntry("EGDPath", d->m_EGDPath);
 
-	m_cfg->sync();
+	d->m_cfg->sync();
 	// FIXME - ciphers
 #if 0
 #if KSSL_HAVE_SSL
@@ -182,7 +190,7 @@ void KSSLSettings::save() {
 			cfg.writeEntry(ciphername, true);
 		} else cfg.writeEntry(ciphername, false);
 	}
-        m_cfg->sync();
+        d->m_cfg->sync();
 #endif
 
 	// insure proper permissions -- contains sensitive data
@@ -193,13 +201,13 @@ void KSSLSettings::save() {
 }
 
 
-bool KSSLSettings::warnOnEnter() const       { return m_bWarnOnEnter; }
-void KSSLSettings::setWarnOnEnter(bool x)    { m_bWarnOnEnter = x; }
-bool KSSLSettings::warnOnUnencrypted() const { return m_bWarnOnUnencrypted; }
-void KSSLSettings::setWarnOnUnencrypted(bool x) { m_bWarnOnUnencrypted = x; }
-bool KSSLSettings::warnOnLeave() const       { return m_bWarnOnLeave; }
-void KSSLSettings::setWarnOnLeave(bool x)    { m_bWarnOnLeave = x; }
-bool KSSLSettings::warnOnMixed() const       { return m_bWarnOnMixed; }
+bool KSSLSettings::warnOnEnter() const       { return d->m_bWarnOnEnter; }
+void KSSLSettings::setWarnOnEnter(bool x)    { d->m_bWarnOnEnter = x; }
+bool KSSLSettings::warnOnUnencrypted() const { return d->m_bWarnOnUnencrypted; }
+void KSSLSettings::setWarnOnUnencrypted(bool x) { d->m_bWarnOnUnencrypted = x; }
+bool KSSLSettings::warnOnLeave() const       { return d->m_bWarnOnLeave; }
+void KSSLSettings::setWarnOnLeave(bool x)    { d->m_bWarnOnLeave = x; }
+bool KSSLSettings::warnOnMixed() const       { return d->m_bWarnOnMixed; }
 bool KSSLSettings::useEGD() const            { return d->m_bUseEGD;      }
 bool KSSLSettings::useEFile() const          { return d->m_bUseEFile;    }
 bool KSSLSettings::autoSendX509() const      { return d->m_bSendX509; }

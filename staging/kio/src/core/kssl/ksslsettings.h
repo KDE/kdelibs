@@ -154,13 +154,6 @@ public:
 	void save();
 
 private:
-	KConfig *m_cfg;
-	bool m_bWarnOnEnter, m_bWarnOnUnencrypted, m_bWarnOnLeave, m_bWarnOnMixed;
-	bool m_bWarnSelfSigned, m_bWarnRevoked, m_bWarnExpired;
-
-	QList<QString> v3ciphers, v3selectedciphers;
-	QList<int> v3bits;
-
 	KSSLSettingsPrivate* const d;
 };
 
