@@ -18,7 +18,7 @@ ecm_setup_version(5.0.0 VARIABLE_PREFIX KWINDOWSYSTEM
 set(REQUIRED_QT_VERSION 5.2.0)
 find_package(Qt5 ${REQUIRED_QT_VERSION} CONFIG REQUIRED Widgets)
 
-find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
+find_package(KF5 5.0.0 MODULE REQUIRED CMake Compiler InstallDirs)
 
 if(NOT WIN32)
     find_package(Qt5 ${REQUIRED_QT_VERSION} CONFIG REQUIRED X11Extras)

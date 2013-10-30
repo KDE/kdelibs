@@ -24,7 +24,7 @@ set(REQUIRED_QT_VERSION "5.2.0")
 
 find_package(Qt5 ${REQUIRED_QT_VERSION} CONFIG REQUIRED Core Test Concurrent)
 
-find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
+find_package(KF5 5.0.0 MODULE REQUIRED CMake Compiler InstallDirs)
 
 find_package(Perl)
 set_package_properties(Perl PROPERTIES URL "http://www.perl.org" TYPE REQUIRED PURPOSE "Needed for building kdelibs")

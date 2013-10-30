@@ -15,7 +15,7 @@ ecm_setup_version(5.0.0 VARIABLE_PREFIX KJS
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KJSConfigVersion.cmake")
 
 # Dependencies
-find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
+find_package(KF5 5.0.0 MODULE REQUIRED CMake Compiler InstallDirs)
 
 set(REQUIRED_QT_VERSION 5.2.0)
 find_package(Qt5Core ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE)

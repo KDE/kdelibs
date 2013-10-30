@@ -10,7 +10,7 @@ include(FeatureSummary)
 include(CMakePackageConfigHelpers)
 include(ECMSetupVersion)
 
-find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
+find_package(KF5 5.0.0 MODULE REQUIRED CMake Compiler InstallDirs)
 find_package(Qt5 5.2.0 CONFIG REQUIRED Test Concurrent)
 
 ecm_setup_version(5.0.0 VARIABLE_PREFIX KSTYLE

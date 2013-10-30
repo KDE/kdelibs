@@ -10,7 +10,7 @@ find_package(Qt5 ${REQUIRED_QT_VERSION} NO_MODULE REQUIRED COMPONENTS DBus Netwo
 
 # Not part of kdelibs
 if (${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR})
-find_package(KF5 REQUIRED MODULE COMPONENTS
+find_package(KF5 MODULE REQUIRED
   CMake Compiler InstallDirs KCoreAddons KConfig KI18n KGuiAddons KCodecs 
   KWidgetsAddons KAuth ItemViews KConfigWidgets KArchive KCompletion
   KIconThemes KWindowSystem KDBusAddons KService KJobWidgets KIO Sonnet 
@@ -19,7 +19,7 @@ find_package(KF5 REQUIRED MODULE COMPONENTS
 
 # Part of kdelibs
 else()
-find_package(KF5 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
+find_package(KF5 MODULE REQUIRED CMake Compiler InstallDirs)
 endif()
 
 include(FeatureSummary)
