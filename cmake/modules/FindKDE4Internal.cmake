@@ -1278,21 +1278,35 @@ if (CMAKE_COMPILER_IS_GNUCXX)
    endif (GCC_IS_NEWER_THAN_4_1)
 
    if (__KDE_HAVE_GCC_VISIBILITY AND GCC_IS_NEWER_THAN_4_1 AND NOT _GCC_COMPILED_WITH_BAD_ALLOCATOR AND NOT WIN32)
-      set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden")
-      set (KDE4_C_FLAGS "-fvisibility=hidden")
-      # check that Qt defines Q_DECL_EXPORT as __attribute__ ((visibility("default")))
-      # if it doesn't and KDE compiles with hidden default visibiltiy plugins will break
-      set(_source "#include <QtCore/QtGlobal>\n int main()\n {\n #ifndef QT_VISIBILITY_AVAILABLE \n #error QT_VISIBILITY_AVAILABLE is not available\n #endif \n }\n")
-      set(_source_file ${CMAKE_BINARY_DIR}/CMakeTmp/check_qt_visibility.cpp)
-      file(WRITE "${_source_file}" "${_source}")
       set(_include_dirs "-DINCLUDE_DIRECTORIES:STRING=${QT_INCLUDES}")
 
-      try_compile(_compile_result ${CMAKE_BINARY_DIR} ${_source_file} CMAKE_FLAGS "${_include_dirs}" OUTPUT_VARIABLE _compile_output_var)
+      # first check if we can compile a Qt application
+      set(_source "#include <QtCore/QtGlobal>\n int main() \n {\n return 0; \n } \n")
+      set(_source_file ${CMAKE_BINARY_DIR}/CMakeTmp/check_qt_application.cpp)
+      file(WRITE "${_source_file}" "${_source}")
 
-      if(NOT _compile_result)
+      try_compile(_basic_compile_result ${CMAKE_BINARY_DIR} ${_source_file} CMAKE_FLAGS "${_include_dirs}" OUTPUT_VARIABLE _compile_output_var)
+
+      if(_basic_compile_result)
+            # now ready to check for visibility=hidden
+            set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden")
+            set (KDE4_C_FLAGS "-fvisibility=hidden")
+            # check that Qt defines Q_DECL_EXPORT as __attribute__ ((visibility("default")))
+            # if it doesn't and KDE compiles with hidden default visibiltiy plugins will break
+            set(_source "#include <QtCore/QtGlobal>\n int main()\n {\n #ifndef QT_VISIBILITY_AVAILABLE \n #error QT_VISIBILITY_AVAILABLE is not available\n #endif \n }\n")
+            set(_source_file ${CMAKE_BINARY_DIR}/CMakeTmp/check_qt_visibility.cpp)
+            file(WRITE "${_source_file}" "${_source}")
+
+            try_compile(_compile_result ${CMAKE_BINARY_DIR} ${_source_file} CMAKE_FLAGS "${_include_dirs}" OUTPUT_VARIABLE _compile_output_var)
+
+            if(NOT _compile_result)
+               message("${_compile_output_var}")
+               message(FATAL_ERROR "Qt compiled without support for -fvisibility=hidden. This will break plugins and linking of some applications. Please fix your Qt installation (try passing --reduce-exports to configure).")
+            endif(NOT _compile_result)
+       else(_basic_compile_result)
          message("${_compile_output_var}")
-         message(FATAL_ERROR "Qt compiled without support for -fvisibility=hidden. This will break plugins and linking of some applications. Please fix your Qt installation (try passing --reduce-exports to configure).")
-      endif(NOT _compile_result)
+         message(FATAL_ERROR "Unable to compile a basic Qt application. Qt has not been found correctly.")
+       endif(_basic_compile_result)
 
       if (GCC_IS_NEWER_THAN_4_2)
          set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror=return-type -fvisibility-inlines-hidden")

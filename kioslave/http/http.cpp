@@ -2204,11 +2204,13 @@ bool HTTPProtocol::httpOpenConnection()
     }
 
     if (m_request.proxyUrls.isEmpty()) {
+        QNetworkProxy::setApplicationProxy(QNetworkProxy::NoProxy);
         connectError = connectToHost(m_request.url.host(), m_request.url.port(defaultPort()), &errorString);
     } else {
         KUrl::List badProxyUrls;
         Q_FOREACH(const QString& proxyUrl, m_request.proxyUrls) {
             if (proxyUrl == QLatin1String("DIRECT")) {
+                QNetworkProxy::setApplicationProxy(QNetworkProxy::NoProxy);
                 connectError = connectToHost(m_request.url.host(), m_request.url.port(defaultPort()), &errorString);
                 if (connectError == 0) {
                     kDebug(7113) << "Connected DIRECT: host=" << m_request.url.host() << "port=" << m_request.url.port(defaultPort());
@@ -2237,6 +2239,7 @@ bool HTTPProtocol::httpOpenConnection()
             kDebug(7113) << "Connecting to proxy: address=" << proxyUrl << "type=" << proxyType;
 
             if (proxyType == QNetworkProxy::NoProxy) {
+                QNetworkProxy::setApplicationProxy(QNetworkProxy::NoProxy);
                 connectError = connectToHost(url.host(), url.port(), &errorString);
                 if (connectError == 0) {
                     m_request.proxyUrl = url;
@@ -2682,7 +2685,7 @@ bool HTTPProtocol::sendQuery()
   if (!sendOk)
   {
     kDebug(7113) << "Connection broken! (" << m_request.url.host() << ")"
-                 << "  -- intended to write" << header.length()
+                 << "  -- intended to write" << headerBytes.length()
                  << "bytes but wrote" << (int)written << ".";
 
     // The server might have closed the connection due to a timeout, or maybe
@@ -2694,7 +2697,7 @@ bool HTTPProtocol::sendQuery()
     }
 
     kDebug(7113) << "sendOk == false. Connection broken !"
-                 << "  -- intended to write" << header.length()
+                 << "  -- intended to write" << headerBytes.length()
                  << "bytes but wrote" << (int)written << ".";
     error( ERR_CONNECTION_BROKEN, m_request.url.host() );
     return false;

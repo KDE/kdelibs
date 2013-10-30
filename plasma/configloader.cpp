@@ -381,7 +381,7 @@ ConfigLoader::ConfigLoader(KSharedConfigPtr config, QIODevice *xml, QObject *par
 //       but KConfigSkeleton does not currently support this. it will eventually though,
 //       at which point this can be addressed properly
 ConfigLoader::ConfigLoader(const KConfigGroup *config, QIODevice *xml, QObject *parent)
-    : KConfigSkeleton(KSharedConfig::openConfig(config->config()->name()), parent),
+    : KConfigSkeleton(KSharedConfig::openConfig(config->config()->name(), KConfig::SimpleConfig), parent),
       d(new ConfigLoaderPrivate)
 {
     KConfigGroup group = config->parent();
