@@ -16,7 +16,7 @@ generate_export_header(ItemViews)
 add_library(KF5::ItemViews ALIAS ItemViews)
 
 
-target_link_libraries(ItemViews LINK_PUBLIC Qt5::Widgets)
+target_link_libraries(ItemViews PUBLIC Qt5::Widgets)
 
 set_target_properties(ItemViews PROPERTIES VERSION   ${ITEMVIEWS_VERSION_STRING}
                                            SOVERSION ${ITEMVIEWS_SOVERSION}

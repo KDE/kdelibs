@@ -27,18 +27,18 @@ add_library(KWallet ${kwallet_SRCS})
 generate_export_header(KWallet)
 add_library(KF5::KWallet ALIAS KWallet)
 
-target_link_libraries(KWallet LINK_PUBLIC  Qt5::Widgets
-                              LINK_PRIVATE KF5::KWindowSystem # KWindowSystem::allowExternalProcessWindowActivation
+target_link_libraries(KWallet PUBLIC  Qt5::Widgets
+                              PRIVATE KF5::KWindowSystem # KWindowSystem::allowExternalProcessWindowActivation
                                            KF5::KConfigCore   # used to store the wallet to be used
 )
 
 if(MAC_USE_OSXKEYCHAIN)
-   target_link_libraries(KWallet LINK_PRIVATE ${CARBON_LIBRARY}
+   target_link_libraries(KWallet PRIVATE ${CARBON_LIBRARY}
                                               ${SECURITY_LIBRARY})
 elseif(APPLE)
-    target_link_libraries(KWallet LINK_PRIVATE ${CARBON_LIBRARY})
+    target_link_libraries(KWallet PRIVATE ${CARBON_LIBRARY})
 else()
-    target_link_libraries(KWallet LINK_PRIVATE Qt5::DBus)
+    target_link_libraries(KWallet PRIVATE Qt5::DBus)
     install(FILES ${kwallet_xml} DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 endif()
 

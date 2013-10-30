@@ -11,9 +11,9 @@ add_library(KF5::KPty ALIAS KPty)
 include(ConfigureChecks.cmake)
 configure_file(config-pty.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-pty.h )
 
-target_link_libraries(KPty LINK_PUBLIC Qt5::Core
+target_link_libraries(KPty PUBLIC Qt5::Core
                                        KF5::KCoreAddons # KProcess
-                           LINK_PRIVATE
+                           PRIVATE
                                 ${UTIL_LIBRARY}
                                 ${UTEMPTER_LIBRARY}
                                 KF5::KI18n)

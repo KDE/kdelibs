@@ -25,13 +25,13 @@ add_library(KCrash ${kcrash_SRCS})
 generate_export_header(KCrash)
 add_library(KF5::KCrash ALIAS KCrash)
 
-target_link_libraries(KCrash LINK_PUBLIC Qt5::Core)
-target_link_libraries(KCrash LINK_PRIVATE KF5::KCoreAddons KF5::KWindowSystem Qt5::Gui)
+target_link_libraries(KCrash PUBLIC Qt5::Core)
+target_link_libraries(KCrash PRIVATE KF5::KCoreAddons KF5::KWindowSystem Qt5::Gui)
 
 
 if(${X11_FOUND})
   find_package(Qt5X11Extras 5.2.0 REQUIRED NO_MODULE)
-  target_link_libraries(KCrash LINK_PRIVATE Qt5::X11Extras ${X11_LIBRARIES})
+  target_link_libraries(KCrash PRIVATE Qt5::X11Extras ${X11_LIBRARIES})
 endif()
 
 set_target_properties(KCrash PROPERTIES VERSION   ${KCrash_VERSION_STRING}

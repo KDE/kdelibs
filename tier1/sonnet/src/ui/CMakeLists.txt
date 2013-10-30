@@ -42,8 +42,8 @@ generate_export_header(SonnetUi EXPORT_FILE_NAME sonnetui_export.h)
 add_library(KF5::SonnetUi ALIAS SonnetUi)
 
 target_link_libraries(SonnetUi
-    LINK_PUBLIC Qt5::Widgets
-    LINK_PRIVATE SonnetCore
+    PUBLIC Qt5::Widgets
+    PRIVATE SonnetCore
 )
 
 set_target_properties(SonnetUi PROPERTIES VERSION ${SONNET_VERSION_STRING}

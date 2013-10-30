@@ -38,9 +38,9 @@ generate_export_header(KStyle)
 add_library(KF5::KStyle ALIAS KStyle)
 
 target_link_libraries(KStyle
-  LINK_PUBLIC
+  PUBLIC
     Qt5::Widgets
-  LINK_PRIVATE
+  PRIVATE
     KConfigWidgets
     KF5::KIconThemes
 )

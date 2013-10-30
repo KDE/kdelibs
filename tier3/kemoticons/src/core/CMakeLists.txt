@@ -11,10 +11,10 @@ generate_export_header(KEmoticons)
 add_library(KF5::KEmoticons ALIAS KEmoticons)
 
 target_link_libraries(KEmoticons
-LINK_PUBLIC
+PUBLIC
     Qt5::Widgets # for QPixmap
     KF5::KService     # for KService::Ptr, KServiceTypeTrader
-LINK_PRIVATE
+PRIVATE
     KArchive    # for KTar, KZip
 )
 

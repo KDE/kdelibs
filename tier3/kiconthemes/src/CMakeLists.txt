@@ -13,9 +13,9 @@ generate_export_header(KIconThemes)
 add_library(KF5::KIconThemes ALIAS KIconThemes)
 
 target_link_libraries(KIconThemes
-  LINK_PUBLIC
+  PUBLIC
     Qt5::Widgets
-  LINK_PRIVATE
+  PRIVATE
     Qt5::DBus
     Qt5::Svg
     KF5::KI18n          # for i18n in KIconDialog

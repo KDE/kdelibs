@@ -7,9 +7,9 @@ generate_export_header(FooBar)
 add_library(KF5::FooBar ALIAS FooBar)
 
 target_link_libraries(FooBar
-  LINK_PUBLIC
+  PUBLIC
     Qt5::Core
-  # LINK_PRIVATE
+  # PRIVATE
   #  Other private libs
 )
 

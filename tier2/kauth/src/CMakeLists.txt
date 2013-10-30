@@ -24,8 +24,8 @@ add_library(KAuth ${libkauth_SRCS})
 generate_export_header(KAuth)
 add_library(KF5::KAuth ALIAS KAuth)
 
-target_link_libraries(KAuth LINK_PUBLIC Qt5::Core KF5::KCoreAddons)
-target_link_libraries(KAuth LINK_PRIVATE Qt5::Widgets Qt5::DBus)
+target_link_libraries(KAuth PUBLIC Qt5::Core KF5::KCoreAddons)
+target_link_libraries(KAuth PRIVATE Qt5::Widgets Qt5::DBus)
 set_target_properties(KAuth PROPERTIES VERSION   ${KAUTH_VERSION_STRING}
                                        SOVERSION ${KAUTH_SOVERSION}
 )
@@ -39,7 +39,7 @@ if (NOT "${KDE4_AUTH_BACKEND_NAME}" STREQUAL "FAKE")
     add_executable(kauth-policy-gen ${KAUTH_POLICY_GEN_SRCS})
 
     # KAUTH_POLICY_GEN_LIBRARIES has been generated from ConfigureChecks.cmake
-    target_link_libraries( kauth-policy-gen LINK_PRIVATE ${KAUTH_POLICY_GEN_LIBRARIES} )
+    target_link_libraries( kauth-policy-gen PRIVATE ${KAUTH_POLICY_GEN_LIBRARIES} )
 
     install( TARGETS kauth-policy-gen EXPORT KAuthTargets DESTINATION ${LIBEXEC_INSTALL_DIR})
 endif ()
@@ -50,7 +50,7 @@ if (NOT "${KDE4_AUTH_BACKEND_NAME}" STREQUAL "FAKE")
     set(KAUTH_BACKEND_SRCS ${KAUTH_BACKEND_SRCS})
     # KAuth::AuthBackend is not exported
     add_library(kauth_backend_plugin MODULE ${KAUTH_BACKEND_SRCS} AuthBackend.cpp)
-    target_link_libraries(kauth_backend_plugin LINK_PRIVATE ${KAUTH_BACKEND_LIBS})
+    target_link_libraries(kauth_backend_plugin PRIVATE ${KAUTH_BACKEND_LIBS})
     set_target_properties(kauth_backend_plugin PROPERTIES PREFIX "")
     install(TARGETS kauth_backend_plugin
             LIBRARY DESTINATION ${KAUTH_BACKEND_PLUGIN_DIR}
@@ -64,7 +64,7 @@ endif ()
 if (NOT "${KDE4_AUTH_HELPER_BACKEND_NAME}" STREQUAL "FAKE")
     # KAuth::HelperProxy is not exported
     add_library(kauth_helper_plugin MODULE ${KAUTH_HELPER_BACKEND_SRCS} HelperProxy.cpp)
-    target_link_libraries(kauth_helper_plugin LINK_PRIVATE ${KAUTH_HELPER_BACKEND_LIBS})
+    target_link_libraries(kauth_helper_plugin PRIVATE ${KAUTH_HELPER_BACKEND_LIBS})
     set_target_properties(kauth_helper_plugin PROPERTIES PREFIX "")
     install(TARGETS kauth_helper_plugin
             LIBRARY DESTINATION ${KAUTH_HELPER_PLUGIN_DIR}

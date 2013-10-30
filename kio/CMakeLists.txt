@@ -100,15 +100,15 @@ target_include_directories(kio PRIVATE
    ${kiocore_BINARY_DIR}/..   # kio_version.h
 )
 
-target_link_libraries(kio LINK_PRIVATE KIOWidgets KIOCore KIOFileWidgets KF5::KCoreAddons KF5::KI18n KCompletion KJobWidgets KF5::KIconThemes XmlGui KF5::KWidgetsAddons KF5::KWindowSystem ${ZLIB_LIBRARY} Qt5::Network Qt5::Xml Qt5::Svg ${X11_LIBRARIES} ${KIO_EXTRA_LIBS} KWallet KCrash KTextWidgets Qt5::X11Extras)
-target_link_libraries(kio LINK_PUBLIC KIOWidgets KIOCore Qt5::Network Qt5::Xml Qt5::Widgets KF5::KWidgetsAddons)
+target_link_libraries(kio PRIVATE KIOWidgets KIOCore KIOFileWidgets KF5::KCoreAddons KF5::KI18n KCompletion KJobWidgets KF5::KIconThemes XmlGui KF5::KWidgetsAddons KF5::KWindowSystem ${ZLIB_LIBRARY} Qt5::Network Qt5::Xml Qt5::Svg ${X11_LIBRARIES} ${KIO_EXTRA_LIBS} KWallet KCrash KTextWidgets Qt5::X11Extras)
+target_link_libraries(kio PUBLIC KIOWidgets KIOCore Qt5::Network Qt5::Xml Qt5::Widgets KF5::KWidgetsAddons)
 
 if(ACL_FOUND)
-   target_link_libraries(kio LINK_PRIVATE ${ACL_LIBS})
+   target_link_libraries(kio PRIVATE ${ACL_LIBS})
 endif(ACL_FOUND)
 
 if(X11_Xrender_FOUND)
-   target_link_libraries(kio LINK_PRIVATE ${X11_Xrender_LIB})
+   target_link_libraries(kio PRIVATE ${X11_Xrender_LIB})
 endif(X11_Xrender_FOUND)
 
 set_target_properties(kio PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION}

@@ -25,9 +25,9 @@ generate_export_header(KNotifyConfig)
 add_library(KF5::KNotifyConfig ALIAS KNotifyConfig)
 
 target_link_libraries(KNotifyConfig
-        LINK_PUBLIC
+        PUBLIC
             Qt5::Widgets
-        LINK_PRIVATE
+        PRIVATE
             KF5::KI18n
             KF5::KIOWidgets     # KUrlRequester
             ${PHONON_LIBS}

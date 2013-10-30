@@ -36,7 +36,7 @@ add_library(KCodecs ${kcodecs_SRCS})
 generate_export_header(KCodecs)
 add_library(KF5::KCodecs ALIAS KCodecs)
 
-target_link_libraries(KCodecs LINK_PUBLIC Qt5::Core )
+target_link_libraries(KCodecs PUBLIC Qt5::Core )
 
 set_target_properties(KCodecs PROPERTIES VERSION   ${KCODECS_VERSION_STRING}
                                          SOVERSION ${KCODECS_SOVERSION}

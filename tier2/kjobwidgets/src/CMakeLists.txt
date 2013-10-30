@@ -20,17 +20,17 @@ generate_export_header(KJobWidgets)
 add_library(KF5::KJobWidgets ALIAS KJobWidgets)
 
 target_link_libraries(KJobWidgets
-   LINK_PUBLIC
+   PUBLIC
       Qt5::Widgets
       KF5::KCoreAddons    # KJob
-   LINK_PRIVATE
+   PRIVATE
       Qt5::DBus
       KF5::KWidgetsAddons # KSqueezedTextLabel
 )
 
 if (HAVE_X11)
   find_package(Qt5X11Extras 5.2.0 REQUIRED NO_MODULE)
-  target_link_libraries(KJobWidgets LINK_PRIVATE Qt5::X11Extras)
+  target_link_libraries(KJobWidgets PRIVATE Qt5::X11Extras)
 endif ()
 
 set_target_properties(KJobWidgets PROPERTIES VERSION   ${KJOBWIDGETS_VERSION_STRING}

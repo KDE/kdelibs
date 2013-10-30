@@ -17,11 +17,11 @@ add_library(KCMUtils ${kcmutils_LIB_SRCS})
 generate_export_header(KCMUtils)
 
 target_link_libraries(KCMUtils
-  LINK_PUBLIC
+  PUBLIC
     Qt5::Widgets
     KConfigWidgets  # KCModule
     KF5::KService        # KService
-  LINK_PRIVATE
+  PRIVATE
     KF5::KCoreAddons
     KF5::KI18n
     KF5::KIconThemes     # KIconLoader

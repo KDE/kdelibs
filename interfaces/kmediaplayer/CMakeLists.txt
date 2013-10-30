@@ -17,8 +17,8 @@ add_library(kmediaplayer ${kmediaplayer_LIB_SRCS})
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/kmediaplayer)
 generate_export_header(kmediaplayer EXPORT_FILE_NAME kmediaplayer/kmediaplayer_export.h)
 
-target_link_libraries(kmediaplayer  LINK_PRIVATE KParts XmlGui)
-target_link_libraries(kmediaplayer  LINK_PUBLIC KParts Qt5::Widgets KF5::KI18n)
+target_link_libraries(kmediaplayer  PRIVATE KParts XmlGui)
+target_link_libraries(kmediaplayer  PUBLIC KParts Qt5::Widgets KF5::KI18n)
 
 set_target_properties(kmediaplayer PROPERTIES
    VERSION ${GENERIC_LIB_VERSION}

@@ -47,8 +47,8 @@ generate_export_header(KWindowSystem)
 add_library(KF5::KWindowSystem ALIAS KWindowSystem)
 
 target_link_libraries(KWindowSystem
-  LINK_PUBLIC Qt5::Gui
-  LINK_PRIVATE Qt5::Widgets ${platformLinkLibraries}
+  PUBLIC Qt5::Gui
+  PRIVATE Qt5::Widgets ${platformLinkLibraries}
 )
 
 if(IS_ABSOLUTE "${INCLUDE_INSTALL_DIR}")

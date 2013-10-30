@@ -89,13 +89,13 @@ target_include_directories(KIOWidgets PUBLIC
 )
 
 target_link_libraries(KIOWidgets
-  LINK_PUBLIC
+  PUBLIC
     KIOCore
     KJobWidgets
     Qt5::Network  # SSL
     KCompletion   # KUrlCompletion uses KCompletion
     KF5::KWidgetsAddons # keditlistwidget
-  LINK_PRIVATE
+  PRIVATE
     Qt5::DBus
     KF5::KI18n
     KF5::KIconThemes   # KIconLoader
@@ -104,7 +104,7 @@ target_link_libraries(KIOWidgets
 )
 
 if(ACL_FOUND)
-   target_link_libraries(KIOWidgets LINK_PRIVATE ${ACL_LIBS})
+   target_link_libraries(KIOWidgets PRIVATE ${ACL_LIBS})
 endif(ACL_FOUND)
 
 set_target_properties(KIOWidgets PROPERTIES VERSION ${KIO_VERSION_STRING}

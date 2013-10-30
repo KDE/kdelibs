@@ -90,13 +90,13 @@ generate_export_header(XmlGui)
 add_library(KF5::XmlGui ALIAS XmlGui)
 
 target_link_libraries(XmlGui
-LINK_PUBLIC
+PUBLIC
     Qt5::DBus           #QDBus connect to signal in KToolBar
     Qt5::Xml            #To parse the configuration (QDomDocument etc)
     Qt5::Widgets        #QWidget is used everywhere
     KF5::KConfigCore         #Reading config for ToolbarIcons, Shortcut Schemes...
     KConfigWidgets      #KStandardAction, KToggleAction...
-LINK_PRIVATE
+PRIVATE
     Qt5::Network        #QNetworkAccessManager in kaboutapplicationpersonmodel_p
     Qt5::PrintSupport   #QPrinter in kshortcutseditor
     Qt5::X11Extras      #QX11Info in kglobalaccel, QX11Info::appTime, appUserTime, setAppUserTime

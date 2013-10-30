@@ -36,25 +36,25 @@ add_library(KNotifications ${knotifications_SRCS})
 generate_export_header(KNotifications)
 add_library(KF5::KNotifications ALIAS KNotifications)
 
-target_link_libraries(KNotifications LINK_PUBLIC
+target_link_libraries(KNotifications PUBLIC
    Qt5::Widgets
 )
-target_link_libraries(KNotifications LINK_PRIVATE
+target_link_libraries(KNotifications PRIVATE
    KF5::KWindowSystem
    Qt5::DBus
 )
 
 if(X11_FOUND)
    find_package(Qt5X11Extras 5.2.0 REQUIRED NO_MODULE)
-   target_link_libraries(KNotifications LINK_PRIVATE ${X11_X11_LIB} Qt5::X11Extras)
+   target_link_libraries(KNotifications PRIVATE ${X11_X11_LIB} Qt5::X11Extras)
 endif()
 
 if(X11_XTest_FOUND)
-  target_link_libraries(KNotifications LINK_PRIVATE ${X11_XTest_LIB})
+  target_link_libraries(KNotifications PRIVATE ${X11_XTest_LIB})
 endif(X11_XTest_FOUND)
 
 if(HAVE_DBUSMENUQT)
-  target_link_libraries(KNotifications LINK_PRIVATE ${DBusMenuQt5_LIBRARIES})
+  target_link_libraries(KNotifications PRIVATE ${DBusMenuQt5_LIBRARIES})
 endif()
 
 set_target_properties(KNotifications PROPERTIES VERSION   ${KNOTIFICATIONS_VERSION_STRING}

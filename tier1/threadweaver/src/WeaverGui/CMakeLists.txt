@@ -12,7 +12,7 @@ target_include_directories(ThreadWeaverGui
     "$<INSTALL_INTERFACE:${INCLUDE_INSTALL_DIR}/threadweaver>"
 )
 
-target_link_libraries(ThreadWeaverGui LINK_PUBLIC ThreadWeaver Qt5::Widgets)
+target_link_libraries(ThreadWeaverGui PUBLIC ThreadWeaver Qt5::Widgets)
 set_target_properties(ThreadWeaverGui PROPERTIES VERSION   ${THREADWEAVER_VERSION_STRING}
                                                  SOVERSION ${THREADWEAVER_SOVERSION})
 

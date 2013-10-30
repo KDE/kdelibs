@@ -13,7 +13,7 @@ add_library(ItemModels ${itemmodels_SRCS})
 generate_export_header(ItemModels)
 add_library(KF5::ItemModels ALIAS ItemModels)
 
-target_link_libraries(ItemModels LINK_PUBLIC Qt5::Core)
+target_link_libraries(ItemModels PUBLIC Qt5::Core)
 
 set_target_properties(ItemModels PROPERTIES VERSION   ${ITEMMODELS_VERSION_STRING}
                                             SOVERSION ${ITEMMODELS_SOVERSION}

@@ -47,12 +47,12 @@ target_include_directories(KIOFileWidgets PUBLIC
 )
 
 target_link_libraries(KIOFileWidgets
-  LINK_PUBLIC
+  PUBLIC
     KIOWidgets
     KBookmarks    # in KFilePlacesModel's API
     XmlGui        # for KActionCollection, used by KFileWidget/KDirOperator
     KF5::Solid    # KFilePlacesModel/KFilePlacesView
-  LINK_PRIVATE
+  PRIVATE
     KF5::KIconThemes   # KIconLoader
     KF5::KI18n
     ItemViews     # kdirsortfilterproxymodel

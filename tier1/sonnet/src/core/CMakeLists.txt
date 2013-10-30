@@ -23,7 +23,7 @@ add_library(SonnetCore ${sonnetcore_SRCS})
 generate_export_header(SonnetCore EXPORT_FILE_NAME sonnetcore_export.h)
 add_library(KF5::SonnetCore ALIAS SonnetCore)
 
-target_link_libraries(SonnetCore LINK_PUBLIC Qt5::Core)
+target_link_libraries(SonnetCore PUBLIC Qt5::Core)
 
 set_target_properties(SonnetCore PROPERTIES VERSION ${SONNET_VERSION_STRING}
                                           SOVERSION ${SONNET_SOVERSION}

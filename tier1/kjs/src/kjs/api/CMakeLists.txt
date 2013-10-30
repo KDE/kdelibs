@@ -11,8 +11,8 @@ generate_export_header(KJSApi)
 add_library(KF5::KJSApi ALIAS KJSApi)
 
 target_link_libraries(KJSApi
-    LINK_PUBLIC Qt5::Core
-    LINK_PRIVATE KJS)
+    PUBLIC Qt5::Core
+    PRIVATE KJS)
 
 set_target_properties(KJSApi PROPERTIES VERSION ${KJS_VERSION_STRING} SOVERSION ${KJS_SOVERSION} )
 install(TARGETS KJSApi EXPORT KJSTargets ${INSTALL_TARGETS_DEFAULT_ARGS})

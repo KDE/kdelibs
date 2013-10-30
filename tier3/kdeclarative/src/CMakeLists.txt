@@ -26,9 +26,9 @@ generate_export_header(KDeclarative EXPORT_FILE_NAME ${KDeclarative_BINARY_DIR}/
 add_library(KF5::KDeclarative ALIAS KDeclarative)
 
 target_link_libraries(KDeclarative
-  LINK_PUBLIC
+  PUBLIC
     Qt5::Qml
-  LINK_PRIVATE
+  PRIVATE
     Qt5::Quick  #QQuickImageProvider
     KF5::KConfigCore # KCoreConfigSkeleton, in ConfigPropertyMap
     KF5::KI18n       #i18n bindings

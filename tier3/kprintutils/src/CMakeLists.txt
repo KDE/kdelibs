@@ -33,10 +33,10 @@ generate_export_header(KPrintUtils)
 add_library(KF5::KPrintUtils ALIAS KPrintUtils)
 
 target_link_libraries(KPrintUtils
-  LINK_PUBLIC
+  PUBLIC
     Qt5::Widgets
     Qt5::PrintSupport
-  LINK_PRIVATE
+  PRIVATE
     KParts
     KF5::KCoreAddons
     KF5::KI18n

@@ -4,7 +4,7 @@ set(pidginemoticons_SRCS pidgin_emoticons.cpp)
 
 add_library(emoticonstheme_pidgin MODULE ${pidginemoticons_SRCS})
 
-target_link_libraries(emoticonstheme_pidgin LINK_PRIVATE KEmoticons)
+target_link_libraries(emoticonstheme_pidgin PRIVATE KEmoticons)
 
 ########### install files ###############
 

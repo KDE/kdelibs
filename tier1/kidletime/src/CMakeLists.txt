@@ -37,8 +37,8 @@ endif (X11_FOUND)
 add_library(KIdleTime ${kidletime_LIB_SRCS})
 generate_export_header(KIdleTime)
 add_library(KF5::KIdleTime ALIAS KIdleTime)
-target_link_libraries(KIdleTime LINK_PUBLIC Qt5::Core)
-target_link_libraries(KIdleTime LINK_PRIVATE Qt5::Widgets ${kidletime_LIBS})
+target_link_libraries(KIdleTime PUBLIC Qt5::Core)
+target_link_libraries(KIdleTime PRIVATE Qt5::Widgets ${kidletime_LIBS})
 
 set_target_properties(KIdleTime PROPERTIES  VERSION ${KIDLETIME_VERSION_STRING}
                                             SOVERSION ${KIDLETIME_SOVERSION})

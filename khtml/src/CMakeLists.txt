@@ -536,7 +536,7 @@ qt5_wrap_ui(khtml_LIB_SRCS
 add_library(KHtml ${khtml_LIB_SRCS})
 
 target_link_libraries(KHtml
-  LINK_PRIVATE
+  PRIVATE
   KParts
   ${PHONON_LIBRARIES}
   KF5::KJS
@@ -561,9 +561,9 @@ target_link_libraries(KHtml
   KIOWidgets # KUrlRequester
 )
 if (KJS_DEBUGGER)
-  target_link_libraries(KHtml LINK_PRIVATE ktexteditor)
+  target_link_libraries(KHtml PRIVATE ktexteditor)
 endif()
-target_link_libraries(KHtml LINK_PUBLIC kio Qt5::Widgets KF5::KJS KF5::KI18n KF5::KBookmarks KF5::KParts)
+target_link_libraries(KHtml PUBLIC kio Qt5::Widgets KF5::KJS KF5::KI18n KF5::KBookmarks KF5::KParts)
 
 set_target_properties(KHtml PROPERTIES VERSION ${KHTML_VERSION_STRING}
                                        SOVERSION ${KHTML_SOVERSION}

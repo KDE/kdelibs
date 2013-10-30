@@ -14,8 +14,8 @@ qt5_add_dbus_interface(kimproxy_LIB_SRCS ../interface/org.kde.KIMIface.xml kimif
 add_library(kimproxy ${kimproxy_LIB_SRCS})
 generate_export_header(kimproxy)
 
-target_link_libraries(kimproxy  LINK_PRIVATE ${KDE4_KIO_LIBS} KDE4Support KF5::KIconThemes Qt5::DBus)
-target_link_libraries(kimproxy  LINK_PUBLIC Qt5::Core )
+target_link_libraries(kimproxy  PRIVATE ${KDE4_KIO_LIBS} KDE4Support KF5::KIconThemes Qt5::DBus)
+target_link_libraries(kimproxy  PUBLIC Qt5::Core )
 
 set_target_properties(kimproxy PROPERTIES
    VERSION ${GENERIC_LIB_VERSION}

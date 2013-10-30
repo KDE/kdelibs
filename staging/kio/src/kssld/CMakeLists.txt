@@ -6,10 +6,10 @@ set(kded_kssld_SRCS kssld.cpp )
 add_library(kded_kssld MODULE ${kded_kssld_SRCS})
 
 target_link_libraries(kded_kssld
-LINK_PUBLIC
+PUBLIC
    KIOCore     # ksslcertificatemanager
    KF5::KDBusAddons # kdedmodule
-LINK_PRIVATE
+PRIVATE
    KF5::KConfigCore
    KF5::KService    # kpluginfactory
    Qt5::Network

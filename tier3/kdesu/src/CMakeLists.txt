@@ -29,9 +29,9 @@ add_library(KF5::KDESu ALIAS KDESu)
 target_include_directories(KDESu PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/..)
 
 target_link_libraries(KDESu
-  LINK_PUBLIC
+  PUBLIC
     KPty
-  LINK_PRIVATE
+  PRIVATE
     KF5::KCoreAddons # KUser::loginName
     KF5::KService # KToolInvocation::kdeinitExecWait
 )

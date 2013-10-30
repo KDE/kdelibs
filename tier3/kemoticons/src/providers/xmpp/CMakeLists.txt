@@ -6,7 +6,7 @@ add_library(emoticonstheme_xmpp MODULE ${xmppemoticons_SRCS})
 
 find_package(Qt5Xml REQUIRED)
 target_link_libraries(emoticonstheme_xmpp
-LINK_PRIVATE
+PRIVATE
     KEmoticons
     Qt5::Xml # for QDomDocument
 )

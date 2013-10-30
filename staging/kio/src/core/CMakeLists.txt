@@ -112,10 +112,10 @@ target_include_directories(KIOCore PUBLIC
 )
 
 target_link_libraries(KIOCore
-LINK_PUBLIC
+PUBLIC
  KF5::KCoreAddons   # KJob
  KF5::KService
-LINK_PRIVATE
+PRIVATE
  Qt5::Network
  Qt5::Concurrent            # QtConcurrentRun in hostinfo.cpp
  Qt5::Xml                   # davjob.cpp uses QDom
@@ -125,7 +125,7 @@ LINK_PRIVATE
 )
 
 if(ACL_FOUND)
-  target_link_libraries(KIOCore LINK_PRIVATE ${ACL_LIBS})
+  target_link_libraries(KIOCore PRIVATE ${ACL_LIBS})
 endif(ACL_FOUND)
 
 set_target_properties(KIOCore PROPERTIES VERSION ${KIO_VERSION_STRING}

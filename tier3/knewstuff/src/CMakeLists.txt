@@ -70,11 +70,11 @@ add_library(knewstuff3 ${knewstuff3_SRCS} )
 
 target_include_directories(knewstuff3 PUBLIC "$<BUILD_INTERFACE:${KNewStuff_BINARY_DIR}>")
 target_link_libraries(knewstuff3
-  LINK_PUBLIC
+  PUBLIC
     Qt5::Widgets
     ${LibAttica_LIBRARIES}     # For interacting with ocs providers, public for uploaddialog slots
     XmlGui                     # For KActionCollection in knewstuffaction.h
-  LINK_PRIVATE
+  PRIVATE
     KIOCore                    # For network fetching operations
     KIOWidgets                 # For KUrlRequester
     KF5::KArchive              # For decompressing archives

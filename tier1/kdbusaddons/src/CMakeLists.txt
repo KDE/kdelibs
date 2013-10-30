@@ -15,7 +15,7 @@ add_library(KF5::KDBusAddons ALIAS KDBusAddons)
 
 
 
-target_link_libraries(KDBusAddons LINK_PUBLIC Qt5::DBus)
+target_link_libraries(KDBusAddons PUBLIC Qt5::DBus)
 
 set_target_properties(KDBusAddons PROPERTIES VERSION   ${KDBUSADDONS_VERSION_STRING}
                                              SOVERSION ${KDBUSADDONS_SOVERSION}

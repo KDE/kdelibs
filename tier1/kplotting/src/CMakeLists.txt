@@ -11,7 +11,7 @@ add_library(KPlotting ${kplotting_SRCS})
 generate_export_header(KPlotting)
 add_library(KF5::KPlotting ALIAS KPlotting)
 
-target_link_libraries(KPlotting LINK_PUBLIC Qt5::Widgets)
+target_link_libraries(KPlotting PUBLIC Qt5::Widgets)
 
 set_target_properties(KPlotting PROPERTIES VERSION   ${KPLOTTING_VERSION_STRING}
                                            SOVERSION ${KPLOTTING_SOVERSION}

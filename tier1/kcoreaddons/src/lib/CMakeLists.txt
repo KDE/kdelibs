@@ -91,15 +91,15 @@ add_library(KF5::KCoreAddons ALIAS KCoreAddons)
 target_include_directories(KCoreAddons PUBLIC "$<BUILD_INTERFACE:${kcoreaddons_INCLUDE_DIRS}>")
 
 target_link_libraries(KCoreAddons
-  LINK_PUBLIC
+  PUBLIC
     Qt5::Core
-  LINK_PRIVATE
+  PRIVATE
     ${kcoreaddons_OPTIONAL_LIBS}
 )
 if(NOT WIN32)
-    target_link_libraries(KCoreAddons LINK_PRIVATE pthread)
+    target_link_libraries(KCoreAddons PRIVATE pthread)
 else(NOT WIN32)
-    target_link_libraries(KCoreAddons LINK_PRIVATE netapi32)
+    target_link_libraries(KCoreAddons PRIVATE netapi32)
 endif()
 
 if(IS_ABSOLUTE "${INCLUDE_INSTALL_DIR}")
