@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 2.8.12)
 
 project(tier1)
 
+add_subdirectory(kf5umbrella)
 add_subdirectory(itemmodels)
 add_subdirectory(itemviews)
 add_subdirectory(kplotting)
