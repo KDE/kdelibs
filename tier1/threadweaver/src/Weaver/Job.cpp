@@ -79,8 +79,7 @@ public:
         : mutex(QMutex::NonRecursive)
         , finished (false)
         , executor(&defaultExecutor)
-    {
-    }
+    {}
 
     ~Private()
     {}
@@ -163,8 +162,6 @@ void Job::freeQueuePolicyResources(JobPointer job)
 
 void Job::defaultBegin(JobPointer, Thread *)
 {
-    //FIXME document - not valid anymore: job is the job the queue see. this could be decorated, and then job.data != this
-    //Q_ASSERT(job.data() == this);
 }
 
 void Job::defaultEnd(JobPointer job, Thread *)

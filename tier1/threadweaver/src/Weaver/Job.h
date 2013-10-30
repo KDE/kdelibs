@@ -44,17 +44,18 @@ class QueueAPI;
 class Executor;
 
 
-/** A Job is a simple abstraction of an action that is to be executed in a thread context.
+/** @brief A Job is a simple abstraction of an action that is to be executed in a thread context.
+ *
  * It is essential for the ThreadWeaver library that as a kind of convention, the different creators of Job objects do not touch
  * the protected data members of the Job until somehow notified by the Job.
  *
- * Also, please note that Jobs may not be executed twice. Create two different objects to perform two consecutive or parallel runs.
+ * Jobs may not be executed twice. Create two different objects to perform two consecutive or parallel runs.
+ * (Note: this rule is being reconsidered.)
  *
  * Jobs may declare dependencies. If Job B depends on Job A, B may not be executed before A is finished. To learn about
  * dependencies, see DependencyPolicy.
  *
- * Job objects finish by emitting the done(Job*) signal.  Once this has been emitted, ThreadWeaver is no longer using the Job which
- * may then be deleted.
+ * Job objects do not inherit QObject. To connect to signals when jobs are started or finished, see QObjectDecorator.
  */
 class THREADWEAVER_EXPORT Job : public JobInterface
 {
@@ -98,7 +99,7 @@ public:
      *
      * The default implementation returns zero. Only if this method is overloaded for some job classes, priorities will influence
      * the execution order of jobs. */
-    virtual int priority() const Q_DECL_OVERRIDE;
+    int priority() const Q_DECL_OVERRIDE;
 
     /** Return whether the Job finished successfully or not.
      * The default implementation simply returns true. Overload in derived classes if the derived Job class can fail.
@@ -110,7 +111,7 @@ public:
      * not be executed after a failure, it is important to dequeue those before deleting the failed Job. A JobSequence may be
      * helpful for that purpose.
      */
-    virtual bool success () const Q_DECL_OVERRIDE;
+    bool success() const Q_DECL_OVERRIDE;
 
     /** Abort the execution of the job.
      *
@@ -122,7 +123,7 @@ public:
      * The method is not pure virtual because users are not supposed to be forced to always implement requestAbort(). Also, this
      * method is supposed to return immediately, not after the abort has completed. It requests the abort, the Job has to act on
      * the request. */
-    virtual void requestAbort () {}
+    void requestAbort() Q_DECL_OVERRIDE {}
 
     /** The job is about to be added to the weaver's job queue.
      *
@@ -136,7 +137,7 @@ public:
     void aboutToBeQueued(QueueAPI *api) Q_DECL_OVERRIDE;
 
     /** Called from aboutToBeQueued() while the mutex is being held. */
-    virtual void aboutToBeQueued_locked(QueueAPI *api) Q_DECL_OVERRIDE;
+    void aboutToBeQueued_locked(QueueAPI *api) Q_DECL_OVERRIDE;
 
     /** This Job is about the be dequeued from the weaver's job queue.
      *
@@ -150,10 +151,10 @@ public:
     void aboutToBeDequeued(QueueAPI *api) Q_DECL_OVERRIDE;
 
     /** Called from aboutToBeDequeued() while the mutex is being held. */
-    virtual void aboutToBeDequeued_locked(QueueAPI *api) Q_DECL_OVERRIDE;
+    void aboutToBeDequeued_locked(QueueAPI *api) Q_DECL_OVERRIDE;
 
     /** Returns true if the jobs's execute method finished. */
-    bool isFinished() const;
+    bool isFinished() const Q_DECL_OVERRIDE;
 
     /** Assign a queue policy.
      *
