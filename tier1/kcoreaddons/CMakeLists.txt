@@ -4,7 +4,7 @@ project(KCoreAddons)
 
 find_package(ECM 0.0.9 REQUIRED NO_MODULE)
 
-set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 include(FeatureSummary)
 include(CMakePackageConfigHelpers)

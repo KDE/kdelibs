@@ -4,7 +4,7 @@ project(KGuiAddons)
 
 find_package(ECM 0.0.9 REQUIRED NO_MODULE)
 
-set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake/modules) #TODO: remove cmake/modules when extra-cmake-modules is done. OpenEXR
+set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR} ${CMAKE_SOURCE_DIR}/cmake/modules) #TODO: remove cmake/modules when extra-cmake-modules is done. OpenEXR
 
 find_package(KF5 5.0 MODULE REQUIRED CMake Compiler InstallDirs)
 set(REQUIRED_QT_VERSION 5.2.0)

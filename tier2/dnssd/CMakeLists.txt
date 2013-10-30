@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.8.12)
 project(KDNSSD)
 
 find_package(ECM 0.0.9 REQUIRED NO_MODULE)
-set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake/modules) #TODO: remove cmake/modules when extra-cmake-modules is done
+set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR} ${CMAKE_SOURCE_DIR}/cmake/modules) #TODO: remove cmake/modules when extra-cmake-modules is done
 
 find_package(KF5 5.0 MODULE REQUIRED CMake Compiler InstallDirs)
 

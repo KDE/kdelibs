@@ -4,7 +4,7 @@ project(KIconThemes)
 
 find_package(ECM 0.0.9 REQUIRED NO_MODULE)
 
-set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
+set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR})
 
 find_package(Qt5Svg 5.2.0 REQUIRED NO_MODULE)
 find_package(Qt5DBus 5.2.0 REQUIRED NO_MODULE)

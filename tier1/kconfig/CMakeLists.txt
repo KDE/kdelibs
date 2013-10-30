@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.8.12)
 project(KConfig)
 
 find_package(ECM 0.0.9 REQUIRED NO_MODULE)
-set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
+set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR})
 
 find_package(Qt5 5.2.0 CONFIG REQUIRED Widgets Xml Test Concurrent)
 find_package(KF5 5.0.0 MODULE REQUIRED CMake Compiler InstallDirs)

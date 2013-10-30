@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.8.11)
 project(KJsEmbed)
 
 find_package(ECM 0.0.8 REQUIRED NO_MODULE)
-set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
+set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR})
 
 set(REQUIRED_QT_VERSION "5.2")
 set(KF5_VERSION "5.0")
