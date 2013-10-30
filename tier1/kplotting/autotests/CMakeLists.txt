@@ -1,5 +1,5 @@
 
-find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS Test Widgets)
+find_package(Qt5 5.2.0 CONFIG REQUIRED Test Widgets)
 
 include(ECMMarkAsTest)
 

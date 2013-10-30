@@ -5,7 +5,7 @@ project(KConfig)
 find_package(ECM 0.0.9 REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
-find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS Widgets Xml Test Concurrent)
+find_package(Qt5 5.2.0 CONFIG REQUIRED Widgets Xml Test Concurrent)
 find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 
 include(FeatureSummary)

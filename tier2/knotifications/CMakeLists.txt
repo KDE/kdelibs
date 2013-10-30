@@ -20,7 +20,7 @@ ecm_setup_version(${KF5_VERSION}
 # Dependencies
 set(REQUIRED_QT_VERSION "5.2.0")
 
-find_package(Qt5 ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE COMPONENTS Widgets DBus)
+find_package(Qt5 ${REQUIRED_QT_VERSION} CONFIG REQUIRED Widgets DBus)
 find_package(KF5 ${KF5_VERSION} MODULE REQUIRED CMake Compiler InstallDirs)
 
 find_package(X11)

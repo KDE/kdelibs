@@ -1,6 +1,6 @@
 include(ECMMarkAsTest)
 
-find_package(Qt5 ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE COMPONENTS Test PrintSupport Widgets)
+find_package(Qt5 ${REQUIRED_QT_VERSION} CONFIG REQUIRED Test PrintSupport Widgets)
 
 macro(kprintutils_executable_tests)
   foreach(_testname ${ARGN})

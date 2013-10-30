@@ -9,10 +9,10 @@ set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 find_package(KF5 5.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 
 set(QT_REQUIRED_VERSION 5.2.0)
-find_package(Qt5 ${QT_REQUIRED_VERSION} REQUIRED NO_MODULE COMPONENTS Widgets DBus Xml Network PrintSupport)
+find_package(Qt5 ${QT_REQUIRED_VERSION} CONFIG REQUIRED Widgets DBus Xml Network PrintSupport)
 
 if(NOT WIN32)
-    find_package(Qt5 ${QT_REQUIRED_VERSION} REQUIRED NO_MODULE COMPONENTS X11Extras)
+    find_package(Qt5 ${QT_REQUIRED_VERSION} CONFIG REQUIRED X11Extras)
 
     find_package(X11)
     set_package_properties(X11 PROPERTIES TYPE OPTIONAL)

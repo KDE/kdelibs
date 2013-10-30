@@ -1,5 +1,5 @@
 
-find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS DBus Test)
+find_package(Qt5 5.2.0 CONFIG REQUIRED DBus Test)
 
 qt5_add_dbus_adaptor(kauth_dbus_adaptor_tests_SRCS
                      ../src/backends/dbus/org.kde.auth.xml

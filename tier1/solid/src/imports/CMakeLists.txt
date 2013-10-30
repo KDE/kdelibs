@@ -7,7 +7,7 @@ set(solidextensionplugin_SRCS
 
 add_library(solidextensionplugin SHARED ${solidextensionplugin_SRCS})
 
-find_package(Qt5 ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE COMPONENTS Qml)
+find_package(Qt5 ${REQUIRED_QT_VERSION} CONFIG REQUIRED Qml)
 
 target_link_libraries(
     solidextensionplugin

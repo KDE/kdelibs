@@ -1,7 +1,7 @@
 
 include(ECMMarkAsTest)
 
-find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS Test)
+find_package(Qt5 5.2.0 CONFIG REQUIRED Test)
 
 macro(kjobwidgets_executable_tests)
   foreach(_testname ${ARGN})

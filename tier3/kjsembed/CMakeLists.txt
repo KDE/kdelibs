@@ -7,7 +7,7 @@ set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
 set(REQUIRED_QT_VERSION "5.2")
 set(KF5_VERSION "5.0")
-find_package(Qt5 "${REQUIRED_QT_VERSION}" REQUIRED NO_MODULE COMPONENTS UiTools Widgets Xml Svg)
+find_package(Qt5 "${REQUIRED_QT_VERSION}" CONFIG REQUIRED UiTools Widgets Xml Svg)
 find_package(KF5 "${KF5_VERSION}" REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 
 include(FeatureSummary)

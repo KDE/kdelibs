@@ -2,7 +2,7 @@ remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
 include(ECMMarkAsTest)
 
-find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS Concurrent Network)
+find_package(Qt5 5.2.0 CONFIG REQUIRED Concurrent Network)
 
 macro(KCOREADDONS_EXECUTABLE_TESTS)
     foreach(_testname ${ARGN})

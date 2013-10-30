@@ -10,7 +10,7 @@ include(ECMSetupVersion)
 
 
 set(REQUIRED_QT_VERSION "5.2")
-find_package(Qt5 "${REQUIRED_QT_VERSION}" REQUIRED NO_MODULE COMPONENTS Widgets Network DBus PrintSupport Xml Test)
+find_package(Qt5 "${REQUIRED_QT_VERSION}" CONFIG REQUIRED Widgets Network DBus PrintSupport Xml Test)
 find_package(KF5 5.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 
 find_package(Phonon4Qt5 4.6.60 NO_MODULE)
@@ -51,7 +51,7 @@ set_package_properties(PNG PROPERTIES DESCRIPTION "PNG image format support"
                       )
 
 if(NOT WIN32)
-    find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS X11Extras)
+    find_package(Qt5 5.2.0 CONFIG REQUIRED X11Extras)
 endif(NOT WIN32)
 
 

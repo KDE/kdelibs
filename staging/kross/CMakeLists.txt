@@ -12,7 +12,7 @@ include(ECMSetupVersion)
 
 set(REQUIRED_QT_VERSION "5.2")
 find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
-find_package(Qt5 ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE COMPONENTS Core Test Script Xml Widgets UiTools)
+find_package(Qt5 ${REQUIRED_QT_VERSION} CONFIG REQUIRED Core Test Script Xml Widgets UiTools)
 
 ecm_setup_version(5.0.0 VARIABLE_PREFIX KROSS
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kross_version.h"
