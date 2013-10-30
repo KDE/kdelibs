@@ -24,7 +24,9 @@ set(REQUIRED_QT_VERSION "5.2.0")
 
 # Required Qt5 components to build this framework
 find_package(Qt5 ${REQUIRED_QT_VERSION} NO_MODULE REQUIRED Core)
-find_package(KF5 ${KF5_VERSION} MODULE REQUIRED CMake Compiler InstallDirs)
+include(KDEInstallDirs)
+include(KDECompilerSettings)
+include(KDECMakeSettings)
 
 # TODO: Add all required find_package() calls here
 

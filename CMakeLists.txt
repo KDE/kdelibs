@@ -51,7 +51,9 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules" ${ECM_MODULE_PATH} ${E
 
 # this gives us the KDE install dir variables (instead of defining them in FindKDE4Internal.cmake),
 # RPATH handling and test settings.
-find_package(KF5 MODULE REQUIRED CMake Compiler InstallDirs)
+include(KDEInstallDirs)
+include(KDECompilerSettings)
+include(KDECMakeSettings)
 
 add_subdirectory( tier1 )
 

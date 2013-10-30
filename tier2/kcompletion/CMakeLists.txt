@@ -9,6 +9,9 @@ set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR})
 include(FeatureSummary)
 include(ECMSetupVersion)
 include(CMakePackageConfigHelpers)
+include(KDEInstallDirs)
+include(KDECompilerSettings)
+include(KDECMakeSettings)
 
 set(KF5_VERSION "5.0.0")
 
@@ -23,7 +26,6 @@ ecm_setup_version(
 set(REQUIRED_QT_VERSION "5.2.0")
 
 find_package(Qt5 ${REQUIRED_QT_VERSION} NO_MODULE REQUIRED Widgets Xml)
-find_package(KF5 ${KF5_VERSION} REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 
 if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
   find_package(KConfig ${KF5_VERSION} REQUIRED)

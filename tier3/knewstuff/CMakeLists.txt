@@ -19,7 +19,9 @@ find_package(KF5 MODULE REQUIRED
 
 # Part of kdelibs
 else()
-find_package(KF5 MODULE REQUIRED CMake Compiler InstallDirs)
+include(KDEInstallDirs)
+include(KDECompilerSettings)
+include(KDECMakeSettings)
 endif()
 
 include(FeatureSummary)

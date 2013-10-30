@@ -5,7 +5,9 @@ set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR})
 
 set(REQUIRED_QT_VERSION 5.2)
 set(KF5_VERSION "5.0.0")
-find_package(KF5 5.0.0 MODULE REQUIRED CMake Compiler InstallDirs)
+include(KDEInstallDirs)
+include(KDECompilerSettings)
+include(KDECMakeSettings)
 find_package(Qt5 "${REQUIRED_QT_VERSION}" CONFIG REQUIRED Test)
 
 if(NOT kdelibs_SOURCE_DIR)

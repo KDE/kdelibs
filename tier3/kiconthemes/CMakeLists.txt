@@ -8,7 +8,9 @@ set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR})
 
 find_package(Qt5Svg 5.2.0 REQUIRED NO_MODULE)
 find_package(Qt5DBus 5.2.0 REQUIRED NO_MODULE)
-find_package(KF5 5.0 MODULE REQUIRED CMake Compiler InstallDirs)
+include(KDEInstallDirs)
+include(KDECompilerSettings)
+include(KDECMakeSettings)
 
 set(QT_REQUIRED_VERSION 5.2.0)
 find_package(Qt5Widgets ${QT_REQUIRED_VERSION} REQUIRED NO_MODULE)

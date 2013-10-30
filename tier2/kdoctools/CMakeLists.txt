@@ -13,7 +13,9 @@ set(KF5_VERSION "5.0.0")
 # Dependencies
 set(REQUIRED_QT_VERSION 5.2.0)
 find_package(Qt5Core ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE)
-find_package(KF5 ${KF5_VERSION} MODULE REQUIRED CMake Compiler InstallDirs)
+include(KDEInstallDirs)
+include(KDECompilerSettings)
+include(KDECMakeSettings)
 
 if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
   # KF5 frameworks

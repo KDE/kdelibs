@@ -5,7 +5,9 @@ set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR} ${CMAKE_SOURCE_DI
 
 set(REQUIRED_QT_VERSION "5.2")
 find_package(Qt5 "${REQUIRED_QT_VERSION}" CONFIG REQUIRED Widgets Network Svg Xml Test)
-find_package(KF5 5.0.0 MODULE REQUIRED CMake Compiler InstallDirs)
+include(KDEInstallDirs)
+include(KDECompilerSettings)
+include(KDECMakeSettings)
 
 include(FeatureSummary)
 include(CMakePackageConfigHelpers)

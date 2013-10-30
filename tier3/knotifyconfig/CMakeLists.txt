@@ -11,7 +11,9 @@ set(KF5_VERSION "5.0.0")
 
 # Required Qt5 components to build this framework
 find_package(Qt5 ${REQUIRED_QT_VERSION} NO_MODULE REQUIRED Widgets DBus Test)
-find_package(KF5 ${KF5_VERSION} MODULE REQUIRED CMake Compiler InstallDirs)
+include(KDEInstallDirs)
+include(KDECompilerSettings)
+include(KDECMakeSettings)
 find_package(Phonon4Qt5 4.6.60 NO_MODULE)
 
 if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
