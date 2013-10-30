@@ -2685,7 +2685,7 @@ bool HTTPProtocol::sendQuery()
   if (!sendOk)
   {
     kDebug(7113) << "Connection broken! (" << m_request.url.host() << ")"
-                 << "  -- intended to write" << header.length()
+                 << "  -- intended to write" << headerBytes.length()
                  << "bytes but wrote" << (int)written << ".";
 
     // The server might have closed the connection due to a timeout, or maybe
@@ -2697,7 +2697,7 @@ bool HTTPProtocol::sendQuery()
     }
 
     kDebug(7113) << "sendOk == false. Connection broken !"
-                 << "  -- intended to write" << header.length()
+                 << "  -- intended to write" << headerBytes.length()
                  << "bytes but wrote" << (int)written << ".";
     error( ERR_CONNECTION_BROKEN, m_request.url.host() );
     return false;
