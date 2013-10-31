@@ -1,9 +1,12 @@
 add_subdirectory( tests )
 
-####### kcookiejar: command line tool for talking to the kded kcookiejar module #######
+if(kdelibs_BINARY_DIR)
+    qt5_generate_dbus_interface( ${CMAKE_SOURCE_DIR}/tier3/kded/src/kdedadaptor.h org.kde.kded5.xml )
+    set(KDED_DBUS_INTERFACE "${CMAKE_CURRENT_BINARY_DIR}/org.kde.kded5.xml")
+endif()
 
-qt5_generate_dbus_interface( ${CMAKE_SOURCE_DIR}/tier3/kded/src/kdedadaptor.h org.kde.kded5.xml )
-qt5_add_dbus_interfaces(kcookiejar_SRCS ${CMAKE_CURRENT_BINARY_DIR}/org.kde.kded5.xml)
+####### kcookiejar: command line tool for talking to the kded kcookiejar module #######
+qt5_add_dbus_interfaces(kcookiejar_SRCS ${KDED_DBUS_INTERFACE})
 
 qt5_generate_dbus_interface(${CMAKE_CURRENT_SOURCE_DIR}/kcookieserver.h org.kde.KCookieServer.xml)
 set(kcookieserver_xml ${CMAKE_CURRENT_BINARY_DIR}/org.kde.KCookieServer.xml)
