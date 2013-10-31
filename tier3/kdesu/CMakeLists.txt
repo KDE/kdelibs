@@ -13,7 +13,7 @@ include(KDECompilerSettings)
 include(KDECMakeSettings)
 if(NOT kdelibs_SOURCE_DIR)
   find_package(KCoreAddons 5.0.0 REQUIRED)
-  find_package(KF5::KService 5.0.0 REQUIRED)
+  find_package(KService 5.0.0 REQUIRED)
   find_package(KPty 5.0.0 REQUIRED)
 endif()
 

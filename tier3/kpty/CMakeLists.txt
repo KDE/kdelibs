@@ -12,7 +12,7 @@ find_package(Qt5 "${REQUIRED_QT_VERSION}" CONFIG REQUIRED Test)
 
 if(NOT kdelibs_SOURCE_DIR)
   find_package(KCoreAddons 5.0.0 REQUIRED)
-  find_package(KF5::KI18n 5.0.0 REQUIRED)
+  find_package(KI18n 5.0.0 REQUIRED)
 endif()
 
 

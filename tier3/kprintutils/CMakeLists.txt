@@ -14,7 +14,7 @@ include(KDECMakeSettings)
 
 if(NOT kdelibs_SOURCE_DIR)
   find_package(KCoreAddons 5.0.0 REQUIRED)
-  find_package(KF5::KI18n 5.0.0 REQUIRED)
+  find_package(KI18n 5.0.0 REQUIRED)
   find_package(KParts 5.0.0 REQUIRED)
 endif()
 

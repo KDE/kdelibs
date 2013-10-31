@@ -16,7 +16,7 @@ if(NOT kdelibs_SOURCE_DIR)
   find_package(KCodecs 5.0.0 REQUIRED)
   find_package(KConfig 5.0.0 REQUIRED)
   find_package(KGuiAddons 5.0.0 REQUIRED)
-  find_package(KF5::KI18n 5.0.0 REQUIRED)
+  find_package(KI18n 5.0.0 REQUIRED)
   find_package(KWidgetsAddons 5.0.0 REQUIRED)
 endif()
 
