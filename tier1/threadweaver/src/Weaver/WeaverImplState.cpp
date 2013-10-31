@@ -89,12 +89,12 @@ void WeaverImplState::registerObserver(WeaverObserver *obs)
     weaver()->registerObserver_p(obs);
 }
 
-void WeaverImplState::enqueue(JobPointer job)
+void WeaverImplState::enqueue(const JobPointer &job)
 {
     weaver()->enqueue_p(job);
 }
 
-bool WeaverImplState::dequeue(JobPointer job)
+bool WeaverImplState::dequeue(const JobPointer& job)
 {
     return weaver()->dequeue_p(job);
 }

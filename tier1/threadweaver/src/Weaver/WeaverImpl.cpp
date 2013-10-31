@@ -221,7 +221,7 @@ void WeaverImpl::registerObserver_p(WeaverObserver *ext)
             ext,  SIGNAL (threadExited(ThreadWeaver::Thread*)));
 }
 
-void WeaverImpl::enqueue(JobPointer job)
+void WeaverImpl::enqueue(const JobPointer& job)
 {
     QMutexLocker l(m_mutex); Q_UNUSED(l);
     state()->enqueue(job);
@@ -251,7 +251,7 @@ void WeaverImpl::enqueue_p(JobPointer job)
     }
 }
 
-bool WeaverImpl::dequeue(JobPointer job)
+bool WeaverImpl::dequeue(const JobPointer &job)
 {
     QMutexLocker l(m_mutex); Q_UNUSED(l);
     return state()->dequeue(job);

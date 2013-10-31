@@ -103,7 +103,7 @@ public:
     JobPointer is a shared pointer. This means the object pointed to will be deleted if this object
     is the last remaining reference to it. Keep a JobPointer to the job to avoid automatic deletion.
     */
-    virtual void enqueue(JobPointer job) = 0;
+    virtual void enqueue(const JobPointer& job) = 0;
 
     /** Add a job to be executed.
      *
@@ -126,7 +126,7 @@ public:
      * @return true if the job was waiting and has been dequeued
      * @return false if the job was not found waiting in the queue
      */
-    virtual bool dequeue(JobPointer job) = 0;
+    virtual bool dequeue(const JobPointer& job) = 0;
 
     /** Remove a raw job from the queue.
      * @see dequeue(JobPointer)

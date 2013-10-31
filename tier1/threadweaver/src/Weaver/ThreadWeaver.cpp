@@ -136,7 +136,7 @@ Weaver* Weaver::instance()
     return s_instance.loadAcquire();
 }
 
-void Weaver::enqueue(JobPointer job)
+void Weaver::enqueue(const JobPointer &job)
 {
     d->implementation->enqueue(job);
 }
@@ -146,7 +146,7 @@ void Weaver::enqueueRaw(JobInterface *job)
     d->implementation->enqueueRaw(job);
 }
 
-bool Weaver::dequeue(JobPointer job)
+bool Weaver::dequeue(const JobPointer& job)
 {
     return d->implementation->dequeue(job);
 }

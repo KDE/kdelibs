@@ -67,11 +67,11 @@ void DestructedState::registerObserver(WeaverObserver*)
 {
 }
 
-void DestructedState::enqueue(JobPointer)
+void DestructedState::enqueue(const JobPointer &)
 {
 }
 
-bool DestructedState::dequeue(JobPointer)
+bool DestructedState::dequeue(const JobPointer&)
 {
     return false;
 }
