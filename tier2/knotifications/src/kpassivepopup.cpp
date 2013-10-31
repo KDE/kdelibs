@@ -19,10 +19,13 @@
 
 #include "kpassivepopup.h"
 
+#include <config-knotifications.h>
+
 // Qt
 #include <QApplication>
 #include <QBitmap>
 #include <QDebug>
+#include <QDesktopWidget>
 #include <QLabel>
 #include <QLayout>
 #include <QBoxLayout>
@@ -37,7 +40,7 @@
 #include <QSystemTrayIcon>
 
 #if HAVE_X11
-#include <qx11info_x11.h>
+#include <QX11Info>
 #include <netwm.h>
 #endif
 
@@ -323,56 +326,59 @@ void KPassivePopup::hideEvent( QHideEvent * )
 
 QRect KPassivePopup::defaultArea() const
 {
-#if HAVE_X11
-    NETRootInfo info( QX11Info::display(),
-                      NET::NumberOfDesktops |
-                      NET::CurrentDesktop |
-                      NET::WorkArea,
-                      -1, false );
-    info.activate();
-    NETRect workArea = info.workArea( info.currentDesktop() );
-    QRect r;
-    r.setRect( workArea.pos.x, workArea.pos.y, 0, 0 ); // top left
-#else
-    // FIX IT
-    QRect r;
-    r.setRect( 100, 100, 200, 200 ); // top left
-#endif
-    return r;
+    const QRect r = QApplication::desktop()->availableGeometry();
+    return QRect( r.x(), r.y(), 0, 0 ); // top left
 }
 
 void KPassivePopup::positionSelf()
 {
     QRect target;
 
-#if HAVE_X11
     if ( !d->window ) {
         target = defaultArea();
-    }
-
-    else {
+#if HAVE_X11
+    } else if ( QX11Info::isPlatformX11() ) {
         NETWinInfo ni( QX11Info::display(), d->window, QX11Info::appRootWindow(),
-                       NET::WMIconGeometry );
+                       NET::WMIconGeometry | NET::WMState );
 
-        // Figure out where to put the popup. Note that we must handle
-        // windows that skip the taskbar cleanly
-        if ( ni.state() & NET::SkipTaskbar ) {
-            target = defaultArea();
-        }
-        else {
+        // Try to put the popup by the taskbar entry
+        if ( !(ni.state() & NET::SkipTaskbar) ) {
             NETRect r = ni.iconGeometry();
             target.setRect( r.pos.x, r.pos.y, r.size.width, r.size.height );
-                if ( target.isNull() ) { // bogus value, use the exact position
-                    NETRect dummy;
-                    ni.kdeGeometry( dummy, r );
-                    target.setRect( r.pos.x, r.pos.y,
-                                    r.size.width, r.size.height);
-                }
         }
-    }
+        // If that failed, put it by the window itself
+        if ( target.isNull() ) {
+            NETRect dummy;
+            NETRect r;
+            ni.kdeGeometry( dummy, r );
+            target.setRect( r.pos.x, r.pos.y,
+                            r.size.width, r.size.height);
+        }
 #else
-        target = defaultArea();
+    } else {
+        // Our only choice is to put it by the window
+
+        // Easy case: we were passed one of our own widgets
+        QWidget *widget = QWidget::find( d->winId );
+        if ( widget ) {
+            target = widget->geometry();
+            if ( target.isNull() ) {
+                const QRect d = QApplication::desktop()->availableGeometry( widget );
+                target.setRect( d.x(), d.y(), 0, 0 );
+            }
+        } else {
+            // NB: this will not work on X11 (hence the fallback in the NET
+            //     code above) as the XCB platform plugin does not collect
+            //     information about foreign windows
+            QWindow *window = QWindow::fromWinId( d->winId );
+            target = window->geometry();
+            if ( target.isNull() ) {
+                const QRect d = window->screen()->availableGeometry();
+                target.setRect( d.x(), d.y(), 0, 0 );
+            }
+        }
 #endif
+    }
     moveNear( target );
 }
 

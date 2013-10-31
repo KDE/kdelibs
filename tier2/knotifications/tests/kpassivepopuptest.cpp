@@ -24,7 +24,7 @@ void Test::showIt2()
 
 void Test::showIt3()
 {
-  KPassivePopup *pop = new KPassivePopup( pb3->winId() );
+  KPassivePopup *pop = new KPassivePopup();
   pop->setView( QLatin1String("Caption"), QLatin1String("test") );
   pop->show();
 }
@@ -63,7 +63,7 @@ int main( int argc, char **argv )
     pb2->show();
 
     pb3 = new QPushButton();
-    pb3->setText( QLatin1String("By WinId") );
+    pb3->setText( QLatin1String("Without WinID") );
     pb3->connect( pb3, SIGNAL(clicked()), t, SLOT(showIt3()) );
     pb3->show();
 
