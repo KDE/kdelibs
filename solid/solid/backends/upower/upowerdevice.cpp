@@ -48,7 +48,7 @@ UPowerDevice::UPowerDevice(const QString &udi)
 
          // for UPower >= 0.99.0, missing Changed() signal
         QDBusConnection::systemBus().connect(UP_DBUS_SERVICE, m_udi, "org.freedesktop.DBus.Properties", "PropertiesChanged", this,
-                                             SLOT(slotChanged()));
+                                             SLOT(onPropertiesChanged(QString,QVariantMap,QStringList)));
     }
 }
 
@@ -220,6 +220,16 @@ QMap<QString, QVariant> UPowerDevice::allProperties() const
         m_cache.clear();
 
     return m_cache;
+}
+
+void UPowerDevice::onPropertiesChanged(const QString &ifaceName, const QVariantMap &changedProps, const QStringList &invalidatedProps)
+{
+    Q_UNUSED(changedProps);
+    Q_UNUSED(invalidatedProps);
+
+    if (ifaceName == UP_DBUS_INTERFACE_DEVICE) {
+        slotChanged(); // TODO maybe process the properties separately?
+    }
 }
 
 void UPowerDevice::slotChanged()
