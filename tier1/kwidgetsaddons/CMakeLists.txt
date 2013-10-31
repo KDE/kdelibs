@@ -16,9 +16,6 @@ include(FeatureSummary)
 include(CMakePackageConfigHelpers)
 include(ECMSetupVersion)
 
-find_package(X11)
-set(HAVE_X11 ${X11_FOUND})
-
 ecm_setup_version(5.0.0 VARIABLE_PREFIX KWIDGETSADDONS
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kwidgetsaddons_version.h"
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KWidgetsAddonsConfigVersion.cmake")

@@ -22,7 +22,7 @@
 #ifndef KPASSIVEPOPUP_H
 #define KPASSIVEPOPUP_H
 
-#include <kwidgetsaddons_export.h>
+#include <knotifications_export.h>
 
 #include <QFrame>
 
@@ -82,7 +82,7 @@ class QSystemTrayIcon;
  * @author Richard Moore, rich@kde.org
  * @author Sascha Cunz, sascha.cunz@tiscali.de
  */
-class KWIDGETSADDONS_EXPORT KPassivePopup : public QFrame
+class KNOTIFICATIONS_EXPORT KPassivePopup : public QFrame
 {
     Q_OBJECT
     Q_PROPERTY (bool autoDelete READ autoDelete WRITE setAutoDelete )

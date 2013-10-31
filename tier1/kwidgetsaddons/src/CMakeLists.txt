@@ -47,7 +47,6 @@ set(kwidgetsaddons_SRCS
   ktoolbarspaceraction.cpp
   kpixmapregionselectordialog.cpp
   kpixmapregionselectorwidget.cpp
-  kpassivepopup.cpp
   kactionmenu.cpp
   ktoolbarlabelaction.cpp
   ktoolbarpopupaction.cpp
@@ -135,7 +134,6 @@ install(FILES
   kratingwidget.h
   kactionselector.h
   kcolorcombo.h
-  kpassivepopup.h
   kactionmenu.h
   ktoolbarlabelaction.h
   ktoolbarpopupaction.h

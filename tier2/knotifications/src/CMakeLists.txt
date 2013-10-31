@@ -2,6 +2,7 @@
 set(knotifications_SRCS
   knotification.cpp
   knotificationmanager.cpp
+  kpassivepopup.cpp
   kstatusnotifieritem.cpp
   kstatusnotifieritemdbus_p.cpp
   knotificationrestrictions.cpp
@@ -65,6 +66,7 @@ install(TARGETS KNotifications EXPORT KNotificationsTargets ${INSTALL_TARGETS_DE
 
 install(FILES
   knotification.h
+  kpassivepopup.h
   kstatusnotifieritem.h
   knotificationrestrictions.h
   ${CMAKE_CURRENT_BINARY_DIR}/knotifications_export.h
