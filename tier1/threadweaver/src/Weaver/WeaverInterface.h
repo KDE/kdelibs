@@ -105,12 +105,6 @@ public:
     */
     virtual void enqueue(const JobPointer& job) = 0;
 
-    /** Add a job to be executed.
-     *
-     * Use this overloaded method to queue jobs that are memory-managed by the caller, instead of being
-     * QSharedPointers. */
-    virtual void enqueueRaw(JobInterface* job) = 0;
-
     /** Remove a job from the queue.
      *
      * If the job was queued but not started so far, it is removed from the queue.
@@ -127,11 +121,6 @@ public:
      * @return false if the job was not found waiting in the queue
      */
     virtual bool dequeue(const JobPointer& job) = 0;
-
-    /** Remove a raw job from the queue.
-     * @see dequeue(JobPointer)
-     */
-    virtual bool dequeueRaw(JobInterface* job) = 0;
 
     /** Remove all queued jobs.
      *

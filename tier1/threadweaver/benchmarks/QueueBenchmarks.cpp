@@ -6,6 +6,7 @@
 #include <QCoreApplication>
 #include <QList>
 
+#include <Queueing.h>
 #include <Job.h>
 #include <JobCollection.h>
 #include <JobSequence.h>
@@ -161,7 +162,7 @@ void QueueBenchmarksTest::IndividualJobsBenchmark()
     QVector<AccumulateJob> jobs(n);
     for(int i = 0; i < n; ++i) {
         jobs[i].setCount(m);
-        weaver.enqueueRaw(&jobs[i]);
+        ThreadWeaver::Queueing::enqueue_raw(&weaver, &jobs[i]);
     }
 
     QBENCHMARK_ONCE {

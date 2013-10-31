@@ -78,9 +78,7 @@ public:
     void setState( StateId );
     void registerObserver(WeaverObserver*) Q_DECL_OVERRIDE;
     void enqueue(const JobPointer& job) Q_DECL_OVERRIDE;
-    void enqueueRaw(JobInterface* job) Q_DECL_OVERRIDE;
     bool dequeue(const JobPointer& job) Q_DECL_OVERRIDE;
-    bool dequeueRaw(JobInterface* job) Q_DECL_OVERRIDE;
     void dequeue() Q_DECL_OVERRIDE;
     void finish() Q_DECL_OVERRIDE;
     void suspend() Q_DECL_OVERRIDE;

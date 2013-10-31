@@ -114,19 +114,9 @@ void Weaver::enqueue(const JobPointer &job)
     d->implementation->enqueue(job);
 }
 
-void Weaver::enqueueRaw(JobInterface *job)
-{
-    d->implementation->enqueueRaw(job);
-}
-
 bool Weaver::dequeue(const JobPointer& job)
 {
     return d->implementation->dequeue(job);
-}
-
-bool Weaver::dequeueRaw(JobInterface* job)
-{
-    return d->implementation->dequeueRaw(job);
 }
 
 void Weaver::dequeue ()

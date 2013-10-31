@@ -20,9 +20,14 @@ JobPointer make_job(T t) {
 }
 
 // make a job pointer holding a pointer to a Job(Interface)
-template<>
-inline JobPointer make_job<JobInterface*>(JobInterface* job) {
-    return JobPointer(job);
+template<typename T>
+inline JobPointer make_job(T* job) {
+    return JobPointer(static_cast<JobInterface*>(job));
+}
+
+// make a job pointer holding anything resembling JobInterface
+inline JobPointer make_job_raw(JobInterface* job) {
+    return ManagedJobPointer<JobInterface>(job);
 }
 
 // enqueue any functor type to the specified queue:
@@ -33,10 +38,9 @@ JobPointer enqueue(Weaver* weaver, T t) {
     return ret;
 }
 
-// specialise for QObjectDecorator:
-template<>
-inline JobPointer enqueue<QObjectDecorator*>(Weaver* weaver, QObjectDecorator* q) {
-    JobPointer ret(q);
+template<typename T>
+JobPointer enqueue(Weaver* weaver, T* t) {
+    JobPointer ret(make_job(static_cast<JobInterface*>(t)));
     weaver->enqueue(ret);
     return ret;
 }
@@ -48,24 +52,6 @@ inline JobPointer enqueue<JobPointer>(Weaver* weaver, JobPointer job) {
     return job;
 }
 
-//// specialise for JobInterface:
-//template<>
-//JobPointer enqueue<JobInterface*>(Weaver* weaver, JobInterface* job) {
-//    return enqueue(weaver, make_job(job));
-//}
-
-//// specialise for Collection:
-//template<>
-//JobPointer enqueue<JobCollection*>(Weaver* weaver, JobCollection* job) {
-//    return enqueue(weaver, make_job(job));
-//}
-
-//// specialise for Sequence:
-//template<>
-//JobPointer enqueue<JobSequence*>(Weaver* weaver, JobSequence* job) {
-//    return enqueue(weaver, make_job(job));
-//}
-
 // convenience overload: enqueue the functor to the global queue:
 template<typename T>
 JobPointer enqueue(T t) {
@@ -73,11 +59,13 @@ JobPointer enqueue(T t) {
 }
 
 // enqueue a raw pointer with no memory management
-template<typename T>
-JobPointer enqueue_raw(Weaver* weaver, T* t) {
-    ManagedJobPointer<T> ret(t);
-    weaver->enqueue(ret);
-    return ret;
+inline JobPointer enqueue_raw(Weaver* weaver, JobInterface* job) {
+    return enqueue(weaver, make_job_raw(job));
+}
+
+// overload to enqueue to the global pool
+inline JobPointer enqueue_raw(JobInterface* job) {
+    return enqueue(Weaver::instance(), make_job_raw(job));
 }
 
 // create a QObjectDecorator decorating the job

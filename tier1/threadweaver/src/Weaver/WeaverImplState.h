@@ -83,11 +83,6 @@ protected:
     /** Provide correct return type for WeaverImpl states. */
     WeaverImpl* weaver() Q_DECL_OVERRIDE;
     const WeaverImpl* weaver() const Q_DECL_OVERRIDE;
-private:
-    /** Enqueue a naked job. Not implemented. */
-    void enqueueRaw(JobInterface* job) Q_DECL_OVERRIDE;
-    /** Dequeue a raw job. Not implemented. */
-    bool dequeueRaw(JobInterface* job) Q_DECL_OVERRIDE;
 };
 
 }
