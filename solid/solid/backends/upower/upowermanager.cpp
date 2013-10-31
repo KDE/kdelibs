@@ -65,9 +65,9 @@ UPowerManager::UPowerManager(QObject *parent)
 
     if (serviceFound) {
         connect(&m_manager, SIGNAL(DeviceAdded(QString)),
-                this, SLOT(slotDeviceAdded(QString)));
+                this, SIGNAL(deviceAdded(QString)));
         connect(&m_manager, SIGNAL(DeviceRemoved(QString)),
-                this, SLOT(slotDeviceRemoved(QString)));
+                this, SIGNAL(deviceRemoved(QString)));
     }
 }
 
@@ -158,16 +158,6 @@ QSet< Solid::DeviceInterface::Type > UPowerManager::supportedInterfaces() const
 QString UPowerManager::udiPrefix() const
 {
     return UP_UDI_PREFIX;
-}
-
-void UPowerManager::slotDeviceAdded(const QString &opath)
-{
-    emit deviceAdded(opath);
-}
-
-void UPowerManager::slotDeviceRemoved(const QString &opath)
-{
-    emit deviceRemoved(opath);
 }
 
 #include "backends/upower/upowermanager.moc"

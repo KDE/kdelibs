@@ -48,14 +48,9 @@ public:
     virtual QSet< Solid::DeviceInterface::Type > supportedInterfaces() const;
     virtual QString udiPrefix() const;
 
-private Q_SLOTS:
-    void slotDeviceAdded(const QString &opath);
-    void slotDeviceRemoved(const QString &opath);
-
 private:
     QSet<Solid::DeviceInterface::Type> m_supportedInterfaces;
     QDBusInterface m_manager;
-
 };
 
 }
