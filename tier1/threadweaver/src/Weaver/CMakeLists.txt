@@ -3,7 +3,7 @@
 set(ThreadWeaver_LIB_SRCS
     Queue.cpp
     QueueAPI.cpp
-    ThreadWeaver.cpp
+    Weaver.cpp
     WeaverImpl.cpp
     DebuggingAids.cpp
     Thread.cpp
@@ -46,8 +46,10 @@ set_target_properties(ThreadWeaver PROPERTIES
 install(TARGETS ThreadWeaver EXPORT ThreadWeaverTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
-    WeaverInterface.h
     ThreadWeaver.h
+    Queueing.h
+    WeaverInterface.h
+    Weaver.h
     DebuggingAids.h
     Thread.h
     JobInterface.h
