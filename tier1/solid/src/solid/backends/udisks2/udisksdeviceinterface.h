@@ -55,9 +55,6 @@ public:
         case Solid::DeviceInterface::GenericInterface:
             list << "generic";
             break;
-        case Solid::DeviceInterface::Processor:
-            // Doesn't exist with UDisks
-            break;
         case Solid::DeviceInterface::Block:
             list << "block";
             break;
@@ -76,42 +73,23 @@ public:
         case Solid::DeviceInterface::OpticalDisc:
             list << "volume.disc";
             break;
+        case Solid::DeviceInterface::Processor:
         case Solid::DeviceInterface::Camera:
-            // Doesn't exist with UDisks
-            break;
         case Solid::DeviceInterface::PortableMediaPlayer:
-            // Doesn't exist with UDisks
-            break;
         case Solid::DeviceInterface::NetworkInterface:
-            // Doesn't exist with UDisks
-            break;
         case Solid::DeviceInterface::AcAdapter:
-            // Doesn't exist with UDisks
-            break;
         case Solid::DeviceInterface::Battery:
-            // Doesn't exist with UDisks
-            break;
         case Solid::DeviceInterface::Button:
-            // Doesn't exist with UDisks
-            break;
         case Solid::DeviceInterface::AudioInterface:
-            // Doesn't exist with UDisks
-            break;
         case Solid::DeviceInterface::DvbInterface:
-            // Doesn't exist with UDisks
-            break;
         case Solid::DeviceInterface::Video:
-            // Doesn't exist with UDisks
-            break;
         case Solid::DeviceInterface::SerialInterface:
-            // Doesn't exist with UDisks
-            break;
-        case Solid::DeviceInterface::InternetGateway:
-            break;
         case Solid::DeviceInterface::SmartCardReader:
-            // Doesn't exist with UDisks
+        case Solid::DeviceInterface::InternetGateway:
         case Solid::DeviceInterface::NetworkShare:
-            // Doesn't exist with UDisks
+        case Solid::DeviceInterface::Keyboard:
+        case Solid::DeviceInterface::PointingDevice:
+            // These do not exist with UDisks
             break;
         case Solid::DeviceInterface::Unknown:
             break;
