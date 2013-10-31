@@ -99,7 +99,7 @@ public:
         met.
         In *previous*, threads give the job they have completed. If this is
         the first job, previous is zero. */
-    virtual JobPointer applyForWork (Thread *thread, JobPointer previous) Q_DECL_OVERRIDE;
+    virtual JobPointer applyForWork (Thread *thread, bool wasBusy) Q_DECL_OVERRIDE;
     /** Wait for a job to become available. */
     void waitForAvailableJob(Thread *th) Q_DECL_OVERRIDE;
     /** Blocks the calling thread until some actor calls assignJobs. */
@@ -124,7 +124,7 @@ public:
      * available. If only jobs that depened on other, unfinished jobs are in the queue, this method blocks on m_jobAvailable.
      * Go to suspended state if the active thread count is now zero and suspendIfAllThreadsInactive is true.
      * If justReturning is true, do not assign a new job, just process the completed previous one. */
-    JobPointer takeFirstAvailableJobOrSuspendOrWait(Thread* th, JobPointer previous,
+    JobPointer takeFirstAvailableJobOrSuspendOrWait(Thread* th, bool threadWasBusy,
                                                     bool suspendIfAllThreadsInactive, bool justReturning);
     void requestAbort() Q_DECL_OVERRIDE;
 

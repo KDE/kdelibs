@@ -503,16 +503,16 @@ void WeaverImpl::threadEnteredRun(Thread *thread)
     emit threadStarted(thread);
 }
 
-JobPointer WeaverImpl::takeFirstAvailableJobOrSuspendOrWait(Thread *th, JobPointer previous,
+JobPointer WeaverImpl::takeFirstAvailableJobOrSuspendOrWait(Thread *th, bool threadWasBusy,
                                                             bool suspendIfInactive, bool justReturning)
 {
     QMutexLocker l (m_mutex); Q_UNUSED(l);
-    Q_ASSERT(previous==0 || (previous != 0 && m_active > 0));
+    Q_ASSERT(threadWasBusy==false || (threadWasBusy == true && m_active > 0));
     debug(3, "WeaverImpl::takeFirstAvailableJobOrWait: trying to assign new job to thread %i (%s state).\n",
           th->id(), qPrintable(state()->stateName()));
-    debug(5, "WeaverImpl::takeFirstAvailableJobOrWait: %i active threads, previous: %p, suspend?: %s, assign new job?: %s.\n",
-          activeThreadCount(), previous.data(), suspendIfInactive ? "yes" : "no", !justReturning ? "yes" : "no");
-    if (previous) {
+    debug(5, "WeaverImpl::takeFirstAvailableJobOrWait: %i active threads, was busy: %s, suspend: %s, assign new job: %s.\n",
+          activeThreadCount(), threadWasBusy ? "yes" : "no", suspendIfInactive ? "yes" : "no", !justReturning ? "yes" : "no");
+    if (threadWasBusy) {
         // cleanup and send events:
         decActiveThreadCount();
     }
@@ -547,9 +547,9 @@ JobPointer WeaverImpl::takeFirstAvailableJobOrSuspendOrWait(Thread *th, JobPoint
     return JobPointer();
 }
 
-JobPointer WeaverImpl::applyForWork(Thread *th, JobPointer previous)
+JobPointer WeaverImpl::applyForWork(Thread *th, bool wasBusy)
 {
-    return state()->applyForWork(th, previous);
+    return state()->applyForWork(th, wasBusy);
 }
 
 void WeaverImpl::waitForAvailableJob(Thread* th)

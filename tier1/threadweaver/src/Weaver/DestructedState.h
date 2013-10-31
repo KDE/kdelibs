@@ -63,7 +63,7 @@ public:
     void requestAbort() Q_DECL_OVERRIDE;
     void suspend() Q_DECL_OVERRIDE;
     void resume() Q_DECL_OVERRIDE;
-    JobPointer applyForWork(Thread *th, JobPointer previous) Q_DECL_OVERRIDE;
+    JobPointer applyForWork(Thread *th, bool wasBusy) Q_DECL_OVERRIDE;
     void waitForAvailableJob ( Thread *th ) Q_DECL_OVERRIDE;
     StateId stateId() const Q_DECL_OVERRIDE;
 };

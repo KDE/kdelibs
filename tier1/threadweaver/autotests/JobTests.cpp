@@ -867,22 +867,33 @@ struct InstanceCountedJob : public Job {
     }
 
     ~InstanceCountedJob() {
-        counter.fetchAndAddRelease(0);
+        counter.fetchAndAddRelease(-1);
     }
 };
 
 QAtomicInt InstanceCountedJob::counter;
 
+/** @brief Verify that neither the queue nor the thread keep a reference to the job after completing it.
+ *
+ * This is necessary because user-allocated objects like queue policies may be registered with the jobs. If the jobs stick around
+ * until the thread or queue are deleted, the user-allocatd objects may have gone out of scope or been deleted already, causing
+ * potential errors. From ThreadWeaver's point of view, a job seizes to exist once the processing thread asks for the next job. */
 void JobTests::JobsAreDestroyedAfterFinish()
 {
     using namespace ThreadWeaver;
-
-    WaitForIdleAndFinished w(Weaver::instance());
+    WaitForIdleAndFinished w(Weaver::instance()); Q_UNUSED(w);
     Weaver::instance()->suspend();
-    Weaver::instance()->enqueue(JobPointer(new InstanceCountedJob));
+    JobPointer job(new InstanceCountedJob);
+    Weaver::instance()->enqueue(job);
     QCOMPARE(InstanceCountedJob::counter.loadAcquire(), 1);
     Weaver::instance()->resume();
+    QCOMPARE(InstanceCountedJob::counter.loadAcquire(), 1);
     Weaver::instance()->finish();
+    QCOMPARE(InstanceCountedJob::counter.loadAcquire(), 1);
+    QCoreApplication::processEvents();
+    QCOMPARE(InstanceCountedJob::counter.loadAcquire(), 1);
+    job.clear();
+    // if this succeeds, job is the only shared pointer pointing to the created InstanceCountedJob object:
     QCOMPARE(InstanceCountedJob::counter.loadAcquire(), 0);
 }
 

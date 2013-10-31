@@ -14,9 +14,9 @@ public:
 
     /** Assign a job to an idle thread.
      * @param th the thread to give a new Job to
-     * @param previous the job this thread finished before calling
+     * @param wasBusy true if a job was previously assigned to the calling thread
      */
-    virtual JobPointer applyForWork(Thread *th, JobPointer previous) = 0;
+    virtual JobPointer applyForWork(Thread *th, bool wasBusy) = 0;
 
     /** Wait (by suspending the calling thread) until a job becomes available. */
     virtual void waitForAvailableJob(Thread *th) = 0;

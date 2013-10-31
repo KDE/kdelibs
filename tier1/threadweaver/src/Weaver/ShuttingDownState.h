@@ -54,7 +54,7 @@ public:
     /** Resume job processing. */
     void resume() Q_DECL_OVERRIDE;
     /** Assign a job to an idle thread. */
-    JobPointer applyForWork(Thread *th, JobPointer previous) Q_DECL_OVERRIDE;
+    JobPointer applyForWork(Thread *th, bool wasBusy) Q_DECL_OVERRIDE;
     /** Wait (by suspending the calling thread) until a job becomes available. */
     void waitForAvailableJob(Thread *th) Q_DECL_OVERRIDE;
     /** reimpl */

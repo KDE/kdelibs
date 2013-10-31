@@ -58,18 +58,18 @@ void WorkingHardState::resume()
 {
 }
 
-JobPointer WorkingHardState::applyForWork(Thread *th,  JobPointer previous)
+JobPointer WorkingHardState::applyForWork(Thread *th,  bool wasBusy)
 {   // beware: this code is executed in the applying thread!
     debug(2, "WorkingHardState::applyForWork: thread %i applies for work in %s state.\n", th->id(),
-          qPrintable ( weaver()->state()->stateName() ) );
-    JobPointer next = weaver()->takeFirstAvailableJobOrSuspendOrWait(th, previous, false, false);
+          qPrintable(weaver()->state()->stateName()));
+    JobPointer next = weaver()->takeFirstAvailableJobOrSuspendOrWait(th, wasBusy, false, false);
     if (next) {
         return next;
     } else {
         // this is no infinite recursion: the state may have changed meanwhile, or jobs may have become available:
         debug(2, "WorkingHardState::applyForWork: repeating for thread %i in %s state.\n", th->id(),
-              qPrintable ( weaver()->state()->stateName() ) );
-        return weaver()->applyForWork(th, JobPointer());
+              qPrintable(weaver()->state()->stateName()));
+        return weaver()->applyForWork(th, false);
     }
 }
 

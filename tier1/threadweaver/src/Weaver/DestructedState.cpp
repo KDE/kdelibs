@@ -111,10 +111,10 @@ void DestructedState::resume()
 {
 }
 
-JobPointer DestructedState::applyForWork(Thread*, JobPointer previous)
+JobPointer DestructedState::applyForWork(Thread*, bool wasBusy)
 {
-    Q_UNUSED(previous) // except in Q_ASSERT
-    Q_ASSERT(previous==0);
+    Q_UNUSED(wasBusy) // except in Q_ASSERT
+    Q_ASSERT(wasBusy==false);
     return JobPointer();
 }
 

@@ -48,9 +48,9 @@ void InConstructionState::resume()
     // this request is not handled in InConstruction state
 }
 
-JobPointer InConstructionState::applyForWork(Thread *th, JobPointer previous)
+JobPointer InConstructionState::applyForWork(Thread *th, bool wasBusy)
 {
-    Q_ASSERT(previous==0);
+    Q_ASSERT(wasBusy==false);
     // As long as we are in the construction state, no jobs will be given
     // to the worker threads. The threads will be suspended. They will
     // return from the blocked state when jobs are queued. By then, we
@@ -59,7 +59,7 @@ JobPointer InConstructionState::applyForWork(Thread *th, JobPointer previous)
     while (weaver()->state()->stateId() == InConstruction) {
         weaver()->waitForAvailableJob(th);
     }
-    return weaver()->applyForWork(th, previous);
+    return weaver()->applyForWork(th, wasBusy);
 }
 
 StateId InConstructionState::stateId() const

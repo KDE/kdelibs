@@ -95,26 +95,26 @@ void Thread::run()
     emit started(this);
     debug(3, "Thread::run [%u]: running.\n", id());
 
+    bool wasBusy = false;
     while (true) {
         debug(3, "Thread::run [%u]: trying to execute the next job.\n", id());
-        JobPointer oldJob;
-        {
-            QMutexLocker l(&d->mutex); Q_UNUSED(l);
-            oldJob = d->job; d->job.clear();
-        }
-        JobPointer newJob = d->parent->applyForWork(this, oldJob);
 
-        if (newJob == 0) {
-            break;
+        // the assignment is intentional: newJob needs to go out of scope at the end of the if statement
+        if (JobPointer newJob = d->parent->applyForWork(this, wasBusy)) {
+            QMutexLocker l(&d->mutex); Q_UNUSED(l);
+            d->job = newJob;
         } else {
-            {
-                QMutexLocker l(&d->mutex); Q_UNUSED(l);
-                d->job = newJob;
-            }
-            emit jobStarted(newJob, this);
-            newJob->execute(newJob, this);
-            emit jobDone(newJob);
+            break;
         }
+
+        wasBusy = true;
+
+        emit jobStarted(d->job, this);
+        d->job->execute(d->job, this);
+        emit jobDone(d->job);
+
+        QMutexLocker l(&d->mutex); Q_UNUSED(l);
+        d->job.clear();
     }
     debug ( 3, "Thread::run [%u]: exiting.\n", id() );
 }
@@ -124,8 +124,6 @@ void Thread::requestAbort ()
     QMutexLocker l(&d->mutex); Q_UNUSED(l);
     if (d->job) {
         d->job->requestAbort();
-    } else {
-        qDebug ( "Thread::requestAbort: not running." );
     }
 }
 

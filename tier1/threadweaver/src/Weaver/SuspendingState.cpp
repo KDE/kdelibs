@@ -54,11 +54,11 @@ void SuspendingState::activated()
     weaver()->reschedule();
 }
 
-JobPointer SuspendingState::applyForWork(Thread *th, JobPointer previous)
+JobPointer SuspendingState::applyForWork(Thread *th, bool wasBusy)
 {
-    weaver()->takeFirstAvailableJobOrSuspendOrWait(th, previous, true, true);
+    weaver()->takeFirstAvailableJobOrSuspendOrWait(th, wasBusy, true, true);
     weaver()->waitForAvailableJob(th);
-    return weaver()->applyForWork(th, JobPointer());
+    return weaver()->applyForWork(th, false);
 }
 
 StateId SuspendingState::stateId() const
