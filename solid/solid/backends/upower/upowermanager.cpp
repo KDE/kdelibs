@@ -68,6 +68,12 @@ UPowerManager::UPowerManager(QObject *parent)
                 this, SIGNAL(deviceAdded(QString)));
         connect(&m_manager, SIGNAL(DeviceRemoved(QString)),
                 this, SIGNAL(deviceRemoved(QString)));
+
+        // for UPower >= 0.99.0, changed signature :o/
+        connect(&m_manager, SIGNAL(DeviceAdded(QDBusObjectPath)),
+                this, SLOT(onDeviceAdded(QDBusObjectPath)));
+        connect(&m_manager, SIGNAL(DeviceRemoved(QDBusObjectPath)),
+                this, SLOT(onDeviceRemoved(QDBusObjectPath)));
     }
 }
 
@@ -158,6 +164,16 @@ QSet< Solid::DeviceInterface::Type > UPowerManager::supportedInterfaces() const
 QString UPowerManager::udiPrefix() const
 {
     return UP_UDI_PREFIX;
+}
+
+void UPowerManager::onDeviceAdded(const QDBusObjectPath &path)
+{
+    emit deviceAdded(path.path());
+}
+
+void UPowerManager::onDeviceRemoved(const QDBusObjectPath &path)
+{
+    emit deviceRemoved(path.path());
 }
 
 #include "backends/upower/upowermanager.moc"

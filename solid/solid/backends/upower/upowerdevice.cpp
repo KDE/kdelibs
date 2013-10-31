@@ -43,8 +43,13 @@ UPowerDevice::UPowerDevice(const QString &udi)
                QDBusConnection::systemBus())
     , m_udi(udi)
 {
-    if (m_device.isValid())
+    if (m_device.isValid()) {
         connect(&m_device, SIGNAL(Changed()), this, SLOT(slotChanged()));
+
+         // for UPower >= 0.99.0, missing Changed() signal
+        QDBusConnection::systemBus().connect(UP_DBUS_SERVICE, m_udi, "org.freedesktop.DBus.Properties", "PropertiesChanged", this,
+                                             SLOT(slotChanged()));
+    }
 }
 
 UPowerDevice::~UPowerDevice()
