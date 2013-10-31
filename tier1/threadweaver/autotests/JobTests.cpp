@@ -9,6 +9,7 @@
 #include <JobSequence.h>
 #include <Lambda.h>
 #include <ThreadWeaver.h>
+#include <Thread.h>
 #include <DebuggingAids.h>
 #include <JobCollection.h>
 #include <ResourceRestrictionPolicy.h>
@@ -852,6 +853,37 @@ void JobTests::IdDecoratorSingleAllocationTest()
     Weaver::instance()->enqueueRaw(&job);
     Weaver::instance()->finish();
     QCOMPARE(job.sequence, QString::fromLatin1("a"));
+}
+
+struct InstanceCountedJob : public Job {
+    static QAtomicInt counter;
+
+    void run(ThreadWeaver::JobPointer, ThreadWeaver::Thread* thread) {
+        qDebug() << thread->objectName();
+    }
+
+    InstanceCountedJob() {
+        counter.fetchAndAddRelease(1);
+    }
+
+    ~InstanceCountedJob() {
+        counter.fetchAndAddRelease(0);
+    }
+};
+
+QAtomicInt InstanceCountedJob::counter;
+
+void JobTests::JobsAreDestroyedAfterFinish()
+{
+    using namespace ThreadWeaver;
+
+    WaitForIdleAndFinished w(Weaver::instance());
+    Weaver::instance()->suspend();
+    Weaver::instance()->enqueue(JobPointer(new InstanceCountedJob));
+    QCOMPARE(InstanceCountedJob::counter.loadAcquire(), 1);
+    Weaver::instance()->resume();
+    Weaver::instance()->finish();
+    QCOMPARE(InstanceCountedJob::counter.loadAcquire(), 0);
 }
 
 QTEST_MAIN ( JobTests )
