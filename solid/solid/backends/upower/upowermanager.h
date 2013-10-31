@@ -48,7 +48,7 @@ public:
     virtual QSet< Solid::DeviceInterface::Type > supportedInterfaces() const;
     virtual QString udiPrefix() const;
 
-private slots:
+private Q_SLOTS:
     void onDeviceAdded(const QDBusObjectPath & path);
     void onDeviceRemoved(const QDBusObjectPath & path);
 
