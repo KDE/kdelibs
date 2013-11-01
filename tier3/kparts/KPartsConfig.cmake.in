@@ -1,7 +1,7 @@
 @PACKAGE_INIT@
 
 find_dependency(XmlGui "@KF5_VERSION@")
-find_dependency(KIOCore "@KF5_VERSION@")
+find_dependency(KIO "@KF5_VERSION@")
 find_dependency(KTextWidgets "@KF5_VERSION@")
 
 
