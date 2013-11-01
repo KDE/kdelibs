@@ -62,7 +62,7 @@ class KTextEdit::Private
         checkSpellingEnabled( false ),
         findReplaceEnabled(true),
         showTabAction(true),
-	showAutoCorrectionButton(false),
+        showAutoCorrectionButton(false),
         highlighter( 0 ), findDlg(0),find(0),repDlg(0),replace(0), findIndex(0), repIndex(0),
         lastReplacedPosition(-1)
     {
@@ -125,7 +125,6 @@ class KTextEdit::Private
 
     void checkSpelling(bool force);
     KTextEdit *parent;
-    KTextEditSpellInterface *spellInterface;
     QAction *autoSpellCheckAction;
     QAction *allowTab;
     QAction *spellCheckAction;
@@ -304,7 +303,6 @@ QRect KTextEdit::Private::clickMessageRect() const
 
 void KTextEdit::Private::init()
 {
-    spellInterface = 0;
     KCursor::setAutoHideCursor(parent, true, false);
     parent->connect(parent, SIGNAL(languageChanged(QString)),
                     parent, SLOT(setSpellCheckingLanguage(QString)));
@@ -643,8 +641,7 @@ void KTextEdit::contextMenuEvent(QContextMenuEvent *event)
     // If the user clicked on a misspelled word, select that word.
     // Same behavior as in OpenOffice Writer.
     bool inQuote = false;
-    if (d->spellInterface &&
-        !d->spellInterface->shouldBlockBeSpellChecked(cursorAtMouse.block().text()))
+    if (!shouldBlockBeSpellChecked(cursorAtMouse.block().text()))
         inQuote = true;
     if (!selectedWordClicked) {
         if (wordIsMisspelled && !inQuote)
@@ -723,14 +720,6 @@ void KTextEdit::setHighlighter(Sonnet::Highlighter *_highLighter)
 
 void KTextEdit::setCheckSpellingEnabled(bool check)
 {
-    if (d->spellInterface)
-        d->spellInterface->setSpellCheckingEnabled(check);
-    else
-        setCheckSpellingEnabledInternal(check);
-}
-
-void KTextEdit::setCheckSpellingEnabledInternal( bool check )
-{
   emit checkSpellingChanged( check );
   if ( check == d->checkSpellingEnabled )
     return;
@@ -765,15 +754,12 @@ void KTextEdit::focusInEvent( QFocusEvent *event )
 
 bool KTextEdit::checkSpellingEnabled() const
 {
-    if (d->spellInterface)
-      return d->spellInterface->isSpellCheckingEnabled();
-    else
-      return checkSpellingEnabledInternal();
+  return d->checkSpellingEnabled;
 }
 
-bool KTextEdit::checkSpellingEnabledInternal() const
+bool KTextEdit::shouldBlockBeSpellChecked( const QString& ) const
 {
-  return d->checkSpellingEnabled;
+    return true;
 }
 
 void KTextEdit::setReadOnly( bool readOnly )
@@ -1016,11 +1002,6 @@ void KTextEdit::enableFindReplace( bool enabled )
 void KTextEdit::showTabAction( bool show )
 {
     d->showTabAction = show;
-}
-
-void KTextEdit::setSpellInterface(KTextEditSpellInterface *spellInterface)
-{
-    d->spellInterface = spellInterface;
 }
 
 bool KTextEdit::Private::overrideShortcut(const QKeyEvent* event)

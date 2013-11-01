@@ -29,45 +29,6 @@
 #define HAVE_AUTOCORRECTFEATURE 1
 #define HAVE_FORCESPELLCHECKING 1
 #define HAVE_MOUSEPOPUPMENUIMPLEMENTATION 1
-/**
- * This interface is a workaround to keep binary compatibility in KDE4, because
- * adding the virtual keyword to functions is not BC.
- *
- * Call KTextEdit::setSpellInterface() to set this interface to a KTextEdit,
- * and some functions of KTextEdit will delegate their calls to this interface
- * instead, which provides a way for derived classes to modifiy the behavior
- * or those functions.
- *
- * @since 4.2
- *
- * TODO: Get rid of this class in KDE5 and add the methods to KTextEdit instead,
- *       by making them virtual there.
- */
-class KTextEditSpellInterface
-{
-  public:
-
-    /**
-     * @return true if spellchecking for the text edit is enabled.
-     */
-    virtual bool isSpellCheckingEnabled() const = 0;
-
-    /**
-     * Sets whether to enable spellchecking for the KTextEdit.
-     * @param enable true if spellchecking should be enabled, false otherwise
-     */
-    virtual void setSpellCheckingEnabled(bool enable) = 0;
-
-    /**
-     * Returns true if the given paragraph or block should be spellcheck.
-     * For example, a mail client does not want to check quoted text, and
-     * would return false here (by checking whether the block starts with a
-     * quote sign).
-     */
-    virtual bool shouldBlockBeSpellChecked(const QString& block) const = 0;
-
-    virtual ~KTextEditSpellInterface() {}
-};
 
 /**
  * @short A KDE'ified QTextEdit
@@ -125,14 +86,11 @@ class KTEXTWIDGETS_EXPORT KTextEdit : public QTextEdit //krazy:exclude=qclasses
      * Enabling spell checking will set back the current highlighter to the one
      * returned by createHighlighter().
      *
-     * If a spell interface is set by setSpellInterface(),
-     * the call will be delegated to there instead.
-     *
      * @see checkSpellingEnabled()
      * @see isReadOnly()
      * @see setReadOnly()
      */
-    void setCheckSpellingEnabled( bool check );
+    virtual void setCheckSpellingEnabled( bool check );
 
     /**
      * Returns true if background spell checking is enabled for this text edit.
@@ -140,12 +98,20 @@ class KTEXTWIDGETS_EXPORT KTextEdit : public QTextEdit //krazy:exclude=qclasses
      * where spell checking is actually disabled.
      * By default spell checking is disabled.
      *
-     * If a spell interface is set by setSpellInterface(),
-     * the call will be delegated to there instead.
-     *
      * @see setCheckSpellingEnabled()
      */
-    bool checkSpellingEnabled() const;
+    virtual bool checkSpellingEnabled() const;
+
+    /**
+     * Returns true if the given paragraph or block should be spellcheck.
+     * For example, a mail client does not want to check quoted text, and
+     * would return false here (by checking whether the block starts with a
+     * quote sign).
+     *
+     * Always returns true by default.
+     *
+     */
+    virtual bool shouldBlockBeSpellChecked(const QString& block) const;
 
     /**
      * Selects the characters at the specified position. Any previous
@@ -209,16 +175,6 @@ class KTEXTWIDGETS_EXPORT KTextEdit : public QTextEdit //krazy:exclude=qclasses
      * @since 4.1
      */
     void enableFindReplace( bool enabled);
-
-    /**
-     * Sets the spell interface, which is used to delegate certain function
-     * calls to the interface.
-     * This is a workaround for binary compatibility and should be removed in
-     * KDE5.
-     *
-     * @since 4.2
-     */
-    void setSpellInterface( KTextEditSpellInterface *spellInterface );
 
     /**
      * @return the spell checking language which was set by
@@ -417,26 +373,6 @@ class KTEXTWIDGETS_EXPORT KTextEdit : public QTextEdit //krazy:exclude=qclasses
      * when appropriate.
      */
     virtual void contextMenuEvent( QContextMenuEvent* );
-
-    // TODO: KDE5: get rid of these as soon as BIC changes are allowed, they
-    //             should be folded back into the normal public version, which
-    //             should be made virtual.
-    //             These methods just provide a way for derived classes to call
-    //             the base class version of the normal methods.
-
-    /**
-     * Enable or disable the spellchecking. This is what setCheckSpellingEnabled()
-     * calls if there is no spell interface.
-     * @since 4.2
-     */
-    void setCheckSpellingEnabledInternal(bool check);
-
-    /**
-     * Checks whether spellchecking is enabled or disabled. This is what
-     * checkSpellingEnabled calls if there is no spell interface.
-     * @since 4.2
-     */
-    bool checkSpellingEnabledInternal() const;
 
   private:
     class Private;
