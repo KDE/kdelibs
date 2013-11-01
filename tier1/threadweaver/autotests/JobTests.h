@@ -51,6 +51,7 @@ private Q_SLOTS:
     void IdDecoratorSingleAllocationTest();
     void JobsAreDestroyedAfterFinishTest();
     void JobExitStatusByExceptionTest();
+    void JobManualExitStatusTest();
 
 public Q_SLOTS: // slots used during tests that are not test cases
     void jobStarted(ThreadWeaver::JobPointer);

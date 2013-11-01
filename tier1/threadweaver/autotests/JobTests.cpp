@@ -935,5 +935,39 @@ void JobTests::JobExitStatusByExceptionTest()
     QCOMPARE(successful.status(), Job::Status_Success);
 }
 
+void JobTests::JobManualExitStatusTest()
+{
+    using namespace ThreadWeaver;
+
+    struct FailingJob : public Job {
+        void run(JobPointer, Thread*) Q_DECL_OVERRIDE {
+            setStatus(Job::Status_Failed);
+        }
+    };
+
+    FailingJob failing;
+    failing.blockingExecute();
+    QCOMPARE(failing.status(), Job::Status_Failed);
+
+    struct AbortingJob : public Job {
+        void run(JobPointer, Thread*) Q_DECL_OVERRIDE {
+            setStatus(Job::Status_Aborted);
+        }
+    };
+
+    AbortingJob aborting;
+    aborting.blockingExecute();
+    QCOMPARE(aborting.status(), Job::Status_Aborted);
+
+    struct SuccessfulJob : public Job {
+        void run(JobPointer, Thread*) Q_DECL_OVERRIDE {
+            // do nothing
+        }
+    };
+    SuccessfulJob successful;
+    successful.blockingExecute();
+    QCOMPARE(successful.status(), Job::Status_Success);
+}
+
 QTEST_MAIN ( JobTests )
 
