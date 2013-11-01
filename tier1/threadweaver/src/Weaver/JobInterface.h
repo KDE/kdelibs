@@ -20,12 +20,25 @@ typedef QSharedPointer<JobInterface> JobPointer;
 
 class THREADWEAVER_EXPORT JobInterface {
 public:
+    enum Status {
+        Status_NoStatus = 0,
+        Status_New,
+        Status_Queued,
+        Status_Running,
+        Status_Success,
+        Status_Failed,
+        Status_Aborted,
+        Status_NumberOfStatuses,
+    };
+
     virtual ~JobInterface() {}
     virtual void execute(JobPointer job, Thread*) = 0;
     virtual void blockingExecute() = 0;
     virtual Executor* setExecutor(Executor* executor) = 0;
     virtual Executor* executor() const = 0;
     virtual int priority() const = 0;
+    virtual Status status() const = 0;
+    virtual void setStatus(Status) = 0;
     virtual bool success () const = 0;
     virtual void requestAbort() = 0;
     virtual void aboutToBeQueued(QueueAPI *api) = 0;
@@ -41,7 +54,6 @@ public:
     friend class Executor;
     virtual void defaultBegin(JobPointer job, Thread* thread) = 0;
     virtual void defaultEnd(JobPointer job, Thread* thread) = 0;
-    virtual void setFinished(bool status) = 0;
     virtual QMutex* mutex() const = 0;
 };
 

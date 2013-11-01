@@ -174,6 +174,7 @@ bool DependencyPolicy::canRun(JobPointer job)
 void DependencyPolicy::free(JobPointer job)
 {
     REQUIRE(job != 0);
+    REQUIRE(job->status() > Job::Status_Running);
     if (job->success()) {
         resolveDependencies(job);
         debug( 3, "DependencyPolicy::free: dependencies resolved for job %p.\n", (void*)job.data());

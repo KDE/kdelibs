@@ -45,6 +45,8 @@ public:
     Executor* setExecutor(Executor* executor) Q_DECL_OVERRIDE;
     Executor* executor() const Q_DECL_OVERRIDE;
     int priority() const Q_DECL_OVERRIDE;
+    void setStatus(Status) Q_DECL_OVERRIDE;
+    Status status() const Q_DECL_OVERRIDE;
     bool success () const Q_DECL_OVERRIDE;
     void requestAbort() Q_DECL_OVERRIDE;
     void aboutToBeQueued(QueueAPI *api) Q_DECL_OVERRIDE;
@@ -62,7 +64,6 @@ protected:
     void defaultBegin(JobPointer job, Thread* thread) Q_DECL_OVERRIDE;
     void defaultEnd(JobPointer job, Thread* thread) Q_DECL_OVERRIDE;
 
-    void setFinished(bool status) Q_DECL_OVERRIDE;
     QMutex* mutex() const Q_DECL_OVERRIDE;
 
 private:

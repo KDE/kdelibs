@@ -32,12 +32,6 @@ QMutex *IdDecorator::mutex() const
     return job()->mutex();
 }
 
-void IdDecorator::setFinished(bool status)
-{
-    Q_ASSERT(d1);
-    job()->setFinished(status);
-}
-
 void IdDecorator::run(JobPointer self, Thread *thread)
 {
     Q_ASSERT(d1);
@@ -126,6 +120,18 @@ int IdDecorator::priority() const
 {
     Q_ASSERT(d1);
     return job()->priority();
+}
+
+void IdDecorator::setStatus(JobInterface::Status status)
+{
+    Q_ASSERT(d1);
+    job()->setStatus(status);
+}
+
+JobInterface::Status IdDecorator::status() const
+{
+    Q_ASSERT(d1);
+    return job()->status();
 }
 
 Executor *IdDecorator::executor() const

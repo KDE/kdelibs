@@ -101,6 +101,17 @@ public:
      * the execution order of jobs. */
     int priority() const Q_DECL_OVERRIDE;
 
+    /** @brief Set the status of the Job.
+     *
+     * Do not call this method unless you know what you are doing, please :-) */
+    void setStatus(Status) Q_DECL_OVERRIDE;
+
+    /** @brief The status of the job.
+     *
+     * The status will be changed to Status_Success if the run() method exits normally.
+     */
+    Status status() const Q_DECL_OVERRIDE;
+
     /** Return whether the Job finished successfully or not.
      * The default implementation simply returns true. Overload in derived classes if the derived Job class can fail.
      *
@@ -203,9 +214,6 @@ protected:
      * job is the Job that the queue is executing. It is not necessarily equal to this. For example, Jobs that are
      * decorated expose the decorator's address, not the address of the decorated object. */
     void defaultEnd(JobPointer job, Thread* thread) Q_DECL_OVERRIDE;
-
-    /** Call with status = true to mark this job as done. */
-    void setFinished(bool status) Q_DECL_OVERRIDE;
 
     /** The mutex used to protect this job. */
     QMutex* mutex() const Q_DECL_OVERRIDE;

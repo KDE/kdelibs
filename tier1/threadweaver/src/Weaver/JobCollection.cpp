@@ -40,7 +40,7 @@ http://creative-destruction.me $
 
 namespace ThreadWeaver {
 
-class CollectionExecuteWrapper : public ThreadWeaver::ExecuteWrapper {
+class CollectionExecuteWrapper : public ExecuteWrapper {
 public:
     CollectionExecuteWrapper()
         : collection(0)
@@ -50,12 +50,19 @@ public:
         collection = collection_;
     }
 
-    void execute(ThreadWeaver::JobPointer job, ThreadWeaver::Thread *thread) Q_DECL_OVERRIDE {
+    void begin(JobPointer job, Thread* thread) Q_DECL_OVERRIDE {
+        ExecuteWrapper::begin(job, thread);
         Q_ASSERT(collection);
         collection->elementStarted(job, thread);
-        executeWrapped(job, thread);
-        collection->elementFinished(job, thread);
     }
+
+    void end(JobPointer job, Thread* thread) Q_DECL_OVERRIDE {
+        Q_ASSERT(collection);
+        collection->elementFinished(job, thread);
+        ExecuteWrapper::end(job, thread);
+    }
+
+
 
     void cleanup(JobPointer job, Thread *) Q_DECL_OVERRIDE {
         //Once job is unwrapped from us, this object is dangling. Job::executor points to the next higher up execute wrapper.
@@ -255,7 +262,7 @@ void JobCollection::finalCleanup()
     Q_ASSERT(!self().isNull());
     Q_ASSERT(!mutex()->tryLock());
     freeQueuePolicyResources(self());
-    setFinished(true);
+    setStatus(Status_Success);
     d->api = 0;
 }
 

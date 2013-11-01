@@ -33,6 +33,7 @@ $Id: Job.cpp 20 2005-08-08 21:02:51Z mirko $
 #include <DebuggingAids.h>
 #include <Thread.h>
 #include <QAtomicPointer>
+#include <QAtomicInt>
 
 #include "QueuePolicy.h"
 #include "DependencyPolicy.h"
@@ -77,7 +78,7 @@ class Job::Private
 public:
     Private ()
         : mutex(QMutex::NonRecursive)
-        , finished (false)
+        , status(Job::Status_NoStatus)
         , executor(&defaultExecutor)
     {}
 
@@ -88,8 +89,8 @@ public:
     QList<QueuePolicy*> queuePolicies;
 
     mutable QMutex mutex;
-    /* d->finished is set to true when the Job has been executed. */
-    bool finished;
+    /* @brief The status of the Job. */
+    QAtomicInt status;
 
     /** The Executor that will execute this Job. */
     QAtomicPointer<Executor> executor;
@@ -107,6 +108,7 @@ Job::Job()
 #if not defined NDEBUG
     d->debugExecuteWrapper.wrap(setExecutor(&d->debugExecuteWrapper));
 #endif
+    d->status.storeRelease(Status_New);
 }
 
 Job::~Job()
@@ -122,9 +124,10 @@ void Job::execute(JobPointer job, Thread *th)
     Executor* executor = d->executor.loadAcquire();
     Q_ASSERT(executor); //may never be unset!
     executor->begin(job, th);
+    setStatus(Status_Running);
     executor->execute(job, th);
+    setStatus(Status_Success);
     executor->end(job, th);
-    setFinished (true);
     executor->cleanup(job, th);
 }
 
@@ -132,7 +135,6 @@ void Job::blockingExecute()
 {
     execute(ManagedJobPointer<Job>(this), 0);
 }
-
 Executor *Job::setExecutor(Executor *executor)
 {
     return d->executor.fetchAndStoreOrdered(executor == 0 ? &defaultExecutor : executor);
@@ -148,9 +150,20 @@ int Job::priority () const
     return 0;
 }
 
+void Job::setStatus(JobInterface::Status status)
+{
+    d->status.storeRelease(status);
+}
+
+JobInterface::Status Job::status() const
+{
+    // since status is set only through setStatus, this should be safe:
+    return static_cast<Status>(d->status.loadAcquire());
+}
+
 bool Job::success () const
 {
-    return true;
+    return d->status.loadAcquire() == Status_Success;
 }
 
 void Job::freeQueuePolicyResources(JobPointer job)
@@ -211,12 +224,8 @@ QList<QueuePolicy *> Job::queuePolicies() const
 
 bool Job::isFinished() const
 {
-    return d->finished;
-}
-
-void Job::setFinished(bool status)
-{
-    d->finished = status;
+    const Status s = status();
+    return s == Status_Success || s == Status_Failed || s == Status_Aborted;
 }
 
 QMutex* Job::mutex() const
