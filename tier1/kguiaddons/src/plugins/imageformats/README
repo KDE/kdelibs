@@ -1,19 +1,4 @@
-This directory contains Qt imageformat plugins. See Qt docs for
-writing a new handler.
+This directory contains Qt imageformat plugins. See QImageIOPlugin docs
+for how to write a new handler.
 
-Current formats include:
-
-JPEG	<read> <write>
-JPEG2000 <read> <write>
-XV	<read> <write>
-EPS	<read> <write>
-NETPBM	<incomplete>
-PNG	<read> <write, only with newer libraries>
-TIFF	<read>
-TGA	<read> <write>
-PCX	<read> <write>
-SGI	<read> <write>   (images/x-rgb: *.bw, *.rgb, *.rgba, *.sgi)
-DDS	<read>
-XCF	<read>
-RAS     <read> (images/x-sun-raster: *.ras, *.sun, *.im1, *.im8, *.im8g...)
-
+It also contains desktop files for the plugins that come with Qt.
