@@ -310,9 +310,7 @@ bool EPSHandler::canRead(QIODevice *device)
 
 QImageIOPlugin::Capabilities EPSPlugin::capabilities(QIODevice *device, const QByteArray &format) const
 {
-    if (format == "eps" || format == "EPS" ||
-        format == "epsi" || format == "EPSI" ||
-        format == "epsf" || format == "EPSF")
+    if (format == "eps" || format == "epsi" || format == "epsf")
         return Capabilities(CanRead | CanWrite);
     if (!format.isEmpty())
         return 0;

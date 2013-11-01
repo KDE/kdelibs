@@ -428,7 +428,7 @@ bool TGAHandler::canRead(QIODevice *device)
 
 QImageIOPlugin::Capabilities TGAPlugin::capabilities(QIODevice *device, const QByteArray &format) const
 {
-    if (format == "tga" || format == "TGA")
+    if (format == "tga")
         return Capabilities(CanRead | CanWrite);
     if (!format.isEmpty())
         return 0;

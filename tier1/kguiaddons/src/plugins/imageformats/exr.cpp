@@ -220,7 +220,7 @@ bool EXRHandler::canRead(QIODevice *device)
 
 QImageIOPlugin::Capabilities EXRPlugin::capabilities(QIODevice *device, const QByteArray &format) const
 {
-    if ( format == "exr" || format == "EXR" )
+    if ( format == "exr" )
 		return Capabilities(CanRead);
     if ( !format.isEmpty() )
         return 0;

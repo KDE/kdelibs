@@ -275,7 +275,7 @@ bool RASHandler::read(QImage *outImage)
 QImageIOPlugin::Capabilities RASPlugin::capabilities(QIODevice *device, const QByteArray &format) const
 {
   
-    if (format == "ras" || format == "RAS")
+    if (format == "ras")
         return Capabilities(CanRead);
     if (!format.isEmpty())
         return 0;

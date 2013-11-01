@@ -1026,7 +1026,7 @@ bool DDSHandler::canRead(QIODevice *device)
 
 QImageIOPlugin::Capabilities DDSPlugin::capabilities(QIODevice *device, const QByteArray &format) const
 {
-    if (format == "dds" || format == "DDS")
+    if (format == "dds")
         return Capabilities(CanRead);
     if (!format.isEmpty())
         return 0;

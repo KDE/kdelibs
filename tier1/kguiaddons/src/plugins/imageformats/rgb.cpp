@@ -667,10 +667,8 @@ bool RGBHandler::canRead(QIODevice *device)
 
 QImageIOPlugin::Capabilities RGBPlugin::capabilities(QIODevice *device, const QByteArray &format) const
 {
-    if (format == "rgb" || format == "RGB" ||
-        format ==  "rgba" || format == "RGBA" ||
-        format ==  "bw" || format == "BW" ||
-        format == "sgi" || format == "SGI")
+    if (format == "rgb" || format ==  "rgba" ||
+            format ==  "bw" || format == "sgi")
         return Capabilities(CanRead|CanWrite);
     if (!format.isEmpty())
         return 0;

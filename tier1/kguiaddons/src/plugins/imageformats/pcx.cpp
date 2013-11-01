@@ -676,7 +676,7 @@ bool PCXHandler::canRead(QIODevice *device)
 
 QImageIOPlugin::Capabilities PCXPlugin::capabilities(QIODevice *device, const QByteArray &format) const
 {
-    if (format == "pcx" || format == "PCX")
+    if (format == "pcx")
         return Capabilities(CanRead | CanWrite);
     if (!format.isEmpty())
         return 0;

@@ -2627,7 +2627,7 @@ bool XCFHandler::canRead(QIODevice *device)
 
 QImageIOPlugin::Capabilities XCFPlugin::capabilities(QIODevice *device, const QByteArray &format) const
 {
-    if (format == "xcf" || format == "XCF")
+    if (format == "xcf")
         return Capabilities(CanRead);
     if (!format.isEmpty())
         return 0;

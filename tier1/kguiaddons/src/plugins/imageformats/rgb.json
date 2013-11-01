@@ -1,4 +1,4 @@
 {
-    "Keys": [ "rgb", "RGB", "rgba", "RGBA", "bw", "BW", "sgi", "SGI" ],
+    "Keys": [ "rgb", "rgba", "bw", "sgi" ],
     "MimeTypes": [ "image/x-rgb" ]
 }

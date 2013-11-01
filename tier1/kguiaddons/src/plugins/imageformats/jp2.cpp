@@ -465,7 +465,7 @@ void JP2Handler::setOption(ImageOption option, const QVariant &value)
 
 QImageIOPlugin::Capabilities JP2Plugin::capabilities(QIODevice *device, const QByteArray &format) const
 {
-    if (format == "jp2" || format == "JP2")
+    if (format == "jp2")
         return Capabilities(CanRead | CanWrite);
     if (!format.isEmpty())
         return 0;

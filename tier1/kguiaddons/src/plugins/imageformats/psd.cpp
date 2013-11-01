@@ -311,7 +311,7 @@ bool PSDHandler::canRead(QIODevice *device)
 
 QImageIOPlugin::Capabilities PSDPlugin::capabilities(QIODevice *device, const QByteArray &format) const
 {
-    if (format == "psd" || format == "PSD")
+    if (format == "psd")
         return Capabilities(CanRead);
     if (!format.isEmpty())
         return 0;

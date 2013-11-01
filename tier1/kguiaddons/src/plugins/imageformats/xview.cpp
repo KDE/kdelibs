@@ -213,7 +213,7 @@ bool XVHandler::canRead(QIODevice *device)
 
 QImageIOPlugin::Capabilities XVPlugin::capabilities(QIODevice *device, const QByteArray &format) const
 {
-    if (format == "xv" || format == "XV")
+    if (format == "xv")
         return Capabilities(CanRead | CanWrite);
     if (!format.isEmpty())
         return 0;

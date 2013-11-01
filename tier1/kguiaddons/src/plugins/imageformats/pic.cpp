@@ -70,7 +70,7 @@ bool SoftimagePICHandler::supportsOption(ImageOption option) const {
 }
 
 QImageIOPlugin::Capabilities SoftimagePICPlugin::capabilities(QIODevice *device, const QByteArray &format) const {
-    if (format == "pic" || format == "PIC")
+    if (format == "pic")
         return Capabilities(CanRead | CanWrite);
     if (!format.isEmpty())
         return 0;
