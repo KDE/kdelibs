@@ -1,17 +1,21 @@
 /**
 * QImageIO Routines to read/write EPS images.
 * copyright (c) 1998 Dirk Schoenberger <dirk.schoenberger@freenet.de>
+* Copyright (c) 2013 Alex Merry <alex.merry@kdemail.net>
+* Includes code by Sven Wiegand <SWiegand@tfh-berlin.de> from KSnapshot
 *
 * This library is distributed under the conditions of the GNU LGPL.
 */
 #include "eps.h"
 #include <unistd.h>
 #include <stdio.h>
+#include <QDebug>
 #include <QImage>
 #include <QFile>
 #include <QLoggingCategory>
 #include <QPainter>
 #include <QPrinter>
+#include <QProcess>
 #include <QtCore/QTextStream>
 #include <QtCore/QTemporaryFile>
 
@@ -227,24 +231,18 @@ bool EPSHandler::read(QImage *image)
 }
 
 
-// Sven Wiegand <SWiegand@tfh-berlin.de> -- eps output filter (from KSnapshot)
 bool EPSHandler::write(const QImage &image)
 {
     QPrinter psOut(QPrinter::PrinterResolution);
     QPainter p;
 
-    // making some definitions (papersize, output to file, filename):
-    psOut.setCreator(QLatin1String("KDE"));
-    if (psOut.outputFileName().isEmpty())
-        psOut.setOutputFileName(QLatin1String("untitled_printer_document"));
-
-    // Extension must be .eps so that Qt generates EPS file
-    QTemporaryFile tmpFile(QLatin1String("XXXXXXXX.eps"));
+    QTemporaryFile tmpFile(QStringLiteral("XXXXXXXX.pdf"));
     if (!tmpFile.open())
         return false;
 
+    psOut.setCreator(QStringLiteral("KDE EPS image plugin"));
     psOut.setOutputFileName(tmpFile.fileName());
-#warning QT5 Port to whatever replaces this?
+    psOut.setOutputFormat(QPrinter::PdfFormat);
     psOut.setFullPage(true);
     psOut.setPaperSize(image.size(), QPrinter::DevicePixel);
 
@@ -253,25 +251,42 @@ bool EPSHandler::write(const QImage &image)
     p.drawImage(QPoint(0, 0), image);
     p.end();
 
-    // Copy file to imageio struct
-    QFile inFile(tmpFile.fileName());
-    if (!inFile.open(QIODevice::ReadOnly))
-        return false;
+    QProcess converter;
+    converter.setProcessChannelMode(QProcess::ForwardedErrorChannel);
+    converter.setReadChannel(QProcess::StandardOutput);
 
-    QTextStream in(&inFile);
-    in.setCodec("ISO-8859-1");
-    QTextStream out(device());
-    out.setCodec("ISO-8859-1");
+    // pdftops comes with Poppler and produces much smaller EPS files than GhostScript
+    QStringList pdftopsArgs;
+    pdftopsArgs << QStringLiteral("-eps")
+                << tmpFile.fileName()
+                << QStringLiteral("-");
+    qCDebug(EPSPLUGIN) << "Running pdftops with args" << pdftopsArgs;
+    converter.start(QStringLiteral("pdftops"), pdftopsArgs);
 
-    QString szInLine = in.readLine();
-    out << szInLine << '\n';
+    if (!converter.waitForStarted()) {
+        // GhostScript produces huge files, and takes a long time doing so
+        QStringList gsArgs;
+        gsArgs << QStringLiteral("-q") << QStringLiteral("-P-")
+               << QStringLiteral("-dNOPAUSE") << QStringLiteral("-dBATCH")
+               << QStringLiteral("-dSAFER")
+               << QStringLiteral("-sDEVICE=epswrite")
+               << QStringLiteral("-sOutputFile=-")
+               << QStringLiteral("-c")
+               << QStringLiteral("save") << QStringLiteral("pop")
+               << QStringLiteral("-f")
+               << tmpFile.fileName();
+        qCDebug(EPSPLUGIN) << "Failed to start pdftops; trying gs with args" << gsArgs;
+        converter.start(QStringLiteral("gs"), gsArgs);
 
-    while (!in.atEnd()) {
-        szInLine = in.readLine();
-        out << szInLine << '\n';
+        if (!converter.waitForStarted(3000)) {
+            qWarning() << "Creating EPS files requires pdftops (from Poppler) or gs (from GhostScript)";
+            return false;
+        }
     }
 
-    inFile.close();
+    while (converter.bytesAvailable() || (converter.state() == QProcess::Running && converter.waitForReadyRead(2000))) {
+        device()->write(converter.readAll());
+    }
 
     return true;
 }
