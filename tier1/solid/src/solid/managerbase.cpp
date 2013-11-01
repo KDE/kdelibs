@@ -90,13 +90,13 @@ void Solid::ManagerBasePrivate::loadBackends()
             } else {
 #               if UDEV_FOUND
                     m_backends << new Solid::Backends::UDev::UDevManager(0);
-#               endif
 #		if defined(WITH_SOLID_UDISKS2)
                 m_backends << new Solid::Backends::UDisks2::Manager(0)
 #		else
                 m_backends << new Solid::Backends::UDisks::UDisksManager(0)
 #		endif
-                           << new Solid::Backends::UPower::UPowerManager(0)
+#               endif
+                m_backends << new Solid::Backends::UPower::UPowerManager(0)
                            << new Solid::Backends::Fstab::FstabManager(0);
             }
 #        endif
