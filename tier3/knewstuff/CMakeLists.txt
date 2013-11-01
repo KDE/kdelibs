@@ -13,7 +13,7 @@ set(REQUIRED_QT_VERSION "5.2")
 find_package(Qt5 ${REQUIRED_QT_VERSION} NO_MODULE REQUIRED COMPONENTS DBus Network Widgets Xml)
 
 # Not part of kdelibs
-if (${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
+if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
 find_package(KF5 CONFIG REQUIRED
   KCoreAddons KConfig KI18n KGuiAddons KCodecs
   KWidgetsAddons KAuth ItemViews KConfigWidgets KArchive KCompletion
