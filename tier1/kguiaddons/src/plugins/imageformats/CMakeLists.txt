@@ -31,7 +31,7 @@ if(JASPER_FOUND)
     target_link_libraries(kimg_jp2  Qt5::Gui ${JASPER_LIBRARIES} )
 
     install(TARGETS kimg_jp2  DESTINATION ${QT_PLUGIN_INSTALL_DIR}/imageformats/ )
-    install( FILES jp2.desktop DESTINATION  ${SERVICES_INSTALL_DIR}/qimageioplugins/ )
+    install(FILES jp2.desktop DESTINATION  ${SERVICES_INSTALL_DIR}/qimageioplugins/ )
 
 endif(JASPER_FOUND)
 
@@ -45,6 +45,7 @@ if (Qt5PrintSupport_FOUND)
     target_link_libraries(kimg_eps  Qt5::Gui Qt5::PrintSupport)
 
     install(TARGETS kimg_eps  DESTINATION ${QT_PLUGIN_INSTALL_DIR}/imageformats/ )
+    install(FILES eps.desktop DESTINATION  ${SERVICES_INSTALL_DIR}/qimageioplugins/ )
 
 endif()
 
@@ -56,6 +57,7 @@ set_target_properties(kimg_pcx PROPERTIES PREFIX "")
 target_link_libraries(kimg_pcx  Qt5::Gui)
 
 install(TARGETS kimg_pcx  DESTINATION ${QT_PLUGIN_INSTALL_DIR}/imageformats/ )
+install(FILES pcx.desktop DESTINATION  ${SERVICES_INSTALL_DIR}/qimageioplugins/ )
 
 ##################################
 
@@ -65,6 +67,7 @@ set_target_properties(kimg_tga PROPERTIES PREFIX "")
 target_link_libraries(kimg_tga  Qt5::Gui)
 
 install(TARGETS kimg_tga  DESTINATION ${QT_PLUGIN_INSTALL_DIR}/imageformats/ )
+install(FILES tga.desktop DESTINATION  ${SERVICES_INSTALL_DIR}/qimageioplugins/ )
 
 ##################################
 
@@ -74,6 +77,7 @@ set_target_properties(kimg_ras PROPERTIES PREFIX "")
 target_link_libraries(kimg_ras  Qt5::Gui)
 
 install(TARGETS kimg_ras  DESTINATION ${QT_PLUGIN_INSTALL_DIR}/imageformats/ )
+install(FILES ras.desktop DESTINATION  ${SERVICES_INSTALL_DIR}/qimageioplugins/ )
 
 ##################################
 
@@ -83,6 +87,7 @@ set_target_properties(kimg_rgb PROPERTIES PREFIX "")
 target_link_libraries(kimg_rgb  Qt5::Gui)
 
 install(TARGETS kimg_rgb  DESTINATION ${QT_PLUGIN_INSTALL_DIR}/imageformats/ )
+install(FILES rgb.desktop DESTINATION  ${SERVICES_INSTALL_DIR}/qimageioplugins/ )
 
 ##################################
 
@@ -92,7 +97,7 @@ set_target_properties(kimg_xcf PROPERTIES PREFIX "")
 target_link_libraries(kimg_xcf Qt5::Gui)
 
 install(TARGETS kimg_xcf  DESTINATION ${QT_PLUGIN_INSTALL_DIR}/imageformats/ )
-
+install(FILES xcf.desktop DESTINATION  ${SERVICES_INSTALL_DIR}/qimageioplugins/ )
 
 ##################################
 
@@ -102,7 +107,7 @@ set_target_properties(kimg_dds PROPERTIES PREFIX "")
 target_link_libraries(kimg_dds Qt5::Gui)
 
 install(TARGETS kimg_dds  DESTINATION ${QT_PLUGIN_INSTALL_DIR}/imageformats/ )
-
+install(FILES dds.desktop DESTINATION  ${SERVICES_INSTALL_DIR}/qimageioplugins/ )
 
 ##################################
 
@@ -112,6 +117,7 @@ set_target_properties(kimg_psd PROPERTIES PREFIX "")
 target_link_libraries(kimg_psd Qt5::Gui)
 
 install(TARGETS kimg_psd  DESTINATION ${QT_PLUGIN_INSTALL_DIR}/imageformats/ )
+install(FILES psd.desktop DESTINATION  ${SERVICES_INSTALL_DIR}/qimageioplugins/ )
 
 ##################################
 
@@ -121,10 +127,12 @@ set_target_properties(kimg_xview PROPERTIES PREFIX "")
 target_link_libraries(kimg_xview Qt5::Gui)
 
 install(TARGETS kimg_xview  DESTINATION ${QT_PLUGIN_INSTALL_DIR}/imageformats/ )
+install(FILES xv.desktop DESTINATION  ${SERVICES_INSTALL_DIR}/qimageioplugins/ )
 
 ##################################
 
 if(OPENEXR_FOUND)
+
     include_directories( ${OPENEXR_INCLUDE_DIR} )
     add_definitions(${OPENEXR_DEFINITIONS})
     set(kimg_exr_LIB_SRCS exr.cpp)
@@ -132,8 +140,9 @@ if(OPENEXR_FOUND)
     set_target_properties(kimg_exr PROPERTIES PREFIX "")
     target_link_libraries(kimg_exr Qt5::Gui ${OPENEXR_LIBRARIES} )
 
-install(TARGETS kimg_exr  DESTINATION ${QT_PLUGIN_INSTALL_DIR}/imageformats/ )
-install( FILES exr.desktop DESTINATION  ${SERVICES_INSTALL_DIR}/qimageioplugins/ )
+    install(TARGETS kimg_exr  DESTINATION ${QT_PLUGIN_INSTALL_DIR}/imageformats/ )
+    install(FILES exr.desktop DESTINATION  ${SERVICES_INSTALL_DIR}/qimageioplugins/ )
+
 endif(OPENEXR_FOUND)
 
 ##################################
@@ -144,35 +153,24 @@ set_target_properties(kimg_pic PROPERTIES PREFIX "")
 target_link_libraries(kimg_pic Qt5::Gui)
 
 install(TARGETS kimg_pic  DESTINATION ${QT_PLUGIN_INSTALL_DIR}/imageformats/ )
-
+install(FILES pic.desktop DESTINATION  ${SERVICES_INSTALL_DIR}/qimageioplugins/ )
 
 ########### install files ###############
 
+# For plugins supplied with Qt
 install( FILES
   png.desktop
   xpm.desktop
   bmp.desktop
   pbm.desktop
   pgm.desktop
-  pnm.desktop
   ppm.desktop
   xbm.desktop
   jpeg.desktop
-  xv.desktop
-  eps.desktop
   ico.desktop
   gif.desktop
-  pcx.desktop
-  tga.desktop
-  ras.desktop
-  rgb.desktop
-  xcf.desktop
-  dds.desktop
   mng.desktop
-  psd.desktop
-  hdr.desktop
   tiff.desktop
-  pic.desktop
   svg+xml.desktop
   svg+xml-compressed.desktop
   DESTINATION ${SERVICES_INSTALL_DIR}/qimageioplugins/ )
