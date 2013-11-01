@@ -5,23 +5,21 @@ project(KNewStuff)
 find_package(ECM 0.0.9 REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR})
 
+include(KDEInstallDirs)
+include(KDECMakeSettings)
+include(KDECompilerSettings)
+
 set(REQUIRED_QT_VERSION "5.2")
 find_package(Qt5 ${REQUIRED_QT_VERSION} NO_MODULE REQUIRED COMPONENTS DBus Network Widgets Xml)
 
 # Not part of kdelibs
-if (${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR})
-find_package(KF5 MODULE REQUIRED
-  CMake Compiler InstallDirs KCoreAddons KConfig KI18n KGuiAddons KCodecs 
+if (${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
+find_package(KF5 CONFIG REQUIRED
+  KCoreAddons KConfig KI18n KGuiAddons KCodecs
   KWidgetsAddons KAuth ItemViews KConfigWidgets KArchive KCompletion
   KIconThemes KWindowSystem KDBusAddons KService KJobWidgets KIO Sonnet 
   KTextWidgets XmlGui KCrash KNotifications KUnitConversion
   Solid KWallet KBookmarks)
-
-# Part of kdelibs
-else()
-include(KDEInstallDirs)
-include(KDECompilerSettings)
-include(KDECMakeSettings)
 endif()
 
 include(FeatureSummary)
