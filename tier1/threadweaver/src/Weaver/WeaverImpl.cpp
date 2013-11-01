@@ -230,6 +230,7 @@ void WeaverImpl::enqueue(const JobPointer& job)
 void WeaverImpl::enqueue_p(JobPointer job)
 {
     Q_ASSERT(!m_mutex->tryLock()); //mutex has to be held when this method is called
+    Q_ASSERT(job->status() == Job::Status_New);
     if (job) {
         adjustInventory(1);
         debug(3, "WeaverImpl::enqueue: queueing job %p.\n", (void*)job.data());
@@ -242,6 +243,7 @@ void WeaverImpl::enqueue_p(JobPointer job)
         } else {
             m_assignments.append(job);
         }
+        job->setStatus(Job::Status_Queued);
         reschedule();
     }
 }
@@ -259,7 +261,8 @@ bool WeaverImpl::dequeue_p(JobPointer job)
     if (position != -1) {
         job->aboutToBeDequeued(this);
         int newPosition = m_assignments.indexOf(job);
-        m_assignments.removeAt(newPosition);
+        JobPointer job = m_assignments.takeAt(newPosition);
+        job->setStatus(Job::Status_New);
         Q_ASSERT(!m_assignments.contains(job));
         debug(3, "WeaverImpl::dequeue: job %p dequeued, %i jobs left.\n", (void*)job.data(), queueLength_p());
         // from the queues point of view, a job is just as finished if it gets dequeued:

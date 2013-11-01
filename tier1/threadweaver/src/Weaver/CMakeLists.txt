@@ -1,8 +1,10 @@
 ########### next target ###############
+add_definitions(-fexceptions)
 
 set(ThreadWeaver_LIB_SRCS
     Queue.cpp
     QueueAPI.cpp
+    Exception.cpp
     Weaver.cpp
     WeaverImpl.cpp
     DebuggingAids.cpp
@@ -48,6 +50,7 @@ install(TARGETS ThreadWeaver EXPORT ThreadWeaverTargets ${INSTALL_TARGETS_DEFAUL
 install(FILES
     ThreadWeaver.h
     Queueing.h
+    Exception.h
     WeaverInterface.h
     Weaver.h
     DebuggingAids.h
