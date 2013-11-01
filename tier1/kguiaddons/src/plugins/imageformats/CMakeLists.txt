@@ -173,6 +173,7 @@ install( FILES
   tiff.desktop
   svg+xml.desktop
   svg+xml-compressed.desktop
+  wbmp.desktop
   DESTINATION ${SERVICES_INSTALL_DIR}/qimageioplugins/ )
 
 install( FILES qimageio_plugin.desktop DESTINATION  ${SERVICETYPES_INSTALL_DIR}/ )
