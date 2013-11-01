@@ -17,6 +17,7 @@
 #include <Dependency.h>
 #include <DependencyPolicy.h>
 #include <QObjectDecorator.h>
+#include <Exception.h>
 
 #include "AppendCharacterJob.h"
 #include "AppendCharacterAndVerifyJob.h"
@@ -881,7 +882,7 @@ QAtomicInt InstanceCountedJob::counter;
  * This is necessary because user-allocated objects like queue policies may be registered with the jobs. If the jobs stick around
  * until the thread or queue are deleted, the user-allocatd objects may have gone out of scope or been deleted already, causing
  * potential errors. From ThreadWeaver's point of view, a job seizes to exist once the processing thread asks for the next job. */
-void JobTests::JobsAreDestroyedAfterFinish()
+void JobTests::JobsAreDestroyedAfterFinishTest()
 {
     using namespace ThreadWeaver;
     WaitForIdleAndFinished w(Weaver::instance()); Q_UNUSED(w);
@@ -898,6 +899,40 @@ void JobTests::JobsAreDestroyedAfterFinish()
     job.clear();
     // if this succeeds, job is the only shared pointer pointing to the created InstanceCountedJob object:
     QCOMPARE(InstanceCountedJob::counter.loadAcquire(), 0);
+}
+
+void JobTests::JobExitStatusByExceptionTest()
+{
+    using namespace ThreadWeaver;
+
+    struct FailingJob : public Job {
+        void run(JobPointer, Thread*) Q_DECL_OVERRIDE {
+            throw JobFailed();
+        }
+    };
+
+    FailingJob failing;
+    failing.blockingExecute();
+    QCOMPARE(failing.status(), Job::Status_Failed);
+
+    struct AbortingJob : public Job {
+        void run(JobPointer, Thread*) Q_DECL_OVERRIDE {
+            throw JobAborted();
+        }
+    };
+
+    AbortingJob aborting;
+    aborting.blockingExecute();
+    QCOMPARE(aborting.status(), Job::Status_Aborted);
+
+    struct SuccessfulJob : public Job {
+        void run(JobPointer, Thread*) Q_DECL_OVERRIDE {
+            // do nothing
+        }
+    };
+    SuccessfulJob successful;
+    successful.blockingExecute();
+    QCOMPARE(successful.status(), Job::Status_Success);
 }
 
 QTEST_MAIN ( JobTests )

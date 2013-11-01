@@ -1,4 +1,5 @@
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
+add_definitions(-fexceptions)
 
 include(ECMMarkAsTest)
 
