@@ -40,6 +40,7 @@ $Id: Job.cpp 20 2005-08-08 21:02:51Z mirko $
 #include "Executor.h"
 #include "ExecuteWrapper.h"
 #include "ManagedJobPointer.h"
+#include "Exception.h"
 
 namespace {
 
@@ -119,16 +120,29 @@ Job::~Job()
     delete d;
 }
 
-void Job::execute(JobPointer job, Thread *th)
+void Job::execute(JobPointer self, Thread *th)
 {
     Executor* executor = d->executor.loadAcquire();
     Q_ASSERT(executor); //may never be unset!
-    executor->begin(job, th);
-    setStatus(Status_Running);
-    executor->execute(job, th);
-    setStatus(Status_Success);
-    executor->end(job, th);
-    executor->cleanup(job, th);
+    Q_ASSERT(self);
+    executor->begin(self, th);
+    self->setStatus(Status_Running);
+    try {
+        executor->execute(self, th);
+        if (self->status() == Status_Running) {
+            self->setStatus(Status_Success);
+        }
+    } catch(JobAborted&) {
+        self->setStatus(Status_Aborted);
+    } catch(JobFailed&) {
+        self->setStatus(Status_Failed);
+    } catch(...) {
+        debug(0, "Uncaught exception in Job %p, aborting.", self.data());
+        throw;
+    }
+    Q_ASSERT(self->status() > Status_Running);
+    executor->end(self, th);
+    executor->cleanup(self, th);
 }
 
 void Job::blockingExecute()
