@@ -163,6 +163,7 @@ void KLineEditTest::slotPlaceholderText(bool click)
     }
 }
 
+#ifndef KDE_NO_DEPRECATED
 void KLineEditTest::slotClickMessage(bool click)
 {
 	if( click )
@@ -171,6 +172,7 @@ void KLineEditTest::slotClickMessage(bool click)
 		m_lineedit->setClickMessage ("Click in this lineedit");
 	}
 }
+#endif
 
 void KLineEditTest::slotHide()
 {
