@@ -175,8 +175,12 @@ class KSERVICE_EXPORT KPluginInfo
          *
          * @param services The list of services to construct the list of KPluginInfo objects from
          * @param config The config group where to save/load whether the plugin is enabled/disabled
+         * @deprecated since 5.0, use (Q|K)PluginLoader instead and build the
+         * metadata into the plugins using K_PLUGIN_FACTORY_WITH_JSON( ..., "mypluginmetadata.json", ...)
          */
-        static KPluginInfo::List fromServices(const KService::List &services, const KConfigGroup &config = KConfigGroup());
+#ifndef KDE_NO_DEPRECATED
+        static KSERVICE_DEPRECATED KPluginInfo::List fromServices(const KService::List &services, const KConfigGroup &config = KConfigGroup());
+#endif
 
         /**
          * @return A list of KPluginInfo objects constructed from a list of

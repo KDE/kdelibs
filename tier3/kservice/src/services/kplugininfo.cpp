@@ -224,6 +224,7 @@ KPluginInfo::~KPluginInfo()
 {
 }
 
+#ifndef KDE_NO_DEPRECATED
 QList<KPluginInfo> KPluginInfo::fromServices(const KService::List &services, const KConfigGroup &config)
 {
     QList<KPluginInfo> infolist;
@@ -236,6 +237,7 @@ QList<KPluginInfo> KPluginInfo::fromServices(const KService::List &services, con
     }
     return infolist;
 }
+#endif
 
 QList<KPluginInfo> KPluginInfo::fromFiles(const QStringList &files, const KConfigGroup &config)
 {
