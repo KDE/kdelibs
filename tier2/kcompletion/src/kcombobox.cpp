@@ -125,14 +125,13 @@ void KComboBox::setContextMenuEnabled( bool showMenu )
     if( d->klineEdit )
         d->klineEdit->setContextMenuEnabled( showMenu );
 }
-#endif
-
 
 void KComboBox::setUrlDropsEnabled( bool enable )
 {
     if ( d->klineEdit )
         d->klineEdit->setUrlDropsEnabled( enable );
 }
+#endif
 
 bool KComboBox::urlDropsEnabled() const
 {
