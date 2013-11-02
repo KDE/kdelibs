@@ -2465,7 +2465,7 @@ void KFileWidgetPrivate::addToRecentDocuments()
         const QStringList files = q->selectedFiles();
         QStringList::ConstIterator it = files.begin();
         for ( ; it != files.end() && atmost > 0; ++it ) {
-            KRecentDocument::add( *it );
+            KRecentDocument::add( QUrl::fromLocalFile(*it) );
             atmost--;
         }
     }

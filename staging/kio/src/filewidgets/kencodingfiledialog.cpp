@@ -226,7 +226,7 @@ KEncodingFileDialog::Result KEncodingFileDialog::getSaveFileNameAndEncoding(cons
 
     QString filename = dlg.d->w->selectedFile();
     if (!filename.isEmpty())
-        KRecentDocument::add(filename);
+        KRecentDocument::add(QUrl::fromLocalFile(filename));
 
     Result res;
     res.fileNames << filename;
