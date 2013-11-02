@@ -177,6 +177,7 @@ set(libkde4support_SRCS
     kio/kscan.cpp
     kio/netaccess.cpp
     kio/kdirselectdialog.cpp
+    kio/kimageio.cpp
 
     kparts/factory.cpp
 )
@@ -443,6 +444,7 @@ install(FILES
     kio/kfiledialog.h
     kio/kpropsdialog.h
     kio/kdevicelistmodel.h
+    kio/kimageio.h
     kssl/ksslcertificate.h
     kssl/ksslx509v3.h
     kssl/kssl.h

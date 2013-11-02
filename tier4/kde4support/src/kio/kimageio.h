@@ -11,7 +11,7 @@
 #include <QtCore/QStringList>
 #include <QtCore/QString>
 
-#include <kio/kio_export.h>
+#include <kde4support_export.h>
 
 /**
  * Methods to get information about image format names and
@@ -65,7 +65,7 @@ namespace KImageIO
    * @deprecated Use QIMageReader/QImageWriter::supportedMimeTypes() and
    * QFileDialog::setMimeTypeFilters() instead.
    */
-  KIO_EXPORT KIO_DEPRECATED QString pattern(Mode mode = Reading);
+  KDE4SUPPORT_DEPRECATED_EXPORT QString pattern(Mode mode = Reading);
 #endif
 
 #if !defined(KDE_NO_DEPRECATED) && !defined(DOXYGEN_SHOULD_SKIP_THIS)
@@ -76,7 +76,7 @@ namespace KImageIO
    *         is not supported
    * @deprecated Use QMimeType::name() instead().
    */
-  KIO_EXPORT KIO_DEPRECATED QStringList typeForMime(const QString& mimeType);
+  KDE4SUPPORT_DEPRECATED_EXPORT QStringList typeForMime(const QString& mimeType);
 #endif
 
 #if !defined(KDE_NO_DEPRECATED) && !defined(DOXYGEN_SHOULD_SKIP_THIS)
@@ -87,7 +87,7 @@ namespace KImageIO
    * @return a list of the type ids
    * @deprecated Use QImageReader/QImageWriter::supportedImageFormats() instead.
    */
-  KIO_EXPORT KIO_DEPRECATED QStringList types(Mode mode = Writing);
+  KDE4SUPPORT_DEPRECATED_EXPORT QStringList types(Mode mode = Writing);
 #endif
 
 #if !defined(KDE_NO_DEPRECATED) && !defined(DOXYGEN_SHOULD_SKIP_THIS)
@@ -98,7 +98,7 @@ namespace KImageIO
    * @return a list if MIME types of the supported formats
    * @deprecated Use QImageReader/QImageWriter::supportedMimeTypes() instead.
    */
-  KIO_EXPORT KIO_DEPRECATED QStringList mimeTypes( Mode mode = Writing );
+  KDE4SUPPORT_DEPRECATED_EXPORT QStringList mimeTypes( Mode mode = Writing );
 #endif
 
 #if !defined(KDE_NO_DEPRECATED) && !defined(DOXYGEN_SHOULD_SKIP_THIS)
@@ -109,7 +109,7 @@ namespace KImageIO
    * @return true if the type is supported
    * @deprecated Use QImageReader/QImageWriter::supportedMimeTypes() instead.
    **/
-  KIO_EXPORT KIO_DEPRECATED bool isSupported( const QString& mimeType, Mode mode = Writing );
+  KDE4SUPPORT_DEPRECATED_EXPORT bool isSupported( const QString& mimeType, Mode mode = Writing );
 #endif
 }
 
