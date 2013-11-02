@@ -21,4 +21,5 @@ KIOWIDGETS_EXECUTABLE_TESTS(
   kurlrequestertest_gui
   kfiletreeviewtest
   kpropertiesdialogtest
+  kmountpoint_debug
 )

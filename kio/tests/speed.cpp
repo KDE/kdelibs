@@ -19,12 +19,9 @@
 #include <QDebug>
 #include <QApplication>
 #include <QUrl>
-#include <time.h>
 #include "speed.h"
 #include <kio/job.h>
-#include <QtCore/QDir>
 #include <kio/global.h>
-#include <kmountpoint.h>
 
 using namespace KIO;
 
@@ -62,41 +59,7 @@ int main(int argc, char **argv) {
     //options.add("+[URL]", qi18n("the URL to list"));
 
     QApplication app(argc, argv);
-// This is the real "speed test"
-    // SpeedTest test( url );
-    // app.exec();
-
-// This is a test for KMountPoint and KIO::probably_slow_mounted etc.
-    // TODO: SPLIT OUT!
-
-    QUrl url;
-    if (argc > 1)
-      url = QUrl::fromUserInput(argv[1]);
-    else
-      url = QUrl::fromLocalFile(QDir::currentPath());
-
-    const KMountPoint::List mountPoints = KMountPoint::currentMountPoints();
-
-    KMountPoint::Ptr mp = mountPoints.findByDevice(url.toLocalFile());
-    if (!mp) {
-        qDebug() << "no mount point for device " << url << " found\n";
-    } else
-        qDebug() << mp->mountPoint() << " is the mount point for device " << url;
-
-    mp = mountPoints.findByPath(url.toLocalFile());
-    if (!mp) {
-        qDebug() << "no mount point for path " << url << " found\n";
-    } else {
-        qDebug() << mp->mountPoint() << " is the mount point for path " << url;
-        qDebug() << url << " is probably " << (mp->probablySlow() ? "slow" : "normal") << " mounted\n";
-    }
-
-    url.setPath(QDir::homePath());
-
-    mp = mountPoints.findByPath(url.toLocalFile());
-    if (!mp) {
-        qDebug() << "no mount point for path " << url << " found\n";
-    } else
-        qDebug() << mp->mountPoint() << " is the mount point for path " << url;
+    SpeedTest test( url );
+    app.exec();
 }
 
