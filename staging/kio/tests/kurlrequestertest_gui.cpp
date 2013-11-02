@@ -26,7 +26,6 @@ int main( int argc, char **argv )
     el->show();
 
     KUrlRequester *req1 = new KUrlRequester();
-    req1->fileDialog();
     req1->setWindowTitle("AAAAAAAAAAAA");
     req1->show();
 
