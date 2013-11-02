@@ -21,12 +21,12 @@
 
 #include <QDebug>
 #include <kservice.h>
-#include <QApplication>
+#include <QCoreApplication>
 
 int main(int argc, char **argv)
 {
-    QApplication::setApplicationName("kdbusservicestartertest");
-    QApplication app(argc, argv);
+    QCoreApplication::setApplicationName("kdbusservicestartertest");
+    QCoreApplication app(argc, argv);
 
     QString error, dbusService;
     KDBusServiceStarter::self()->

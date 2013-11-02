@@ -20,6 +20,7 @@
 #include <QDebug>
 #include <QApplication>
 #include <QUrl>
+#include <QDir>
 #include <kio/job.h>
 #include <kio/global.h>
 #include <kio/udsentry.h>
@@ -76,8 +77,15 @@ int main(int argc, char **argv) {
     //options.add("+[URL]", qi18n("the URL to list"));
 
     QApplication app(argc, argv);
+
+    QUrl url;
+    if (argc > 1)
+      url = QUrl::fromUserInput(argv[1]);
+    else
+      url = QUrl::fromLocalFile(QDir::currentPath());
+
     SpeedTest test( url );
     app.exec();
 }
 
-#include "moc_listrecursivetest.cpp"
+#include "listrecursivetest.moc"

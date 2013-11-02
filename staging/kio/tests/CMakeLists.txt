@@ -23,4 +23,6 @@ KIOWIDGETS_EXECUTABLE_TESTS(
   kpropertiesdialogtest
   kmountpoint_debug
   listrecursivetest
+  kionetrctest
+  ksycocaupdatetest
 )

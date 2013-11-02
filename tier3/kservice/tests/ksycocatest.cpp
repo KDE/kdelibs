@@ -16,9 +16,8 @@
  *  Boston, MA 02110-1301, USA.
  */
 
-#include <QApplication>
+#include <QCoreApplication>
 #include <QDebug>
-#include <kprotocolinfo.h>
 #include <kservice.h>
 #include <kservicegroup.h>
 
@@ -36,8 +35,8 @@
 //
 int main(int argc, char *argv[])
 {
-   QApplication::setApplicationName("ksycocatest");
-   QApplication k(argc, argv);//(argc,argv,"whatever",false/*noGUI*/); // KMessageBox needs KApp for makeStdCaption
+   QCoreApplication::setApplicationName("ksycocatest");
+   QCoreApplication k(argc, argv);
 
    QString instname = "kword";
    QString desktopPath = QString::fromLatin1( "Office/%1.desktop" ).arg( instname );
@@ -166,10 +165,6 @@ int main(int argc, char *argv[])
       }
    }
    }
-
-   qDebug("--protocols--");
-   QStringList stringL = KProtocolInfo::protocols();
-   qDebug() << stringL;
 #endif
    return 0;
 }

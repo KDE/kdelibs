@@ -117,7 +117,6 @@ set_target_properties(kio PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION}
                      )
 
 add_subdirectory( misc )
-add_subdirectory( tests )
 
 ########### install files ###############
 install(TARGETS kio EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})

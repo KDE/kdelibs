@@ -17,6 +17,8 @@ endmacro()
 
 kservice_executable_tests(
   startserviceby
+  kdbusservicestartertest
+  ksycocatest
 )
 
 ######### kmimeassociationstest ########
