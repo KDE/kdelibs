@@ -22,4 +22,5 @@ KIOWIDGETS_EXECUTABLE_TESTS(
   kfiletreeviewtest
   kpropertiesdialogtest
   kmountpoint_debug
+  listrecursivetest
 )

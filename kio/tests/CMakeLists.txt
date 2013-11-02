@@ -11,7 +11,6 @@ ENDMACRO(KIO_EXECUTABLE_TESTS)
 
 KIO_EXECUTABLE_TESTS(
   ksycocatest
-  speed
   kionetrctest
   ksycocaupdatetest
   kdbusservicestartertest

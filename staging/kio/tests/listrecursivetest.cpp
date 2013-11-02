@@ -16,19 +16,36 @@
  *  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  *  Boston, MA 02110-1301, USA.
  */
+
 #include <QDebug>
 #include <QApplication>
 #include <QUrl>
-#include "speed.h"
 #include <kio/job.h>
 #include <kio/global.h>
+#include <kio/udsentry.h>
+
+class KJob;
+namespace KIO {
+    class Job;
+}
+
+class SpeedTest : public QObject {
+    Q_OBJECT
+
+public:
+    SpeedTest(const QUrl & url);
+
+private Q_SLOTS:
+    void entries( KIO::Job *, const KIO::UDSEntryList& );
+    void finished( KJob *job );
+
+};
 
 using namespace KIO;
 
 SpeedTest::SpeedTest( const QUrl & url )
     : QObject(0)
 {
-    setObjectName( "speed" );
     Job *job = listRecursive( url );
     connect(job, SIGNAL(result(KJob*)),
 	    SLOT(finished(KJob*)));
@@ -63,3 +80,4 @@ int main(int argc, char **argv) {
     app.exec();
 }
 
+#include "moc_listrecursivetest.cpp"
