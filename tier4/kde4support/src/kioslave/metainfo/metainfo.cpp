@@ -18,7 +18,7 @@
 
 #include "metainfo.h"
 
-#include <QApplication>
+#include <QCoreApplication>
 #include <QUrl>
 #include <QDebug>
 #include <kfilemetainfo.h>
@@ -33,9 +33,9 @@ using namespace KIO;
 
 extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
 {
-    QApplication::setApplicationName("kio_metainfo");
+    QCoreApplication::setApplicationName("kio_metainfo");
 
-    QApplication app(argc, argv);
+    QCoreApplication app(argc, argv);
 
     //KApplication app(argc, argv, "kio_metainfo", false, true);
 

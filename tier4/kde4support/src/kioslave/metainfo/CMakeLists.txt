@@ -13,6 +13,7 @@ target_link_libraries(kio_metainfo
    KDE4Support
    KF5::KCoreAddons
    KF5::KI18n
+   KF5::KIOCore
 )
 
 install(TARGETS kio_metainfo  DESTINATION ${PLUGIN_INSTALL_DIR} )
