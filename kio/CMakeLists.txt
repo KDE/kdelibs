@@ -48,35 +48,10 @@ set_package_properties(ACL PROPERTIES DESCRIPTION "LibACL" URL "ftp://oss.sgi.co
 
 include(ConfigureChecks.cmake)
 
-configure_file(kio/config-kio.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kio/config-kio.h )
-
-set(kiocore_STAT_SRCS
-)
-
-if(NOT KDE_NO_DEPRECATED)
-  set(kiocore_STAT_SRCS
-    ${kiocore_STAT_SRCS}
-    )
-endif(NOT KDE_NO_DEPRECATED)
-
-if(NOT KIO_NO_SOLID)
-  set(kiocore_STAT_SRCS
-    ${kiocore_STAT_SRCS}
-    )
-endif(NOT KIO_NO_SOLID)
-
-if(UNIX)
-   set(kiocore_STAT_SRCS ${kiocore_STAT_SRCS}
-   )
-endif(UNIX)
-
-
 ########### next target ###############
 
-
-
 set(kio_LIB_SRCS
-   ${kiocore_STAT_SRCS}
+
 )
 
 add_library(kio ${kio_LIB_SRCS})
