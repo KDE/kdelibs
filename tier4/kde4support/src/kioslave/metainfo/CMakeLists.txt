@@ -9,7 +9,11 @@ set(kio_metainfo_PART_SRCS metainfo.cpp )
 add_library(kio_metainfo MODULE ${kio_metainfo_PART_SRCS})
 
 
-target_link_libraries(kio_metainfo KDE4Support kio KF5::KCoreAddons KF5::KI18n)
+target_link_libraries(kio_metainfo
+   KDE4Support
+   KF5::KCoreAddons
+   KF5::KI18n
+)
 
 install(TARGETS kio_metainfo  DESTINATION ${PLUGIN_INSTALL_DIR} )
 

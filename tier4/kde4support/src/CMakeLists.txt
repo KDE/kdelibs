@@ -274,7 +274,6 @@ target_link_libraries(KDE4Support
    KConfigWidgets
    KIOCore
    KIOFileWidgets
-   kio
    ${KIO_EXTRA_LIBS}
    KF5::KI18n
    ${X11_LIBRARIES}
