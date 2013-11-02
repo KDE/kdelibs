@@ -214,7 +214,7 @@ public:
     void slotResultConflictCreatingDirs( KJob * job );
     void createNextDir();
     void slotResultCopyingFiles( KJob * job );
-    void slotResultError( KJob * job );
+    void slotResultErrorCopyingFiles( KJob * job );
 //     KIO::Job* linkNextFile( const QUrl& uSource, const QUrl& uDest, bool overwrite );
     KIO::Job* linkNextFile( const QUrl& uSource, const QUrl& uDest, JobFlags flags );
     void copyNextFile();
@@ -1268,7 +1268,7 @@ void CopyJobPrivate::slotResultCopyingFiles( KJob * job )
                     }
 
                     // Go directly to the conflict resolution, there is nothing to stat
-                    slotResultError( job );
+                    slotResultErrorCopyingFiles( job );
                     return;
                 }
             }
@@ -1328,7 +1328,7 @@ void CopyJobPrivate::slotResultCopyingFiles( KJob * job )
     copyNextFile();
 }
 
-void CopyJobPrivate::slotResultError( KJob * job )
+void CopyJobPrivate::slotResultErrorCopyingFiles( KJob * job )
 {
     Q_Q(CopyJob);
     // We come here after a conflict has been detected and we've stated the existing file
@@ -1882,7 +1882,7 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
     }
     if ( err )
     {
-        // This code is similar to CopyJobPrivate::slotResultError
+        // This code is similar to CopyJobPrivate::slotResultErrorCopyingFiles
         // but here it's about the base src url being moved/renamed
         // (m_currentSrcURL) and its dest (m_dest), not about a single file.
         // It also means we already stated the dest, here.
@@ -2106,7 +2106,7 @@ void CopyJob::slotResult( KJob *job )
             d->slotResultCopyingFiles( job );
             break;
         case STATE_CONFLICT_COPYING_FILES:
-            d->slotResultError( job );
+            d->slotResultErrorCopyingFiles( job );
             break;
         case STATE_DELETING_DIRS:
             d->slotResultDeletingDirs( job );
