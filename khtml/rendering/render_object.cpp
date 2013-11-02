@@ -2380,6 +2380,13 @@ void RenderObject::removeFromObjectLists()
 
         if (outermostBlock)
             outermostBlock->markAllDescendantsWithFloatsForLayout(this);
+
+        RenderObject *p;
+        for (p = parent(); p; p = p->parent()) {
+            if (p->isRenderBlock())
+                static_cast<RenderBlock*>(p)->removeFloatingObject(this);
+        }
+
     }
 
     if (isPositioned()) {
