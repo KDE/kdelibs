@@ -677,6 +677,7 @@ QDomDocument KXMLGUIFactoryPrivate::shortcutSchemeDoc(KXMLGUIClient *client)
 
 void KXMLGUIFactoryPrivate::applyShortcutScheme(KXMLGUIClient *client, const QList<QAction*> &actions, const QDomDocument& scheme)
 {
+    Q_UNUSED(client)
     KConfigGroup cg = KSharedConfig::openConfig()->group( "Shortcut Schemes" );
     QString schemeName = cg.readEntry("Current Scheme", "Default");
 

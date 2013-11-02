@@ -80,6 +80,7 @@ void KMimeAssociations::parseMimeAppsList(const QString& file, int basePreferenc
 
 void KMimeAssociations::parseAddedAssociations(const KConfigGroup& group, const QString& file, int basePreference)
 {
+    Q_UNUSED(file) // except in debug statements
     QMimeDatabase db;
     Q_FOREACH(const QString& mimeName, group.keyList()) {
         const QStringList services = group.readXdgListEntry(mimeName);
@@ -104,6 +105,7 @@ void KMimeAssociations::parseAddedAssociations(const KConfigGroup& group, const 
 
 void KMimeAssociations::parseRemovedAssociations(const KConfigGroup& group, const QString& file)
 {
+    Q_UNUSED(file) // except in debug statements
     Q_FOREACH(const QString& mime, group.keyList()) {
         const QStringList services = group.readXdgListEntry(mime);
         Q_FOREACH(const QString& service, services) {
