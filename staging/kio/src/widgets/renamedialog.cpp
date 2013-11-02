@@ -381,7 +381,7 @@ QUrl RenameDialog::newDestUrl()
 QUrl RenameDialog::autoDestUrl() const
 {
     const QUrl destDirectory = d->dest.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash);
-    const QString newName = suggestName(destDirectory, d->dest.fileName());
+    const QString newName = KIO::suggestName(destDirectory, d->dest.fileName());
     QUrl newDest(destDirectory);
     newDest.setPath(newDest.path() + QLatin1Char('/') + newName);
     return newDest;
@@ -413,10 +413,12 @@ void RenameDialog::renamePressed()
     }
 }
 
+#ifndef KDE_NO_DEPRECATED
 QString RenameDialog::suggestName(const QUrl &baseURL, const QString& oldName)
 {
     return KIO::suggestName(baseURL, oldName);
 }
+#endif
 
 // Propose button clicked
 void RenameDialog::suggestNewNamePressed()
@@ -426,7 +428,7 @@ void RenameDialog::suggestNewNamePressed()
         return;
 
     QUrl destDirectory = d->dest.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash);
-    d->setRenameBoxText(suggestName(destDirectory, d->m_pLineEdit->text()));
+    d->setRenameBoxText(KIO::suggestName(destDirectory, d->m_pLineEdit->text()));
 
     return;
 }
