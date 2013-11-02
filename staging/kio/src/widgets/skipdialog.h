@@ -41,6 +41,7 @@ private Q_SLOTS:
   void cancelPressed();
   void skipPressed();
   void autoSkipPressed();
+  void retryPressed();
 
 Q_SIGNALS:
   void result( SkipDialog *_this, int _button );

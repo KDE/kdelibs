@@ -45,6 +45,10 @@ SkipDialog::SkipDialog(QWidget *parent, bool _multi, const QString& _error_text 
   QDialogButtonBox *buttonBox = new QDialogButtonBox(this);
   layout->addWidget(buttonBox);
 
+  QPushButton *retryButton = new QPushButton(i18n("Retry"));
+  connect(retryButton, SIGNAL(clicked()), SLOT(retryPressed()));
+  buttonBox->addButton(retryButton, QDialogButtonBox::ActionRole);
+
   if (_multi) {
     QPushButton *skipButton = new QPushButton(i18n("Skip"));
     connect(skipButton, SIGNAL(clicked()), SLOT(skipPressed()));
@@ -78,5 +82,10 @@ void SkipDialog::skipPressed()
 void SkipDialog::autoSkipPressed()
 {
   done(KIO::S_AUTO_SKIP);
+}
+
+void SkipDialog::retryPressed()
+{
+  done(KIO::S_RETRY);
 }
 

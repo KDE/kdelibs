@@ -1397,9 +1397,19 @@ void CopyJobPrivate::slotResultConflictCopyingFiles( KJob * job )
                                                                               job->errorString());
 
             // Convert the return code from SkipDialog into a RenameDialog code
-            res = ( skipResult == S_SKIP ) ? R_SKIP :
-                         ( skipResult == S_AUTO_SKIP ) ? R_AUTO_SKIP :
-                                        R_CANCEL;
+            switch (skipResult) {
+                case S_SKIP:
+                    res = R_SKIP;
+                    break;
+                case S_AUTO_SKIP:
+                    res = R_AUTO_SKIP;
+                    break;
+                case S_RETRY:
+                    res = R_RETRY;
+                    break;
+                case S_CANCEL:
+                    res = R_CANCEL;
+            }
         }
     }
 
@@ -1444,6 +1454,9 @@ void CopyJobPrivate::slotResultConflictCopyingFiles( KJob * job )
         case R_OVERWRITE:
             // Add to overwrite list, so that copyNextFile knows to overwrite
             m_overwriteList.insert( (*it).uDest.path() );
+            break;
+        case R_RETRY:
+            // Do nothing, copy file again
             break;
         default:
             assert( 0 );
