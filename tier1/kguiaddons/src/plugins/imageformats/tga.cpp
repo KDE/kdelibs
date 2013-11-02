@@ -13,7 +13,7 @@
  *     uncompressed and run length encoded indexed, grey and color tga files.
  *     image types 1, 2, 3, 9, 10 and 11.
  *     only RGB color maps with no more than 256 colors.
- *     pixel formats 8, 15, 24 and 32.
+ *     pixel formats 8, 16, 24 and 32.
  * writing:
  *     uncompressed true color tga files
  */

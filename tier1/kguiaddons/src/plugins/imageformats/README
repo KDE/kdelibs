@@ -2,3 +2,8 @@ This directory contains Qt imageformat plugins. See QImageIOPlugin docs
 for how to write a new handler.
 
 It also contains desktop files for the plugins that come with Qt.
+
+The TGA plugin supports more formats than Qt's own TGA plugin;
+specifically, the one provided here supports indexed, greyscale and RLE
+images (types 1-3 and 9-11), while Qt's plugin only supports type 2
+(RGB) files.
