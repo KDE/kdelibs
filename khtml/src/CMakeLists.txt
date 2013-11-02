@@ -563,7 +563,7 @@ target_link_libraries(KHtml
 if (KJS_DEBUGGER)
   target_link_libraries(KHtml PRIVATE ktexteditor)
 endif()
-target_link_libraries(KHtml PUBLIC kio Qt5::Widgets KF5::KJS KF5::KI18n KF5::KBookmarks KF5::KParts)
+target_link_libraries(KHtml PUBLIC KF5::KIOCore Qt5::Widgets KF5::KJS KF5::KI18n KF5::KBookmarks KF5::KParts)
 
 set_target_properties(KHtml PROPERTIES VERSION ${KHTML_VERSION_STRING}
                                        SOVERSION ${KHTML_SOVERSION}

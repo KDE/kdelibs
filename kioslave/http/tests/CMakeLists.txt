@@ -14,8 +14,16 @@ target_link_libraries(httpheaderdispositiontest KF5::KI18n Qt5::Test
                       Qt5::Widgets)
 
 kde4_add_unit_test(httpauthenticationtest httpauthenticationtest.cpp)
-target_link_libraries(httpauthenticationtest KF5::KI18n kntlm Qt5::Test
-                      Qt5::Network Qt5::Widgets KF5::KCoreAddons kio)
+target_link_libraries(httpauthenticationtest
+   Qt5::Test
+   Qt5::Network
+   Qt5::Widgets
+   KF5::KI18n
+   KF5::KIOCore
+   KF5::KConfigCore
+   KF5::KCoreAddons
+   kntlm
+)
 if(GSSAPI_FOUND)
   target_link_libraries(httpauthenticationtest ${GSSAPI_LIBS})
 endif(GSSAPI_FOUND)
@@ -34,6 +42,7 @@ target_link_libraries(httpobjecttest
    Qt5::Xml # QDomElement
    KF5::KI18n
    KF5::KIOCore
+   KF5::KConfigCore
    kntlm
    KF5::KArchive
    Solid)

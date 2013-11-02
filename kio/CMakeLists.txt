@@ -50,65 +50,11 @@ include(ConfigureChecks.cmake)
 
 ########### next target ###############
 
-set(kio_LIB_SRCS
-
-)
-
-add_library(kio ${kio_LIB_SRCS})
-generate_export_header(kio)
-
-set(kio_INCLUDES
-   ${CMAKE_CURRENT_SOURCE_DIR}
-   ${CMAKE_CURRENT_SOURCE_DIR}/kio
-   ${CMAKE_CURRENT_SOURCE_DIR}/kfile
-   ${CMAKE_CURRENT_BINARY_DIR}/..      # for including kio/kio_export.h
-
-   ${CMAKE_CURRENT_BINARY_DIR}/kio
-   ${CMAKE_CURRENT_BINARY_DIR}/kfile
-   ${CMAKE_CURRENT_BINARY_DIR}      # e.g. for observer_stub.h
-   ${CMAKE_SOURCE_DIR}/interfaces
-)
-target_include_directories(kio PUBLIC "$<BUILD_INTERFACE:${kio_INCLUDES}>" )
-
-target_include_directories(kio PRIVATE
-   ${ZLIB_INCLUDE_DIR}
-   ${kiocore_BINARY_DIR}/..   # kio_version.h
-)
-
-target_link_libraries(kio PRIVATE KIOWidgets KIOCore KIOFileWidgets KF5::KCoreAddons KF5::KI18n KCompletion KJobWidgets KF5::KIconThemes XmlGui KF5::KWidgetsAddons KF5::KWindowSystem ${ZLIB_LIBRARY} Qt5::Network Qt5::Xml Qt5::Svg ${X11_LIBRARIES} ${KIO_EXTRA_LIBS} KWallet KCrash KTextWidgets Qt5::X11Extras)
-target_link_libraries(kio PUBLIC KIOWidgets KIOCore Qt5::Network Qt5::Xml Qt5::Widgets KF5::KWidgetsAddons)
-
-if(ACL_FOUND)
-   target_link_libraries(kio PRIVATE ${ACL_LIBS})
-endif(ACL_FOUND)
-
-if(X11_Xrender_FOUND)
-   target_link_libraries(kio PRIVATE ${X11_Xrender_LIB})
-endif(X11_Xrender_FOUND)
-
-set_target_properties(kio PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION}
-                                     SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION}
-                     )
-
 add_subdirectory( misc )
 
 ########### install files ###############
-install(TARGETS kio EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 install( PROGRAMS useragent.pl proxytype.pl  DESTINATION ${KCONF_UPDATE_INSTALL_DIR} )
 
 
 install( FILES data.protocol  DESTINATION  ${SERVICES_INSTALL_DIR} )
-
-install(  FILES
-  ${CMAKE_CURRENT_BINARY_DIR}/kio_export.h
-  DESTINATION ${INCLUDE_INSTALL_DIR}/kio COMPONENT Devel)
-
-install( FILES
-
-  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
-
-if(NOT KIO_NO_SOLID)
-install( FILES
-  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
-endif(NOT KIO_NO_SOLID)
 

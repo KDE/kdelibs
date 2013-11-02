@@ -24,7 +24,12 @@ if (Qt5Script_FOUND)
 
     add_library(kded_proxyscout MODULE ${kded_proxyscout_PART_SRCS})
 
-    target_link_libraries(kded_proxyscout Qt5::Script ${KPAC_EXTRA_LIBS} kio KF5::KCoreAddons )
+    target_link_libraries(kded_proxyscout
+       Qt5::Script
+       ${KPAC_EXTRA_LIBS}
+       KF5::KIOCore
+       KF5::KCoreAddons
+    )
 
     # this needs -lresolv e.g on Slackware, but not on FreeBSD
     if (HAVE_RESOLV_LIBRARY)
