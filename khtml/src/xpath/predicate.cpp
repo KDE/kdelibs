@@ -125,6 +125,7 @@ Value NumericOp::doEvaluate() const
 					return Value(); // 0/0 = NaN
 				} else {
 					// +/- Infinity.
+					using namespace std; // for signbit
 					if (signbit(leftVal) == signbit(rightVal))
 						return Value( KJS::Inf );
 					else
