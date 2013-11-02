@@ -53,7 +53,13 @@ set(kio_http_cache_cleaner_KDEINIT_SRCS
 
 kf5_add_kdeinit_executable( kio_http_cache_cleaner NOGUI ${kio_http_cache_cleaner_KDEINIT_SRCS})
 
-target_link_libraries(kdeinit_kio_http_cache_cleaner Qt5::DBus ${KDE4_KIO_LIBS} ${ZLIB_LIBRARY} KF5::KCoreAddons KF5::KI18n)
+target_link_libraries(kdeinit_kio_http_cache_cleaner
+   Qt5::DBus
+   Qt5::Network # QLocalSocket
+   ${ZLIB_LIBRARY}
+   KF5::KIOCore # KProtocolManager
+   KF5::KCoreAddons
+   KF5::KI18n)
 
 install(TARGETS kdeinit_kio_http_cache_cleaner ${INSTALL_TARGETS_DEFAULT_ARGS})
 
@@ -74,7 +80,18 @@ set(kio_http_PART_SRCS
 
 add_library(kio_http MODULE ${kio_http_PART_SRCS})
 
-target_link_libraries(kio_http Qt5::DBus KF5::KArchive ${KDE4_KIO_LIBS} KF5::Solid kntlm ${ZLIB_LIBRARY} KF5::KCoreAddons KF5::KI18n)
+target_link_libraries(kio_http
+   Qt5::DBus
+   Qt5::Network # QLocalSocket etc.
+   Qt5::Xml     # QDom
+   KF5::KIOCore
+   KF5::KArchive
+   KF5::Solid
+   kntlm
+   ${ZLIB_LIBRARY}
+   KF5::KCoreAddons
+   KF5::KI18n
+)
 if(GSSAPI_FOUND)
   target_link_libraries(kio_http ${GSSAPI_LIBS} )
 endif(GSSAPI_FOUND)

@@ -26,8 +26,17 @@ kde4_add_unit_test(httpobjecttest httpobjecttest.cpp
    ../httpfilter.cpp
 
 )
-target_link_libraries(httpobjecttest Qt5::Test Qt5::DBus
-   Qt5::Widgets ${KDE4_KIO_LIBS} KF5::KI18n kntlm KF5::KArchive Solid)
+target_link_libraries(httpobjecttest
+   Qt5::Test
+   Qt5::DBus
+   Qt5::Widgets
+   Qt5::Network # QLocalSocket
+   Qt5::Xml # QDomElement
+   KF5::KI18n
+   KF5::KIOCore
+   kntlm
+   KF5::KArchive
+   Solid)
 if(GSSAPI_FOUND)
   target_link_libraries(httpobjecttest ${GSSAPI_LIBS})
 endif(GSSAPI_FOUND)
