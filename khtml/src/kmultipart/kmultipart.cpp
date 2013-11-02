@@ -19,7 +19,7 @@
 
 #include "kmultipart.h"
 
-
+#include "httpfiltergzip_p.h"
 #include <klocalizedstring.h>
 #include <kjobuidelegate.h>
 #include <kio/job.h>

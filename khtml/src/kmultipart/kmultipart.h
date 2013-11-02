@@ -21,13 +21,13 @@
 #define __kmultipart_h__
 
 #include <QPointer>
-#include <httpfilter/httpfilter.h>
 
 #include <kparts/part.h>
 #include <kparts/browserextension.h>
 #include <kaboutdata.h>
 #include <QtCore/QDate>
 
+class HTTPFilterGZip;
 class QTemporaryFile;
 class KLineParser;
 
@@ -83,7 +83,7 @@ private:
     bool m_bParsingHeader;
     bool m_bGotAnyHeader;
     bool m_gzip;
-    HTTPFilterBase *m_filter;
+    HTTPFilterGZip *m_filter;
     // Speed measurements
     long m_totalNumberOfFrames;
     long m_numberOfFrames;
