@@ -201,7 +201,7 @@ void DeviceBackend::slotPropertiesChanged(const QString& ifaceName, const QVaria
 
     Q_FOREACH(const QString & key, invalidatedProps) {
         m_propertyCache.remove(key);
-        changeMap.insert(key, Solid::GenericInterface::PropertyRemoved);
+        changeMap.insert(key, Solid::GenericInterface::PropertyModified);
         //qDebug() << "\t invalidated:" << key;
     }
 
