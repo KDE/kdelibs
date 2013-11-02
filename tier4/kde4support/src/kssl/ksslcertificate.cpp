@@ -21,7 +21,7 @@
 
 #include "ksslcertificate.h"
 
-#include <ksslconfig.h>
+#include <ksslconfig.h> // KSSL_HAVE_SSL
 
 #include <unistd.h>
 #include <QtCore/QString>
@@ -40,7 +40,7 @@
 
 #include <sys/types.h>
 
-#include <config-kio.h>
+#include <config-kde4support.h> // HAVE_SYS_STAT_H
 
 #if HAVE_SYS_STAT_H
 #include <sys/stat.h>
