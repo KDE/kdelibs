@@ -259,7 +259,7 @@ KPluginSelector::KPluginSelector(QWidget *parent)
     d->lineEdit->setClearButtonEnabled(true);
     d->lineEdit->setPlaceholderText(i18n("Search Plugins"));
     d->listView = new KCategorizedView(this);
-    d->categoryDrawer = new KCategoryDrawerV3(d->listView);
+    d->categoryDrawer = new KCategoryDrawer(d->listView);
     d->listView->setVerticalScrollMode(QListView::ScrollPerPixel);
     d->listView->setAlternatingRowColors(true);
     d->listView->setCategoryDrawer(d->categoryDrawer);
