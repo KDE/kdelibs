@@ -319,6 +319,9 @@ void debugMessageReceived(int t, const QString &message)
 {
     QtMsgType type = (QtMsgType)t;
     switch (type) {
+    case QtTraceMsg:
+        qDebug("Trace message from helper: %s", message.toLatin1().data());
+        break;
     case QtDebugMsg:
         qDebug("Debug message from helper: %s", message.toLatin1().data());
         break;

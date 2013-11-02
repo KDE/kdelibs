@@ -98,6 +98,7 @@ void HelperSupport::helperDebugHandler(QtMsgType type, const QMessageLogContext 
     if (!remote_dbg) {
         int level = LOG_DEBUG;
         switch (type) {
+        case QtTraceMsg:
         case QtDebugMsg:
             level = LOG_DEBUG;
             break;
