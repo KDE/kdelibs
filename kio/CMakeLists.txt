@@ -87,7 +87,6 @@ set(kio_INCLUDES
    ${CMAKE_CURRENT_SOURCE_DIR}
    ${CMAKE_CURRENT_SOURCE_DIR}/kio
    ${CMAKE_CURRENT_SOURCE_DIR}/kfile
-   ${CMAKE_CURRENT_SOURCE_DIR}/httpfilter
    ${CMAKE_CURRENT_BINARY_DIR}/..      # for including kio/kio_export.h
 
    ${CMAKE_CURRENT_BINARY_DIR}/kio
@@ -119,7 +118,6 @@ set_target_properties(kio PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION}
 
 add_subdirectory( misc )
 add_subdirectory( tests )
-add_subdirectory( httpfilter/autotests )
 
 ########### install files ###############
 install(TARGETS kio EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})

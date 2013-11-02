@@ -23,8 +23,7 @@ endif(GSSAPI_FOUND)
 kde4_add_unit_test(httpobjecttest httpobjecttest.cpp
    ${kioslave-http_SOURCE_DIR}/http.cpp
    ${kioslave-http_SOURCE_DIR}/httpauthentication.cpp
-   ${httpfilter_STAT_SRCS}
-   ${CMAKE_SOURCE_DIR}/kio/httpfilter/httpfilter.cc
+   ../httpfilter.cpp
 
 )
 target_link_libraries(httpobjecttest Qt5::Test Qt5::DBus
@@ -32,3 +31,8 @@ target_link_libraries(httpobjecttest Qt5::Test Qt5::DBus
 if(GSSAPI_FOUND)
   target_link_libraries(httpobjecttest ${GSSAPI_LIBS})
 endif(GSSAPI_FOUND)
+
+add_executable(httpfiltertest httpfiltertest.cpp ../httpfilter.cpp)
+target_link_libraries(httpfiltertest Qt5::Test KF5::KArchive ${ZLIB_LIBRARIES})
+add_test(kiohttp-httpfiltertest httpfiltertest)
+

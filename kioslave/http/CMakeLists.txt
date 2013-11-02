@@ -1,5 +1,11 @@
-
 project(kioslave-http)
+
+find_package(ZLIB)
+set_package_properties(ZLIB PROPERTIES DESCRIPTION "Support for gzip compressed files and data streams"
+                       URL "http://www.zlib.net"
+                       TYPE REQUIRED
+                       PURPOSE "Required by the hspell sonnet plugin"
+                      )
 
 include(ConfigureChecks.cmake)
 configure_file(config-kioslave-http.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kioslave-http.h )
@@ -62,8 +68,7 @@ install(TARGETS kio_http_cache_cleaner DESTINATION ${LIBEXEC_INSTALL_DIR} )
 set(kio_http_PART_SRCS
    http.cpp
    httpauthentication.cpp
-   ${httpfilter_STAT_SRCS}
-   ${CMAKE_SOURCE_DIR}/kio/httpfilter/httpfilter.cc
+   httpfilter.cpp
    )
 
 

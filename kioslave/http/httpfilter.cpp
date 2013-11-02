@@ -26,6 +26,18 @@
 
 #include <stdio.h>
 
+/*
+Testcases:
+ - http://david.fullrecall.com/browser-http-compression-test?compression=deflate-http (bug 160289)
+ - http://demo.serv-u.com/?user=demo-WC&password=demo-WC  (Content-Encoding: deflate)  (bug 188935)
+ - http://web.davidfaure.fr/cgi-bin/deflate_test (Content-Encoding: deflate) (bug 114830)
+ - http://www.zlib.net/zlib_faq.html#faq39 (Content-Encoding: gzip)
+ - wikipedia (Content-Encoding: gzip)
+ - cnn.com (Content-Encoding: gzip)
+ - http://arstechnica.com/ (Content-Encoding: gzip)
+ - mailman admin interface on mail.kde.org (see r266769, but can't confirm these days)
+*/
+
 HTTPFilterBase::HTTPFilterBase()
  : last(0)
 {
