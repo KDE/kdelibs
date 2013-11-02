@@ -43,6 +43,15 @@ endif()
 
 add_subdirectory(filewidgets)
 
+if (NOT EXISTS ${_INCDIR}/kntlm_export.h)
+    file(WRITE ${_INCDIR}/kntlm_export.h "#include \"${CMAKE_CURRENT_BINARY_DIR}/kntlm/kntlm_export.h\"\n")
+endif()
+if (NOT EXISTS ${_INCDIR}/kntlm.h)
+    file(WRITE ${_INCDIR}/kntlm.h "#include \"${CMAKE_CURRENT_SOURCE_DIR}/kntlm/kntlm.h\"\n")
+endif()
+
+add_subdirectory(kntlm)
+
 if ( NOT WINCE )
     add_subdirectory(kssld)
 endif ( NOT WINCE )

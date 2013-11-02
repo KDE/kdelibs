@@ -38,7 +38,7 @@
 #include <QDebug>
 #include <kconfiggroup.h>
 #include <kio/authinfo.h>
-#include <misc/kntlm/kntlm.h>
+#include <kio/kntlm.h>
 
 #include <QtCore/QTextCodec>
 #include <QtCore/QCryptographicHash>
