@@ -10,7 +10,6 @@ include_directories(
    ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
 )
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
-remove_definitions(-DQT_NO_KEYWORDS)
 
 add_library(KDEPlatformTheme MODULE ${platformtheme_SRCS})
 set_target_properties(KDEPlatformTheme PROPERTIES PREFIX "") # remove lib prefix

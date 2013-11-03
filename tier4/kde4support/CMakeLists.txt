@@ -50,7 +50,6 @@ add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0)
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 remove_definitions(-DQT_NO_CAST_FROM_BYTEARRAY)
 remove_definitions(-DQT_NO_CAST_TO_ASCII)
-remove_definitions(-DQT_NO_KEYWORDS)
 
 # This one won't be needed when CMake 2.8.13 is depended on.
 add_definitions(

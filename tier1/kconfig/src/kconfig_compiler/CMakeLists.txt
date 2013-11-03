@@ -1,5 +1,4 @@
 
-remove_definitions(-DQT_NO_KEYWORDS)
 
 set(kconfig_compiler_SRCS kconfig_compiler.cpp)
 

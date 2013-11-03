@@ -9,7 +9,6 @@ set(CHANGED_CONFIGFILE "${CMAKE_CURRENT_SOURCE_DIR}/kdeplatformtheme_changed_kde
 configure_file(kdeplatformtheme_config.h.in ${CMAKE_CURRENT_BINARY_DIR}/kdeplatformtheme_config.h)
 
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
-remove_definitions(-DQT_NO_KEYWORDS)
 
 macro(FRAMEWORKINTEGRATION_TESTS _testname)
     add_executable(${_testname} ${_testname}.cpp ${ARGN})

@@ -20,10 +20,7 @@ ecm_setup_version(5.0.0 VARIABLE_PREFIX KSERVICE
 # TODO: Remove these
 remove_definitions(-DQT_NO_CAST_TO_ASCII)
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
-remove_definitions(-DQT_STRICT_ITERATORS)
 remove_definitions(-DQT_NO_CAST_FROM_BYTEARRAY)
-remove_definitions(-DQT_USE_FAST_CONCATENATION)
-remove_definitions(-DQT_USE_FAST_OPERATOR_PLUS)
 
 find_package(Qt5 5.2.0 CONFIG REQUIRED DBus Test Xml)
 

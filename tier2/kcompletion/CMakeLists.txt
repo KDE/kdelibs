@@ -32,7 +32,6 @@ if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
   find_package(KWidgetsAddons ${KF5_VERSION} REQUIRED)
 endif()
 
-remove_definitions(-DQT_NO_KEYWORDS)
 remove_definitions(-DQT_NO_CAST_TO_ASCII)
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 

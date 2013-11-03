@@ -68,12 +68,8 @@ ecm_setup_version(5.0.0 VARIABLE_PREFIX SOLID
 # TODO: Remove these
 remove_definitions(-DQT_NO_CAST_TO_ASCII)
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
-remove_definitions(-DQT_STRICT_ITERATORS)
 remove_definitions(-DQT_NO_URL_CAST_FROM_STRING)
 remove_definitions(-DQT_NO_CAST_FROM_BYTEARRAY)
-remove_definitions(-DQT_NO_KEYWORDS)
-remove_definitions(-DQT_USE_FAST_CONCATENATION)
-remove_definitions(-DQT_USE_FAST_OPERATOR_PLUS)
 
 include_directories (${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR}/src)
 

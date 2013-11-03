@@ -29,7 +29,6 @@ configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/KStyleConfig.cmake.in
                               )
 
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
-remove_definitions(-DQT_NO_KEYWORDS)
 
 set(kstyle_SRCS
     kstyle.cpp
