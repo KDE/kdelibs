@@ -57,3 +57,8 @@ if ( NOT WINCE )
     add_subdirectory(kssld)
 endif ( NOT WINCE )
 
+if(NOT WIN32)
+  # arpa/nameser.h
+  add_subdirectory(kpac)
+endif(NOT WIN32)
+
