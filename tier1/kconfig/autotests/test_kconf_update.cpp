@@ -65,7 +65,7 @@ static QTemporaryFile* writeUpdFile(const QString &content)
 
 static void runKConfUpdate(const QString &updPath)
 {
-    QString exePath = CMAKE_INSTALL_PREFIX "/" LIBEXEC_INSTALL_DIR "/kconf_update";
+    QString exePath = KCONF_UPDATE_BINARY_DIR "/kconf_update";
     QVERIFY(QFile::exists(exePath));
     QProcess::execute(exePath, QStringList() << "--debug" << updPath);
 }
