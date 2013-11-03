@@ -5,16 +5,21 @@ find_package(Qt5Widgets REQUIRED)
 
 include_directories("${CMAKE_CURRENT_BINARY_DIR}/.." "${CMAKE_CURRENT_SOURCE_DIR}/.." )
 
-kde4_add_unit_test(httpheadertokenizetest httpheadertokenizetest.cpp)
-target_link_libraries(httpheadertokenizetest KF5::KI18n Qt5::Test
-                      Qt5::Widgets)
+include(ECMAddTests)
 
-kde4_add_unit_test(httpheaderdispositiontest httpheaderdispositiontest.cpp)
-target_link_libraries(httpheaderdispositiontest KF5::KI18n Qt5::Test
-                      Qt5::Widgets)
+ecm_add_test(httpheadertokenizetest.cpp
+   NAME_PREFIX "kioslave-"
+   LINK_LIBRARIES KF5::KI18n Qt5::Test Qt5::Widgets
+)
 
-kde4_add_unit_test(httpauthenticationtest httpauthenticationtest.cpp)
-target_link_libraries(httpauthenticationtest
+ecm_add_test(httpheaderdispositiontest.cpp
+   NAME_PREFIX "kioslave-"
+   LINK_LIBRARIES KF5::KI18n Qt5::Test Qt5::Widgets
+)
+
+ecm_add_test(httpauthenticationtest.cpp
+   NAME_PREFIX "kioslave-"
+   LINK_LIBRARIES
    Qt5::Test
    Qt5::Network
    Qt5::Widgets
@@ -24,17 +29,21 @@ target_link_libraries(httpauthenticationtest
    KF5::KCoreAddons
    kntlm
 )
+
 if(GSSAPI_FOUND)
-  target_link_libraries(httpauthenticationtest ${GSSAPI_LIBS})
+  target_link_libraries(kioslave-httpauthenticationtest ${GSSAPI_LIBS})
 endif(GSSAPI_FOUND)
 
-kde4_add_unit_test(httpobjecttest httpobjecttest.cpp
+set(httpobjecttest_SRCS
+   httpobjecttest.cpp
    ${kioslave-http_SOURCE_DIR}/http.cpp
    ${kioslave-http_SOURCE_DIR}/httpauthentication.cpp
    ../httpfilter.cpp
-
 )
-target_link_libraries(httpobjecttest
+
+ecm_add_test(${httpobjecttest_SRCS}
+   TEST_NAME "kioslave-httpobjecttest"
+   LINK_LIBRARIES
    Qt5::Test
    Qt5::DBus
    Qt5::Widgets
@@ -47,7 +56,7 @@ target_link_libraries(httpobjecttest
    KF5::KArchive
    Solid)
 if(GSSAPI_FOUND)
-  target_link_libraries(httpobjecttest ${GSSAPI_LIBS})
+  target_link_libraries(kioslave-httpobjecttest ${GSSAPI_LIBS})
 endif(GSSAPI_FOUND)
 
 add_executable(httpfiltertest httpfiltertest.cpp ../httpfilter.cpp)

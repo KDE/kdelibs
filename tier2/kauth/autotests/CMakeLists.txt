@@ -6,6 +6,8 @@ qt5_add_dbus_adaptor(kauth_dbus_adaptor_tests_SRCS
                      ../src/backends/dbus/DBusHelperProxy.h
                      KAuth::DBusHelperProxy)
 
+include(ECMMarkAsTest)
+
 set(libkauth_tests_static_SRCS
     ../src/kauthaction.cpp
     ../src/kauthactionreply.cpp
@@ -21,6 +23,7 @@ set(libkauth_tests_static_SRCS
 )
 
 add_library(kauth_tests_static STATIC ${libkauth_tests_static_SRCS})
+ecm_mark_as_test(kauth_tests_static)
 
 target_include_directories(kauth_tests_static
   PUBLIC
@@ -29,8 +32,6 @@ target_include_directories(kauth_tests_static
 )
 
 target_link_libraries(kauth_tests_static PUBLIC Qt5::DBus KF5::KCoreAddons)
-
-include(ECMMarkAsTest)
 
 ########### next target ###############
 

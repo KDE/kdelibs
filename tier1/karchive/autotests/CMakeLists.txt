@@ -20,6 +20,7 @@ karchive_unit_tests(
 ########### klimitediodevicetest ###############
 
 add_executable(klimitediodevicetest klimitediodevicetest.cpp ../src/klimitediodevice.cpp)
+ecm_mark_as_test(klimitediodevicetest)
 add_test(karchive-klimitediodevicetest klimitediodevicetest)
 target_link_libraries(klimitediodevicetest Qt5::Test )
 target_include_directories(klimitediodevicetest PRIVATE $<TARGET_PROPERTY:KArchive,INTERFACE_INCLUDE_DIRECTORIES>)
@@ -27,5 +28,6 @@ target_include_directories(klimitediodevicetest PRIVATE $<TARGET_PROPERTY:KArchi
 ########### kfiltertest ###############
 
 add_executable(kfiltertest kfiltertest.cpp)
+ecm_mark_as_test(kfiltertest)
 add_test(karchive-kfiltertest kfiltertest)
 target_link_libraries(kfiltertest Qt5::Test KArchive ${ZLIB_LIBRARIES})

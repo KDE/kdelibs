@@ -6,6 +6,7 @@ find_package(Qt5Test 5.2.0 REQUIRED NO_MODULE)
 add_executable(ecmatest
   ecmatest.cpp
 )
+ecm_mark_as_test(ecmatest)
 target_link_libraries(ecmatest KJS ${KDEWIN_LIBRARIES} Qt5::Test)
 
 function(ADD_ECMATEST ECMA262_CHAPTER)
@@ -21,7 +22,7 @@ function(ADD_ECMATEST ECMA262_CHAPTER)
    endif ()
 endfunction(ADD_ECMATEST)
 
-if (KDE4_BUILD_TESTS)
+if (BUILD_TESTING)
    set(ECMATEST_BASEDIR "" CACHE PATH "path to checkout of ECMAscript Tests262 checkout")
    if (ECMATEST_BASEDIR)
       file(GLOB _test262_chapters RELATIVE "${ECMATEST_BASEDIR}/test/suite/" "${ECMATEST_BASEDIR}/test/suite/*")
@@ -46,5 +47,6 @@ endif ()
 ##################### kjsapitest ################
 
 add_executable(kjsapitest kjsapitest.cpp)
+ecm_mark_as_test(kjsapitest)
 add_test(kjsapitest kjsapitest)
 target_link_libraries(kjsapitest KJSApi Qt5::Test)
