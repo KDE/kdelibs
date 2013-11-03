@@ -240,7 +240,7 @@ QSslError::NoSslSupport                             Never happens :)
 protected:
     virtual qint64 readData (char *data, qint64 maxSize);
     virtual qint64 writeData (const char *data, qint64 maxSize);
-signals:
+Q_SIGNALS:
     /// @since 4.8.1
     /// Forwarded from QSslSocket
     void encryptedBytesWritten( qint64 written );
