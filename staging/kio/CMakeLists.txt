@@ -21,10 +21,9 @@ ecm_setup_version(5.0.0 VARIABLE_PREFIX KIO
 # TODO: Remove these
 remove_definitions(-DQT_NO_CAST_TO_ASCII)
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
-remove_definitions(-DQT_STRICT_ITERATORS)
 remove_definitions(-DQT_NO_CAST_FROM_BYTEARRAY)
-remove_definitions(-DQT_USE_FAST_CONCATENATION)
-remove_definitions(-DQT_USE_FAST_OPERATOR_PLUS)
+
+add_definitions(-DQT_NO_URL_CAST_FROM_STRING)
 
 set(QT_REQUIRED_VERSION 5.2.0)
 find_package(Qt5 ${QT_REQUIRED_VERSION} CONFIG REQUIRED Widgets DBus Network Concurrent Xml Test)

@@ -262,21 +262,21 @@ set(kde4support_INCLUDES
 target_include_directories(KDE4Support PUBLIC "$<BUILD_INTERFACE:${kde4support_INCLUDES}>")
 
 target_link_libraries(KDE4Support
+PUBLIC
    Qt5::Widgets
    Qt5::DBus
-   Qt5::Test
+   Qt5::Test # for qtest_kde.cpp
    Qt5::X11Extras
    Qt5::Svg
    Qt5::PrintSupport
    KF5::KCoreAddons
    KCrash
    KF5::KWidgetsAddons
+   KConfigCore # KSharedConfig in kcomponentdata.h
    KConfigWidgets
    KIOCore
    KIOFileWidgets
-   ${KIO_EXTRA_LIBS}
    KF5::KI18n
-   ${X11_LIBRARIES}
    KCompletion
    KNotifications
    KF5::KIconThemes
@@ -285,6 +285,9 @@ target_link_libraries(KDE4Support
    KUnitConversion
    KTextWidgets
    KParts
+PRIVATE
+   ${KIO_EXTRA_LIBS}
+   ${X11_LIBRARIES}
    ${libkde4support_OPTIONAL_LIBS}
 )
 
