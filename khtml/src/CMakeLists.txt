@@ -536,34 +536,32 @@ qt5_wrap_ui(khtml_LIB_SRCS
 add_library(KHtml ${khtml_LIB_SRCS})
 
 target_link_libraries(KHtml
+  PUBLIC
+    KF5::KIOCore
+    KF5::KJS
+    KF5::KI18n
+    KF5::KBookmarks
+    KF5::KParts
   PRIVATE
-  KParts
-  ${PHONON_LIBRARIES}
-  KF5::KJS
-  KArchive
-  KF5::SonnetCore
-  ${JPEG_LIBRARIES}
-  ${GIF_LIBRARIES}
-  ${PNG_LIBRARIES}
-  ${X11_LIBRARIES}
-  KGuiAddons
-  KF5::KWidgetsAddons
-  KF5::KI18n
-  KF5::KWindowSystem
-  KWallet
-  Qt5::X11Extras
-  Qt5::PrintSupport
-  XmlGui
-  KTextWidgets
-  KF5::KIconThemes
-  KNotifications
-  KBookmarks
-  KIOWidgets # KUrlRequester
+    ${PHONON_LIBRARIES}
+    ${JPEG_LIBRARIES}
+    ${GIF_LIBRARIES}
+    ${PNG_LIBRARIES}
+    ${X11_LIBRARIES}
+    Qt5::PrintSupport
+    Qt5::X11Extras
+    KF5::KArchive
+    KF5::SonnetCore
+    KF5::KWidgetsAddons
+    KF5::KWindowSystem
+    KF5::KWallet
+    KF5::KIconThemes
+    KF5::KNotifications
+    KF5::KIOWidgets # KUrlRequester
 )
 if (KJS_DEBUGGER)
   target_link_libraries(KHtml PRIVATE ktexteditor)
 endif()
-target_link_libraries(KHtml PUBLIC KF5::KIOCore Qt5::Widgets KF5::KJS KF5::KI18n KF5::KBookmarks KF5::KParts)
 
 set_target_properties(KHtml PROPERTIES VERSION ${KHTML_VERSION_STRING}
                                        SOVERSION ${KHTML_SOVERSION}
