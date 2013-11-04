@@ -11,8 +11,8 @@
 class QImageIO;
 
 extern "C" {
-  void kimgio_g3_read( QImageIO *io );
-  void kimgio_g3_write( QImageIO *io );
+    void kimgio_g3_read(QImageIO *io);
+    void kimgio_g3_write(QImageIO *io);
 }
 
 #endif

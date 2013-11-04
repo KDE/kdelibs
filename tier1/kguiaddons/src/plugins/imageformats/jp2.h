@@ -28,7 +28,7 @@ public:
 private:
     int quality;
 };
-                        
+
 class JP2Plugin : public QImageIOPlugin
 {
     Q_OBJECT

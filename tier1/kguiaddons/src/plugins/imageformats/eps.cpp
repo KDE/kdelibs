@@ -20,110 +20,92 @@
 #define BBOX "%%BoundingBox:"
 #define BBOX_LEN strlen(BBOX)
 
-static bool seekToCodeStart( QIODevice * io, quint32 & ps_offset, quint32 & ps_size )
+static bool seekToCodeStart(QIODevice * io, quint32 & ps_offset, quint32 & ps_size)
 {
     char buf[4]; // We at most need to read 4 bytes at a time
-    ps_offset=0L;
-    ps_size=0L;
+    ps_offset = 0L;
+    ps_size = 0L;
 
-    if ( io->read(buf, 2)!=2 ) // Read first two bytes
-    {
+    if (io->read(buf, 2) != 2) { // Read first two bytes
 //         qDebug() << "kimgio EPS: EPS file has less than 2 bytes." << endl;
         return false;
     }
 
-    if ( buf[0]=='%' && buf[1]=='!' ) // Check %! magic
-    {
+    if (buf[0] == '%' && buf[1] == '!') { // Check %! magic
 //         qDebug() << "kimgio EPS: normal EPS file";
-    }
-    else if ( buf[0]==char(0xc5) && buf[1]==char(0xd0) ) // Check start of MS-DOS EPS magic
-    {   // May be a MS-DOS EPS file
-        if ( io->read(buf+2, 2)!=2 ) // Read further bytes of MS-DOS EPS magic
-        {
+    } else if (buf[0] == char(0xc5) && buf[1] == char(0xd0)) { // Check start of MS-DOS EPS magic
+        // May be a MS-DOS EPS file
+        if (io->read(buf + 2, 2) != 2) { // Read further bytes of MS-DOS EPS magic
 //             qDebug() << "kimgio EPS: potential MS-DOS EPS file has less than 4 bytes." << endl;
             return false;
         }
-        if ( buf[2]==char(0xd3) && buf[3]==char(0xc6) ) // Check last bytes of MS-DOS EPS magic
-        {
-            if (io->read(buf, 4)!=4) // Get offset of PostScript code in the MS-DOS EPS file.
-            {
+        if (buf[2] == char(0xd3) && buf[3] == char(0xc6)) { // Check last bytes of MS-DOS EPS magic
+            if (io->read(buf, 4) != 4) { // Get offset of PostScript code in the MS-DOS EPS file.
 //                 qDebug() << "kimgio EPS: cannot read offset of MS-DOS EPS file" << endl;
                 return false;
             }
             ps_offset // Offset is in little endian
                 = ((unsigned char) buf[0])
-                + ((unsigned char) buf[1] << 8)
-                + ((unsigned char) buf[2] << 16)
-                + ((unsigned char) buf[3] << 24);
-            if (io->read(buf, 4)!=4) // Get size of PostScript code in the MS-DOS EPS file.
-            {
+                  + ((unsigned char) buf[1] << 8)
+                  + ((unsigned char) buf[2] << 16)
+                  + ((unsigned char) buf[3] << 24);
+            if (io->read(buf, 4) != 4) { // Get size of PostScript code in the MS-DOS EPS file.
 //                 qDebug() << "kimgio EPS: cannot read size of MS-DOS EPS file" << endl;
                 return false;
             }
             ps_size // Size is in little endian
                 = ((unsigned char) buf[0])
-                + ((unsigned char) buf[1] << 8)
-                + ((unsigned char) buf[2] << 16)
-                + ((unsigned char) buf[3] << 24);
+                  + ((unsigned char) buf[1] << 8)
+                  + ((unsigned char) buf[2] << 16)
+                  + ((unsigned char) buf[3] << 24);
 //             qDebug() << "kimgio EPS: Offset: " << ps_offset <<" Size: " << ps_size;
-            if ( !io->seek(ps_offset) ) // Get offset of PostScript code in the MS-DOS EPS file.
-            {
+            if (!io->seek(ps_offset)) { // Get offset of PostScript code in the MS-DOS EPS file.
 //                 qDebug() << "kimgio EPS: cannot seek in MS-DOS EPS file" << endl;
                 return false;
             }
-            if ( io->read(buf, 2)!=2 ) // Read first two bytes of what should be the Postscript code
-            {
+            if (io->read(buf, 2) != 2) { // Read first two bytes of what should be the Postscript code
 //                 qDebug() << "kimgio EPS: PostScript code has less than 2 bytes." << endl;
                 return false;
             }
-            if ( buf[0]=='%' && buf[1]=='!' ) // Check %! magic
-            {
+            if (buf[0] == '%' && buf[1] == '!') { // Check %! magic
 //                 qDebug() << "kimgio EPS: MS-DOS EPS file";
-            }
-            else
-            {
+            } else {
 //                 qDebug() << "kimgio EPS: supposed Postscript code of a MS-DOS EPS file doe not start with %!." << endl;
                 return false;
             }
-        }
-        else
-        {
+        } else {
 //             qDebug() << "kimgio EPS: wrong magic for potential MS-DOS EPS file!" << endl;
             return false;
         }
-    }
-    else
-    {
+    } else {
 //         qDebug() << "kimgio EPS: not an EPS file!" << endl;
         return false;
     }
     return true;
 }
 
-static bool bbox ( QIODevice *io, int *x1, int *y1, int *x2, int *y2)
+static bool bbox(QIODevice *io, int *x1, int *y1, int *x2, int *y2)
 {
-        char buf[BUFLEN+1];
+    char buf[BUFLEN + 1];
 
-        bool ret = false;
+    bool ret = false;
 
-        while (io->readLine(buf, BUFLEN) > 0)
-        {
-                if (strncmp (buf, BBOX, BBOX_LEN) == 0)
-                {
-                        // Some EPS files have non-integer values for the bbox
-                        // We don't support that currently, but at least we parse it
-                        float _x1, _y1, _x2, _y2;
-                        if ( sscanf (buf, "%*s %f %f %f %f",
-                                &_x1, &_y1, &_x2, &_y2) == 4) {
+    while (io->readLine(buf, BUFLEN) > 0) {
+        if (strncmp(buf, BBOX, BBOX_LEN) == 0) {
+            // Some EPS files have non-integer values for the bbox
+            // We don't support that currently, but at least we parse it
+            float _x1, _y1, _x2, _y2;
+            if (sscanf(buf, "%*s %f %f %f %f",
+                       &_x1, &_y1, &_x2, &_y2) == 4) {
 //                                 qDebug() << "kimgio EPS BBOX: " << _x1 << " " << _y1 << " " << _x2 << " " << _y2;
-                                *x1=(int)_x1; *y1=(int)_y1; *x2=(int)_x2; *y2=(int)_y2;
-                                ret = true;
-                                break;
-                        }
-                }
+                *x1 = (int)_x1; *y1 = (int)_y1; *x2 = (int)_x2; *y2 = (int)_y2;
+                ret = true;
+                break;
+            }
         }
+    }
 
-        return ret;
+    return ret;
 }
 
 EPSHandler::EPSHandler()
@@ -155,17 +137,17 @@ bool EPSHandler::read(QImage *image)
     quint32 ps_offset, ps_size;
 
     // find start of PostScript code
-    if ( !seekToCodeStart(io, ps_offset, ps_size) )
+    if (!seekToCodeStart(io, ps_offset, ps_size))
         return false;
 
     // find bounding box
-    if ( !bbox (io, &x1, &y1, &x2, &y2)) {
+    if (!bbox(io, &x1, &y1, &x2, &y2)) {
 //         qDebug() << "kimgio EPS: no bounding box found!" << endl;
         return false;
     }
 
     QTemporaryFile tmpFile;
-    if( !tmpFile.open() ) {
+    if (!tmpFile.open()) {
 //         qDebug() << "kimgio EPS: no temp file!" << endl;
         return false;
     }
@@ -186,9 +168,9 @@ bool EPSHandler::read(QImage *image)
     cmdBuf = QLatin1String("gs -sOutputFile=");
     cmdBuf += tmpFile.fileName();
     cmdBuf += QLatin1String(" -q -g");
-    tmp.setNum( wantedWidth );
+    tmp.setNum(wantedWidth);
     cmdBuf += tmp;
-    tmp.setNum( wantedHeight );
+    tmp.setNum(wantedHeight);
     cmdBuf += QLatin1Char('x');
     cmdBuf += tmp;
     cmdBuf += QLatin1String(" -dSAFER -dPARANOIDSAFER -dNOPAUSE -sDEVICE=ppm -c "
@@ -201,33 +183,33 @@ bool EPSHandler::read(QImage *image)
 
     // run ghostview
 
-    ghostfd = popen (QFile::encodeName(cmdBuf).constData(), "w");
+    ghostfd = popen(QFile::encodeName(cmdBuf).constData(), "w");
 
-    if ( ghostfd == 0 ) {
+    if (ghostfd == 0) {
 //         qDebug() << "kimgio EPS: no GhostScript?" << endl;
         return false;
     }
 
-    fprintf (ghostfd, "\n%d %d translate\n", -qRound(x1*xScale), -qRound(y1*yScale));
+    fprintf(ghostfd, "\n%d %d translate\n", -qRound(x1 * xScale), -qRound(y1 * yScale));
 
     // write image to gs
 
     io->reset(); // Go back to start of file to give all the file to GhostScript
-    if (ps_offset>0L) // We have an offset
+    if (ps_offset > 0L) // We have an offset
         io->seek(ps_offset);
-    QByteArray buffer ( io->readAll() );
+    QByteArray buffer(io->readAll());
 
     // If we have no MS-DOS EPS file or if the size seems wrong, then choose the buffer size
-    if (ps_size<=0 || ps_size>(unsigned int)buffer.size())
-        ps_size=buffer.size();
+    if (ps_size <= 0 || ps_size > (unsigned int)buffer.size())
+        ps_size = buffer.size();
 
     fwrite(buffer.data(), sizeof(char), ps_size, ghostfd);
     buffer.resize(0);
 
-    pclose ( ghostfd );
+    pclose(ghostfd);
 
     // load image
-    if( image->load (tmpFile.fileName()) ) {
+    if (image->load(tmpFile.fileName())) {
 //         qDebug() << "kimgio EPS: success!";
         //qDebug() << "Loading EPS took " << (float)(dt.elapsed()) / 1000 << " seconds";
         return true;
@@ -251,7 +233,7 @@ bool EPSHandler::write(const QImage &image)
 
     // Extension must be .eps so that Qt generates EPS file
     QTemporaryFile tmpFile(QLatin1String("XXXXXXXX.eps"));
-    if ( !tmpFile.open() )
+    if (!tmpFile.open())
         return false;
 
     psOut.setOutputFileName(tmpFile.fileName());
@@ -260,24 +242,24 @@ bool EPSHandler::write(const QImage &image)
     psOut.setPaperSize(image.size(), QPrinter::DevicePixel);
 
     // painting the pixmap to the "printer" which is a file
-    p.begin( &psOut );
-    p.drawImage( QPoint( 0, 0 ), image );
+    p.begin(&psOut);
+    p.drawImage(QPoint(0, 0), image);
     p.end();
 
     // Copy file to imageio struct
     QFile inFile(tmpFile.fileName());
-    if ( !inFile.open( QIODevice::ReadOnly ) )
+    if (!inFile.open(QIODevice::ReadOnly))
         return false;
 
-    QTextStream in( &inFile );
-    in.setCodec( "ISO-8859-1" );
-    QTextStream out( device() );
-    out.setCodec( "ISO-8859-1" );
+    QTextStream in(&inFile);
+    in.setCodec("ISO-8859-1");
+    QTextStream out(device());
+    out.setCodec("ISO-8859-1");
 
     QString szInLine = in.readLine();
     out << szInLine << '\n';
 
-    while( !in.atEnd() ){
+    while (!in.atEnd()) {
         szInLine = in.readLine();
         out << szInLine << '\n';
     }

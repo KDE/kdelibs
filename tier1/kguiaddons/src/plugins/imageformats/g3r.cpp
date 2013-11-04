@@ -12,41 +12,40 @@
 #include <qimage.h>
 #include <qfile.h>
 
-Q_DECL_EXPORT void kimgio_g3_read( QImageIO *io )
+Q_DECL_EXPORT void kimgio_g3_read(QImageIO *io)
 {
     // This won't work if io is not a QFile !
-  TIFF *tiff = TIFFOpen(QFile::encodeName(io->fileName()), "r");
-  if (!tiff)
-    return;
+    TIFF *tiff = TIFFOpen(QFile::encodeName(io->fileName()), "r");
+    if (!tiff)
+        return;
 
-  uint32 width, height;
-  tsize_t scanlength;
+    uint32 width, height;
+    tsize_t scanlength;
 
-  if( TIFFGetField( tiff, TIFFTAG_IMAGEWIDTH, &width ) != 1
-      || TIFFGetField( tiff, TIFFTAG_IMAGELENGTH, &height ) != 1 )
-      return;
-  scanlength = TIFFScanlineSize(tiff);
+    if (TIFFGetField(tiff, TIFFTAG_IMAGEWIDTH, &width) != 1
+            || TIFFGetField(tiff, TIFFTAG_IMAGELENGTH, &height) != 1)
+        return;
+    scanlength = TIFFScanlineSize(tiff);
 
-  QImage image(width, height, 1, 0, QImage::BigEndian);
+    QImage image(width, height, 1, 0, QImage::BigEndian);
 
-  if (image.isNull() || scanlength != image.bytesPerLine())
-    {
-      TIFFClose(tiff);
-      return;
+    if (image.isNull() || scanlength != image.bytesPerLine()) {
+        TIFFClose(tiff);
+        return;
     }
 
-  for (uint32 y=0; y < height; y++)
-    TIFFReadScanline(tiff, image.scanLine(y), y);
+    for (uint32 y = 0; y < height; y++)
+        TIFFReadScanline(tiff, image.scanLine(y), y);
 
-  TIFFClose(tiff);
+    TIFFClose(tiff);
 
-  io->setImage(image);
-  io->setStatus(0);
+    io->setImage(image);
+    io->setStatus(0);
 }
 
 
 Q_DECL_EXPORT void kimgio_g3_write(QImageIO *)
 {
-	// TODO: stub
+    // TODO: stub
 }
 

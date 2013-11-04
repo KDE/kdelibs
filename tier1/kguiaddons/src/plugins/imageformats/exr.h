@@ -19,10 +19,10 @@ public:
     EXRHandler();
 
     virtual bool canRead() const;
-    virtual bool read( QImage *outImage );
-    virtual bool write( const QImage &image );
+    virtual bool read(QImage *outImage);
+    virtual bool write(const QImage &image);
 
-    static bool canRead( QIODevice *device );
+    static bool canRead(QIODevice *device);
 };
 
 class EXRPlugin : public QImageIOPlugin

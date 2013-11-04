@@ -39,12 +39,13 @@
  * @param alpha Image has alpha?
  * @return True on success
  */
-static bool writeHeader(QIODevice *dev, std::string msg, unsigned width, unsigned height, bool alpha) {
+static bool writeHeader(QIODevice *dev, std::string msg, unsigned width, unsigned height, bool alpha)
+{
     PICHeader h;
     PICChannel c;
     unsigned count = 0;
 
-    memset(&h, 0, sizeof (PICHeader));
+    memset(&h, 0, sizeof(PICHeader));
     h.magic = htonl(PIC_MAGIC_NUMBER);
     h.version = 3.71f;
     strcpy(h.comment, msg.c_str());
@@ -53,35 +54,36 @@ static bool writeHeader(QIODevice *dev, std::string msg, unsigned width, unsigne
     h.height = htons(height);
     h.ratio = 1.0f;
     h.fields = htons(BOTH);
-    count = dev->write((const char*) & h, sizeof (PICHeader));
-    if (count != sizeof (PICHeader)) {
+    count = dev->write((const char*) & h, sizeof(PICHeader));
+    if (count != sizeof(PICHeader)) {
         return false;
     }
 
-    memset(&c, 0, sizeof (PICChannel));
+    memset(&c, 0, sizeof(PICChannel));
     c.size = 8;
     c.type = RLE;
     c.channel = RED | GREEN | BLUE;
     if (alpha) {
         c.chained = 1;
     }
-    count = dev->write((const char*) & c, sizeof (PICChannel));
-    if (count != sizeof (PICChannel)) {
+    count = dev->write((const char*) & c, sizeof(PICChannel));
+    if (count != sizeof(PICChannel)) {
         return false;
     }
 
     if (alpha) {
         c.channel = ALPHA;
         c.chained = 0;
-        count = dev->write((const char*) & c, sizeof (PICChannel));
-        if (count != sizeof (PICChannel)) {
+        count = dev->write((const char*) & c, sizeof(PICChannel));
+        if (count != sizeof(PICChannel)) {
             return false;
         }
     }
     return true;
 }
 
-inline unsigned convertABGRtoRGBA(unsigned pixel) {
+inline unsigned convertABGRtoRGBA(unsigned pixel)
+{
     unsigned r = pixel & 0xFF;
     unsigned g = (pixel >> 8) & 0xFF;
     unsigned b = (pixel >> 16) & 0xFF;
@@ -100,7 +102,8 @@ inline unsigned convertABGRtoRGBA(unsigned pixel) {
  * @param oProduced The number of bytes produced in out
  * @return True on success
  */
-static bool encodeRLE(const unsigned *image, unsigned char *output, bool rgb, unsigned max, unsigned &oConsumed, unsigned &oProduced) {
+static bool encodeRLE(const unsigned *image, unsigned char *output, bool rgb, unsigned max, unsigned &oConsumed, unsigned &oProduced)
+{
     const unsigned *in = image;
     unsigned char *out = output;
     unsigned count = 0;
@@ -124,8 +127,7 @@ static bool encodeRLE(const unsigned *image, unsigned char *output, bool rgb, un
         out += channels;
         oConsumed = count;
         oProduced = out - output;
-    }
-    else if (count > 1) {
+    } else if (count > 1) {
         /* Sequece of < 128 identical pixels */
         *out++ = (count + 127);
         unsigned pixel = convertABGRtoRGBA(*image);
@@ -133,8 +135,7 @@ static bool encodeRLE(const unsigned *image, unsigned char *output, bool rgb, un
         out += channels;
         oConsumed = count;
         oProduced = out - output;
-    }
-    else {
+    } else {
         in = image + 1;
         unsigned previous = *image;
         count = 0;
@@ -165,7 +166,8 @@ static bool encodeRLE(const unsigned *image, unsigned char *output, bool rgb, un
  * Writes a row to the file
  * @return True on success
  */
-static bool writeRow(QIODevice *dev, unsigned *row, unsigned width, bool alpha) {
+static bool writeRow(QIODevice *dev, unsigned *row, unsigned width, bool alpha)
+{
     unsigned char *buf = new unsigned char[width * 4];
     unsigned posIn = 0;
     unsigned posOut = 0;
@@ -204,13 +206,14 @@ static bool writeRow(QIODevice *dev, unsigned *row, unsigned width, bool alpha) 
 }
 
 #define FAIL() { \
-	std::cout << "ERROR Writing PIC!" << std::endl; \
-	return; \
-}
+        std::cout << "ERROR Writing PIC!" << std::endl; \
+        return; \
+    }
 
 /// Pic write handler for Qt / KDE
 
-void pic_write(QIODevice *dev, const QImage *img) {
+void pic_write(QIODevice *dev, const QImage *img)
+{
     bool alpha = img->hasAlphaChannel();
     if (!writeHeader(dev, "Created with KDE", img->width(), img->height(), alpha)) {
         FAIL();

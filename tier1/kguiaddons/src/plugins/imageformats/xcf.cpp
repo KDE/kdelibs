@@ -44,7 +44,8 @@ typedef QVector<QVector<QImage> > Tiles;
 
 
 
-class XCFImageFormat {
+class XCFImageFormat
+{
 public:
     XCFImageFormat();
     bool readXCF(QIODevice *device, QImage *image);
@@ -59,7 +60,8 @@ private:
      * Note: there is only ever one instance of this structure. The
      * layer info is discarded after it is merged into the final QImage.
      */
-    class Layer {
+    class Layer
+    {
     public:
         quint32 width;          //!< Width of the layer
         quint32 height;     //!< Height of the layer
@@ -109,7 +111,9 @@ private:
         void (*assignBytes)(Layer& layer, uint i, uint j);
 
         Layer(void) : name(0) {}
-        ~Layer(void) { delete[] name; }
+        ~Layer(void) {
+            delete[] name;
+        }
     };
 
 
@@ -117,7 +121,8 @@ private:
      * The in-memory representation of the XCF Image. It contains a few
      * metadata items, but is mostly a container for the layer information.
      */
-    class XCFImage {
+    class XCFImage
+    {
     public:
         quint32 width;          //!< width of the XCF image
         quint32 height;     //!< height of the XCF image
@@ -156,16 +161,16 @@ private:
 
     //! This table provides the add_pixel saturation values (i.e. 250 + 250 = 255).
     //static int add_lut[256][256]; - this is so lame waste of 256k of memory
-    static int add_lut( int, int );
+    static int add_lut(int, int);
 
     //! The bottom-most layer is copied into the final QImage by this
     //! routine.
     typedef void (*PixelCopyOperation)(Layer& layer, uint i, uint j, int k, int l,
-            QImage& image, int m, int n);
+                                       QImage& image, int m, int n);
 
     //! Higher layers are merged into the final QImage by this routine.
     typedef void (*PixelMergeOperation)(Layer& layer, uint i, uint j, int k, int l,
-            QImage& image, int m, int n);
+                                        QImage& image, int m, int n);
 
     //! Layer mode static data.
     typedef struct {
@@ -191,41 +196,41 @@ private:
     bool loadChannelProperties(QDataStream& xcf_io, Layer& layer);
     bool initializeImage(XCFImage& xcf_image);
     bool loadTileRLE(QDataStream& xcf_io, uchar* tile, int size,
-            int data_length, qint32 bpp);
+                     int data_length, qint32 bpp);
 
     static void copyLayerToImage(XCFImage& xcf_image);
     static void copyRGBToRGB(Layer& layer, uint i, uint j, int k, int l,
-            QImage& image, int m, int n);
+                             QImage& image, int m, int n);
     static void copyGrayToGray(Layer& layer, uint i, uint j, int k, int l,
-            QImage& image, int m, int n);
+                               QImage& image, int m, int n);
     static void copyGrayToRGB(Layer& layer, uint i, uint j, int k, int l,
-            QImage& image, int m, int n);
+                              QImage& image, int m, int n);
     static void copyGrayAToRGB(Layer& layer, uint i, uint j, int k, int l,
-            QImage& image, int m, int n);
+                               QImage& image, int m, int n);
     static void copyIndexedToIndexed(Layer& layer, uint i, uint j, int k, int l,
-            QImage& image, int m, int n);
+                                     QImage& image, int m, int n);
     static void copyIndexedAToIndexed(Layer& layer, uint i, uint j, int k, int l,
-            QImage& image, int m, int n);
+                                      QImage& image, int m, int n);
     static void copyIndexedAToRGB(Layer& layer, uint i, uint j, int k, int l,
-            QImage& image, int m, int n);
+                                  QImage& image, int m, int n);
 
     static void mergeLayerIntoImage(XCFImage& xcf_image);
     static void mergeRGBToRGB(Layer& layer, uint i, uint j, int k, int l,
-            QImage& image, int m, int n);
+                              QImage& image, int m, int n);
     static void mergeGrayToGray(Layer& layer, uint i, uint j, int k, int l,
-            QImage& image, int m, int n);
+                                QImage& image, int m, int n);
     static void mergeGrayAToGray(Layer& layer, uint i, uint j, int k, int l,
-            QImage& image, int m, int n);
+                                 QImage& image, int m, int n);
     static void mergeGrayToRGB(Layer& layer, uint i, uint j, int k, int l,
-            QImage& image, int m, int n);
+                               QImage& image, int m, int n);
     static void mergeGrayAToRGB(Layer& layer, uint i, uint j, int k, int l,
-            QImage& image, int m, int n);
+                                QImage& image, int m, int n);
     static void mergeIndexedToIndexed(Layer& layer, uint i, uint j, int k, int l,
-            QImage& image, int m, int n);
+                                      QImage& image, int m, int n);
     static void mergeIndexedAToIndexed(Layer& layer, uint i, uint j, int k, int l,
-            QImage& image, int m, int n);
+                                       QImage& image, int m, int n);
     static void mergeIndexedAToRGB(Layer& layer, uint i, uint j, int k, int l,
-            QImage& image, int m, int n);
+                                   QImage& image, int m, int n);
 
     static void initializeRandomTable();
     static void dissolveRGBPixels(QImage& image, int x, int y);
@@ -240,35 +245,35 @@ QVector<QRgb> XCFImageFormat::grayTable;
 
 
 const XCFImageFormat::LayerModes XCFImageFormat::layer_modes[] = {
-	{true},		// NORMAL_MODE
-	{true},		// DISSOLVE_MODE
-	{true},		// BEHIND_MODE
-	{false},	// MULTIPLY_MODE
-	{false},	// SCREEN_MODE
-	{false},	// OVERLAY_MODE
-	{false},	// DIFFERENCE_MODE
-	{false},	// ADDITION_MODE
-	{false},	// SUBTRACT_MODE
-	{false},	// DARKEN_ONLY_MODE
-	{false},	// LIGHTEN_ONLY_MODE
-	{false},	// HUE_MODE
-	{false},	// SATURATION_MODE
-	{false},	// COLOR_MODE
-	{false},	// VALUE_MODE
-	{false},	// DIVIDE_MODE
-	{false},	// DODGE_MODE
-	{false},	// BURN_MODE
-	{false},	// HARDLIGHT_MODE
-	{false},	// SOFTLIGHT_MODE
-	{false},	// GRAIN_EXTRACT_MODE
-	{false},	// GRAIN_MERGE_MODE
+    {true},     // NORMAL_MODE
+    {true},     // DISSOLVE_MODE
+    {true},     // BEHIND_MODE
+    {false},    // MULTIPLY_MODE
+    {false},    // SCREEN_MODE
+    {false},    // OVERLAY_MODE
+    {false},    // DIFFERENCE_MODE
+    {false},    // ADDITION_MODE
+    {false},    // SUBTRACT_MODE
+    {false},    // DARKEN_ONLY_MODE
+    {false},    // LIGHTEN_ONLY_MODE
+    {false},    // HUE_MODE
+    {false},    // SATURATION_MODE
+    {false},    // COLOR_MODE
+    {false},    // VALUE_MODE
+    {false},    // DIVIDE_MODE
+    {false},    // DODGE_MODE
+    {false},    // BURN_MODE
+    {false},    // HARDLIGHT_MODE
+    {false},    // SOFTLIGHT_MODE
+    {false},    // GRAIN_EXTRACT_MODE
+    {false},    // GRAIN_MERGE_MODE
 };
 
 
 //! Change a QRgb value's alpha only.
-inline QRgb qRgba ( const QRgb& rgb, int a )
+inline QRgb qRgba(const QRgb& rgb, int a)
 {
-	return ((a & 0xff) << 24 | (rgb & RGB_MASK));
+    return ((a & 0xff) << 24 | (rgb & RGB_MASK));
 }
 
 
@@ -284,90 +289,91 @@ XCFImageFormat::XCFImageFormat()
  */
 void XCFImageFormat::initializeRandomTable()
 {
-	// From GIMP "paint_funcs.c" v1.2
-	srand(RANDOM_SEED);
+    // From GIMP "paint_funcs.c" v1.2
+    srand(RANDOM_SEED);
 
-	for (int i = 0; i < RANDOM_TABLE_SIZE; i++)
-		random_table[i] = rand();
+    for (int i = 0; i < RANDOM_TABLE_SIZE; i++)
+        random_table[i] = rand();
 
-	for (int i = 0; i < RANDOM_TABLE_SIZE; i++) {
-		int tmp;
-		int swap = i + rand() % (RANDOM_TABLE_SIZE - i);
-		tmp = random_table[i];
-		random_table[i] = random_table[swap];
-		random_table[swap] = tmp;
-	}
+    for (int i = 0; i < RANDOM_TABLE_SIZE; i++) {
+        int tmp;
+        int swap = i + rand() % (RANDOM_TABLE_SIZE - i);
+        tmp = random_table[i];
+        random_table[i] = random_table[swap];
+        random_table[swap] = tmp;
+    }
 }
 
 inline
-int XCFImageFormat::add_lut( int a, int b ) {
-	return qMin( a + b, 255 );
+int XCFImageFormat::add_lut(int a, int b)
+{
+    return qMin(a + b, 255);
 }
 
 bool XCFImageFormat::readXCF(QIODevice *device, QImage *outImage)
 {
-	XCFImage xcf_image;
-	QDataStream xcf_io(device);
+    XCFImage xcf_image;
+    QDataStream xcf_io(device);
 
-	char tag[14];;
+    char tag[14];;
 
-	if (xcf_io.readRawData(tag, sizeof(tag)) != sizeof(tag)) {
+    if (xcf_io.readRawData(tag, sizeof(tag)) != sizeof(tag)) {
 //             qDebug() << "XCF: read failure on header tag";
-            return false;
-	}
-	if (qstrncmp(tag, "gimp xcf", 8) != 0) {
+        return false;
+    }
+    if (qstrncmp(tag, "gimp xcf", 8) != 0) {
 //             qDebug() << "XCF: read called on non-XCF file";
+        return false;
+    }
+
+    xcf_io >> xcf_image.width >> xcf_image.height >> xcf_image.type;
+
+//  qDebug() << tag << " " << xcf_image.width << " " << xcf_image.height << " " <<  xcf_image.type;
+    if (!loadImageProperties(xcf_io, xcf_image))
+        return false;
+
+    // The layers appear to be stored in top-to-bottom order. This is
+    // the reverse of how a merged image must be computed. So, the layer
+    // offsets are pushed onto a LIFO stack (thus, we don't have to load
+    // all the data of all layers before beginning to construct the
+    // merged image).
+
+    QStack<qint32> layer_offsets;
+
+    while (true) {
+        qint32 layer_offset;
+
+        xcf_io >> layer_offset;
+
+        if (layer_offset == 0)
+            break;
+
+        layer_offsets.push(layer_offset);
+    }
+
+    xcf_image.num_layers = layer_offsets.size();
+
+    if (layer_offsets.size() == 0) {
+//      qDebug() << "XCF: no layers!"; return false;
+    }
+
+    // Load each layer and add it to the image
+    while (!layer_offsets.isEmpty()) {
+        qint32 layer_offset = layer_offsets.pop();
+
+        xcf_io.device()->seek(layer_offset);
+
+        if (!loadLayer(xcf_io, xcf_image))
             return false;
-	}
+    }
 
-	xcf_io >> xcf_image.width >> xcf_image.height >> xcf_image.type;
+    if (!xcf_image.initialized) {
+//      qDebug() << "XCF: no visible layers!";
+        return false;
+    }
 
-// 	qDebug() << tag << " " << xcf_image.width << " " << xcf_image.height << " " <<  xcf_image.type;
-	if (!loadImageProperties(xcf_io, xcf_image))
-		return false;
-
-	// The layers appear to be stored in top-to-bottom order. This is
-	// the reverse of how a merged image must be computed. So, the layer
-	// offsets are pushed onto a LIFO stack (thus, we don't have to load
-	// all the data of all layers before beginning to construct the
-	// merged image).
-
-	QStack<qint32> layer_offsets;
-
-	while (true) {
-		qint32 layer_offset;
-
-		xcf_io >> layer_offset;
-
-		if (layer_offset == 0)
-			break;
-
-		layer_offsets.push(layer_offset);
-	}
-
-	xcf_image.num_layers = layer_offsets.size();
-
-	if (layer_offsets.size() == 0) {
-// 		qDebug() << "XCF: no layers!"; return false;
-	}
-
-	// Load each layer and add it to the image
-	while (!layer_offsets.isEmpty()) {
-		qint32 layer_offset = layer_offsets.pop();
-
-		xcf_io.device()->seek(layer_offset);
-
-		if (!loadLayer(xcf_io, xcf_image))
-			return false;
-	}
-
-	if (!xcf_image.initialized) {
-// 		qDebug() << "XCF: no visible layers!";
-		return false;
-	}
-
-        *outImage = xcf_image.image;
-        return true;
+    *outImage = xcf_image.image;
+    return true;
 }
 
 
@@ -380,82 +386,82 @@ bool XCFImageFormat::readXCF(QIODevice *device, QImage *outImage)
  */
 bool XCFImageFormat::loadImageProperties(QDataStream& xcf_io, XCFImage& xcf_image)
 {
-	while (true) {
-		PropType type;
-		QByteArray bytes;
+    while (true) {
+        PropType type;
+        QByteArray bytes;
 
-		if (!loadProperty(xcf_io, type, bytes)) {
-// 			qDebug() << "XCF: error loading global image properties";
-			return false;
-		}
+        if (!loadProperty(xcf_io, type, bytes)) {
+//          qDebug() << "XCF: error loading global image properties";
+            return false;
+        }
 
-		QDataStream property(bytes);
+        QDataStream property(bytes);
 
-		switch (type) {
-			case PROP_END:
-				return true;
+        switch (type) {
+        case PROP_END:
+            return true;
 
-			case PROP_COMPRESSION:
-				property >> xcf_image.compression;
-				break;
+        case PROP_COMPRESSION:
+            property >> xcf_image.compression;
+            break;
 
-			case PROP_RESOLUTION:
-				property >> xcf_image.x_resolution >> xcf_image.y_resolution;
-				break;
+        case PROP_RESOLUTION:
+            property >> xcf_image.x_resolution >> xcf_image.y_resolution;
+            break;
 
-			case PROP_TATTOO:
-				property >> xcf_image.tattoo;
-				break;
+        case PROP_TATTOO:
+            property >> xcf_image.tattoo;
+            break;
 
-			case PROP_PARASITES:
-				while (!property.atEnd()) {
-					char* tag;
-					quint32 size;
+        case PROP_PARASITES:
+            while (!property.atEnd()) {
+                char* tag;
+                quint32 size;
 
-					property.readBytes(tag, size);
+                property.readBytes(tag, size);
 
-					quint32 flags;
-					char* data=0;
-					property >> flags >> data;
+                quint32 flags;
+                char* data = 0;
+                property >> flags >> data;
 
-					if (tag && strncmp(tag, "gimp-comment", strlen("gimp-comment")) == 0)
-						xcf_image.image.setText(QStringLiteral("Comment"), QString::fromUtf8(data));
+                if (tag && strncmp(tag, "gimp-comment", strlen("gimp-comment")) == 0)
+                    xcf_image.image.setText(QStringLiteral("Comment"), QString::fromUtf8(data));
 
-					delete[] tag;
-					delete[] data;
-				}
-				break;
+                delete[] tag;
+                delete[] data;
+            }
+            break;
 
-				case PROP_UNIT:
-					property >> xcf_image.unit;
-					break;
+        case PROP_UNIT:
+            property >> xcf_image.unit;
+            break;
 
-				case PROP_PATHS:	// This property is ignored.
-					break;
+        case PROP_PATHS:    // This property is ignored.
+            break;
 
-				case PROP_USER_UNIT:	// This property is ignored.
-					break;
+        case PROP_USER_UNIT:    // This property is ignored.
+            break;
 
-				case PROP_COLORMAP:
-					property >> xcf_image.num_colors;
-                                        if(xcf_image.num_colors < 0 || xcf_image.num_colors > 65535)
-                                            return false;
+        case PROP_COLORMAP:
+            property >> xcf_image.num_colors;
+            if (xcf_image.num_colors < 0 || xcf_image.num_colors > 65535)
+                return false;
 
-					xcf_image.palette.reserve(xcf_image.num_colors);
+            xcf_image.palette.reserve(xcf_image.num_colors);
 
-					for (int i = 0; i < xcf_image.num_colors; i++) {
-						uchar r, g, b;
-						property >> r >> g >> b;
-						xcf_image.palette.push_back( qRgb(r,g,b) );
-					}
-					break;
+            for (int i = 0; i < xcf_image.num_colors; i++) {
+                uchar r, g, b;
+                property >> r >> g >> b;
+                xcf_image.palette.push_back(qRgb(r, g, b));
+            }
+            break;
 
-				default:
-// 					qDebug() << "XCF: unimplemented image property" << type
-// 							<< ", size " << bytes.size() << endl;
-					break;
-		}
-	}
+        default:
+//                  qDebug() << "XCF: unimplemented image property" << type
+//                          << ", size " << bytes.size() << endl;
+            break;
+        }
+    }
 }
 
 
@@ -468,71 +474,71 @@ bool XCFImageFormat::loadImageProperties(QDataStream& xcf_io, XCFImage& xcf_imag
  * \return true if there were no IO errors.  */
 bool XCFImageFormat::loadProperty(QDataStream& xcf_io, PropType& type, QByteArray& bytes)
 {
-	quint32 foo;
-	xcf_io >> foo;
-	type=PropType(foo);	// TODO urks
+    quint32 foo;
+    xcf_io >> foo;
+    type = PropType(foo); // TODO urks
 
-	char* data = 0;
-	quint32 size;
+    char* data = 0;
+    quint32 size;
 
-	// The colormap property size is not the correct number of bytes:
-	// The GIMP source xcf.c has size = 4 + ncolors, but it should be
-	// 4 + 3 * ncolors
+    // The colormap property size is not the correct number of bytes:
+    // The GIMP source xcf.c has size = 4 + ncolors, but it should be
+    // 4 + 3 * ncolors
 
-	if (type == PROP_COLORMAP) {
-		xcf_io >> size;
-                quint32 ncolors;
-                xcf_io >> ncolors;
+    if (type == PROP_COLORMAP) {
+        xcf_io >> size;
+        quint32 ncolors;
+        xcf_io >> ncolors;
 
-                if(size > 65535 || size < 4)
-                    return false;
+        if (size > 65535 || size < 4)
+            return false;
 
-		size = 3 * ncolors + 4;
-		data = new char[size];
+        size = 3 * ncolors + 4;
+        data = new char[size];
 
-                // since we already read "ncolors" from the stream, we put that data back
-                data[0] = 0;
-                data[1] = 0;
-                data[2] = ncolors >> 8;
-                data[3] = ncolors & 255;
+        // since we already read "ncolors" from the stream, we put that data back
+        data[0] = 0;
+        data[1] = 0;
+        data[2] = ncolors >> 8;
+        data[3] = ncolors & 255;
 
-                // ... and read the remaining bytes from the stream
-		xcf_io.readRawData(data + 4, size - 4);
-	} else if (type == PROP_USER_UNIT) {
-		// The USER UNIT property size is not correct. I'm not sure why, though.
-		float factor;
-		qint32 digits;
+        // ... and read the remaining bytes from the stream
+        xcf_io.readRawData(data + 4, size - 4);
+    } else if (type == PROP_USER_UNIT) {
+        // The USER UNIT property size is not correct. I'm not sure why, though.
+        float factor;
+        qint32 digits;
 
-		xcf_io >> size >> factor >> digits;
+        xcf_io >> size >> factor >> digits;
 
-		for (int i = 0; i < 5; i++) {
-			char* unit_strings;
+        for (int i = 0; i < 5; i++) {
+            char* unit_strings;
 
-			xcf_io >> unit_strings;
+            xcf_io >> unit_strings;
 
-			delete[] unit_strings;
+            delete[] unit_strings;
 
-			if (xcf_io.device()->atEnd()) {
-// 				qDebug() << "XCF: read failure on property " << type;
-				return false;
-			}
-		}
-
-		size = 0;
-	} else {
-                xcf_io >> size;
-                if(size >256000)
-                    return false;
-                data = new char[size];
-		xcf_io.readRawData(data, size);
+            if (xcf_io.device()->atEnd()) {
+//              qDebug() << "XCF: read failure on property " << type;
+                return false;
+            }
         }
 
-	if (size != 0 && data)
-            bytes = QByteArray(data,size);
-	
-        delete [] data;
+        size = 0;
+    } else {
+        xcf_io >> size;
+        if (size > 256000)
+            return false;
+        data = new char[size];
+        xcf_io.readRawData(data, size);
+    }
 
-	return true;
+    if (size != 0 && data)
+        bytes = QByteArray(data, size);
+
+    delete [] data;
+
+    return true;
 }
 
 
@@ -546,66 +552,66 @@ bool XCFImageFormat::loadProperty(QDataStream& xcf_io, PropType& type, QByteArra
  */
 bool XCFImageFormat::loadLayer(QDataStream& xcf_io, XCFImage& xcf_image)
 {
-	Layer& layer(xcf_image.layer);
-	delete[] layer.name;
+    Layer& layer(xcf_image.layer);
+    delete[] layer.name;
 
-	xcf_io >> layer.width >> layer.height >> layer.type >> layer.name;
+    xcf_io >> layer.width >> layer.height >> layer.type >> layer.name;
 
-	if (!loadLayerProperties(xcf_io, layer))
-		return false;
+    if (!loadLayerProperties(xcf_io, layer))
+        return false;
 #if 0
-  cout << "layer: \"" << layer.name << "\", size: " << layer.width << " x "
-       << layer.height << ", type: " << layer.type << ", mode: " << layer.mode
-       << ", opacity: " << layer.opacity << ", visible: " << layer.visible
-       << ", offset: " << layer.x_offset << ", " << layer.y_offset << endl;
+    cout << "layer: \"" << layer.name << "\", size: " << layer.width << " x "
+         << layer.height << ", type: " << layer.type << ", mode: " << layer.mode
+         << ", opacity: " << layer.opacity << ", visible: " << layer.visible
+         << ", offset: " << layer.x_offset << ", " << layer.y_offset << endl;
 #endif
-  // Skip reading the rest of it if it is not visible. Typically, when
-  // you export an image from the The GIMP it flattens (or merges) only
-  // the visible layers into the output image.
+    // Skip reading the rest of it if it is not visible. Typically, when
+    // you export an image from the The GIMP it flattens (or merges) only
+    // the visible layers into the output image.
 
-	if (layer.visible == 0)
-		return true;
+    if (layer.visible == 0)
+        return true;
 
-	// If there are any more layers, merge them into the final QImage.
+    // If there are any more layers, merge them into the final QImage.
 
-	xcf_io >> layer.hierarchy_offset >> layer.mask_offset;
+    xcf_io >> layer.hierarchy_offset >> layer.mask_offset;
 
-	// Allocate the individual tile QImages based on the size and type
-	// of this layer.
+    // Allocate the individual tile QImages based on the size and type
+    // of this layer.
 
-	if( !composeTiles(xcf_image))
-		return false;
-	xcf_io.device()->seek(layer.hierarchy_offset);
+    if (!composeTiles(xcf_image))
+        return false;
+    xcf_io.device()->seek(layer.hierarchy_offset);
 
-	// As tiles are loaded, they are copied into the layers tiles by
-	// this routine. (loadMask(), below, uses a slightly different
-	// version of assignBytes().)
+    // As tiles are loaded, they are copied into the layers tiles by
+    // this routine. (loadMask(), below, uses a slightly different
+    // version of assignBytes().)
 
-	layer.assignBytes = assignImageBytes;
+    layer.assignBytes = assignImageBytes;
 
-	if (!loadHierarchy(xcf_io, layer))
-		return false;
+    if (!loadHierarchy(xcf_io, layer))
+        return false;
 
-	if (layer.mask_offset != 0) {
-		xcf_io.device()->seek(layer.mask_offset);
+    if (layer.mask_offset != 0) {
+        xcf_io.device()->seek(layer.mask_offset);
 
-		if (!loadMask(xcf_io, layer))
-			return false;
-	}
+        if (!loadMask(xcf_io, layer))
+            return false;
+    }
 
-	// Now we should have enough information to initialize the final
-	// QImage. The first visible layer determines the attributes
-	// of the QImage.
+    // Now we should have enough information to initialize the final
+    // QImage. The first visible layer determines the attributes
+    // of the QImage.
 
-	if (!xcf_image.initialized) {
-		if( !initializeImage(xcf_image))
-			return false;
-		copyLayerToImage(xcf_image);
-		xcf_image.initialized = true;
-	} else
-		mergeLayerIntoImage(xcf_image);
+    if (!xcf_image.initialized) {
+        if (!initializeImage(xcf_image))
+            return false;
+        copyLayerToImage(xcf_image);
+        xcf_image.initialized = true;
+    } else
+        mergeLayerIntoImage(xcf_image);
 
-	return true;
+    return true;
 }
 
 
@@ -618,71 +624,71 @@ bool XCFImageFormat::loadLayer(QDataStream& xcf_io, XCFImage& xcf_image)
  */
 bool XCFImageFormat::loadLayerProperties(QDataStream& xcf_io, Layer& layer)
 {
-	while (true) {
-		PropType type;
-		QByteArray bytes;
+    while (true) {
+        PropType type;
+        QByteArray bytes;
 
-		if (!loadProperty(xcf_io, type, bytes)) {
-// 			qDebug() << "XCF: error loading layer properties";
-			return false;
-		}
+        if (!loadProperty(xcf_io, type, bytes)) {
+//          qDebug() << "XCF: error loading layer properties";
+            return false;
+        }
 
-		QDataStream property(bytes);
+        QDataStream property(bytes);
 
-		switch (type) {
-			case PROP_END:
-				return true;
+        switch (type) {
+        case PROP_END:
+            return true;
 
-			case PROP_ACTIVE_LAYER:
-				layer.active = true;
-				break;
+        case PROP_ACTIVE_LAYER:
+            layer.active = true;
+            break;
 
-			case PROP_OPACITY:
-				property >> layer.opacity;
-				break;
+        case PROP_OPACITY:
+            property >> layer.opacity;
+            break;
 
-			case PROP_VISIBLE:
-				property >> layer.visible;
-				break;
+        case PROP_VISIBLE:
+            property >> layer.visible;
+            break;
 
-			case PROP_LINKED:
-				property >> layer.linked;
-				break;
+        case PROP_LINKED:
+            property >> layer.linked;
+            break;
 
-			case PROP_PRESERVE_TRANSPARENCY:
-				property >> layer.preserve_transparency;
-				break;
+        case PROP_PRESERVE_TRANSPARENCY:
+            property >> layer.preserve_transparency;
+            break;
 
-			case PROP_APPLY_MASK:
-				property >> layer.apply_mask;
-				break;
+        case PROP_APPLY_MASK:
+            property >> layer.apply_mask;
+            break;
 
-			case PROP_EDIT_MASK:
-				property >> layer.edit_mask;
-				break;
+        case PROP_EDIT_MASK:
+            property >> layer.edit_mask;
+            break;
 
-			case PROP_SHOW_MASK:
-				property >> layer.show_mask;
-				break;
+        case PROP_SHOW_MASK:
+            property >> layer.show_mask;
+            break;
 
-			case PROP_OFFSETS:
-				property >> layer.x_offset >> layer.y_offset;
-				break;
+        case PROP_OFFSETS:
+            property >> layer.x_offset >> layer.y_offset;
+            break;
 
-			case PROP_MODE:
-				property >> layer.mode;
-				break;
+        case PROP_MODE:
+            property >> layer.mode;
+            break;
 
-			case PROP_TATTOO:
-				property >> layer.tattoo;
-				break;
+        case PROP_TATTOO:
+            property >> layer.tattoo;
+            break;
 
-			default:
-// 				qDebug() << "XCF: unimplemented layer property " << type
-// 						<< ", size " << bytes.size() << endl;
-				break;
-		}
-	}
+        default:
+//              qDebug() << "XCF: unimplemented layer property " << type
+//                      << ", size " << bytes.size() << endl;
+            break;
+        }
+    }
 }
 
 
@@ -693,119 +699,119 @@ bool XCFImageFormat::loadLayerProperties(QDataStream& xcf_io, Layer& layer)
  */
 bool XCFImageFormat::composeTiles(XCFImage& xcf_image)
 {
-	Layer& layer(xcf_image.layer);
+    Layer& layer(xcf_image.layer);
 
-	layer.nrows = (layer.height + TILE_HEIGHT - 1) / TILE_HEIGHT;
-	layer.ncols = (layer.width + TILE_WIDTH - 1) / TILE_WIDTH;
+    layer.nrows = (layer.height + TILE_HEIGHT - 1) / TILE_HEIGHT;
+    layer.ncols = (layer.width + TILE_WIDTH - 1) / TILE_WIDTH;
 
-        //qDebug() << "IMAGE: height=" << xcf_image.height << ", width=" << xcf_image.width;
-        //qDebug() << "LAYER: height=" << layer.height << ", width=" << layer.width;
-        //qDebug() << "LAYER: rows=" << layer.nrows << ", columns=" << layer.ncols;
-        
-        // SANITY CHECK: Catch corrupted XCF image file where the width or height
-        // of a tile is reported are bogus. See Bug# 234030.
-        if (layer.width > 32767 || layer.height > 32767 || layer.width * layer.height > 16384 * 16384)
-              return false;
-       
-	layer.image_tiles.resize(layer.nrows);
+    //qDebug() << "IMAGE: height=" << xcf_image.height << ", width=" << xcf_image.width;
+    //qDebug() << "LAYER: height=" << layer.height << ", width=" << layer.width;
+    //qDebug() << "LAYER: rows=" << layer.nrows << ", columns=" << layer.ncols;
 
-	if (layer.type == GRAYA_GIMAGE || layer.type == INDEXEDA_GIMAGE)
-		layer.alpha_tiles.resize(layer.nrows);
+    // SANITY CHECK: Catch corrupted XCF image file where the width or height
+    // of a tile is reported are bogus. See Bug# 234030.
+    if (layer.width > 32767 || layer.height > 32767 || layer.width * layer.height > 16384 * 16384)
+        return false;
 
-	if (layer.mask_offset != 0)
-		layer.mask_tiles.resize(layer.nrows);
+    layer.image_tiles.resize(layer.nrows);
 
-	for (uint j = 0; j < layer.nrows; j++) {
-		layer.image_tiles[j].resize(layer.ncols);
+    if (layer.type == GRAYA_GIMAGE || layer.type == INDEXEDA_GIMAGE)
+        layer.alpha_tiles.resize(layer.nrows);
 
-		if (layer.type == GRAYA_GIMAGE || layer.type == INDEXEDA_GIMAGE)
-			layer.alpha_tiles[j].resize(layer.ncols);
+    if (layer.mask_offset != 0)
+        layer.mask_tiles.resize(layer.nrows);
 
-		if (layer.mask_offset != 0)
-			layer.mask_tiles[j].resize(layer.ncols);
-	}
+    for (uint j = 0; j < layer.nrows; j++) {
+        layer.image_tiles[j].resize(layer.ncols);
 
-	for (uint j = 0; j < layer.nrows; j++) {
-		for (uint i = 0; i < layer.ncols; i++) {
+        if (layer.type == GRAYA_GIMAGE || layer.type == INDEXEDA_GIMAGE)
+            layer.alpha_tiles[j].resize(layer.ncols);
 
-			uint tile_width = (i + 1) * TILE_WIDTH <= layer.width
-					? TILE_WIDTH : layer.width - i * TILE_WIDTH;
+        if (layer.mask_offset != 0)
+            layer.mask_tiles[j].resize(layer.ncols);
+    }
 
-			uint tile_height = (j + 1) * TILE_HEIGHT <= layer.height
-					? TILE_HEIGHT : layer.height - j * TILE_HEIGHT;
+    for (uint j = 0; j < layer.nrows; j++) {
+        for (uint i = 0; i < layer.ncols; i++) {
 
-			// Try to create the most appropriate QImage (each GIMP layer
-			// type is treated slightly differently)
+            uint tile_width = (i + 1) * TILE_WIDTH <= layer.width
+                              ? TILE_WIDTH : layer.width - i * TILE_WIDTH;
 
-			switch (layer.type) {
-				case RGB_GIMAGE:
-					layer.image_tiles[j][i] = QImage(tile_width, tile_height, QImage::Format_RGB32);
-					layer.image_tiles[j][i].setColorCount(0);
-					if( layer.image_tiles[j][i].isNull())
-						return false;
-					break;
+            uint tile_height = (j + 1) * TILE_HEIGHT <= layer.height
+                               ? TILE_HEIGHT : layer.height - j * TILE_HEIGHT;
 
-				case RGBA_GIMAGE:
-					layer.image_tiles[j][i] = QImage(tile_width, tile_height, QImage::Format_ARGB32);
-					layer.image_tiles[j][i].setColorCount(0);
-					if( layer.image_tiles[j][i].isNull())
-						return false;
-					break;
+            // Try to create the most appropriate QImage (each GIMP layer
+            // type is treated slightly differently)
 
-				case GRAY_GIMAGE:
-					layer.image_tiles[j][i] = QImage(tile_width, tile_height, QImage::Format_Indexed8);
-					layer.image_tiles[j][i].setColorCount(256);
-					if( layer.image_tiles[j][i].isNull())
-						return false;
-					setGrayPalette(layer.image_tiles[j][i]);
-					break;
+            switch (layer.type) {
+            case RGB_GIMAGE:
+                layer.image_tiles[j][i] = QImage(tile_width, tile_height, QImage::Format_RGB32);
+                layer.image_tiles[j][i].setColorCount(0);
+                if (layer.image_tiles[j][i].isNull())
+                    return false;
+                break;
 
-				case GRAYA_GIMAGE:
-					layer.image_tiles[j][i] = QImage(tile_width, tile_height, QImage::Format_Indexed8);
-					layer.image_tiles[j][i].setColorCount(256);
-					if( layer.image_tiles[j][i].isNull())
-						return false;
-					setGrayPalette(layer.image_tiles[j][i]);
+            case RGBA_GIMAGE:
+                layer.image_tiles[j][i] = QImage(tile_width, tile_height, QImage::Format_ARGB32);
+                layer.image_tiles[j][i].setColorCount(0);
+                if (layer.image_tiles[j][i].isNull())
+                    return false;
+                break;
 
-					layer.alpha_tiles[j][i] = QImage(tile_width, tile_height, QImage::Format_Indexed8);
-					layer.alpha_tiles[j][i].setColorCount(256);
-					if( layer.alpha_tiles[j][i].isNull())
-						return false;
-					setGrayPalette(layer.alpha_tiles[j][i]);
-					break;
+            case GRAY_GIMAGE:
+                layer.image_tiles[j][i] = QImage(tile_width, tile_height, QImage::Format_Indexed8);
+                layer.image_tiles[j][i].setColorCount(256);
+                if (layer.image_tiles[j][i].isNull())
+                    return false;
+                setGrayPalette(layer.image_tiles[j][i]);
+                break;
 
-				case INDEXED_GIMAGE:
-					layer.image_tiles[j][i] = QImage(tile_width, tile_height, QImage::Format_Indexed8);
-					layer.image_tiles[j][i].setColorCount(xcf_image.num_colors);
-					if( layer.image_tiles[j][i].isNull())
-						return false;
-					setPalette(xcf_image, layer.image_tiles[j][i]);
-					break;
+            case GRAYA_GIMAGE:
+                layer.image_tiles[j][i] = QImage(tile_width, tile_height, QImage::Format_Indexed8);
+                layer.image_tiles[j][i].setColorCount(256);
+                if (layer.image_tiles[j][i].isNull())
+                    return false;
+                setGrayPalette(layer.image_tiles[j][i]);
 
-				case INDEXEDA_GIMAGE:
-					layer.image_tiles[j][i] = QImage(tile_width, tile_height, QImage::Format_Indexed8);
-					layer.image_tiles[j][i].setColorCount(xcf_image.num_colors);
-					if( layer.image_tiles[j][i].isNull())
-						return false;
-					setPalette(xcf_image, layer.image_tiles[j][i]);
+                layer.alpha_tiles[j][i] = QImage(tile_width, tile_height, QImage::Format_Indexed8);
+                layer.alpha_tiles[j][i].setColorCount(256);
+                if (layer.alpha_tiles[j][i].isNull())
+                    return false;
+                setGrayPalette(layer.alpha_tiles[j][i]);
+                break;
 
-					layer.alpha_tiles[j][i] = QImage(tile_width, tile_height, QImage::Format_Indexed8);
-					layer.alpha_tiles[j][i].setColorCount(256);
-					if( layer.alpha_tiles[j][i].isNull())
-						return false;
-					setGrayPalette(layer.alpha_tiles[j][i]);
-			}
+            case INDEXED_GIMAGE:
+                layer.image_tiles[j][i] = QImage(tile_width, tile_height, QImage::Format_Indexed8);
+                layer.image_tiles[j][i].setColorCount(xcf_image.num_colors);
+                if (layer.image_tiles[j][i].isNull())
+                    return false;
+                setPalette(xcf_image, layer.image_tiles[j][i]);
+                break;
 
-			if (layer.mask_offset != 0) {
-				layer.mask_tiles[j][i] = QImage(tile_width, tile_height, QImage::Format_Indexed8);
-				layer.mask_tiles[j][i].setColorCount(256);
-				if( layer.mask_tiles[j][i].isNull())
-					return false;
-				setGrayPalette(layer.mask_tiles[j][i]);
-			}
-		}
-	}
-	return true;
+            case INDEXEDA_GIMAGE:
+                layer.image_tiles[j][i] = QImage(tile_width, tile_height, QImage::Format_Indexed8);
+                layer.image_tiles[j][i].setColorCount(xcf_image.num_colors);
+                if (layer.image_tiles[j][i].isNull())
+                    return false;
+                setPalette(xcf_image, layer.image_tiles[j][i]);
+
+                layer.alpha_tiles[j][i] = QImage(tile_width, tile_height, QImage::Format_Indexed8);
+                layer.alpha_tiles[j][i].setColorCount(256);
+                if (layer.alpha_tiles[j][i].isNull())
+                    return false;
+                setGrayPalette(layer.alpha_tiles[j][i]);
+            }
+
+            if (layer.mask_offset != 0) {
+                layer.mask_tiles[j][i] = QImage(tile_width, tile_height, QImage::Format_Indexed8);
+                layer.mask_tiles[j][i].setColorCount(256);
+                if (layer.mask_tiles[j][i].isNull())
+                    return false;
+                setGrayPalette(layer.mask_tiles[j][i]);
+            }
+        }
+    }
+    return true;
 }
 
 
@@ -817,14 +823,14 @@ bool XCFImageFormat::composeTiles(XCFImage& xcf_image)
  */
 void XCFImageFormat::setGrayPalette(QImage& image)
 {
-	if (grayTable.isEmpty()) {
-		grayTable.resize(256);
+    if (grayTable.isEmpty()) {
+        grayTable.resize(256);
 
-		for (int i = 0; i < 256; i++)
-			grayTable[i] = qRgb(i, i, i);
-	}
+        for (int i = 0; i < 256; i++)
+            grayTable[i] = qRgb(i, i, i);
+    }
 
-	image.setColorTable(grayTable);
+    image.setColorTable(grayTable);
 }
 
 
@@ -835,9 +841,9 @@ void XCFImageFormat::setGrayPalette(QImage& image)
  */
 void XCFImageFormat::setPalette(XCFImage& xcf_image, QImage& image)
 {
-	Q_ASSERT (xcf_image.num_colors == xcf_image.palette.size());
+    Q_ASSERT(xcf_image.num_colors == xcf_image.palette.size());
 
-	image.setColorTable(xcf_image.palette);
+    image.setColorTable(xcf_image.palette);
 }
 
 
@@ -850,67 +856,67 @@ void XCFImageFormat::setPalette(XCFImage& xcf_image, QImage& image)
  */
 void XCFImageFormat::assignImageBytes(Layer& layer, uint i, uint j)
 {
-	QImage &image = layer.image_tiles[j][i];
-	uchar* tile = layer.tile;
-	const int width = image.width();
-	const int height = image.height();
-	const int bytesPerLine = image.bytesPerLine();
-	uchar *bits = image.bits();
+    QImage &image = layer.image_tiles[j][i];
+    uchar* tile = layer.tile;
+    const int width = image.width();
+    const int height = image.height();
+    const int bytesPerLine = image.bytesPerLine();
+    uchar *bits = image.bits();
 
-	switch (layer.type) {
-		case RGB_GIMAGE:
-			for (int y = 0; y < height; y++) {
-				QRgb *dataPtr = (QRgb *) (bits + y * bytesPerLine);
-				for (int x = 0; x < width; x++) {
-					*dataPtr++ = qRgb(tile[0], tile[1], tile[2]);
-					tile += sizeof(QRgb);
-				}
-			}
-			break;
+    switch (layer.type) {
+    case RGB_GIMAGE:
+        for (int y = 0; y < height; y++) {
+            QRgb *dataPtr = (QRgb *)(bits + y * bytesPerLine);
+            for (int x = 0; x < width; x++) {
+                *dataPtr++ = qRgb(tile[0], tile[1], tile[2]);
+                tile += sizeof(QRgb);
+            }
+        }
+        break;
 
-		case RGBA_GIMAGE:
-			for (int y = 0; y < height; y++) {
-				QRgb *dataPtr = (QRgb *) (bits + y * bytesPerLine);
-				for (int x = 0; x < width; x++) {
-					*dataPtr++ = 	qRgba(tile[0], tile[1], tile[2], tile[3]);
-					tile += sizeof(QRgb);
-				}
-			}
-			break;
+    case RGBA_GIMAGE:
+        for (int y = 0; y < height; y++) {
+            QRgb *dataPtr = (QRgb *)(bits + y * bytesPerLine);
+            for (int x = 0; x < width; x++) {
+                *dataPtr++ =    qRgba(tile[0], tile[1], tile[2], tile[3]);
+                tile += sizeof(QRgb);
+            }
+        }
+        break;
 
-		case GRAY_GIMAGE:
-		case INDEXED_GIMAGE:
-			for (int y = 0; y < height; y++) {
-				uchar *dataPtr = bits + y * bytesPerLine;
-				for (int x = 0; x < width; x++) {
-					*dataPtr++ = tile[0];
-					tile += sizeof(QRgb);
-				}
-			}
-			break;
+    case GRAY_GIMAGE:
+    case INDEXED_GIMAGE:
+        for (int y = 0; y < height; y++) {
+            uchar *dataPtr = bits + y * bytesPerLine;
+            for (int x = 0; x < width; x++) {
+                *dataPtr++ = tile[0];
+                tile += sizeof(QRgb);
+            }
+        }
+        break;
 
-		case GRAYA_GIMAGE:
-		case INDEXEDA_GIMAGE:
-			for (int y = 0; y < height; y++) {
-				uchar *dataPtr = bits + y * bytesPerLine;
-				uchar *alphaPtr = layer.alpha_tiles[j][i].scanLine(y);
-				for (int x = 0; x < width; x++) {
+    case GRAYA_GIMAGE:
+    case INDEXEDA_GIMAGE:
+        for (int y = 0; y < height; y++) {
+            uchar *dataPtr = bits + y * bytesPerLine;
+            uchar *alphaPtr = layer.alpha_tiles[j][i].scanLine(y);
+            for (int x = 0; x < width; x++) {
 
-				// The "if" here should not be necessary, but apparently there
-				// are some cases where the image can contain larger indices
-				// than there are colors in the palette. (A bug in The GIMP?)
+                // The "if" here should not be necessary, but apparently there
+                // are some cases where the image can contain larger indices
+                // than there are colors in the palette. (A bug in The GIMP?)
 
-					if (tile[0] < image.colorCount())
-						*dataPtr = tile[0];
+                if (tile[0] < image.colorCount())
+                    *dataPtr = tile[0];
 
-					*alphaPtr = tile[1];
-					dataPtr += 1;
-					alphaPtr += 1;
-					tile += sizeof(QRgb);
-				}
-			}
-			break;
-	}
+                *alphaPtr = tile[1];
+                dataPtr += 1;
+                alphaPtr += 1;
+                tile += sizeof(QRgb);
+            }
+        }
+        break;
+    }
 }
 
 
@@ -924,35 +930,35 @@ void XCFImageFormat::assignImageBytes(Layer& layer, uint i, uint j)
  */
 bool XCFImageFormat::loadHierarchy(QDataStream& xcf_io, Layer& layer)
 {
-	qint32 width;
-	qint32 height;
-	qint32 bpp;
-	quint32 offset;
+    qint32 width;
+    qint32 height;
+    qint32 bpp;
+    quint32 offset;
 
-	xcf_io >> width >> height >> bpp >> offset;
+    xcf_io >> width >> height >> bpp >> offset;
 
-	// GIMP stores images in a "mipmap"-like format (multiple levels of
-	// increasingly lower resolution). Only the top level is used here,
-	// however.
+    // GIMP stores images in a "mipmap"-like format (multiple levels of
+    // increasingly lower resolution). Only the top level is used here,
+    // however.
 
-	quint32 junk;
-	do {
-		xcf_io >> junk;
+    quint32 junk;
+    do {
+        xcf_io >> junk;
 
-		if (xcf_io.device()->atEnd()) {
-// 			qDebug() << "XCF: read failure on layer " << layer.name << " level offsets";
-			return false;
-		}
-	} while (junk != 0);
+        if (xcf_io.device()->atEnd()) {
+//          qDebug() << "XCF: read failure on layer " << layer.name << " level offsets";
+            return false;
+        }
+    } while (junk != 0);
 
-	qint64 saved_pos = xcf_io.device()->pos();
+    qint64 saved_pos = xcf_io.device()->pos();
 
-	xcf_io.device()->seek(offset);
-	if (!loadLevel(xcf_io, layer, bpp))
-		return false;
+    xcf_io.device()->seek(offset);
+    if (!loadLevel(xcf_io, layer, bpp))
+        return false;
 
-	xcf_io.device()->seek(saved_pos);
-	return true;
+    xcf_io.device()->seek(saved_pos);
+    return true;
 }
 
 
@@ -966,50 +972,50 @@ bool XCFImageFormat::loadHierarchy(QDataStream& xcf_io, Layer& layer)
  */
 bool XCFImageFormat::loadLevel(QDataStream& xcf_io, Layer& layer, qint32 bpp)
 {
-	qint32 width;
-	qint32 height;
-	quint32 offset;
+    qint32 width;
+    qint32 height;
+    quint32 offset;
 
-	xcf_io >> width >> height >> offset;
+    xcf_io >> width >> height >> offset;
 
-	if (offset == 0)
-		return true;
+    if (offset == 0)
+        return true;
 
-	for (uint j = 0; j < layer.nrows; j++) {
-		for (uint i = 0; i < layer.ncols; i++) {
+    for (uint j = 0; j < layer.nrows; j++) {
+        for (uint i = 0; i < layer.ncols; i++) {
 
-			if (offset == 0) {
-// 				qDebug() << "XCF: incorrect number of tiles in layer " << layer.name;
-				return false;
-			}
+            if (offset == 0) {
+//              qDebug() << "XCF: incorrect number of tiles in layer " << layer.name;
+                return false;
+            }
 
-			qint64 saved_pos = xcf_io.device()->pos();
-			quint32 offset2;
-			xcf_io >> offset2;
+            qint64 saved_pos = xcf_io.device()->pos();
+            quint32 offset2;
+            xcf_io >> offset2;
 
-			// Evidently, RLE can occasionally expand a tile instead of compressing it!
+            // Evidently, RLE can occasionally expand a tile instead of compressing it!
 
-			if (offset2 == 0)
-				offset2 = offset + (uint)(TILE_WIDTH * TILE_HEIGHT * 4 * 1.5);
+            if (offset2 == 0)
+                offset2 = offset + (uint)(TILE_WIDTH * TILE_HEIGHT * 4 * 1.5);
 
-			xcf_io.device()->seek(offset);
-			int size = layer.image_tiles[j][i].width() * layer.image_tiles[j][i].height();
+            xcf_io.device()->seek(offset);
+            int size = layer.image_tiles[j][i].width() * layer.image_tiles[j][i].height();
 
-			if (!loadTileRLE(xcf_io, layer.tile, size, offset2 - offset, bpp))
-				return false;
+            if (!loadTileRLE(xcf_io, layer.tile, size, offset2 - offset, bpp))
+                return false;
 
-			// The bytes in the layer tile are juggled differently depending on
-			// the target QImage. The caller has set layer.assignBytes to the
-			// appropriate routine.
+            // The bytes in the layer tile are juggled differently depending on
+            // the target QImage. The caller has set layer.assignBytes to the
+            // appropriate routine.
 
-			layer.assignBytes(layer, i, j);
+            layer.assignBytes(layer, i, j);
 
-			xcf_io.device()->seek(saved_pos);
-			xcf_io >> offset;
-		}
-	}
+            xcf_io.device()->seek(saved_pos);
+            xcf_io >> offset;
+        }
+    }
 
-	return true;
+    return true;
 }
 
 
@@ -1021,27 +1027,27 @@ bool XCFImageFormat::loadLevel(QDataStream& xcf_io, Layer& layer, qint32 bpp)
  */
 bool XCFImageFormat::loadMask(QDataStream& xcf_io, Layer& layer)
 {
-	qint32 width;
-	qint32 height;
-	char* name;
+    qint32 width;
+    qint32 height;
+    char* name;
 
-	xcf_io >> width >> height >> name;
+    xcf_io >> width >> height >> name;
 
-	delete name;
+    delete name;
 
-	if (!loadChannelProperties(xcf_io, layer))
-		return false;
+    if (!loadChannelProperties(xcf_io, layer))
+        return false;
 
-	quint32 hierarchy_offset;
-	xcf_io >> hierarchy_offset;
+    quint32 hierarchy_offset;
+    xcf_io >> hierarchy_offset;
 
-	xcf_io.device()->seek(hierarchy_offset);
-	layer.assignBytes = assignMaskBytes;
+    xcf_io.device()->seek(hierarchy_offset);
+    layer.assignBytes = assignMaskBytes;
 
-	if (!loadHierarchy(xcf_io, layer))
-		return false;
+    if (!loadHierarchy(xcf_io, layer))
+        return false;
 
-	return true;
+    return true;
 }
 
 
@@ -1069,106 +1075,106 @@ bool XCFImageFormat::loadMask(QDataStream& xcf_io, Layer& layer)
  * the RLE data.
  */
 bool XCFImageFormat::loadTileRLE(QDataStream& xcf_io, uchar* tile, int image_size,
-		int data_length, qint32 bpp)
+                                 int data_length, qint32 bpp)
 {
-	uchar* data;
+    uchar* data;
 
-	uchar* xcfdata;
-	uchar* xcfodata;
-	uchar* xcfdatalimit;
+    uchar* xcfdata;
+    uchar* xcfodata;
+    uchar* xcfdatalimit;
 
-	if (data_length < 0 || data_length > int(TILE_WIDTH * TILE_HEIGHT * 4 * 1.5)) {
-// 		qDebug() << "XCF: invalid tile data length" << data_length;
-		return false;
-	}
+    if (data_length < 0 || data_length > int(TILE_WIDTH * TILE_HEIGHT * 4 * 1.5)) {
+//      qDebug() << "XCF: invalid tile data length" << data_length;
+        return false;
+    }
 
-	xcfdata = xcfodata = new uchar[data_length];
+    xcfdata = xcfodata = new uchar[data_length];
 
-	xcf_io.readRawData((char*)xcfdata, data_length);
+    xcf_io.readRawData((char*)xcfdata, data_length);
 
-	if (!xcf_io.device()->isOpen()) {
-		delete[] xcfodata;
-// 		qDebug() << "XCF: read failure on tile";
-		return false;
-	}
+    if (!xcf_io.device()->isOpen()) {
+        delete[] xcfodata;
+//      qDebug() << "XCF: read failure on tile";
+        return false;
+    }
 
-	xcfdatalimit = &xcfodata[data_length - 1];
+    xcfdatalimit = &xcfodata[data_length - 1];
 
-	for (int i = 0; i < bpp; ++i) {
+    for (int i = 0; i < bpp; ++i) {
 
-		data = tile + i;
+        data = tile + i;
 
-		int count = 0;
-		int size = image_size;
+        int count = 0;
+        int size = image_size;
 
-		while (size > 0) {
-			if (xcfdata > xcfdatalimit)
-				goto bogus_rle;
+        while (size > 0) {
+            if (xcfdata > xcfdatalimit)
+                goto bogus_rle;
 
-			uchar val = *xcfdata++;
-			uint length = val;
+            uchar val = *xcfdata++;
+            uint length = val;
 
-			if (length >= 128) {
-				length = 255 - (length - 1);
-				if (length == 128) {
-					if (xcfdata >= xcfdatalimit)
-						goto bogus_rle;
+            if (length >= 128) {
+                length = 255 - (length - 1);
+                if (length == 128) {
+                    if (xcfdata >= xcfdatalimit)
+                        goto bogus_rle;
 
-					length = (*xcfdata << 8) + xcfdata[1];
+                    length = (*xcfdata << 8) + xcfdata[1];
 
-					xcfdata += 2;
-				}
+                    xcfdata += 2;
+                }
 
-				count += length;
-				size -= length;
+                count += length;
+                size -= length;
 
-				if (size < 0)
-					goto bogus_rle;
+                if (size < 0)
+                    goto bogus_rle;
 
-				if (&xcfdata[length - 1] > xcfdatalimit)
-					goto bogus_rle;
+                if (&xcfdata[length - 1] > xcfdatalimit)
+                    goto bogus_rle;
 
-				while (length-- > 0) {
-					*data = *xcfdata++;
-					data += sizeof(QRgb);
-				}
-			} else {
-				length += 1;
-				if (length == 128) {
-					if (xcfdata >= xcfdatalimit)
-						goto bogus_rle;
+                while (length-- > 0) {
+                    *data = *xcfdata++;
+                    data += sizeof(QRgb);
+                }
+            } else {
+                length += 1;
+                if (length == 128) {
+                    if (xcfdata >= xcfdatalimit)
+                        goto bogus_rle;
 
-					length = (*xcfdata << 8) + xcfdata[1];
-					xcfdata += 2;
-				}
+                    length = (*xcfdata << 8) + xcfdata[1];
+                    xcfdata += 2;
+                }
 
-				count += length;
-				size -= length;
+                count += length;
+                size -= length;
 
-				if (size < 0)
-					goto bogus_rle;
+                if (size < 0)
+                    goto bogus_rle;
 
-				if (xcfdata > xcfdatalimit)
-					goto bogus_rle;
+                if (xcfdata > xcfdatalimit)
+                    goto bogus_rle;
 
-				val = *xcfdata++;
+                val = *xcfdata++;
 
-				while (length-- > 0) {
-					*data = val;
-					data += sizeof(QRgb);
-				}
-			}
-		}
-	}
+                while (length-- > 0) {
+                    *data = val;
+                    data += sizeof(QRgb);
+                }
+            }
+        }
+    }
 
-	delete[] xcfodata;
-	return true;
+    delete[] xcfodata;
+    return true;
 
 bogus_rle:
 
-// 	qDebug() << "The run length encoding could not be decoded properly";
-	delete[] xcfodata;
-	return false;
+//  qDebug() << "The run length encoding could not be decoded properly";
+    delete[] xcfodata;
+    return false;
 }
 
 
@@ -1181,48 +1187,48 @@ bogus_rle:
  */
 bool XCFImageFormat::loadChannelProperties(QDataStream& xcf_io, Layer& layer)
 {
-	while (true) {
-		PropType type;
-		QByteArray bytes;
+    while (true) {
+        PropType type;
+        QByteArray bytes;
 
-		if (!loadProperty(xcf_io, type, bytes)) {
-// 			qDebug() << "XCF: error loading channel properties";
-			return false;
-		}
+        if (!loadProperty(xcf_io, type, bytes)) {
+//          qDebug() << "XCF: error loading channel properties";
+            return false;
+        }
 
-		QDataStream property(bytes);
+        QDataStream property(bytes);
 
-		switch (type) {
-			case PROP_END:
-				return true;
+        switch (type) {
+        case PROP_END:
+            return true;
 
-			case PROP_OPACITY:
-				property >> layer.mask_channel.opacity;
-				break;
+        case PROP_OPACITY:
+            property >> layer.mask_channel.opacity;
+            break;
 
-			case PROP_VISIBLE:
-				property >> layer.mask_channel.visible;
-				break;
+        case PROP_VISIBLE:
+            property >> layer.mask_channel.visible;
+            break;
 
-			case PROP_SHOW_MASKED:
-				property >> layer.mask_channel.show_masked;
-				break;
+        case PROP_SHOW_MASKED:
+            property >> layer.mask_channel.show_masked;
+            break;
 
-			case PROP_COLOR:
-				property >> layer.mask_channel.red >> layer.mask_channel.green
-						>> layer.mask_channel.blue;
-				break;
+        case PROP_COLOR:
+            property >> layer.mask_channel.red >> layer.mask_channel.green
+                     >> layer.mask_channel.blue;
+            break;
 
-			case PROP_TATTOO:
-				property >> layer.mask_channel.tattoo;
-				break;
+        case PROP_TATTOO:
+            property >> layer.mask_channel.tattoo;
+            break;
 
-			default:
-// 				qDebug() << "XCF: unimplemented channel property " << type
-// 						<< ", size " << bytes.size() << endl;
-				break;
-		}
-	}
+        default:
+//              qDebug() << "XCF: unimplemented channel property " << type
+//                      << ", size " << bytes.size() << endl;
+            break;
+        }
+    }
 }
 
 
@@ -1234,20 +1240,20 @@ bool XCFImageFormat::loadChannelProperties(QDataStream& xcf_io, Layer& layer)
  */
 void XCFImageFormat::assignMaskBytes(Layer& layer, uint i, uint j)
 {
-	QImage &image = layer.mask_tiles[j][i];
-	uchar* tile = layer.tile;
-	const int width = image.width();
-	const int height = image.height();
-	const int bytesPerLine = image.bytesPerLine();
-	uchar *bits = image.bits();
+    QImage &image = layer.mask_tiles[j][i];
+    uchar* tile = layer.tile;
+    const int width = image.width();
+    const int height = image.height();
+    const int bytesPerLine = image.bytesPerLine();
+    uchar *bits = image.bits();
 
-	for (int y = 0; y < height; y++) {
-		uchar *dataPtr = bits + y * bytesPerLine;
-		for (int x = 0; x < width; x++) {
-			*dataPtr++ = tile[0];
-			tile += sizeof(QRgb);
-		}
-	}
+    for (int y = 0; y < height; y++) {
+        uchar *dataPtr = bits + y * bytesPerLine;
+        for (int x = 0; x < width; x++) {
+            *dataPtr++ = tile[0];
+            tile += sizeof(QRgb);
+        }
+    }
 }
 
 
@@ -1281,118 +1287,118 @@ void XCFImageFormat::assignMaskBytes(Layer& layer, uint i, uint j)
  */
 bool XCFImageFormat::initializeImage(XCFImage& xcf_image)
 {
-	// (Aliases to make the code look a little better.)
-	Layer& layer(xcf_image.layer);
-	QImage& image(xcf_image.image);
+    // (Aliases to make the code look a little better.)
+    Layer& layer(xcf_image.layer);
+    QImage& image(xcf_image.image);
 
-	switch (layer.type) {
-		case RGB_GIMAGE:
-			if (layer.opacity == OPAQUE_OPACITY) {
-				image = QImage( xcf_image.width, xcf_image.height, QImage::Format_RGB32);
-				if( image.isNull())
-					return false;
-				image.fill(qRgb(255, 255, 255));
-				break;
-			} // else, fall through to 32-bit representation
+    switch (layer.type) {
+    case RGB_GIMAGE:
+        if (layer.opacity == OPAQUE_OPACITY) {
+            image = QImage(xcf_image.width, xcf_image.height, QImage::Format_RGB32);
+            if (image.isNull())
+                return false;
+            image.fill(qRgb(255, 255, 255));
+            break;
+        } // else, fall through to 32-bit representation
 
-		case RGBA_GIMAGE:
-			image = QImage(xcf_image.width, xcf_image.height, QImage::Format_ARGB32);
-			if( image.isNull())
-				return false;
-			image.fill(qRgba(255, 255, 255, 0));
-			break;
+    case RGBA_GIMAGE:
+        image = QImage(xcf_image.width, xcf_image.height, QImage::Format_ARGB32);
+        if (image.isNull())
+            return false;
+        image.fill(qRgba(255, 255, 255, 0));
+        break;
 
-		case GRAY_GIMAGE:
-			if (layer.opacity == OPAQUE_OPACITY) {
-				image = QImage(xcf_image.width, xcf_image.height, QImage::Format_Indexed8);
-				image.setColorCount(256);
-				if( image.isNull())
-					return false;
-				setGrayPalette(image);
-				image.fill(255);
-				break;
-			} // else, fall through to 32-bit representation
+    case GRAY_GIMAGE:
+        if (layer.opacity == OPAQUE_OPACITY) {
+            image = QImage(xcf_image.width, xcf_image.height, QImage::Format_Indexed8);
+            image.setColorCount(256);
+            if (image.isNull())
+                return false;
+            setGrayPalette(image);
+            image.fill(255);
+            break;
+        } // else, fall through to 32-bit representation
 
-		case GRAYA_GIMAGE:
-			image = QImage(xcf_image.width, xcf_image.height, QImage::Format_ARGB32);
-			if( image.isNull())
-				return false;
-			image.fill(qRgba(255, 255, 255, 0));
-			break;
+    case GRAYA_GIMAGE:
+        image = QImage(xcf_image.width, xcf_image.height, QImage::Format_ARGB32);
+        if (image.isNull())
+            return false;
+        image.fill(qRgba(255, 255, 255, 0));
+        break;
 
-		case INDEXED_GIMAGE:
-			// As noted in the table above, there are quite a few combinations
-			// which are possible with indexed images, depending on the
-			// presence of transparency (note: not translucency, which is not
-			// supported by The GIMP for indexed images) and the number of
-			// individual colors.
+    case INDEXED_GIMAGE:
+        // As noted in the table above, there are quite a few combinations
+        // which are possible with indexed images, depending on the
+        // presence of transparency (note: not translucency, which is not
+        // supported by The GIMP for indexed images) and the number of
+        // individual colors.
 
-			// Note: Qt treats a bitmap with a Black and White color palette
-			// as a mask, so only the "on" bits are drawn, regardless of the
-			// order color table entries. Otherwise (i.e., at least one of the
-			// color table entries is not black or white), it obeys the one-
-			// or two-color palette. Have to ask about this...
+        // Note: Qt treats a bitmap with a Black and White color palette
+        // as a mask, so only the "on" bits are drawn, regardless of the
+        // order color table entries. Otherwise (i.e., at least one of the
+        // color table entries is not black or white), it obeys the one-
+        // or two-color palette. Have to ask about this...
 
-			if (xcf_image.num_colors <= 2) {
-				image = QImage(xcf_image.width, xcf_image.height, QImage::Format_MonoLSB);
-				image.setColorCount(xcf_image.num_colors);
-				if( image.isNull())
-					return false;
-				image.fill(0);
-				setPalette(xcf_image, image);
-			} else if (xcf_image.num_colors <= 256) {
-				image = QImage(xcf_image.width, xcf_image.height, QImage::Format_Indexed8);
-				image.setColorCount(xcf_image.num_colors);
-				if( image.isNull())
-					return false;
-				image.fill(0);
-				setPalette(xcf_image, image);
-			}
-			break;
+        if (xcf_image.num_colors <= 2) {
+            image = QImage(xcf_image.width, xcf_image.height, QImage::Format_MonoLSB);
+            image.setColorCount(xcf_image.num_colors);
+            if (image.isNull())
+                return false;
+            image.fill(0);
+            setPalette(xcf_image, image);
+        } else if (xcf_image.num_colors <= 256) {
+            image = QImage(xcf_image.width, xcf_image.height, QImage::Format_Indexed8);
+            image.setColorCount(xcf_image.num_colors);
+            if (image.isNull())
+                return false;
+            image.fill(0);
+            setPalette(xcf_image, image);
+        }
+        break;
 
-		case INDEXEDA_GIMAGE:
-			if (xcf_image.num_colors == 1) {
-				// Plenty(!) of room to add a transparent color
-				xcf_image.num_colors++;
-				xcf_image.palette.resize(xcf_image.num_colors);
-				xcf_image.palette[1] = xcf_image.palette[0];
-				xcf_image.palette[0] = qRgba(255, 255, 255, 0);
+    case INDEXEDA_GIMAGE:
+        if (xcf_image.num_colors == 1) {
+            // Plenty(!) of room to add a transparent color
+            xcf_image.num_colors++;
+            xcf_image.palette.resize(xcf_image.num_colors);
+            xcf_image.palette[1] = xcf_image.palette[0];
+            xcf_image.palette[0] = qRgba(255, 255, 255, 0);
 
-				image = QImage(xcf_image.width, xcf_image.height, QImage::Format_MonoLSB);
-				image.setColorCount(xcf_image.num_colors);
-				if( image.isNull())
-					return false;
-				image.fill(0);
-				setPalette(xcf_image, image);
-			} else if (xcf_image.num_colors < 256) {
-				// Plenty of room to add a transparent color
-				xcf_image.num_colors++;
-				xcf_image.palette.resize(xcf_image.num_colors);
-				for (int c = xcf_image.num_colors - 1; c >= 1; c--)
-					xcf_image.palette[c] = xcf_image.palette[c - 1];
+            image = QImage(xcf_image.width, xcf_image.height, QImage::Format_MonoLSB);
+            image.setColorCount(xcf_image.num_colors);
+            if (image.isNull())
+                return false;
+            image.fill(0);
+            setPalette(xcf_image, image);
+        } else if (xcf_image.num_colors < 256) {
+            // Plenty of room to add a transparent color
+            xcf_image.num_colors++;
+            xcf_image.palette.resize(xcf_image.num_colors);
+            for (int c = xcf_image.num_colors - 1; c >= 1; c--)
+                xcf_image.palette[c] = xcf_image.palette[c - 1];
 
-				xcf_image.palette[0] = qRgba(255, 255, 255, 0);
-				image = QImage( xcf_image.width, xcf_image.height, QImage::Format_Indexed8);
-				image.setColorCount(xcf_image.num_colors);
-				if( image.isNull())
-					return false;
-				image.fill(0);
-				setPalette(xcf_image, image);
-			} else {
-				// No room for a transparent color, so this has to be promoted to
-				// true color. (There is no equivalent PNG representation output
-				// from The GIMP as of v1.2.)
-				image = QImage(xcf_image.width, xcf_image.height, QImage::Format_ARGB32);
-				if( image.isNull())
-					return false;
-				image.fill(qRgba(255, 255, 255, 0));
-			}
-			break;
-	}
+            xcf_image.palette[0] = qRgba(255, 255, 255, 0);
+            image = QImage(xcf_image.width, xcf_image.height, QImage::Format_Indexed8);
+            image.setColorCount(xcf_image.num_colors);
+            if (image.isNull())
+                return false;
+            image.fill(0);
+            setPalette(xcf_image, image);
+        } else {
+            // No room for a transparent color, so this has to be promoted to
+            // true color. (There is no equivalent PNG representation output
+            // from The GIMP as of v1.2.)
+            image = QImage(xcf_image.width, xcf_image.height, QImage::Format_ARGB32);
+            if (image.isNull())
+                return false;
+            image.fill(qRgba(255, 255, 255, 0));
+        }
+        break;
+    }
 
-	image.setDotsPerMeterX((int)(xcf_image.x_resolution * INCHESPERMETER));
-	image.setDotsPerMeterY((int)(xcf_image.y_resolution * INCHESPERMETER));
-	return true;
+    image.setDotsPerMeterX((int)(xcf_image.x_resolution * INCHESPERMETER));
+    image.setDotsPerMeterY((int)(xcf_image.y_resolution * INCHESPERMETER));
+    return true;
 }
 
 
@@ -1403,86 +1409,86 @@ bool XCFImageFormat::initializeImage(XCFImage& xcf_image)
  */
 void XCFImageFormat::copyLayerToImage(XCFImage& xcf_image)
 {
-	Layer& layer(xcf_image.layer);
-	QImage& image(xcf_image.image);
-	PixelCopyOperation copy = 0;
+    Layer& layer(xcf_image.layer);
+    QImage& image(xcf_image.image);
+    PixelCopyOperation copy = 0;
 
-	switch (layer.type) {
-		case RGB_GIMAGE:
-		case RGBA_GIMAGE:
-			copy = copyRGBToRGB;
-			break;
-		case GRAY_GIMAGE:
-			if (layer.opacity == OPAQUE_OPACITY)
-				copy = copyGrayToGray;
-			else
-				copy = copyGrayToRGB;
-			break;
-		case GRAYA_GIMAGE:
-			copy = copyGrayAToRGB;
-			break;
-		case INDEXED_GIMAGE:
-			copy = copyIndexedToIndexed;
-			break;
-		case INDEXEDA_GIMAGE:
-			if (xcf_image.image.depth() <= 8)
-				copy = copyIndexedAToIndexed;
-			else
-				copy = copyIndexedAToRGB;
-	}
+    switch (layer.type) {
+    case RGB_GIMAGE:
+    case RGBA_GIMAGE:
+        copy = copyRGBToRGB;
+        break;
+    case GRAY_GIMAGE:
+        if (layer.opacity == OPAQUE_OPACITY)
+            copy = copyGrayToGray;
+        else
+            copy = copyGrayToRGB;
+        break;
+    case GRAYA_GIMAGE:
+        copy = copyGrayAToRGB;
+        break;
+    case INDEXED_GIMAGE:
+        copy = copyIndexedToIndexed;
+        break;
+    case INDEXEDA_GIMAGE:
+        if (xcf_image.image.depth() <= 8)
+            copy = copyIndexedAToIndexed;
+        else
+            copy = copyIndexedAToRGB;
+    }
 
-	if (!copy) {
-	    return;
-	}
+    if (!copy) {
+        return;
+    }
 
-	// For each tile...
+    // For each tile...
 
-	for (uint j = 0; j < layer.nrows; j++) {
-		uint y = j * TILE_HEIGHT;
+    for (uint j = 0; j < layer.nrows; j++) {
+        uint y = j * TILE_HEIGHT;
 
-		for (uint i = 0; i < layer.ncols; i++) {
-			uint x = i * TILE_WIDTH;
+        for (uint i = 0; i < layer.ncols; i++) {
+            uint x = i * TILE_WIDTH;
 
-			// This seems the best place to apply the dissolve because it
-			// depends on the global position of each tile's
-			// pixels. Apparently it's the only mode which can apply to a
-			// single layer.
+            // This seems the best place to apply the dissolve because it
+            // depends on the global position of each tile's
+            // pixels. Apparently it's the only mode which can apply to a
+            // single layer.
 
-			if (layer.mode == DISSOLVE_MODE) {
-				if (!random_table_initialized) {
-					initializeRandomTable();
-					random_table_initialized = true;
-				}
-				if (layer.type == RGBA_GIMAGE)
-					dissolveRGBPixels(layer.image_tiles[j][i], x, y);
+            if (layer.mode == DISSOLVE_MODE) {
+                if (!random_table_initialized) {
+                    initializeRandomTable();
+                    random_table_initialized = true;
+                }
+                if (layer.type == RGBA_GIMAGE)
+                    dissolveRGBPixels(layer.image_tiles[j][i], x, y);
 
-				else if (layer.type == GRAYA_GIMAGE)
-					dissolveAlphaPixels(layer.alpha_tiles[j][i], x, y);
-			}
+                else if (layer.type == GRAYA_GIMAGE)
+                    dissolveAlphaPixels(layer.alpha_tiles[j][i], x, y);
+            }
 
-			// Shortcut for common case
-			if (copy == copyRGBToRGB && layer.apply_mask != 1) {
-				QPainter painter(&image);
-				painter.setOpacity(layer.opacity / 255.0);
-				painter.setCompositionMode(QPainter::CompositionMode_Source);
-				painter.drawImage(x + layer.x_offset, y + layer.y_offset, layer.image_tiles[j][i]);
-				continue;
-			}
+            // Shortcut for common case
+            if (copy == copyRGBToRGB && layer.apply_mask != 1) {
+                QPainter painter(&image);
+                painter.setOpacity(layer.opacity / 255.0);
+                painter.setCompositionMode(QPainter::CompositionMode_Source);
+                painter.drawImage(x + layer.x_offset, y + layer.y_offset, layer.image_tiles[j][i]);
+                continue;
+            }
 
-			for (int l = 0; l < layer.image_tiles[j][i].height(); l++) {
-				for (int k = 0; k < layer.image_tiles[j][i].width(); k++) {
+            for (int l = 0; l < layer.image_tiles[j][i].height(); l++) {
+                for (int k = 0; k < layer.image_tiles[j][i].width(); k++) {
 
-					int m = x + k + layer.x_offset;
-					int n = y + l + layer.y_offset;
+                    int m = x + k + layer.x_offset;
+                    int n = y + l + layer.y_offset;
 
-					if (m < 0 || m >= image.width() || n < 0 || n >= image.height())
-						continue;
+                    if (m < 0 || m >= image.width() || n < 0 || n >= image.height())
+                        continue;
 
-					(*copy)(layer, i, j, k, l, image, m, n);
-				}
-			}
-		}
-	}
+                    (*copy)(layer, i, j, k, l, image, m, n);
+                }
+            }
+        }
+    }
 }
 
 
@@ -1500,21 +1506,21 @@ void XCFImageFormat::copyLayerToImage(XCFImage& xcf_image)
  * \param n y pixel of destination image.
  */
 void XCFImageFormat::copyRGBToRGB(Layer& layer, uint i, uint j, int k, int l,
-		QImage& image, int m, int n)
+                                  QImage& image, int m, int n)
 {
-	QRgb src = layer.image_tiles[j][i].pixel(k, l);
-	uchar src_a = layer.opacity;
+    QRgb src = layer.image_tiles[j][i].pixel(k, l);
+    uchar src_a = layer.opacity;
 
-	if (layer.type == RGBA_GIMAGE)
-		src_a = INT_MULT(src_a, qAlpha(src));
+    if (layer.type == RGBA_GIMAGE)
+        src_a = INT_MULT(src_a, qAlpha(src));
 
-	// Apply the mask (if any)
+    // Apply the mask (if any)
 
-	if (layer.apply_mask == 1 && layer.mask_tiles.size() > (int)j &&
-			layer.mask_tiles[j].size() > (int)i)
-		src_a = INT_MULT(src_a, layer.mask_tiles[j][i].pixelIndex(k, l));
+    if (layer.apply_mask == 1 && layer.mask_tiles.size() > (int)j &&
+            layer.mask_tiles[j].size() > (int)i)
+        src_a = INT_MULT(src_a, layer.mask_tiles[j][i].pixelIndex(k, l));
 
-	image.setPixel(m, n, qRgba(src, src_a));
+    image.setPixel(m, n, qRgba(src, src_a));
 }
 
 
@@ -1530,10 +1536,10 @@ void XCFImageFormat::copyRGBToRGB(Layer& layer, uint i, uint j, int k, int l,
  * \param n y pixel of destination image.
  */
 void XCFImageFormat::copyGrayToGray(Layer& layer, uint i, uint j, int k, int l,
-		QImage& image, int m, int n)
+                                    QImage& image, int m, int n)
 {
-	int src = layer.image_tiles[j][i].pixelIndex(k, l);
-	image.setPixel(m, n, src);
+    int src = layer.image_tiles[j][i].pixelIndex(k, l);
+    image.setPixel(m, n, src);
 }
 
 
@@ -1551,11 +1557,11 @@ void XCFImageFormat::copyGrayToGray(Layer& layer, uint i, uint j, int k, int l,
  * \param n y pixel of destination image.
  */
 void XCFImageFormat::copyGrayToRGB(Layer& layer, uint i, uint j, int k, int l,
-		QImage& image, int m, int n)
+                                   QImage& image, int m, int n)
 {
-	QRgb src = layer.image_tiles[j][i].pixel(k, l);
-	uchar src_a = layer.opacity;
-	image.setPixel(m, n, qRgba(src, src_a));
+    QRgb src = layer.image_tiles[j][i].pixel(k, l);
+    uchar src_a = layer.opacity;
+    image.setPixel(m, n, qRgba(src, src_a));
 }
 
 
@@ -1573,19 +1579,19 @@ void XCFImageFormat::copyGrayToRGB(Layer& layer, uint i, uint j, int k, int l,
  * \param n y pixel of destination image.
  */
 void XCFImageFormat::copyGrayAToRGB(Layer& layer, uint i, uint j, int k, int l,
-				      QImage& image, int m, int n)
+                                    QImage& image, int m, int n)
 {
-	QRgb src = layer.image_tiles[j][i].pixel(k, l);
-	uchar src_a = layer.alpha_tiles[j][i].pixelIndex(k, l);
-	src_a = INT_MULT(src_a, layer.opacity);
+    QRgb src = layer.image_tiles[j][i].pixel(k, l);
+    uchar src_a = layer.alpha_tiles[j][i].pixelIndex(k, l);
+    src_a = INT_MULT(src_a, layer.opacity);
 
-	// Apply the mask (if any)
+    // Apply the mask (if any)
 
-	if (layer.apply_mask == 1 && layer.mask_tiles.size() > (int)j &&
-			layer.mask_tiles[j].size() > (int)i)
-		src_a = INT_MULT(src_a, layer.mask_tiles[j][i].pixelIndex(k, l));
+    if (layer.apply_mask == 1 && layer.mask_tiles.size() > (int)j &&
+            layer.mask_tiles[j].size() > (int)i)
+        src_a = INT_MULT(src_a, layer.mask_tiles[j][i].pixelIndex(k, l));
 
-	image.setPixel(m, n, qRgba(src, src_a));
+    image.setPixel(m, n, qRgba(src, src_a));
 }
 
 
@@ -1601,10 +1607,10 @@ void XCFImageFormat::copyGrayAToRGB(Layer& layer, uint i, uint j, int k, int l,
  * \param n y pixel of destination image.
  */
 void XCFImageFormat::copyIndexedToIndexed(Layer& layer, uint i, uint j, int k, int l,
-		QImage& image, int m, int n)
+        QImage& image, int m, int n)
 {
-	int src = layer.image_tiles[j][i].pixelIndex(k, l);
-	image.setPixel(m, n, src);
+    int src = layer.image_tiles[j][i].pixelIndex(k, l);
+    image.setPixel(m, n, src);
 }
 
 
@@ -1620,23 +1626,23 @@ void XCFImageFormat::copyIndexedToIndexed(Layer& layer, uint i, uint j, int k, i
  * \param n y pixel of destination image.
  */
 void XCFImageFormat::copyIndexedAToIndexed(Layer& layer, uint i, uint j, int k, int l,
-		QImage& image, int m, int n)
+        QImage& image, int m, int n)
 {
-	uchar src = layer.image_tiles[j][i].pixelIndex(k, l);
-	uchar src_a = layer.alpha_tiles[j][i].pixelIndex(k, l);
-	src_a = INT_MULT(src_a, layer.opacity);
+    uchar src = layer.image_tiles[j][i].pixelIndex(k, l);
+    uchar src_a = layer.alpha_tiles[j][i].pixelIndex(k, l);
+    src_a = INT_MULT(src_a, layer.opacity);
 
-	if (layer.apply_mask == 1 &&
-			layer.mask_tiles.size() > (int)j &&
-			layer.mask_tiles[j].size() > (int)i)
-		src_a = INT_MULT(src_a, layer.mask_tiles[j][i].pixelIndex(k, l));
+    if (layer.apply_mask == 1 &&
+            layer.mask_tiles.size() > (int)j &&
+            layer.mask_tiles[j].size() > (int)i)
+        src_a = INT_MULT(src_a, layer.mask_tiles[j][i].pixelIndex(k, l));
 
-	if (src_a > 127)
-		src++;
-	else
-		src = 0;
+    if (src_a > 127)
+        src++;
+    else
+        src = 0;
 
-image.setPixel(m, n, src);
+    image.setPixel(m, n, src);
 }
 
 
@@ -1654,24 +1660,24 @@ image.setPixel(m, n, src);
  * \param n y pixel of destination image.
  */
 void XCFImageFormat::copyIndexedAToRGB(Layer& layer, uint i, uint j, int k, int l,
-		QImage& image, int m, int n)
+                                       QImage& image, int m, int n)
 {
-	QRgb src = layer.image_tiles[j][i].pixel(k, l);
-	uchar src_a = layer.alpha_tiles[j][i].pixelIndex(k, l);
-	src_a = INT_MULT(src_a, layer.opacity);
+    QRgb src = layer.image_tiles[j][i].pixel(k, l);
+    uchar src_a = layer.alpha_tiles[j][i].pixelIndex(k, l);
+    src_a = INT_MULT(src_a, layer.opacity);
 
-	// Apply the mask (if any)
-	if (layer.apply_mask == 1 && layer.mask_tiles.size() > (int)j &&
-			layer.mask_tiles[j].size() > (int)i)
-		src_a = INT_MULT(src_a, layer.mask_tiles[j][i].pixelIndex(k, l));
+    // Apply the mask (if any)
+    if (layer.apply_mask == 1 && layer.mask_tiles.size() > (int)j &&
+            layer.mask_tiles[j].size() > (int)i)
+        src_a = INT_MULT(src_a, layer.mask_tiles[j][i].pixelIndex(k, l));
 
-	// This is what appears in the GIMP window
-	if (src_a <= 127)
-		src_a = 0;
-	else
-		src_a = OPAQUE_OPACITY;
+    // This is what appears in the GIMP window
+    if (src_a <= 127)
+        src_a = 0;
+    else
+        src_a = OPAQUE_OPACITY;
 
-	image.setPixel(m, n, qRgba(src, src_a));
+    image.setPixel(m, n, qRgba(src, src_a));
 }
 
 
@@ -1681,91 +1687,91 @@ void XCFImageFormat::copyIndexedAToRGB(Layer& layer, uint i, uint j, int k, int 
  */
 void XCFImageFormat::mergeLayerIntoImage(XCFImage& xcf_image)
 {
-	Layer& layer(xcf_image.layer);
-	QImage& image(xcf_image.image);
+    Layer& layer(xcf_image.layer);
+    QImage& image(xcf_image.image);
 
-	PixelMergeOperation merge = 0;
+    PixelMergeOperation merge = 0;
 
-	if (!layer.opacity) return; // don't bother doing anything
+    if (!layer.opacity) return; // don't bother doing anything
 
-	switch (layer.type) {
-		case RGB_GIMAGE:
-		case RGBA_GIMAGE:
-			merge = mergeRGBToRGB;
-			break;
-		case GRAY_GIMAGE:
-			if (layer.opacity == OPAQUE_OPACITY)
-				merge = mergeGrayToGray;
-			else
-				merge = mergeGrayToRGB;
-			break;
-		case GRAYA_GIMAGE:
-			if (xcf_image.image.depth() <= 8)
-				merge = mergeGrayAToGray;
-			else
-				merge = mergeGrayAToRGB;
-			break;
-		case INDEXED_GIMAGE:
-			merge = mergeIndexedToIndexed;
-			break;
-		case INDEXEDA_GIMAGE:
-			if (xcf_image.image.depth() <= 8)
-				merge = mergeIndexedAToIndexed;
-			else
-				merge = mergeIndexedAToRGB;
-	}
+    switch (layer.type) {
+    case RGB_GIMAGE:
+    case RGBA_GIMAGE:
+        merge = mergeRGBToRGB;
+        break;
+    case GRAY_GIMAGE:
+        if (layer.opacity == OPAQUE_OPACITY)
+            merge = mergeGrayToGray;
+        else
+            merge = mergeGrayToRGB;
+        break;
+    case GRAYA_GIMAGE:
+        if (xcf_image.image.depth() <= 8)
+            merge = mergeGrayAToGray;
+        else
+            merge = mergeGrayAToRGB;
+        break;
+    case INDEXED_GIMAGE:
+        merge = mergeIndexedToIndexed;
+        break;
+    case INDEXEDA_GIMAGE:
+        if (xcf_image.image.depth() <= 8)
+            merge = mergeIndexedAToIndexed;
+        else
+            merge = mergeIndexedAToRGB;
+    }
 
-	if (!merge) {
-	    return;
-	}
+    if (!merge) {
+        return;
+    }
 
-	for (uint j = 0; j < layer.nrows; j++) {
-		uint y = j * TILE_HEIGHT;
+    for (uint j = 0; j < layer.nrows; j++) {
+        uint y = j * TILE_HEIGHT;
 
-		for (uint i = 0; i < layer.ncols; i++) {
-			uint x = i * TILE_WIDTH;
+        for (uint i = 0; i < layer.ncols; i++) {
+            uint x = i * TILE_WIDTH;
 
-			// This seems the best place to apply the dissolve because it
-			// depends on the global position of each tile's
-			// pixels. Apparently it's the only mode which can apply to a
-			// single layer.
+            // This seems the best place to apply the dissolve because it
+            // depends on the global position of each tile's
+            // pixels. Apparently it's the only mode which can apply to a
+            // single layer.
 
-			if (layer.mode == DISSOLVE_MODE) {
-				if (!random_table_initialized) {
-					initializeRandomTable();
-					random_table_initialized = true;
-				}
-				if (layer.type == RGBA_GIMAGE)
-					dissolveRGBPixels(layer.image_tiles[j][i], x, y);
+            if (layer.mode == DISSOLVE_MODE) {
+                if (!random_table_initialized) {
+                    initializeRandomTable();
+                    random_table_initialized = true;
+                }
+                if (layer.type == RGBA_GIMAGE)
+                    dissolveRGBPixels(layer.image_tiles[j][i], x, y);
 
-				else if (layer.type == GRAYA_GIMAGE)
-					dissolveAlphaPixels(layer.alpha_tiles[j][i], x, y);
-			}
+                else if (layer.type == GRAYA_GIMAGE)
+                    dissolveAlphaPixels(layer.alpha_tiles[j][i], x, y);
+            }
 
-			// Shortcut for common case
-			if (merge == mergeRGBToRGB && layer.apply_mask != 1
-			    && layer.mode == NORMAL_MODE) {
-				QPainter painter(&image);
-				painter.setOpacity(layer.opacity / 255.0);
-				painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
-				painter.drawImage(x + layer.x_offset, y + layer.y_offset, layer.image_tiles[j][i]);
-				continue;
-			}
+            // Shortcut for common case
+            if (merge == mergeRGBToRGB && layer.apply_mask != 1
+                    && layer.mode == NORMAL_MODE) {
+                QPainter painter(&image);
+                painter.setOpacity(layer.opacity / 255.0);
+                painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
+                painter.drawImage(x + layer.x_offset, y + layer.y_offset, layer.image_tiles[j][i]);
+                continue;
+            }
 
-			for (int l = 0; l < layer.image_tiles[j][i].height(); l++) {
-				for (int k = 0; k < layer.image_tiles[j][i].width(); k++) {
+            for (int l = 0; l < layer.image_tiles[j][i].height(); l++) {
+                for (int k = 0; k < layer.image_tiles[j][i].width(); k++) {
 
-					int m = x + k + layer.x_offset;
-					int n = y + l + layer.y_offset;
+                    int m = x + k + layer.x_offset;
+                    int n = y + l + layer.y_offset;
 
-					if (m < 0 || m >= image.width() || n < 0 || n >= image.height())
-						continue;
+                    if (m < 0 || m >= image.width() || n < 0 || n >= image.height())
+                        continue;
 
-					(*merge)(layer, i, j, k, l, image, m, n);
-				}
-			}
-		}
-	}
+                    (*merge)(layer, i, j, k, l, image, m, n);
+                }
+            }
+        }
+    }
 }
 
 
@@ -1783,314 +1789,314 @@ void XCFImageFormat::mergeLayerIntoImage(XCFImage& xcf_image)
  * \param n y pixel of destination image.
  */
 void XCFImageFormat::mergeRGBToRGB(Layer& layer, uint i, uint j, int k, int l,
-		QImage& image, int m, int n)
+                                   QImage& image, int m, int n)
 {
-	QRgb src = layer.image_tiles[j][i].pixel(k, l);
-	QRgb dst = image.pixel(m, n);
+    QRgb src = layer.image_tiles[j][i].pixel(k, l);
+    QRgb dst = image.pixel(m, n);
 
-	uchar src_r = qRed(src);
-	uchar src_g = qGreen(src);
-	uchar src_b = qBlue(src);
-	uchar src_a = qAlpha(src);
+    uchar src_r = qRed(src);
+    uchar src_g = qGreen(src);
+    uchar src_b = qBlue(src);
+    uchar src_a = qAlpha(src);
 
-	uchar dst_r = qRed(dst);
-	uchar dst_g = qGreen(dst);
-	uchar dst_b = qBlue(dst);
-	uchar dst_a = qAlpha(dst);
+    uchar dst_r = qRed(dst);
+    uchar dst_g = qGreen(dst);
+    uchar dst_b = qBlue(dst);
+    uchar dst_a = qAlpha(dst);
 
-	if (!src_a) return; // nothing to merge
+    if (!src_a) return; // nothing to merge
 
-	switch (layer.mode) {
-		case MULTIPLY_MODE: {
-			src_r = INT_MULT(src_r, dst_r);
-			src_g = INT_MULT(src_g, dst_g);
-			src_b = INT_MULT(src_b, dst_b);
-			src_a = qMin(src_a, dst_a);
-			}
-			break;
-		case DIVIDE_MODE: {
-			src_r = qMin((dst_r * 256) / (1 + src_r), 255);
-			src_g = qMin((dst_g * 256) / (1 + src_g), 255);
-			src_b = qMin((dst_b * 256) / (1 + src_b), 255);
-			src_a = qMin(src_a, dst_a);
-			}
-			break;
-		case SCREEN_MODE: {
-			src_r = 255 - INT_MULT(255 - dst_r, 255 - src_r);
-			src_g = 255 - INT_MULT(255 - dst_g, 255 - src_g);
-			src_b = 255 - INT_MULT(255 - dst_b, 255 - src_b);
-			src_a = qMin(src_a, dst_a);
-			}
-			break;
-		case OVERLAY_MODE: {
-			src_r = INT_MULT(dst_r, dst_r + INT_MULT(2 * src_r, 255 - dst_r));
-			src_g = INT_MULT(dst_g, dst_g + INT_MULT(2 * src_g, 255 - dst_g));
-			src_b = INT_MULT(dst_b, dst_b + INT_MULT(2 * src_b, 255 - dst_b));
-			src_a = qMin(src_a, dst_a);
-			}
-			break;
-		case DIFFERENCE_MODE: {
-			src_r = dst_r > src_r ? dst_r - src_r : src_r - dst_r;
-			src_g = dst_g > src_g ? dst_g - src_g : src_g - dst_g;
-			src_b = dst_b > src_b ? dst_b - src_b : src_b - dst_b;
-			src_a = qMin(src_a, dst_a);
-			}
-			break;
-		case ADDITION_MODE: {
-			  src_r = add_lut(dst_r,src_r);
-			  src_g = add_lut(dst_g,src_g);
-			  src_b = add_lut(dst_b,src_b);
-			  src_a = qMin(src_a, dst_a);
-			}
-			break;
-		case SUBTRACT_MODE: {
-			src_r = dst_r > src_r ? dst_r - src_r : 0;
-			src_g = dst_g > src_g ? dst_g - src_g : 0;
-			src_b = dst_b > src_b ? dst_b - src_b : 0;
-			src_a = qMin(src_a, dst_a);
-			}
-			break;
-		case DARKEN_ONLY_MODE: {
-			src_r = dst_r < src_r ? dst_r : src_r;
-			src_g = dst_g < src_g ? dst_g : src_g;
-			src_b = dst_b < src_b ? dst_b : src_b;
-			src_a = qMin( src_a, dst_a );
-			}
-			break;
-		case LIGHTEN_ONLY_MODE: {
-			src_r = dst_r < src_r ? src_r : dst_r;
-			src_g = dst_g < src_g ? src_g : dst_g;
-			src_b = dst_b < src_b ? src_b : dst_b;
-			src_a = qMin(src_a, dst_a);
-			}
-			break;
-		case HUE_MODE: {
-			uchar new_r = dst_r;
-			uchar new_g = dst_g;
-			uchar new_b = dst_b;
+    switch (layer.mode) {
+    case MULTIPLY_MODE: {
+        src_r = INT_MULT(src_r, dst_r);
+        src_g = INT_MULT(src_g, dst_g);
+        src_b = INT_MULT(src_b, dst_b);
+        src_a = qMin(src_a, dst_a);
+    }
+    break;
+    case DIVIDE_MODE: {
+        src_r = qMin((dst_r * 256) / (1 + src_r), 255);
+        src_g = qMin((dst_g * 256) / (1 + src_g), 255);
+        src_b = qMin((dst_b * 256) / (1 + src_b), 255);
+        src_a = qMin(src_a, dst_a);
+    }
+    break;
+    case SCREEN_MODE: {
+        src_r = 255 - INT_MULT(255 - dst_r, 255 - src_r);
+        src_g = 255 - INT_MULT(255 - dst_g, 255 - src_g);
+        src_b = 255 - INT_MULT(255 - dst_b, 255 - src_b);
+        src_a = qMin(src_a, dst_a);
+    }
+    break;
+    case OVERLAY_MODE: {
+        src_r = INT_MULT(dst_r, dst_r + INT_MULT(2 * src_r, 255 - dst_r));
+        src_g = INT_MULT(dst_g, dst_g + INT_MULT(2 * src_g, 255 - dst_g));
+        src_b = INT_MULT(dst_b, dst_b + INT_MULT(2 * src_b, 255 - dst_b));
+        src_a = qMin(src_a, dst_a);
+    }
+    break;
+    case DIFFERENCE_MODE: {
+        src_r = dst_r > src_r ? dst_r - src_r : src_r - dst_r;
+        src_g = dst_g > src_g ? dst_g - src_g : src_g - dst_g;
+        src_b = dst_b > src_b ? dst_b - src_b : src_b - dst_b;
+        src_a = qMin(src_a, dst_a);
+    }
+    break;
+    case ADDITION_MODE: {
+        src_r = add_lut(dst_r, src_r);
+        src_g = add_lut(dst_g, src_g);
+        src_b = add_lut(dst_b, src_b);
+        src_a = qMin(src_a, dst_a);
+    }
+    break;
+    case SUBTRACT_MODE: {
+        src_r = dst_r > src_r ? dst_r - src_r : 0;
+        src_g = dst_g > src_g ? dst_g - src_g : 0;
+        src_b = dst_b > src_b ? dst_b - src_b : 0;
+        src_a = qMin(src_a, dst_a);
+    }
+    break;
+    case DARKEN_ONLY_MODE: {
+        src_r = dst_r < src_r ? dst_r : src_r;
+        src_g = dst_g < src_g ? dst_g : src_g;
+        src_b = dst_b < src_b ? dst_b : src_b;
+        src_a = qMin(src_a, dst_a);
+    }
+    break;
+    case LIGHTEN_ONLY_MODE: {
+        src_r = dst_r < src_r ? src_r : dst_r;
+        src_g = dst_g < src_g ? src_g : dst_g;
+        src_b = dst_b < src_b ? src_b : dst_b;
+        src_a = qMin(src_a, dst_a);
+    }
+    break;
+    case HUE_MODE: {
+        uchar new_r = dst_r;
+        uchar new_g = dst_g;
+        uchar new_b = dst_b;
 
-			RGBTOHSV(src_r, src_g, src_b);
-			RGBTOHSV(new_r, new_g, new_b);
+        RGBTOHSV(src_r, src_g, src_b);
+        RGBTOHSV(new_r, new_g, new_b);
 
-			new_r = src_r;
+        new_r = src_r;
 
-			HSVTORGB(new_r, new_g, new_b);
+        HSVTORGB(new_r, new_g, new_b);
 
-			src_r = new_r;
-			src_g = new_g;
-			src_b = new_b;
-			src_a = qMin( src_a, dst_a );
-			}
-			break;
-		case SATURATION_MODE: {
-			uchar new_r = dst_r;
-			uchar new_g = dst_g;
-			uchar new_b = dst_b;
+        src_r = new_r;
+        src_g = new_g;
+        src_b = new_b;
+        src_a = qMin(src_a, dst_a);
+    }
+    break;
+    case SATURATION_MODE: {
+        uchar new_r = dst_r;
+        uchar new_g = dst_g;
+        uchar new_b = dst_b;
 
-			RGBTOHSV(src_r, src_g, src_b);
-			RGBTOHSV(new_r, new_g, new_b);
+        RGBTOHSV(src_r, src_g, src_b);
+        RGBTOHSV(new_r, new_g, new_b);
 
-			new_g = src_g;
+        new_g = src_g;
 
-			HSVTORGB(new_r, new_g, new_b);
+        HSVTORGB(new_r, new_g, new_b);
 
-			src_r = new_r;
-			src_g = new_g;
-			src_b = new_b;
-			src_a = qMin(src_a, dst_a);
-			}
-			break;
-		case VALUE_MODE: {
-			uchar new_r = dst_r;
-			uchar new_g = dst_g;
-			uchar new_b = dst_b;
+        src_r = new_r;
+        src_g = new_g;
+        src_b = new_b;
+        src_a = qMin(src_a, dst_a);
+    }
+    break;
+    case VALUE_MODE: {
+        uchar new_r = dst_r;
+        uchar new_g = dst_g;
+        uchar new_b = dst_b;
 
-			RGBTOHSV(src_r, src_g, src_b);
-			RGBTOHSV(new_r, new_g, new_b);
+        RGBTOHSV(src_r, src_g, src_b);
+        RGBTOHSV(new_r, new_g, new_b);
 
-			new_b = src_b;
+        new_b = src_b;
 
-			HSVTORGB(new_r, new_g, new_b);
+        HSVTORGB(new_r, new_g, new_b);
 
-			src_r = new_r;
-			src_g = new_g;
-			src_b = new_b;
-			src_a = qMin(src_a, dst_a);
-			}
-			break;
-		case COLOR_MODE: {
-			uchar new_r = dst_r;
-			uchar new_g = dst_g;
-			uchar new_b = dst_b;
+        src_r = new_r;
+        src_g = new_g;
+        src_b = new_b;
+        src_a = qMin(src_a, dst_a);
+    }
+    break;
+    case COLOR_MODE: {
+        uchar new_r = dst_r;
+        uchar new_g = dst_g;
+        uchar new_b = dst_b;
 
-			RGBTOHLS(src_r, src_g, src_b);
-			RGBTOHLS(new_r, new_g, new_b);
+        RGBTOHLS(src_r, src_g, src_b);
+        RGBTOHLS(new_r, new_g, new_b);
 
-			new_r = src_r;
-			new_b = src_b;
+        new_r = src_r;
+        new_b = src_b;
 
-			HLSTORGB(new_r, new_g, new_b);
+        HLSTORGB(new_r, new_g, new_b);
 
-			src_r = new_r;
-			src_g = new_g;
-			src_b = new_b;
-			src_a = qMin(src_a, dst_a);
-			}
-			break;
-		case DODGE_MODE: {
-			uint tmp;
+        src_r = new_r;
+        src_g = new_g;
+        src_b = new_b;
+        src_a = qMin(src_a, dst_a);
+    }
+    break;
+    case DODGE_MODE: {
+        uint tmp;
 
-			tmp = dst_r << 8;
-			tmp /= 256 - src_r;
-			src_r = (uchar) qMin(tmp, 255u);
+        tmp = dst_r << 8;
+        tmp /= 256 - src_r;
+        src_r = (uchar) qMin(tmp, 255u);
 
-			tmp = dst_g << 8;
-			tmp /= 256 - src_g;
-			src_g = (uchar) qMin(tmp, 255u);
+        tmp = dst_g << 8;
+        tmp /= 256 - src_g;
+        src_g = (uchar) qMin(tmp, 255u);
 
-			tmp = dst_b << 8;
-			tmp /= 256 - src_b;
-			src_b = (uchar) qMin(tmp, 255u);
+        tmp = dst_b << 8;
+        tmp /= 256 - src_b;
+        src_b = (uchar) qMin(tmp, 255u);
 
-			src_a = qMin(src_a, dst_a);
-			}
-			break;
-		case BURN_MODE: {
-			uint tmp;
+        src_a = qMin(src_a, dst_a);
+    }
+    break;
+    case BURN_MODE: {
+        uint tmp;
 
-			tmp = (255 - dst_r) << 8;
-			tmp /= src_r + 1;
-			src_r = (uchar) qMin(tmp, 255u);
-			src_r = 255 - src_r;
+        tmp = (255 - dst_r) << 8;
+        tmp /= src_r + 1;
+        src_r = (uchar) qMin(tmp, 255u);
+        src_r = 255 - src_r;
 
-			tmp = (255 - dst_g) << 8;
-			tmp /= src_g + 1;
-			src_g = (uchar) qMin(tmp, 255u);
-			src_g = 255 - src_g;
+        tmp = (255 - dst_g) << 8;
+        tmp /= src_g + 1;
+        src_g = (uchar) qMin(tmp, 255u);
+        src_g = 255 - src_g;
 
-			tmp = (255 - dst_b) << 8;
-			tmp /= src_b + 1;
-			src_b = (uchar) qMin(tmp, 255u);
-			src_b = 255 - src_b;
+        tmp = (255 - dst_b) << 8;
+        tmp /= src_b + 1;
+        src_b = (uchar) qMin(tmp, 255u);
+        src_b = 255 - src_b;
 
-			src_a = qMin(src_a, dst_a);
-			}
-			break;
-		case HARDLIGHT_MODE: {
-			uint tmp;
-			if (src_r > 128) {
-				tmp = ((int)255-dst_r) * ((int) 255 - ((src_r-128) << 1));
-				src_r = (uchar) qMin(255 - (tmp >> 8), 255u);
-			} else {
-				tmp = (int) dst_r * ((int) src_r << 1);
-				src_r = (uchar) qMin(tmp >> 8, 255u);
-			}
+        src_a = qMin(src_a, dst_a);
+    }
+    break;
+    case HARDLIGHT_MODE: {
+        uint tmp;
+        if (src_r > 128) {
+            tmp = ((int)255 - dst_r) * ((int) 255 - ((src_r - 128) << 1));
+            src_r = (uchar) qMin(255 - (tmp >> 8), 255u);
+        } else {
+            tmp = (int) dst_r * ((int) src_r << 1);
+            src_r = (uchar) qMin(tmp >> 8, 255u);
+        }
 
-			if (src_g > 128) {
-				tmp = ((int)255-dst_g) * ((int) 255 - ((src_g-128) << 1));
-				src_g = (uchar) qMin(255 - (tmp >> 8), 255u);
-			} else {
-				tmp = (int) dst_g * ((int) src_g << 1);
-				src_g = (uchar) qMin(tmp >> 8, 255u);
-			}
+        if (src_g > 128) {
+            tmp = ((int)255 - dst_g) * ((int) 255 - ((src_g - 128) << 1));
+            src_g = (uchar) qMin(255 - (tmp >> 8), 255u);
+        } else {
+            tmp = (int) dst_g * ((int) src_g << 1);
+            src_g = (uchar) qMin(tmp >> 8, 255u);
+        }
 
-			if (src_b > 128) {
-				tmp = ((int)255-dst_b) * ((int) 255 - ((src_b-128) << 1));
-				src_b = (uchar) qMin(255 - (tmp >> 8), 255u);
-			} else {
-				tmp = (int) dst_b * ((int) src_b << 1);
-				src_b = (uchar) qMin(tmp >> 8, 255u);
-			}
-			src_a = qMin(src_a, dst_a);
-			}
-			break;
-		case SOFTLIGHT_MODE: {
-			uint tmpS, tmpM;
+        if (src_b > 128) {
+            tmp = ((int)255 - dst_b) * ((int) 255 - ((src_b - 128) << 1));
+            src_b = (uchar) qMin(255 - (tmp >> 8), 255u);
+        } else {
+            tmp = (int) dst_b * ((int) src_b << 1);
+            src_b = (uchar) qMin(tmp >> 8, 255u);
+        }
+        src_a = qMin(src_a, dst_a);
+    }
+    break;
+    case SOFTLIGHT_MODE: {
+        uint tmpS, tmpM;
 
-			tmpM = INT_MULT(dst_r, src_r);
-			tmpS = 255 - INT_MULT((255 - dst_r), (255-src_r));
-			src_r = INT_MULT((255 - dst_r), tmpM)
-				+ INT_MULT(dst_r, tmpS);
+        tmpM = INT_MULT(dst_r, src_r);
+        tmpS = 255 - INT_MULT((255 - dst_r), (255 - src_r));
+        src_r = INT_MULT((255 - dst_r), tmpM)
+                + INT_MULT(dst_r, tmpS);
 
-			tmpM = INT_MULT(dst_g, src_g);
-			tmpS = 255 - INT_MULT((255 - dst_g), (255-src_g));
-			src_g = INT_MULT((255 - dst_g), tmpM)
-				+ INT_MULT(dst_g, tmpS);
+        tmpM = INT_MULT(dst_g, src_g);
+        tmpS = 255 - INT_MULT((255 - dst_g), (255 - src_g));
+        src_g = INT_MULT((255 - dst_g), tmpM)
+                + INT_MULT(dst_g, tmpS);
 
-			tmpM = INT_MULT(dst_b, src_b);
-			tmpS = 255 - INT_MULT((255 - dst_b), (255-src_b));
-			src_b = INT_MULT((255 - dst_b), tmpM)
-				+ INT_MULT(dst_b, tmpS);
+        tmpM = INT_MULT(dst_b, src_b);
+        tmpS = 255 - INT_MULT((255 - dst_b), (255 - src_b));
+        src_b = INT_MULT((255 - dst_b), tmpM)
+                + INT_MULT(dst_b, tmpS);
 
-			src_a = qMin(src_a, dst_a);
-			}
-			break;
-		case GRAIN_EXTRACT_MODE: {
-			int tmp;
-			
-			tmp = dst_r - src_r + 128;
-			tmp = qMin(tmp, 255);
-			tmp = qMax(tmp, 0);
-			src_r = (uchar) tmp;
+        src_a = qMin(src_a, dst_a);
+    }
+    break;
+    case GRAIN_EXTRACT_MODE: {
+        int tmp;
 
-			tmp = dst_g - src_g + 128;
-			tmp = qMin(tmp, 255);
-			tmp = qMax(tmp, 0);
-			src_g = (uchar) tmp;
+        tmp = dst_r - src_r + 128;
+        tmp = qMin(tmp, 255);
+        tmp = qMax(tmp, 0);
+        src_r = (uchar) tmp;
 
-			tmp = dst_b - src_b + 128;
-			tmp = qMin(tmp, 255);
-			tmp = qMax(tmp, 0);
-			src_b = (uchar) tmp;
+        tmp = dst_g - src_g + 128;
+        tmp = qMin(tmp, 255);
+        tmp = qMax(tmp, 0);
+        src_g = (uchar) tmp;
 
-			src_a = qMin(src_a, dst_a);
-			}
-			break;
-		case GRAIN_MERGE_MODE: {
-			int tmp;
-			
-			tmp = dst_r + src_r - 128;
-			tmp = qMin(tmp, 255);
-			tmp = qMax(tmp, 0);
-			src_r = (uchar) tmp;
+        tmp = dst_b - src_b + 128;
+        tmp = qMin(tmp, 255);
+        tmp = qMax(tmp, 0);
+        src_b = (uchar) tmp;
 
-			tmp = dst_g + src_g - 128;
-			tmp = qMin(tmp, 255);
-			tmp = qMax(tmp, 0);
-			src_g = (uchar) tmp;
+        src_a = qMin(src_a, dst_a);
+    }
+    break;
+    case GRAIN_MERGE_MODE: {
+        int tmp;
 
-			tmp = dst_b + src_b - 128;
-			tmp = qMin(tmp, 255);
-			tmp = qMax(tmp, 0);
-			src_b = (uchar) tmp;
+        tmp = dst_r + src_r - 128;
+        tmp = qMin(tmp, 255);
+        tmp = qMax(tmp, 0);
+        src_r = (uchar) tmp;
 
-			src_a = qMin(src_a, dst_a);
-			}
-			break;
-	}
+        tmp = dst_g + src_g - 128;
+        tmp = qMin(tmp, 255);
+        tmp = qMax(tmp, 0);
+        src_g = (uchar) tmp;
 
-	src_a = INT_MULT(src_a, layer.opacity);
+        tmp = dst_b + src_b - 128;
+        tmp = qMin(tmp, 255);
+        tmp = qMax(tmp, 0);
+        src_b = (uchar) tmp;
 
-	// Apply the mask (if any)
+        src_a = qMin(src_a, dst_a);
+    }
+    break;
+    }
 
-	if (layer.apply_mask == 1 && layer.mask_tiles.size() > (int)j &&
-			layer.mask_tiles[j].size() > (int)i)
-		src_a = INT_MULT(src_a, layer.mask_tiles[j][i].pixelIndex(k, l));
+    src_a = INT_MULT(src_a, layer.opacity);
 
-	uchar new_r, new_g, new_b, new_a;
-	new_a = dst_a + INT_MULT(OPAQUE_OPACITY - dst_a, src_a);
+    // Apply the mask (if any)
 
-	float src_ratio = (float)src_a / new_a;
-	float dst_ratio = 1.0 - src_ratio;
+    if (layer.apply_mask == 1 && layer.mask_tiles.size() > (int)j &&
+            layer.mask_tiles[j].size() > (int)i)
+        src_a = INT_MULT(src_a, layer.mask_tiles[j][i].pixelIndex(k, l));
 
-	new_r = (uchar)(src_ratio * src_r + dst_ratio * dst_r + EPSILON);
-	new_g = (uchar)(src_ratio * src_g + dst_ratio * dst_g + EPSILON);
-	new_b = (uchar)(src_ratio * src_b + dst_ratio * dst_b + EPSILON);
+    uchar new_r, new_g, new_b, new_a;
+    new_a = dst_a + INT_MULT(OPAQUE_OPACITY - dst_a, src_a);
 
-	if (!layer_modes[layer.mode].affect_alpha)
-		new_a = dst_a;
+    float src_ratio = (float)src_a / new_a;
+    float dst_ratio = 1.0 - src_ratio;
 
-	image.setPixel(m, n, qRgba(new_r, new_g, new_b, new_a));
+    new_r = (uchar)(src_ratio * src_r + dst_ratio * dst_r + EPSILON);
+    new_g = (uchar)(src_ratio * src_g + dst_ratio * dst_g + EPSILON);
+    new_b = (uchar)(src_ratio * src_b + dst_ratio * dst_b + EPSILON);
+
+    if (!layer_modes[layer.mode].affect_alpha)
+        new_a = dst_a;
+
+    image.setPixel(m, n, qRgba(new_r, new_g, new_b, new_a));
 }
 
 
@@ -2106,10 +2112,10 @@ void XCFImageFormat::mergeRGBToRGB(Layer& layer, uint i, uint j, int k, int l,
  * \param n y pixel of destination image.
  */
 void XCFImageFormat::mergeGrayToGray(Layer& layer, uint i, uint j, int k, int l,
-		QImage& image, int m, int n)
+                                     QImage& image, int m, int n)
 {
-	int src = layer.image_tiles[j][i].pixelIndex(k, l);
-	image.setPixel(m, n, src);
+    int src = layer.image_tiles[j][i].pixelIndex(k, l);
+    image.setPixel(m, n, src);
 }
 
 
@@ -2125,124 +2131,124 @@ void XCFImageFormat::mergeGrayToGray(Layer& layer, uint i, uint j, int k, int l,
  * \param n y pixel of destination image.
  */
 void XCFImageFormat::mergeGrayAToGray(Layer& layer, uint i, uint j, int k, int l,
-		QImage& image, int m, int n)
+                                      QImage& image, int m, int n)
 {
-	int src = qGray(layer.image_tiles[j][i].pixel(k, l));
-	int dst = image.pixelIndex(m, n);
+    int src = qGray(layer.image_tiles[j][i].pixel(k, l));
+    int dst = image.pixelIndex(m, n);
 
-	uchar src_a = layer.alpha_tiles[j][i].pixelIndex(k, l);
+    uchar src_a = layer.alpha_tiles[j][i].pixelIndex(k, l);
 
-	if (!src_a) return; // nothing to merge
+    if (!src_a) return; // nothing to merge
 
-	switch (layer.mode) {
-		case MULTIPLY_MODE: {
-				src = INT_MULT( src, dst );
-			}
-			break;
-		case DIVIDE_MODE: {
-				src = qMin((dst * 256) / (1 + src), 255);
-			}
-			break;
-		case SCREEN_MODE: {
-				src = 255 - INT_MULT(255 - dst, 255 - src);
-			}
-			break;
-		case OVERLAY_MODE: {
-				src = INT_MULT(dst, dst + INT_MULT(2 * src, 255 - dst));
-			}
-			break;
-		case DIFFERENCE_MODE: {
-				src = dst > src ? dst - src : src - dst;
-			}
-			break;
-		case ADDITION_MODE: {
-				src = add_lut(dst,src);
-			}
-			break;
-		case SUBTRACT_MODE: {
-				src = dst > src ? dst - src : 0;
-			}
-			break;
-		case DARKEN_ONLY_MODE: {
-				src = dst < src ? dst : src;
-			}
-			break;
-		case LIGHTEN_ONLY_MODE: {
-				src = dst < src ? src : dst;
-			}
-			break;
-		case DODGE_MODE: {
-				uint tmp = dst << 8;
-				tmp /= 256 - src;
-				src = (uchar) qMin(tmp, 255u);
-			}
-			break;
-		case BURN_MODE: {
-				uint tmp = (255-dst) << 8;
-				tmp /= src + 1;
-				src = (uchar) qMin(tmp, 255u);
-				src = 255 - src;
-			}
-			break;
-		case HARDLIGHT_MODE: {
-				uint tmp;
-				if (src > 128) {
-					tmp = ((int)255-dst) * ((int) 255 - ((src-128) << 1));
-					src = (uchar) qMin(255 - (tmp >> 8), 255u);
-				} else {
-					tmp = (int) dst * ((int) src << 1);
-					src = (uchar) qMin(tmp >> 8, 255u);
-				}
-			}
-			break;
-		case SOFTLIGHT_MODE: {
-				uint tmpS, tmpM;
+    switch (layer.mode) {
+    case MULTIPLY_MODE: {
+        src = INT_MULT(src, dst);
+    }
+    break;
+    case DIVIDE_MODE: {
+        src = qMin((dst * 256) / (1 + src), 255);
+    }
+    break;
+    case SCREEN_MODE: {
+        src = 255 - INT_MULT(255 - dst, 255 - src);
+    }
+    break;
+    case OVERLAY_MODE: {
+        src = INT_MULT(dst, dst + INT_MULT(2 * src, 255 - dst));
+    }
+    break;
+    case DIFFERENCE_MODE: {
+        src = dst > src ? dst - src : src - dst;
+    }
+    break;
+    case ADDITION_MODE: {
+        src = add_lut(dst, src);
+    }
+    break;
+    case SUBTRACT_MODE: {
+        src = dst > src ? dst - src : 0;
+    }
+    break;
+    case DARKEN_ONLY_MODE: {
+        src = dst < src ? dst : src;
+    }
+    break;
+    case LIGHTEN_ONLY_MODE: {
+        src = dst < src ? src : dst;
+    }
+    break;
+    case DODGE_MODE: {
+        uint tmp = dst << 8;
+        tmp /= 256 - src;
+        src = (uchar) qMin(tmp, 255u);
+    }
+    break;
+    case BURN_MODE: {
+        uint tmp = (255 - dst) << 8;
+        tmp /= src + 1;
+        src = (uchar) qMin(tmp, 255u);
+        src = 255 - src;
+    }
+    break;
+    case HARDLIGHT_MODE: {
+        uint tmp;
+        if (src > 128) {
+            tmp = ((int)255 - dst) * ((int) 255 - ((src - 128) << 1));
+            src = (uchar) qMin(255 - (tmp >> 8), 255u);
+        } else {
+            tmp = (int) dst * ((int) src << 1);
+            src = (uchar) qMin(tmp >> 8, 255u);
+        }
+    }
+    break;
+    case SOFTLIGHT_MODE: {
+        uint tmpS, tmpM;
 
-				tmpM = INT_MULT(dst, src);
-				tmpS = 255 - INT_MULT((255-dst), (255-src));
-				src = INT_MULT((255 - dst), tmpM)
-					+ INT_MULT(dst, tmpS);
+        tmpM = INT_MULT(dst, src);
+        tmpS = 255 - INT_MULT((255 - dst), (255 - src));
+        src = INT_MULT((255 - dst), tmpM)
+              + INT_MULT(dst, tmpS);
 
-			}
-			break;
-		case GRAIN_EXTRACT_MODE: {
-				int tmp;
-				
-				tmp = dst - src + 128;
-				tmp = qMin(tmp, 255);
-				tmp = qMax(tmp, 0);
+    }
+    break;
+    case GRAIN_EXTRACT_MODE: {
+        int tmp;
 
-				src = (uchar) tmp;
-			}
-			break;
-		case GRAIN_MERGE_MODE: {
-				int tmp;
-				
-				tmp = dst + src - 128;
-				tmp = qMin(tmp, 255);
-				tmp = qMax(tmp, 0);
+        tmp = dst - src + 128;
+        tmp = qMin(tmp, 255);
+        tmp = qMax(tmp, 0);
 
-				src = (uchar) tmp;
-			}
-			break;
-	}
+        src = (uchar) tmp;
+    }
+    break;
+    case GRAIN_MERGE_MODE: {
+        int tmp;
 
-	src_a = INT_MULT(src_a, layer.opacity);
+        tmp = dst + src - 128;
+        tmp = qMin(tmp, 255);
+        tmp = qMax(tmp, 0);
 
-	// Apply the mask (if any)
+        src = (uchar) tmp;
+    }
+    break;
+    }
 
-	if (layer.apply_mask == 1 && layer.mask_tiles.size() > (int)j &&
-			layer.mask_tiles[j].size() > (int)i)
-		src_a = INT_MULT(src_a, layer.mask_tiles[j][i].pixelIndex(k, l));
+    src_a = INT_MULT(src_a, layer.opacity);
 
-	uchar new_a = OPAQUE_OPACITY;
+    // Apply the mask (if any)
 
-	float src_ratio = (float)src_a / new_a;
-	float dst_ratio = 1.0 - src_ratio;
+    if (layer.apply_mask == 1 && layer.mask_tiles.size() > (int)j &&
+            layer.mask_tiles[j].size() > (int)i)
+        src_a = INT_MULT(src_a, layer.mask_tiles[j][i].pixelIndex(k, l));
 
-	uchar new_g = (uchar)(src_ratio * src + dst_ratio * dst + EPSILON);
+    uchar new_a = OPAQUE_OPACITY;
 
-	image.setPixel(m, n, new_g);
+    float src_ratio = (float)src_a / new_a;
+    float dst_ratio = 1.0 - src_ratio;
+
+    uchar new_g = (uchar)(src_ratio * src + dst_ratio * dst + EPSILON);
+
+    image.setPixel(m, n, new_g);
 }
 
 
@@ -2260,11 +2266,11 @@ void XCFImageFormat::mergeGrayAToGray(Layer& layer, uint i, uint j, int k, int l
  * \param n y pixel of destination image.
  */
 void XCFImageFormat::mergeGrayToRGB(Layer& layer, uint i, uint j, int k, int l,
-		QImage& image, int m, int n)
+                                    QImage& image, int m, int n)
 {
-	QRgb src = layer.image_tiles[j][i].pixel(k, l);
-	uchar src_a = layer.opacity;
-	image.setPixel(m, n, qRgba(src, src_a));
+    QRgb src = layer.image_tiles[j][i].pixel(k, l);
+    uchar src_a = layer.opacity;
+    image.setPixel(m, n, qRgba(src, src_a));
 }
 
 
@@ -2282,142 +2288,142 @@ void XCFImageFormat::mergeGrayToRGB(Layer& layer, uint i, uint j, int k, int l,
  * \param n y pixel of destination image.
  */
 void XCFImageFormat::mergeGrayAToRGB(Layer& layer, uint i, uint j, int k, int l,
-		QImage& image, int m, int n)
+                                     QImage& image, int m, int n)
 {
-	int src = qGray(layer.image_tiles[j][i].pixel(k, l));
-	int dst = qGray(image.pixel(m, n));
+    int src = qGray(layer.image_tiles[j][i].pixel(k, l));
+    int dst = qGray(image.pixel(m, n));
 
-	uchar src_a = layer.alpha_tiles[j][i].pixelIndex(k, l);
-	uchar dst_a = qAlpha(image.pixel(m, n));
+    uchar src_a = layer.alpha_tiles[j][i].pixelIndex(k, l);
+    uchar dst_a = qAlpha(image.pixel(m, n));
 
-	if (!src_a) return; // nothing to merge
+    if (!src_a) return; // nothing to merge
 
-	switch (layer.mode) {
-		case MULTIPLY_MODE: {
-				src = INT_MULT(src, dst);
-				src_a = qMin(src_a, dst_a);
-			}
-			break;
-		case DIVIDE_MODE: {
-				src = qMin((dst * 256) / (1 + src), 255);
-				src_a = qMin(src_a, dst_a);
-			}
-			break;
-		case SCREEN_MODE: {
-				src = 255 - INT_MULT(255 - dst, 255 - src);
-				src_a = qMin(src_a, dst_a);
-			}
-			break;
-		case OVERLAY_MODE: {
-				src = INT_MULT( dst, dst + INT_MULT(2 * src, 255 - dst));
-				src_a = qMin(src_a, dst_a);
-			}
-			break;
-		case DIFFERENCE_MODE: {
-				src = dst > src ? dst - src : src - dst;
-				src_a = qMin(src_a, dst_a);
-			}
-			break;
-		case ADDITION_MODE: {
-				src = add_lut(dst,src);
-				src_a = qMin(src_a, dst_a);
-			}
-			break;
-		case SUBTRACT_MODE: {
-				src = dst > src ? dst - src : 0;
-				src_a = qMin(src_a, dst_a);
-			}
-			break;
-		case DARKEN_ONLY_MODE: {
-				src = dst < src ? dst : src;
-				src_a = qMin(src_a, dst_a);
-			}
-			break;
-		case LIGHTEN_ONLY_MODE: {
-				src = dst < src ? src : dst;
-				src_a = qMin(src_a, dst_a);
-			}
-			break;
-		case DODGE_MODE: {
-				uint tmp = dst << 8;
-				tmp /= 256 - src;
-				src = (uchar) qMin(tmp, 255u);
-				src_a = qMin(src_a, dst_a);
-			}
-			break;
-		case BURN_MODE: {
-				uint tmp = (255-dst) << 8;
-				tmp /= src + 1;
-				src = (uchar) qMin(tmp, 255u);
-				src = 255 - src;
-				src_a = qMin(src_a, dst_a);
-			}
-			break;
-		case HARDLIGHT_MODE: {
-				uint tmp;
-				if (src > 128) {
-					tmp = ((int)255-dst) * ((int) 255 - ((src-128) << 1));
-					src = (uchar) qMin(255 - (tmp >> 8), 255u);
-				} else {
-					tmp = (int) dst * ((int) src << 1);
-					src = (uchar) qMin(tmp >> 8, 255u);
-				}
-				src_a = qMin(src_a, dst_a);
-			}
-			break;
-		case SOFTLIGHT_MODE: {
-				uint tmpS, tmpM;
+    switch (layer.mode) {
+    case MULTIPLY_MODE: {
+        src = INT_MULT(src, dst);
+        src_a = qMin(src_a, dst_a);
+    }
+    break;
+    case DIVIDE_MODE: {
+        src = qMin((dst * 256) / (1 + src), 255);
+        src_a = qMin(src_a, dst_a);
+    }
+    break;
+    case SCREEN_MODE: {
+        src = 255 - INT_MULT(255 - dst, 255 - src);
+        src_a = qMin(src_a, dst_a);
+    }
+    break;
+    case OVERLAY_MODE: {
+        src = INT_MULT(dst, dst + INT_MULT(2 * src, 255 - dst));
+        src_a = qMin(src_a, dst_a);
+    }
+    break;
+    case DIFFERENCE_MODE: {
+        src = dst > src ? dst - src : src - dst;
+        src_a = qMin(src_a, dst_a);
+    }
+    break;
+    case ADDITION_MODE: {
+        src = add_lut(dst, src);
+        src_a = qMin(src_a, dst_a);
+    }
+    break;
+    case SUBTRACT_MODE: {
+        src = dst > src ? dst - src : 0;
+        src_a = qMin(src_a, dst_a);
+    }
+    break;
+    case DARKEN_ONLY_MODE: {
+        src = dst < src ? dst : src;
+        src_a = qMin(src_a, dst_a);
+    }
+    break;
+    case LIGHTEN_ONLY_MODE: {
+        src = dst < src ? src : dst;
+        src_a = qMin(src_a, dst_a);
+    }
+    break;
+    case DODGE_MODE: {
+        uint tmp = dst << 8;
+        tmp /= 256 - src;
+        src = (uchar) qMin(tmp, 255u);
+        src_a = qMin(src_a, dst_a);
+    }
+    break;
+    case BURN_MODE: {
+        uint tmp = (255 - dst) << 8;
+        tmp /= src + 1;
+        src = (uchar) qMin(tmp, 255u);
+        src = 255 - src;
+        src_a = qMin(src_a, dst_a);
+    }
+    break;
+    case HARDLIGHT_MODE: {
+        uint tmp;
+        if (src > 128) {
+            tmp = ((int)255 - dst) * ((int) 255 - ((src - 128) << 1));
+            src = (uchar) qMin(255 - (tmp >> 8), 255u);
+        } else {
+            tmp = (int) dst * ((int) src << 1);
+            src = (uchar) qMin(tmp >> 8, 255u);
+        }
+        src_a = qMin(src_a, dst_a);
+    }
+    break;
+    case SOFTLIGHT_MODE: {
+        uint tmpS, tmpM;
 
-				tmpM = INT_MULT(dst, src);
-				tmpS = 255 - INT_MULT((255 - dst), (255-src));
-				src = INT_MULT((255 - dst), tmpM)
-					+ INT_MULT(dst, tmpS);
+        tmpM = INT_MULT(dst, src);
+        tmpS = 255 - INT_MULT((255 - dst), (255 - src));
+        src = INT_MULT((255 - dst), tmpM)
+              + INT_MULT(dst, tmpS);
 
-				src_a = qMin(src_a, dst_a);
-			}
-			break;
-		case GRAIN_EXTRACT_MODE: {
-				int tmp;
-				
-				tmp = dst - src + 128;
-				tmp = qMin(tmp, 255);
-				tmp = qMax(tmp, 0);
+        src_a = qMin(src_a, dst_a);
+    }
+    break;
+    case GRAIN_EXTRACT_MODE: {
+        int tmp;
 
-				src = (uchar) tmp;
-				src_a = qMin(src_a, dst_a);
-			}
-			break;
-		case GRAIN_MERGE_MODE: {
-				int tmp;
-				
-				tmp = dst + src - 128;
-				tmp = qMin(tmp, 255);
-				tmp = qMax(tmp, 0);
+        tmp = dst - src + 128;
+        tmp = qMin(tmp, 255);
+        tmp = qMax(tmp, 0);
 
-				src = (uchar) tmp;
-				src_a = qMin(src_a, dst_a);
-			}
-			break;
-	}
+        src = (uchar) tmp;
+        src_a = qMin(src_a, dst_a);
+    }
+    break;
+    case GRAIN_MERGE_MODE: {
+        int tmp;
 
-	src_a = INT_MULT(src_a, layer.opacity);
+        tmp = dst + src - 128;
+        tmp = qMin(tmp, 255);
+        tmp = qMax(tmp, 0);
 
-	// Apply the mask (if any)
-	if (layer.apply_mask == 1 && layer.mask_tiles.size() > (int)j &&
-			layer.mask_tiles[j].size() > (int)i)
-		src_a = INT_MULT(src_a, layer.mask_tiles[j][i].pixelIndex(k, l));
+        src = (uchar) tmp;
+        src_a = qMin(src_a, dst_a);
+    }
+    break;
+    }
 
-	uchar new_a = dst_a + INT_MULT(OPAQUE_OPACITY - dst_a, src_a);
+    src_a = INT_MULT(src_a, layer.opacity);
 
-	float src_ratio = (float)src_a / new_a;
-	float dst_ratio = 1.0 - src_ratio;
+    // Apply the mask (if any)
+    if (layer.apply_mask == 1 && layer.mask_tiles.size() > (int)j &&
+            layer.mask_tiles[j].size() > (int)i)
+        src_a = INT_MULT(src_a, layer.mask_tiles[j][i].pixelIndex(k, l));
 
-	uchar new_g = (uchar)(src_ratio * src + dst_ratio * dst + EPSILON);
+    uchar new_a = dst_a + INT_MULT(OPAQUE_OPACITY - dst_a, src_a);
 
-	if (!layer_modes[layer.mode].affect_alpha)
-		new_a = dst_a;
+    float src_ratio = (float)src_a / new_a;
+    float dst_ratio = 1.0 - src_ratio;
 
-	image.setPixel(m, n, qRgba(new_g, new_g, new_g, new_a));
+    uchar new_g = (uchar)(src_ratio * src + dst_ratio * dst + EPSILON);
+
+    if (!layer_modes[layer.mode].affect_alpha)
+        new_a = dst_a;
+
+    image.setPixel(m, n, qRgba(new_g, new_g, new_g, new_a));
 }
 
 
@@ -2433,10 +2439,10 @@ void XCFImageFormat::mergeGrayAToRGB(Layer& layer, uint i, uint j, int k, int l,
  * \param n y pixel of destination image.
  */
 void XCFImageFormat::mergeIndexedToIndexed(Layer& layer, uint i, uint j, int k, int l,
-		QImage& image, int m, int n)
+        QImage& image, int m, int n)
 {
-	int src = layer.image_tiles[j][i].pixelIndex(k, l);
-	image.setPixel(m, n, src);
+    int src = layer.image_tiles[j][i].pixelIndex(k, l);
+    image.setPixel(m, n, src);
 }
 
 
@@ -2452,21 +2458,21 @@ void XCFImageFormat::mergeIndexedToIndexed(Layer& layer, uint i, uint j, int k, 
  * \param n y pixel of destination image.
  */
 void XCFImageFormat::mergeIndexedAToIndexed(Layer& layer, uint i, uint j, int k, int l,
-		QImage& image, int m, int n)
+        QImage& image, int m, int n)
 {
-	uchar src = layer.image_tiles[j][i].pixelIndex(k, l);
-	uchar src_a = layer.alpha_tiles[j][i].pixelIndex(k, l);
-	src_a = INT_MULT( src_a, layer.opacity );
+    uchar src = layer.image_tiles[j][i].pixelIndex(k, l);
+    uchar src_a = layer.alpha_tiles[j][i].pixelIndex(k, l);
+    src_a = INT_MULT(src_a, layer.opacity);
 
-	if ( layer.apply_mask == 1 &&
-			layer.mask_tiles.size() > (int)j &&
-			layer.mask_tiles[j].size() > (int)i)
-		src_a = INT_MULT(src_a, layer.mask_tiles[j][i].pixelIndex(k, l));
+    if (layer.apply_mask == 1 &&
+            layer.mask_tiles.size() > (int)j &&
+            layer.mask_tiles[j].size() > (int)i)
+        src_a = INT_MULT(src_a, layer.mask_tiles[j][i].pixelIndex(k, l));
 
-	if (src_a > 127) {
-		src++;
-		image.setPixel(m, n, src);
-	}
+    if (src_a > 127) {
+        src++;
+        image.setPixel(m, n, src);
+    }
 }
 
 
@@ -2484,24 +2490,24 @@ void XCFImageFormat::mergeIndexedAToIndexed(Layer& layer, uint i, uint j, int k,
  * \param n y pixel of destination image.
  */
 void XCFImageFormat::mergeIndexedAToRGB(Layer& layer, uint i, uint j, int k, int l,
-		QImage& image, int m, int n)
+                                        QImage& image, int m, int n)
 {
-	QRgb src = layer.image_tiles[j][i].pixel(k, l);
-	uchar src_a = layer.alpha_tiles[j][i].pixelIndex(k, l);
-	src_a = INT_MULT(src_a, layer.opacity);
+    QRgb src = layer.image_tiles[j][i].pixel(k, l);
+    uchar src_a = layer.alpha_tiles[j][i].pixelIndex(k, l);
+    src_a = INT_MULT(src_a, layer.opacity);
 
-	// Apply the mask (if any)
-	if (layer.apply_mask == 1 && layer.mask_tiles.size() > (int)j &&
-			layer.mask_tiles[j].size() > (int)i)
-		src_a = INT_MULT(src_a, layer.mask_tiles[j][i].pixelIndex(k, l));
+    // Apply the mask (if any)
+    if (layer.apply_mask == 1 && layer.mask_tiles.size() > (int)j &&
+            layer.mask_tiles[j].size() > (int)i)
+        src_a = INT_MULT(src_a, layer.mask_tiles[j][i].pixelIndex(k, l));
 
-	// This is what appears in the GIMP window
-	if (src_a <= 127)
-		src_a = 0;
-	else
-		src_a = OPAQUE_OPACITY;
+    // This is what appears in the GIMP window
+    if (src_a <= 127)
+        src_a = 0;
+    else
+        src_a = OPAQUE_OPACITY;
 
-	image.setPixel(m, n, qRgba(src, src_a));
+    image.setPixel(m, n, qRgba(src, src_a));
 }
 
 
@@ -2512,26 +2518,26 @@ void XCFImageFormat::mergeIndexedAToRGB(Layer& layer, uint i, uint j, int k, int
  * \param x the global x position of the tile.
  * \param y the global y position of the tile.
  */
-void XCFImageFormat::dissolveRGBPixels ( QImage& image, int x, int y )
+void XCFImageFormat::dissolveRGBPixels(QImage& image, int x, int y)
 {
-	// The apparently spurious rand() calls are to wind the random
-	// numbers up to the same point for each tile.
+    // The apparently spurious rand() calls are to wind the random
+    // numbers up to the same point for each tile.
 
-	for (int l = 0; l < image.height(); l++) {
-		srand(random_table[( l + y ) % RANDOM_TABLE_SIZE]);
+    for (int l = 0; l < image.height(); l++) {
+        srand(random_table[(l + y) % RANDOM_TABLE_SIZE]);
 
-		for (int k = 0; k < x; k++)
-			rand();
+        for (int k = 0; k < x; k++)
+            rand();
 
-		for (int k = 0; k < image.width(); k++) {
-			int rand_val = rand() & 0xff;
-			QRgb pixel = image.pixel(k, l);
+        for (int k = 0; k < image.width(); k++) {
+            int rand_val = rand() & 0xff;
+            QRgb pixel = image.pixel(k, l);
 
-			if (rand_val > qAlpha(pixel)) {
-				image.setPixel(k, l, qRgba(pixel, 0));
-			}
-		}
-	}
+            if (rand_val > qAlpha(pixel)) {
+                image.setPixel(k, l, qRgba(pixel, 0));
+            }
+        }
+    }
 }
 
 
@@ -2544,26 +2550,26 @@ void XCFImageFormat::dissolveRGBPixels ( QImage& image, int x, int y )
  * \param x the global x position of the tile.
  * \param y the global y position of the tile.
  */
-void XCFImageFormat::dissolveAlphaPixels ( QImage& image, int x, int y )
+void XCFImageFormat::dissolveAlphaPixels(QImage& image, int x, int y)
 {
-	// The apparently spurious rand() calls are to wind the random
-	// numbers up to the same point for each tile.
+    // The apparently spurious rand() calls are to wind the random
+    // numbers up to the same point for each tile.
 
-	for (int l = 0; l < image.height(); l++) {
-		srand( random_table[(l + y) % RANDOM_TABLE_SIZE]);
+    for (int l = 0; l < image.height(); l++) {
+        srand(random_table[(l + y) % RANDOM_TABLE_SIZE]);
 
-		for (int k = 0; k < x; k++)
-			rand();
+        for (int k = 0; k < x; k++)
+            rand();
 
-		for (int k = 0; k < image.width(); k++) {
-			int rand_val = rand() & 0xff;
-			uchar alpha = image.pixelIndex(k, l);
+        for (int k = 0; k < image.width(); k++) {
+            int rand_val = rand() & 0xff;
+            uchar alpha = image.pixelIndex(k, l);
 
-			if (rand_val > alpha) {
-				image.setPixel(k, l, 0);
-			}
-		}
-	}
+            if (rand_val > alpha) {
+                image.setPixel(k, l, 0);
+            }
+        }
+    }
 }
 
 
@@ -2595,7 +2601,7 @@ bool XCFHandler::write(const QImage &)
 
 bool XCFHandler::canRead(QIODevice *device)
 {
-      if (!device) {
+    if (!device) {
         qWarning("DDSHandler::canRead() called with no device");
         return false;
     }

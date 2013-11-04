@@ -38,7 +38,8 @@
  * @param peek Keep bytes in the device
  * @return true on success
  */
-bool picReadHeader(QIODevice *dev, PICHeader *hdr, bool peek) {
+bool picReadHeader(QIODevice *dev, PICHeader *hdr, bool peek)
+{
     int result = 0;
     if (peek) {
         result = dev->peek((char*) hdr, HEADER_SIZE);
@@ -65,11 +66,12 @@ bool picReadHeader(QIODevice *dev, PICHeader *hdr, bool peek) {
  * @param channels The channels bitfield
  * @return The number of bytes per pixel
  */
-static int channels2bpp(char channels) {
+static int channels2bpp(char channels)
+{
     return CHANNEL_BYTE(channels, RED)
-            + CHANNEL_BYTE(channels, GREEN)
-            + CHANNEL_BYTE(channels, BLUE)
-            + CHANNEL_BYTE(channels, ALPHA);
+           + CHANNEL_BYTE(channels, GREEN)
+           + CHANNEL_BYTE(channels, BLUE)
+           + CHANNEL_BYTE(channels, ALPHA);
 }
 
 /**
@@ -78,9 +80,10 @@ static int channels2bpp(char channels) {
  * @param channels A pointer to 8 channels
  * @return true on success
  */
-static bool readChannels(QIODevice *dev, PICChannel *channels, int &bpp) {
+static bool readChannels(QIODevice *dev, PICChannel *channels, int &bpp)
+{
     int c = 0;
-    memset(channels, 0, sizeof ( PICChannel) *8);
+    memset(channels, 0, sizeof(PICChannel) * 8);
     do {
         int result = dev->read((char*) & channels[c], CHANNEL_SIZE);
         if (result != CHANNEL_SIZE) {
@@ -98,7 +101,8 @@ static bool readChannels(QIODevice *dev, PICChannel *channels, int &bpp) {
  * @param channels The channel information
  * @param cmap The component map to be built
  */
-inline static void makeComponentMap(unsigned channel, unsigned char *cmap) {
+inline static void makeComponentMap(unsigned channel, unsigned char *cmap)
+{
     std::fill(cmap, cmap + 8, 0);
 
     unsigned compos[] = {ALPHA, BLUE, GREEN, RED};
@@ -118,7 +122,8 @@ inline static void makeComponentMap(unsigned channel, unsigned char *cmap) {
  * @param cmap The component map that maps each component in PIC format to RGBA format
  * @param components The number of components in the source pixel
  */
-inline static void pic2RGBA(unsigned char *src_pixel, unsigned char *target_pixel, unsigned char *cmap, unsigned components) {
+inline static void pic2RGBA(unsigned char *src_pixel, unsigned char *target_pixel, unsigned char *cmap, unsigned components)
+{
     for (unsigned i = 0; i < components; i++) {
         target_pixel[cmap[i]] = src_pixel[i];
     }
@@ -129,7 +134,8 @@ inline static void pic2RGBA(unsigned char *src_pixel, unsigned char *target_pixe
  * @param channels The header
  * @return The number of used channels
  */
-inline static unsigned getNumChannels(PICChannel *channels) {
+inline static unsigned getNumChannels(PICChannel *channels)
+{
     unsigned result = 0;
     for (unsigned i = 0; i < 8; i++) {
         if (channels[i].channel != 0) {
@@ -149,7 +155,8 @@ inline static unsigned getNumChannels(PICChannel *channels) {
  * @param channels The channels header
  * @return The number of generated pixels
  */
-static int decodeRLE(QIODevice *dev, void *row, unsigned max, unsigned bpp, unsigned channels) {
+static int decodeRLE(QIODevice *dev, void *row, unsigned max, unsigned bpp, unsigned channels)
+{
     unsigned char buf[512];
     unsigned *ptr = (unsigned *) row;
     unsigned char component_map[8];
@@ -172,7 +179,7 @@ static int decodeRLE(QIODevice *dev, void *row, unsigned max, unsigned bpp, unsi
             return -1;
         }
         for (unsigned i = 0; i < len; i++) {
-            pic2RGBA(buf, (unsigned char*) (ptr + i), component_map, bpp);
+            pic2RGBA(buf, (unsigned char*)(ptr + i), component_map, bpp);
         }
     }        /* If the value is exactly 10000000, it means that it is more than 127 repetitions */
     else if (buf[0] == 128) {
@@ -185,7 +192,7 @@ static int decodeRLE(QIODevice *dev, void *row, unsigned max, unsigned bpp, unsi
             return -1;
         }
         for (unsigned i = 0; i < len; i++) {
-            pic2RGBA(buf + 2, (unsigned char*) (ptr + i), component_map, bpp);
+            pic2RGBA(buf + 2, (unsigned char*)(ptr + i), component_map, bpp);
         }
     }        /** No repetitions */
     else {
@@ -198,7 +205,7 @@ static int decodeRLE(QIODevice *dev, void *row, unsigned max, unsigned bpp, unsi
             return -1;
         }
         for (unsigned i = 0; i < len; i++) {
-            pic2RGBA(buf + (i * bpp), (unsigned char*) (ptr + i), component_map, bpp);
+            pic2RGBA(buf + (i * bpp), (unsigned char*)(ptr + i), component_map, bpp);
         }
     }
     return len;
@@ -212,7 +219,8 @@ static int decodeRLE(QIODevice *dev, void *row, unsigned max, unsigned bpp, unsi
  * @param bpp The bytes per pixel
  * @param channels The channels header info
  */
-static bool readRow(QIODevice *dev, unsigned *row, unsigned width, PICChannel *channels) {
+static bool readRow(QIODevice *dev, unsigned *row, unsigned width, PICChannel *channels)
+{
     for (int c = 0; channels[c].channel != 0; c++) {
         unsigned remain = width;
         unsigned bpp = channels2bpp(channels[c].channel);
@@ -235,7 +243,7 @@ static bool readRow(QIODevice *dev, unsigned *row, unsigned width, PICChannel *c
 
             makeComponentMap(channels[c].channel, component_map);
             for (unsigned i = 0; i < width; i++) {
-                pic2RGBA(((unsigned char*) row) + (i * bpp), (unsigned char*) (row + i), component_map, bpp);
+                pic2RGBA(((unsigned char*) row) + (i * bpp), (unsigned char*)(row + i), component_map, bpp);
             }
         }
     }
@@ -243,11 +251,12 @@ static bool readRow(QIODevice *dev, unsigned *row, unsigned width, PICChannel *c
 }
 
 #define FAIL() { \
-    std::cout << "ERROR Reading PIC!" << std::endl; \
-    return; \
-}
+        std::cout << "ERROR Reading PIC!" << std::endl; \
+        return; \
+    }
 
-bool hasAlpha(PICChannel *channels) {
+bool hasAlpha(PICChannel *channels)
+{
     int channel = 0;
     do {
         if (CHANNEL_BYTE(channels[channel].channel, ALPHA)) {
@@ -261,7 +270,8 @@ bool hasAlpha(PICChannel *channels) {
 /**
  * KDE image reading function. Must have this exact name in order to work
  */
-void pic_read(QIODevice *dev, QImage *result) {
+void pic_read(QIODevice *dev, QImage *result)
+{
     PICHeader header;
     PICChannel channels[8];
     int bpp = 0;

@@ -30,7 +30,8 @@
 #include <QImage>
 // #include <QDebug>
 
-class RLEData : public QVector<uchar> {
+class RLEData : public QVector<uchar>
+{
 public:
     RLEData() {}
     RLEData(const uchar *d, uint l, uint o) : _offset(o) {
@@ -39,19 +40,24 @@ public:
     }
     bool operator<(const RLEData&) const;
     void write(QDataStream& s);
-    uint offset() const { return _offset; }
+    uint offset() const {
+        return _offset;
+    }
 
 private:
     uint _offset;
 };
 
 
-class RLEMap : public QMap<RLEData, uint> {
+class RLEMap : public QMap<RLEData, uint>
+{
 public:
     RLEMap() : _counter(0), _offset(0) {}
     uint insert(const uchar *d, uint l);
     QVector<const RLEData*> vector();
-    void setBaseOffset(uint o) { _offset = o; }
+    void setBaseOffset(uint o) {
+        _offset = o;
+    }
 
 private:
     uint _counter;
@@ -59,7 +65,8 @@ private:
 };
 
 
-class SGIImage {
+class SGIImage
+{
 public:
     SGIImage(QIODevice *device);
     ~SGIImage();
@@ -277,12 +284,12 @@ bool SGIImage::readImage(QImage& img)
         return false;
     }
 
-    if( _stream.atEnd())
+    if (_stream.atEnd())
         return false;
 
     _numrows = _ysize * _zsize;
 
-    img = QImage( _xsize, _ysize, QImage::Format_RGB32 );
+    img = QImage(_xsize, _ysize, QImage::Format_RGB32);
 
     if (_zsize == 2 || _zsize == 4)
         img = img.convertToFormat(QImage::Format_ARGB32);
@@ -669,7 +676,7 @@ QImageIOPlugin::Capabilities RGBPlugin::capabilities(QIODevice *device, const QB
 {
     if (format == "rgb" || format ==  "rgba" ||
             format ==  "bw" || format == "sgi")
-        return Capabilities(CanRead|CanWrite);
+        return Capabilities(CanRead | CanWrite);
     if (!format.isEmpty())
         return 0;
     if (!device->isOpen())

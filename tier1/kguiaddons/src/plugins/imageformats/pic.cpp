@@ -25,7 +25,8 @@
 #include <QImage>
 #include <iostream>
 
-bool SoftimagePICHandler::canRead() const {
+bool SoftimagePICHandler::canRead() const
+{
     if (!SoftimagePICHandler::canRead(device())) {
         return false;
     }
@@ -33,17 +34,20 @@ bool SoftimagePICHandler::canRead() const {
     return true;
 }
 
-bool SoftimagePICHandler::read(QImage *image) {
+bool SoftimagePICHandler::read(QImage *image)
+{
     pic_read(device(), image);
     return true;
 }
 
-bool SoftimagePICHandler::write(const QImage &image) {
+bool SoftimagePICHandler::write(const QImage &image)
+{
     pic_write(device(), &image);
     return true;
 }
 
-bool SoftimagePICHandler::canRead(QIODevice *device) {
+bool SoftimagePICHandler::canRead(QIODevice *device)
+{
     PICHeader hdr;
     if (picReadHeader(device, &hdr, true)) {
         if (strncmp(hdr.id, "PICT", 4) == 0) {
@@ -53,7 +57,8 @@ bool SoftimagePICHandler::canRead(QIODevice *device) {
     return false;
 }
 
-QVariant SoftimagePICHandler::option(ImageOption option) const {
+QVariant SoftimagePICHandler::option(ImageOption option) const
+{
     if (option == Size) {
         PICHeader hdr;
         if (picReadHeader(device(), &hdr, true)) {
@@ -65,11 +70,13 @@ QVariant SoftimagePICHandler::option(ImageOption option) const {
     return QVariant();
 }
 
-bool SoftimagePICHandler::supportsOption(ImageOption option) const {
-    return ( option == Size);
+bool SoftimagePICHandler::supportsOption(ImageOption option) const
+{
+    return (option == Size);
 }
 
-QImageIOPlugin::Capabilities SoftimagePICPlugin::capabilities(QIODevice *device, const QByteArray &format) const {
+QImageIOPlugin::Capabilities SoftimagePICPlugin::capabilities(QIODevice *device, const QByteArray &format) const
+{
     if (format == "pic")
         return Capabilities(CanRead | CanWrite);
     if (!format.isEmpty())
@@ -87,7 +94,8 @@ QImageIOPlugin::Capabilities SoftimagePICPlugin::capabilities(QIODevice *device,
     return cap;
 }
 
-QImageIOHandler * SoftimagePICPlugin::create(QIODevice *device, const QByteArray &format) const {
+QImageIOHandler * SoftimagePICPlugin::create(QIODevice *device, const QByteArray &format) const
+{
     QImageIOHandler * handler = new SoftimagePICHandler();
     handler->setDevice(device);
     handler->setFormat(format);

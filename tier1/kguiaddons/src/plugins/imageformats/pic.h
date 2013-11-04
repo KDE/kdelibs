@@ -23,7 +23,8 @@
 
 #include <QImageIOPlugin>
 
-class SoftimagePICHandler : public QImageIOHandler {
+class SoftimagePICHandler : public QImageIOHandler
+{
 public:
     virtual bool canRead() const;
     virtual bool read(QImage * image);
@@ -35,7 +36,8 @@ public:
     static bool canRead(QIODevice *device);
 };
 
-class SoftimagePICPlugin : public QImageIOPlugin {
+class SoftimagePICPlugin : public QImageIOPlugin
+{
     Q_OBJECT
     Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "pic.json")
 

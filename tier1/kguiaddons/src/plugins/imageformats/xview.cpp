@@ -15,8 +15,8 @@
 
 #define BUFSIZE 1024
 
-static const int b_255_3[]= {0,85,170,255},  // index*255/3
-           rg_255_7[]={0,36,72,109,145,182,218,255}; // index *255/7
+static const int b_255_3[] = {0, 85, 170, 255}, // index*255/3
+                             rg_255_7[] = {0, 36, 72, 109, 145, 182, 218, 255}; // index *255/7
 
 
 XVHandler::XVHandler()
@@ -34,79 +34,76 @@ bool XVHandler::canRead() const
 
 bool XVHandler::read(QImage *retImage)
 {
-    int x=-1;
-    int y=-1;
-    int maxval=-1;
+    int x = -1;
+    int y = -1;
+    int maxval = -1;
     QIODevice *iodev = device();
 
     char str[ BUFSIZE ];
 
     // magic number must be "P7 332"
-    iodev->readLine( str, BUFSIZE );
-    if (strncmp(str,"P7 332",6))
+    iodev->readLine(str, BUFSIZE);
+    if (strncmp(str, "P7 332", 6))
         return false;
 
     // next line #XVVERSION
-    iodev->readLine( str, BUFSIZE );
+    iodev->readLine(str, BUFSIZE);
     if (strncmp(str, "#XVVERSION", 10))
         return false;
 
     // now it gets interesting, #BUILTIN means we are out.
     // if IMGINFO comes, we are happy!
-    iodev->readLine( str, BUFSIZE );
+    iodev->readLine(str, BUFSIZE);
     if (strncmp(str, "#IMGINFO:", 9))
         return false;
 
     // after this an #END_OF_COMMENTS signals everything to be ok!
-    iodev->readLine( str, BUFSIZE );
+    iodev->readLine(str, BUFSIZE);
     if (strncmp(str, "#END_OF", 7))
         return false;
 
     // now a last line with width, height, maxval which is
     // supposed to be 255
-    iodev->readLine( str, BUFSIZE );
+    iodev->readLine(str, BUFSIZE);
     sscanf(str, "%d %d %d", &x, &y, &maxval);
 
     if (maxval != 255)
         return false;
-    int blocksize = x*y;
-    if(x < 0 || y < 0 || blocksize < x || blocksize < y)
+    int blocksize = x * y;
+    if (x < 0 || y < 0 || blocksize < x || blocksize < y)
         return false;
 
     // now follows a binary block of x*y bytes.
     char *block = (char*) malloc(blocksize);
-    if(!block)
+    if (!block)
         return false;
 
-    if (iodev->read(block, blocksize) != blocksize )
-    {
-	free(block);
+    if (iodev->read(block, blocksize) != blocksize) {
+        free(block);
         return false;
     }
 
     // Create the image
-    QImage image( x, y, QImage::Format_Indexed8 );
+    QImage image(x, y, QImage::Format_Indexed8);
     int numColors;
-    numColors = qMin( maxval + 1, 0 );
-    numColors = qMax( 0, maxval + 1 );
-    image.setColorCount( numColors );
+    numColors = qMin(maxval + 1, 0);
+    numColors = qMax(0, maxval + 1);
+    image.setColorCount(numColors);
 
     // how do the color handling? they are absolute 24bpp
     // or at least can be calculated as such.
-    int r,g,b;
+    int r, g, b;
 
-    for ( int j = 0; j < 256; j++ )
-    {
+    for (int j = 0; j < 256; j++) {
         r =  rg_255_7[((j >> 5) & 0x07)];
         g =  rg_255_7[((j >> 2) & 0x07)];
         b =  b_255_3[((j >> 0) & 0x03)];
-        image.setColor( j, qRgb( r, g, b ) );
+        image.setColor(j, qRgb(r, g, b));
     }
 
-    for ( int py = 0; py < y; py++ )
-    {
-        uchar *data = image.scanLine( py );
-        memcpy( data, block + py * x, x );
+    for (int py = 0; py < y; py++) {
+        uchar *data = image.scanLine(py);
+        memcpy(data, block + py * x, x);
     }
 
     *retImage = image;
@@ -117,7 +114,7 @@ bool XVHandler::read(QImage *retImage)
 
 bool XVHandler::write(const QImage &image)
 {
-    QIODevice& f = *( device() );
+    QIODevice& f = *(device());
 
     // Removed "f.open(...)" and "f.close()" (tanghus)
 
@@ -126,54 +123,49 @@ bool XVHandler::write(const QImage &image)
     char str[ 1024 ];
 
     // magic number must be "P7 332"
-    f.write( "P7 332\n", 7 );
+    f.write("P7 332\n", 7);
 
     // next line #XVVERSION
-    f.write( "#XVVERSION:\n", 12 );
+    f.write("#XVVERSION:\n", 12);
 
     // now it gets interesting, #BUILTIN means we are out.
     // if IMGINFO comes, we are happy!
-    f.write( "#IMGINFO:\n", 10 );
+    f.write("#IMGINFO:\n", 10);
 
     // after this an #END_OF_COMMENTS signals everything to be ok!
-    f.write( "#END_OF_COMMENTS:\n", 18 );
+    f.write("#END_OF_COMMENTS:\n", 18);
 
     // now a last line with width, height, maxval which is supposed to be 255
-    sprintf( str, "%i %i 255\n", w, h );
-    f.write( str, strlen( str ) );
+    sprintf(str, "%i %i 255\n", w, h);
+    f.write(str, strlen(str));
 
 
-    QImage tmpImage( image );
-    if ( image.depth() == 1 )
-        tmpImage = image.convertToFormat( QImage::Format_Indexed8, Qt::AutoColor );
+    QImage tmpImage(image);
+    if (image.depth() == 1)
+        tmpImage = image.convertToFormat(QImage::Format_Indexed8, Qt::AutoColor);
 
     uchar* buffer = new uchar[ w ];
 
-    for ( int py = 0; py < h; py++ )
-    {
-        const uchar *data = tmpImage.scanLine( py );
-        for ( int px = 0; px < w; px++ )
-        {
+    for (int py = 0; py < h; py++) {
+        const uchar *data = tmpImage.scanLine(py);
+        for (int px = 0; px < w; px++) {
             int r, g, b;
-            if ( tmpImage.depth() == 32 )
-            {
+            if (tmpImage.depth() == 32) {
                 const QRgb *data32 = (QRgb*) data;
-                r = qRed( *data32 ) >> 5;
-                g = qGreen( *data32 ) >> 5;
-                b = qBlue( *data32 ) >> 6;
-                data += sizeof( QRgb );
-            }
-            else
-            {
-                QRgb color = tmpImage.color( *data );
-                r = qRed( color ) >> 5;
-                g = qGreen( color ) >> 5;
-                b = qBlue( color ) >> 6;
+                r = qRed(*data32) >> 5;
+                g = qGreen(*data32) >> 5;
+                b = qBlue(*data32) >> 6;
+                data += sizeof(QRgb);
+            } else {
+                QRgb color = tmpImage.color(*data);
+                r = qRed(color) >> 5;
+                g = qGreen(color) >> 5;
+                b = qBlue(color) >> 6;
                 data++;
             }
-            buffer[ px ] = ( r << 5 ) | ( g << 2 ) | b;
+            buffer[ px ] = (r << 5) | (g << 2) | b;
         }
-        f.write( (const char*)buffer, w );
+        f.write((const char*)buffer, w);
     }
     delete[] buffer;
 
@@ -182,7 +174,7 @@ bool XVHandler::write(const QImage &image)
 
 bool XVHandler::canRead(QIODevice *device)
 {
-     if (!device) {
+    if (!device) {
         qWarning("XVHandler::canRead() called with no device");
         return false;
     }

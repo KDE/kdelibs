@@ -37,143 +37,143 @@
 //unfortunately this is declared as static in JasPer libraries
 static jas_stream_t *jas_stream_create()
 {
-        jas_stream_t *stream;
+    jas_stream_t *stream;
 
-        if (!(stream = (jas_stream_t*)jas_malloc(sizeof(jas_stream_t)))) {
-                return 0;
-        }
-        stream->openmode_ = 0;
-        stream->bufmode_ = 0;
-        stream->flags_ = 0;
-        stream->bufbase_ = 0;
-        stream->bufstart_ = 0;
-        stream->bufsize_ = 0;
-        stream->ptr_ = 0;
-        stream->cnt_ = 0;
-        stream->ops_ = 0;
-        stream->obj_ = 0;
-        stream->rwcnt_ = 0;
-        stream->rwlimit_ = -1;
+    if (!(stream = (jas_stream_t*)jas_malloc(sizeof(jas_stream_t)))) {
+        return 0;
+    }
+    stream->openmode_ = 0;
+    stream->bufmode_ = 0;
+    stream->flags_ = 0;
+    stream->bufbase_ = 0;
+    stream->bufstart_ = 0;
+    stream->bufsize_ = 0;
+    stream->ptr_ = 0;
+    stream->cnt_ = 0;
+    stream->ops_ = 0;
+    stream->obj_ = 0;
+    stream->rwcnt_ = 0;
+    stream->rwlimit_ = -1;
 
-        return stream;
+    return stream;
 }
 
 //unfortunately this is declared as static in JasPer libraries
 static void jas_stream_initbuf(jas_stream_t *stream, int bufmode, char *buf,
-  int bufsize)
+                               int bufsize)
 {
-        /* If this function is being called, the buffer should not have been
-          initialized yet. */
-        assert(!stream->bufbase_);
+    /* If this function is being called, the buffer should not have been
+      initialized yet. */
+    assert(!stream->bufbase_);
 
-        if (bufmode != JAS_STREAM_UNBUF) {
-                /* The full- or line-buffered mode is being employed. */
-                if (!buf) {
-                        /* The caller has not specified a buffer to employ, so allocate
-                          one. */
-                        if ((stream->bufbase_ = (unsigned char*)jas_malloc(JAS_STREAM_BUFSIZE +
-                          JAS_STREAM_MAXPUTBACK))) {
-                                stream->bufmode_ |= JAS_STREAM_FREEBUF;
-                                stream->bufsize_ = JAS_STREAM_BUFSIZE;
-                        } else {
-                                /* The buffer allocation has failed.  Resort to unbuffered
-                                  operation. */
-                                stream->bufbase_ = stream->tinybuf_;
-                                stream->bufsize_ = 1;
-                        }
-                } else {
-                        /* The caller has specified a buffer to employ. */
-                        /* The buffer must be large enough to accommodate maximum
-                          putback. */
-                        assert(bufsize > JAS_STREAM_MAXPUTBACK);
-                        stream->bufbase_ = JAS_CAST(uchar *, buf);
-                        stream->bufsize_ = bufsize - JAS_STREAM_MAXPUTBACK;
-                }
-        } else {
-                /* The unbuffered mode is being employed. */
-                /* A buffer should not have been supplied by the caller. */
-                assert(!buf);
-                /* Use a trivial one-character buffer. */
+    if (bufmode != JAS_STREAM_UNBUF) {
+        /* The full- or line-buffered mode is being employed. */
+        if (!buf) {
+            /* The caller has not specified a buffer to employ, so allocate
+              one. */
+            if ((stream->bufbase_ = (unsigned char*)jas_malloc(JAS_STREAM_BUFSIZE +
+                                    JAS_STREAM_MAXPUTBACK))) {
+                stream->bufmode_ |= JAS_STREAM_FREEBUF;
+                stream->bufsize_ = JAS_STREAM_BUFSIZE;
+            } else {
+                /* The buffer allocation has failed.  Resort to unbuffered
+                  operation. */
                 stream->bufbase_ = stream->tinybuf_;
                 stream->bufsize_ = 1;
+            }
+        } else {
+            /* The caller has specified a buffer to employ. */
+            /* The buffer must be large enough to accommodate maximum
+              putback. */
+            assert(bufsize > JAS_STREAM_MAXPUTBACK);
+            stream->bufbase_ = JAS_CAST(uchar *, buf);
+            stream->bufsize_ = bufsize - JAS_STREAM_MAXPUTBACK;
         }
-        stream->bufstart_ = &stream->bufbase_[JAS_STREAM_MAXPUTBACK];
-        stream->ptr_ = stream->bufstart_;
-        stream->cnt_ = 0;
-        stream->bufmode_ |= bufmode & JAS_STREAM_BUFMODEMASK;
+    } else {
+        /* The unbuffered mode is being employed. */
+        /* A buffer should not have been supplied by the caller. */
+        assert(!buf);
+        /* Use a trivial one-character buffer. */
+        stream->bufbase_ = stream->tinybuf_;
+        stream->bufsize_ = 1;
+    }
+    stream->bufstart_ = &stream->bufbase_[JAS_STREAM_MAXPUTBACK];
+    stream->ptr_ = stream->bufstart_;
+    stream->cnt_ = 0;
+    stream->bufmode_ |= bufmode & JAS_STREAM_BUFMODEMASK;
 }
 
 static int qiodevice_read(jas_stream_obj_t *obj, char *buf, int cnt)
 {
-        QIODevice *io = (QIODevice*) obj;
-        return io->read(buf, cnt);
+    QIODevice *io = (QIODevice*) obj;
+    return io->read(buf, cnt);
 }
 
 static int qiodevice_write(jas_stream_obj_t *obj, char *buf, int cnt)
 {
-        QIODevice *io = (QIODevice*) obj;
-        return io->write(buf, cnt);
+    QIODevice *io = (QIODevice*) obj;
+    return io->write(buf, cnt);
 }
 
 static long qiodevice_seek(jas_stream_obj_t *obj, long offset, int origin)
 {
-        QIODevice *io = (QIODevice*) obj;
-        long newpos;
+    QIODevice *io = (QIODevice*) obj;
+    long newpos;
 
-        switch (origin) {
-        case SEEK_SET:
-                newpos = offset;
-                break;
-        case SEEK_END:
-                newpos = io->size() - offset;
-                break;
-        case SEEK_CUR:
-                newpos = io->pos() + offset;
-                break;
-        default:
-                return -1;
-        }
-        if (newpos < 0) {
-                return -1;
-        }
-        if ( io->seek(newpos) )
-            return newpos;
-        else
-            return -1;
+    switch (origin) {
+    case SEEK_SET:
+        newpos = offset;
+        break;
+    case SEEK_END:
+        newpos = io->size() - offset;
+        break;
+    case SEEK_CUR:
+        newpos = io->pos() + offset;
+        break;
+    default:
+        return -1;
+    }
+    if (newpos < 0) {
+        return -1;
+    }
+    if (io->seek(newpos))
+        return newpos;
+    else
+        return -1;
 }
 
 static int qiodevice_close(jas_stream_obj_t *)
 {
-        return 0;
+    return 0;
 }
 
 static jas_stream_ops_t jas_stream_qiodeviceops = {
-        qiodevice_read,
-        qiodevice_write,
-        qiodevice_seek,
-        qiodevice_close
+    qiodevice_read,
+    qiodevice_write,
+    qiodevice_seek,
+    qiodevice_close
 };
 
 static jas_stream_t *jas_stream_qiodevice(QIODevice *iodevice)
 {
-        jas_stream_t *stream;
+    jas_stream_t *stream;
 
-        if ( !iodevice ) return 0;
-        if (!(stream = jas_stream_create())) {
-                return 0;
-        }
+    if (!iodevice) return 0;
+    if (!(stream = jas_stream_create())) {
+        return 0;
+    }
 
-        /* A stream associated with a memory buffer is always opened
-        for both reading and writing in binary mode. */
-        stream->openmode_ = JAS_STREAM_READ | JAS_STREAM_WRITE | JAS_STREAM_BINARY;
+    /* A stream associated with a memory buffer is always opened
+    for both reading and writing in binary mode. */
+    stream->openmode_ = JAS_STREAM_READ | JAS_STREAM_WRITE | JAS_STREAM_BINARY;
 
-        jas_stream_initbuf(stream, JAS_STREAM_FULLBUF, 0, 0);
+    jas_stream_initbuf(stream, JAS_STREAM_FULLBUF, 0, 0);
 
-        /* Select the operations for a memory stream. */
-        stream->obj_ = (void *)iodevice;
-        stream->ops_ = &jas_stream_qiodeviceops;
+    /* Select the operations for a memory stream. */
+    stream->obj_ = (void *)iodevice;
+    stream->ops_ = &jas_stream_qiodeviceops;
 
-        return stream;
+    return stream;
 }
 
 /************************ End of JasPer QIODevice stream ****************/
@@ -188,45 +188,45 @@ typedef struct {
 
 
 static jas_image_t*
-read_image( QIODevice* io )
+read_image(QIODevice* io)
 {
     jas_stream_t* in = 0;
 
-    in = jas_stream_qiodevice( io );
+    in = jas_stream_qiodevice(io);
 
-    if( !in ) return 0;
+    if (!in) return 0;
 
-    jas_image_t* image = jas_image_decode( in, -1, 0 );
-    jas_stream_close( in );
+    jas_image_t* image = jas_image_decode(in, -1, 0);
+    jas_stream_close(in);
 
     // image may be 0, but that's Ok
     return image;
 } // read_image
 
 static bool
-convert_colorspace( gs_t& gs )
+convert_colorspace(gs_t& gs)
 {
-    jas_cmprof_t *outprof = jas_cmprof_createfromclrspc( JAS_CLRSPC_SRGB );
-    if( !outprof ) return false;
+    jas_cmprof_t *outprof = jas_cmprof_createfromclrspc(JAS_CLRSPC_SRGB);
+    if (!outprof) return false;
 
-    gs.altimage = jas_image_chclrspc( gs.image, outprof,
-                                      JAS_CMXFORM_INTENT_PER );
-    if( !gs.altimage ) return false;
+    gs.altimage = jas_image_chclrspc(gs.image, outprof,
+                                     JAS_CMXFORM_INTENT_PER);
+    if (!gs.altimage) return false;
 
     return true;
 } // convert_colorspace
 
 static bool
-render_view( gs_t& gs, QImage* outImage )
+render_view(gs_t& gs, QImage* outImage)
 {
-    if ( !gs.altimage ) return false;
+    if (!gs.altimage) return false;
     QImage qti;
-    if((gs.cmptlut[0] = jas_image_getcmptbytype(gs.altimage,
-                                                JAS_IMAGE_CT_COLOR(JAS_CLRSPC_CHANIND_RGB_R))) < 0 ||
-       (gs.cmptlut[1] = jas_image_getcmptbytype(gs.altimage,
-                                                JAS_IMAGE_CT_COLOR(JAS_CLRSPC_CHANIND_RGB_G))) < 0 ||
-       (gs.cmptlut[2] = jas_image_getcmptbytype(gs.altimage,
-                                                JAS_IMAGE_CT_COLOR(JAS_CLRSPC_CHANIND_RGB_B))) < 0) {
+    if ((gs.cmptlut[0] = jas_image_getcmptbytype(gs.altimage,
+                         JAS_IMAGE_CT_COLOR(JAS_CLRSPC_CHANIND_RGB_R))) < 0 ||
+            (gs.cmptlut[1] = jas_image_getcmptbytype(gs.altimage,
+                             JAS_IMAGE_CT_COLOR(JAS_CLRSPC_CHANIND_RGB_G))) < 0 ||
+            (gs.cmptlut[2] = jas_image_getcmptbytype(gs.altimage,
+                             JAS_IMAGE_CT_COLOR(JAS_CLRSPC_CHANIND_RGB_B))) < 0) {
         return false;
     } // if
 
@@ -234,11 +234,11 @@ render_view( gs_t& gs, QImage* outImage )
     int v[3];
 
     // check that all components have the same size.
-    const int width = jas_image_cmptwidth( gs.altimage, cmptlut[0] );
-    const int height = jas_image_cmptheight( gs.altimage, cmptlut[0] );
-    for( int i = 1; i < 3; ++i ) {
-        if (jas_image_cmptwidth( gs.altimage, cmptlut[i] ) != width ||
-            jas_image_cmptheight( gs.altimage, cmptlut[i] ) != height)
+    const int width = jas_image_cmptwidth(gs.altimage, cmptlut[0]);
+    const int height = jas_image_cmptheight(gs.altimage, cmptlut[0]);
+    for (int i = 1; i < 3; ++i) {
+        if (jas_image_cmptwidth(gs.altimage, cmptlut[i]) != width ||
+                jas_image_cmptheight(gs.altimage, cmptlut[i]) != height)
             return false;
     } // for
 
@@ -246,44 +246,44 @@ render_view( gs_t& gs, QImage* outImage )
     jas_seqent_t *buf[3];
     int prec[3];
 
-    for (int k = 0; k < 3; ++k ) {
+    for (int k = 0; k < 3; ++k) {
         prec[k] = jas_image_cmptprec(gs.altimage, cmptlut[k]);
         if (!(cmptmatrix[k] = jas_matrix_create(1, width))) {
             return false;
         }
     }
 
-    qti = QImage( jas_image_width( gs.altimage ), jas_image_height( gs.altimage ),
-                  QImage::Format_RGB32 );
+    qti = QImage(jas_image_width(gs.altimage), jas_image_height(gs.altimage),
+                 QImage::Format_RGB32);
     if (qti.isNull()) {
         return false;
     }
     uint32_t* data = (uint32_t*)qti.bits();
 
-    for( int y = 0; y < height; ++y ) {
-        for( int k = 0; k < 3; ++k ) {
+    for (int y = 0; y < height; ++y) {
+        for (int k = 0; k < 3; ++k) {
             if (jas_image_readcmpt(gs.altimage, cmptlut[k], 0, y, width, 1, cmptmatrix[k])) {
                 return false;
             }
             buf[k] = jas_matrix_getref(cmptmatrix[k], 0, 0);
         }
-        for( int x = 0; x < width; ++x ) {
-            for( int k = 0; k < 3; ++k ) {
+        for (int x = 0; x < width; ++x) {
+            for (int k = 0; k < 3; ++k) {
                 v[k] = *buf[k];
                 // if the precision of the component is too small, increase
                 // it to use the complete value range.
                 v[k] <<= 8 - prec[k];
 
-                if( v[k] < 0 ) v[k] = 0;
-                else if( v[k] > 255 ) v[k] = 255;
+                if (v[k] < 0) v[k] = 0;
+                else if (v[k] > 255) v[k] = 255;
                 ++buf[k];
             } // for k
 
-            *data++ = qRgb( v[0], v[1], v[2] );
+            *data++ = qRgb(v[0], v[1], v[2]);
         } // for x
     } // for y
 
-    for (int k = 0; k < 3; ++k ) {
+    for (int k = 0; k < 3; ++k) {
         if (cmptmatrix[k]) {
             jas_matrix_destroy(cmptmatrix[k]);
         }
@@ -295,12 +295,12 @@ render_view( gs_t& gs, QImage* outImage )
 
 
 static jas_image_t*
-create_image( const QImage& qi )
+create_image(const QImage& qi)
 {
     // prepare the component parameters
     jas_image_cmptparm_t* cmptparms = new jas_image_cmptparm_t[ 3 ];
 
-    for ( int i = 0; i < 3; ++i ) {
+    for (int i = 0; i < 3; ++i) {
         // x and y offset
         cmptparms[i].tlx = 0;
         cmptparms[i].tly = 0;
@@ -316,7 +316,7 @@ create_image( const QImage& qi )
         cmptparms[i].sgnd = false;
     }
 
-    jas_image_t* ji = jas_image_create( 3 /* number components */, cmptparms, JAS_CLRSPC_UNKNOWN );
+    jas_image_t* ji = jas_image_create(3 /* number components */, cmptparms, JAS_CLRSPC_UNKNOWN);
     delete[] cmptparms;
 
     // returning 0 is ok
@@ -325,74 +325,74 @@ create_image( const QImage& qi )
 
 
 static bool
-write_components( jas_image_t* ji, const QImage& qi )
+write_components(jas_image_t* ji, const QImage& qi)
 {
     const unsigned height = qi.height();
     const unsigned width = qi.width();
 
-    jas_matrix_t* m = jas_matrix_create( height, width );
-    if( !m ) return false;
+    jas_matrix_t* m = jas_matrix_create(height, width);
+    if (!m) return false;
 
-    jas_image_setclrspc( ji, JAS_CLRSPC_SRGB );
+    jas_image_setclrspc(ji, JAS_CLRSPC_SRGB);
 
-    jas_image_setcmpttype( ji, 0, JAS_IMAGE_CT_RGB_R );
-    for( uint y = 0; y < height; ++y )
-        for( uint x = 0; x < width; ++x )
-            jas_matrix_set( m, y, x, qRed( qi.pixel( x, y ) ) );
-    jas_image_writecmpt( ji, 0, 0, 0, width, height, m );
+    jas_image_setcmpttype(ji, 0, JAS_IMAGE_CT_RGB_R);
+    for (uint y = 0; y < height; ++y)
+        for (uint x = 0; x < width; ++x)
+            jas_matrix_set(m, y, x, qRed(qi.pixel(x, y)));
+    jas_image_writecmpt(ji, 0, 0, 0, width, height, m);
 
-    jas_image_setcmpttype( ji, 1, JAS_IMAGE_CT_RGB_G );
-    for( uint y = 0; y < height; ++y )
-        for( uint x = 0; x < width; ++x )
-            jas_matrix_set( m, y, x, qGreen( qi.pixel( x, y ) ) );
-    jas_image_writecmpt( ji, 1, 0, 0, width, height, m );
+    jas_image_setcmpttype(ji, 1, JAS_IMAGE_CT_RGB_G);
+    for (uint y = 0; y < height; ++y)
+        for (uint x = 0; x < width; ++x)
+            jas_matrix_set(m, y, x, qGreen(qi.pixel(x, y)));
+    jas_image_writecmpt(ji, 1, 0, 0, width, height, m);
 
-    jas_image_setcmpttype( ji, 2, JAS_IMAGE_CT_RGB_B );
-    for( uint y = 0; y < height; ++y )
-        for( uint x = 0; x < width; ++x )
-            jas_matrix_set( m, y, x, qBlue( qi.pixel( x, y ) ) );
-    jas_image_writecmpt( ji, 2, 0, 0, width, height, m );
-    jas_matrix_destroy( m );
+    jas_image_setcmpttype(ji, 2, JAS_IMAGE_CT_RGB_B);
+    for (uint y = 0; y < height; ++y)
+        for (uint x = 0; x < width; ++x)
+            jas_matrix_set(m, y, x, qBlue(qi.pixel(x, y)));
+    jas_image_writecmpt(ji, 2, 0, 0, width, height, m);
+    jas_matrix_destroy(m);
 
     return true;
 } // write_components
 
 static bool
-write_image( const QImage &image, QIODevice* io, int quality )
+write_image(const QImage &image, QIODevice* io, int quality)
 {
-        jas_stream_t* stream = 0;
-        stream = jas_stream_qiodevice( io );
+    jas_stream_t* stream = 0;
+    stream = jas_stream_qiodevice(io);
 
-        // by here, a jas_stream_t is open
-        if( !stream ) return false;
+    // by here, a jas_stream_t is open
+    if (!stream) return false;
 
-        jas_image_t* ji = create_image( image );
-        if( !ji ) {
-                jas_stream_close( stream );
-                return false;
-        } // if
+    jas_image_t* ji = create_image(image);
+    if (!ji) {
+        jas_stream_close(stream);
+        return false;
+    } // if
 
-        if( !write_components( ji, image ) ) {
-                jas_stream_close( stream );
-                jas_image_destroy( ji );
-                return false;
-        } // if
+    if (!write_components(ji, image)) {
+        jas_stream_close(stream);
+        jas_image_destroy(ji);
+        return false;
+    } // if
 
-        // optstr:
-        // - rate=#B => the resulting file size is about # bytes
-        // - rate=0.0 .. 1.0 => the resulting file size is about the factor times
-        //                      the uncompressed size
-        // use sprintf for locale-aware string
-        char rateBuffer[16];
-        sprintf(rateBuffer, "rate=%.2g\n", (quality < 0) ? DEFAULT_RATE : quality / 100.0);
-        int i = jp2_encode( ji, stream, rateBuffer);
+    // optstr:
+    // - rate=#B => the resulting file size is about # bytes
+    // - rate=0.0 .. 1.0 => the resulting file size is about the factor times
+    //                      the uncompressed size
+    // use sprintf for locale-aware string
+    char rateBuffer[16];
+    sprintf(rateBuffer, "rate=%.2g\n", (quality < 0) ? DEFAULT_RATE : quality / 100.0);
+    int i = jp2_encode(ji, stream, rateBuffer);
 
-        jas_image_destroy( ji );
-        jas_stream_close( stream );
+    jas_image_destroy(ji);
+    jas_stream_close(stream);
 
-        if( i != 0 ) return false;
+    if (i != 0) return false;
 
-        return true;
+    return true;
 }
 
 JP2Handler::JP2Handler()
@@ -425,24 +425,24 @@ bool JP2Handler::canRead(QIODevice *device)
 
 bool JP2Handler::read(QImage *image)
 {
-        if (!canRead()) return false;
+    if (!canRead()) return false;
 
-        gs_t gs;
-        if( !(gs.image = read_image( device() )) ) return false;
+    gs_t gs;
+    if (!(gs.image = read_image(device()))) return false;
 
-        if( !convert_colorspace( gs ) ) return false;
+    if (!convert_colorspace(gs)) return false;
 
-        render_view( gs, image );
+    render_view(gs, image);
 
-        if( gs.image ) jas_image_destroy( gs.image );
-        if( gs.altimage ) jas_image_destroy( gs.altimage );
+    if (gs.image) jas_image_destroy(gs.image);
+    if (gs.altimage) jas_image_destroy(gs.altimage);
     return true;
 
 }
 
 bool JP2Handler::write(const QImage &image)
 {
-    return write_image(image, device(),quality);
+    return write_image(image, device(), quality);
 }
 
 bool JP2Handler::supportsOption(ImageOption option) const
@@ -474,9 +474,9 @@ QImageIOPlugin::Capabilities JP2Plugin::capabilities(QIODevice *device, const QB
 
     Capabilities cap;
     if (device->isReadable() && JP2Handler::canRead(device))
-    cap |= CanRead;
+        cap |= CanRead;
     if (device->isWritable())
-    cap |= CanWrite;
+        cap |= CanWrite;
     return cap;
 }
 
