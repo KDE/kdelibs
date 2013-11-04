@@ -2610,18 +2610,8 @@ void RenderBlock::addOverHangingFloats( RenderBlock *flow, int xoff, int offset,
                 }
             }
 
-            bool already = false;
             // don't insert it twice!
-            if (m_floatingObjects) {
-                QListIterator<FloatingObject*> it2(*m_floatingObjects);
-                while ( it2.hasNext() ) {
-                    if (it2.next()->node == r->node) {
-                        already = true;
-                        break;
-                    }
-                }
-            }
-            if ( !already ) {
+            if (!containsFloat(r->node)) {
                 FloatingObject *floatingObj = new FloatingObject(KDE_CAST_BF_ENUM(FloatingObject::Type, r->type));
                 floatingObj->startY = r->startY - offset;
                 floatingObj->endY = r->endY - offset;
