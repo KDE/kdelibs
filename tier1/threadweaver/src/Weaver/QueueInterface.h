@@ -1,7 +1,7 @@
 #ifndef THREADWEAVER_QUEUEINTERFACE_H
 #define THREADWEAVER_QUEUEINTERFACE_H
 
-#include <JobPointer.h>
+#include "JobPointer.h"
 
 namespace ThreadWeaver {
 

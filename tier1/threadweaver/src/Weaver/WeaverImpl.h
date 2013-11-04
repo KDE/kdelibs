@@ -33,6 +33,7 @@ $Id: WeaverImpl.h 32 2005-08-17 08:38:01Z mirko $
 #include <QSharedPointer>
 #include <QAtomicPointer>
 #include <QAtomicInt>
+#include <QSemaphore>
 
 #ifndef THREADWEAVER_PRIVATE_API
 #define THREADWEAVER_PRIVATE_API
@@ -40,7 +41,6 @@ $Id: WeaverImpl.h 32 2005-08-17 08:38:01Z mirko $
 
 #include "State.h"
 #include "QueueAPI.h"
-#include <QSemaphore>
 
 namespace ThreadWeaver {
 

@@ -34,7 +34,7 @@
 #include "WeaverInterface.h"
 #include "QueueInterface.h"
 #include "Queue.h"
-#include <threadweaver_export.h>
+#include "threadweaver_export.h"
 
 namespace ThreadWeaver {
 

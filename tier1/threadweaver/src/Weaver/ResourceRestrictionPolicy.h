@@ -31,8 +31,7 @@ $Id: Job.h 32 2005-08-17 08:38:01Z mirko $
 
 #include <QtGlobal>
 
-#include <JobPointer.h>
-
+#include "JobPointer.h"
 #include "QueuePolicy.h"
 
 namespace ThreadWeaver {

@@ -1,8 +1,8 @@
 #ifndef LAMBDA_H
 #define LAMBDA_H
 
-#include <Job.h>
-#include <threadweaver_export.h>
+#include "Job.h"
+#include "threadweaver_export.h"
 
 namespace ThreadWeaver {
 

@@ -2,7 +2,8 @@
 #define MANAGEDJOBPOINTER_H
 
 #include <QSharedPointer>
-#include <JobInterface.h>
+
+#include "JobInterface.h"
 
 namespace ThreadWeaver {
 

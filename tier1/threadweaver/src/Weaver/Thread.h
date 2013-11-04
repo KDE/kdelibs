@@ -34,8 +34,8 @@
 #include <QtCore/QMutex>
 #include <QtCore/QThread>
 
-#include <threadweaver_export.h>
-#include <JobPointer.h>
+#include "threadweaver_export.h"
+#include "JobPointer.h"
 
 namespace ThreadWeaver {
 

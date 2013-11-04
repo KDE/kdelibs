@@ -29,8 +29,8 @@
 #ifndef QUEUEPOLICY_H
 #define QUEUEPOLICY_H
 
-#include <JobPointer.h>
-#include <threadweaver_export.h>
+#include "JobPointer.h"
+#include "threadweaver_export.h"
 
 namespace ThreadWeaver {
 

@@ -2,6 +2,6 @@
 #define THREADWEAVER_JOBPOINTER_H
 
 // JobPointer is declared together with JobInterface
-#include <JobInterface.h>
+#include "JobInterface.h"
 
 #endif // THREADWEAVER_JOBPOINTER_H

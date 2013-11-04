@@ -31,7 +31,7 @@
 
 #include <QtCore/QObject>
 
-#include <threadweaver_export.h>
+#include "threadweaver_export.h"
 
 namespace ThreadWeaver {
 

@@ -30,9 +30,9 @@
 
 #include <QtCore/QObject>
 
-#include <threadweaver_export.h>
-#include <JobPointer.h>
-#include <JobInterface.h>
+#include "threadweaver_export.h"
+#include "JobPointer.h"
+#include "JobInterface.h"
 
 namespace ThreadWeaver {
 

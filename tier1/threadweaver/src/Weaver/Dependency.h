@@ -1,7 +1,7 @@
 #ifndef DEPENDENCY_H
 #define DEPENDENCY_H
 
-#include <JobPointer.h>
+#include "JobPointer.h"
 
 namespace ThreadWeaver {
 

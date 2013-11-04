@@ -29,9 +29,9 @@ $Id: Job.h 32 2005-08-17 08:38:01Z mirko $
 #ifndef THREADWEAVER_JOB_H
 #define THREADWEAVER_JOB_H
 
-#include <threadweaver_export.h>
-#include <JobInterface.h>
-#include <JobPointer.h>
+#include "threadweaver_export.h"
+#include "JobInterface.h"
+#include "JobPointer.h"
 
 class QMutex;
 class QWaitCondition;

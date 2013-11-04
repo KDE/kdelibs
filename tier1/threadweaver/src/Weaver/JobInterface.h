@@ -3,8 +3,8 @@
 
 #include <QSharedPointer>
 
-#include <threadweaver_export.h>
-#include <JobPointer.h>
+#include "threadweaver_export.h"
+#include "JobPointer.h"
 
 class QMutex;
 

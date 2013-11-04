@@ -3,8 +3,8 @@
 
 #include <QtCore/QObject>
 
-#include <threadweaver_export.h>
-#include <IdDecorator.h>
+#include "threadweaver_export.h"
+#include "IdDecorator.h"
 
 namespace ThreadWeaver {
 
