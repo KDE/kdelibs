@@ -30,7 +30,7 @@ sb_add_project(tier2/kdoctools DEPENDS karchive)
 sb_add_project(tier2/ki18n DEPENDS kjs)
 sb_add_project(tier2/knotifications DEPENDS kwindowsystem)
 
-# sb_add_project(tier3/kconfigwidgets DEPENDS kauth kcoreaddons kcodecs kconfig kguiaddons ki18n kwidgetsaddons)
+sb_add_project(tier3/kconfigwidgets DEPENDS kauth kcoreaddons kcodecs kconfig kguiaddons ki18n kwidgetsaddons)
 
 if(SB_EVERYTHING_DISABLED)
   message(STATUS "All projects are disabled. You may consider running make edit_cache or cmake-gui to enable some.")

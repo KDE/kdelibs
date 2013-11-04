@@ -5,6 +5,7 @@
 
 include("${CMAKE_CURRENT_LIST_DIR}/KConfigTargets.cmake")
 
+find_dependency(Qt5Xml "@REQUIRED_QT_VERSION@")
 
 get_target_property(KConfig_KCFGC_EXECUTABLE  KF5::kconfig_compiler  LOCATION)
 
