@@ -300,7 +300,7 @@ bool Nepomuk::ResourceData::store()
         }
 
         QDBusConnection bus = QDBusConnection::sessionBus();
-        QDBusMessage msg = QDBusMessage::createMethodCall( QLatin1String("org.kde.nepomuk.DataManagement"),
+        QDBusMessage msg = QDBusMessage::createMethodCall( QLatin1String("org.kde.NepomukStorage"),
                                                            QLatin1String("/datamanagement"),
                                                            QLatin1String("org.kde.nepomuk.DataManagement"),
                                                            QLatin1String("createResource") );
@@ -486,7 +486,7 @@ void Nepomuk::ResourceData::setProperty( const QUrl& uri, const Nepomuk::Variant
 
         // update the store
         QDBusConnection bus = QDBusConnection::sessionBus();
-        QDBusMessage msg = QDBusMessage::createMethodCall( QLatin1String("org.kde.nepomuk.DataManagement"),
+        QDBusMessage msg = QDBusMessage::createMethodCall( QLatin1String("org.kde.NepomukStorage"),
                                                            QLatin1String("/datamanagement"),
                                                            QLatin1String("org.kde.nepomuk.DataManagement"),
                                                            QLatin1String("setProperty") );
@@ -540,7 +540,7 @@ void Nepomuk::ResourceData::addProperty( const QUrl& uri, const Nepomuk::Variant
 
         // update the store
         QDBusConnection bus = QDBusConnection::sessionBus();
-        QDBusMessage msg = QDBusMessage::createMethodCall( QLatin1String("org.kde.nepomuk.DataManagement"),
+        QDBusMessage msg = QDBusMessage::createMethodCall( QLatin1String("org.kde.NepomukStorage"),
                                                            QLatin1String("/datamanagement"),
                                                            QLatin1String("org.kde.nepomuk.DataManagement"),
                                                            QLatin1String("addProperty") );
@@ -589,7 +589,7 @@ void Nepomuk::ResourceData::removeProperty( const QUrl& uri )
         QMutexLocker lock(&m_modificationMutex);
 
         QDBusConnection bus = QDBusConnection::sessionBus();
-        QDBusMessage msg = QDBusMessage::createMethodCall( QLatin1String("org.kde.nepomuk.DataManagement"),
+        QDBusMessage msg = QDBusMessage::createMethodCall( QLatin1String("org.kde.NepomukStorage"),
                                                            QLatin1String("/datamanagement"),
                                                            QLatin1String("org.kde.nepomuk.DataManagement"),
                                                            QLatin1String("removeProperties") );
@@ -621,7 +621,7 @@ void Nepomuk::ResourceData::remove( bool recursive )
 
     if( !m_uri.isEmpty() ) {
         QDBusConnection bus = QDBusConnection::sessionBus();
-        QDBusMessage msg = QDBusMessage::createMethodCall( QLatin1String("org.kde.nepomuk.DataManagement"),
+        QDBusMessage msg = QDBusMessage::createMethodCall( QLatin1String("org.kde.NepomukStorage"),
                                                            QLatin1String("/datamanagement"),
                                                            QLatin1String("org.kde.nepomuk.DataManagement"),
                                                            QLatin1String("removeResources") );
