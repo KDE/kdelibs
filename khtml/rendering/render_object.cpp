@@ -2389,7 +2389,7 @@ void RenderObject::removeFromObjectLists()
 
     }
 
-    if (isPositioned()) {
+    if (inPosObjectList()) {
         RenderObject *p;
         for (p = parent(); p; p = p->parent()) {
             if (p->isRenderBlock())
