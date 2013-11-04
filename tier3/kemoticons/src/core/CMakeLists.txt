@@ -19,8 +19,8 @@ PRIVATE
 )
 
 set_target_properties(KEmoticons PROPERTIES
-                      VERSION ${GENERIC_LIB_VERSION}
-                      SOVERSION ${GENERIC_LIB_SOVERSION})
+                      VERSION ${KEMOTICONS_VERSION_STRING}
+                      SOVERSION ${KEMOTICONS_SOVERSION})
 
 install(FILES kemoticonsTheme.desktop DESTINATION ${SERVICETYPES_INSTALL_DIR})
 

@@ -29,8 +29,8 @@ target_link_libraries(KCMUtils
     XmlGui          # KAboutApplicationDialog
 )
 set_target_properties(KCMUtils PROPERTIES
-                      VERSION ${GENERIC_LIB_VERSION}
-                      SOVERSION ${GENERIC_LIB_SOVERSION})
+                      VERSION ${KCMUTILS_VERSION_STRING}
+                      SOVERSION ${KCMUTILS_SOVERSION})
 
 install( FILES
  ${CMAKE_CURRENT_BINARY_DIR}/kcmutils_export.h

@@ -42,8 +42,8 @@ target_link_libraries(KPrintUtils
     KF5::KI18n
 )
 set_target_properties(KPrintUtils PROPERTIES
-                      VERSION ${GENERIC_LIB_VERSION}
-                      SOVERSION ${GENERIC_LIB_SOVERSION})
+                      VERSION ${KPRINTUTILS_VERSION_STRING}
+                      SOVERSION ${KPRINTUTILS_SOVERSION})
 
 install( FILES
  ${CMAKE_CURRENT_BINARY_DIR}/kprintutils_export.h

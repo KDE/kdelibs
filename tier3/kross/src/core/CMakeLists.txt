@@ -15,8 +15,8 @@ target_link_libraries(KrossCore PUBLIC Qt5::Script Qt5::Xml)
 
 target_include_directories(KrossCore PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/../include>")
 
-set_target_properties(KrossCore PROPERTIES VERSION ${GENERIC_LIB_VERSION}
-                                SOVERSION ${GENERIC_LIB_SOVERSION}
+set_target_properties(KrossCore PROPERTIES VERSION ${KROSS_VERSION_STRING}
+                                SOVERSION ${KROSS_SOVERSION}
                      )
 
 

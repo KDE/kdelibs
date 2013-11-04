@@ -86,8 +86,8 @@ target_link_libraries(knewstuff3
 generate_export_header(knewstuff3)
 
 set_target_properties(knewstuff3 PROPERTIES
-   VERSION ${GENERIC_LIB_VERSION}
-   SOVERSION ${GENERIC_LIB_SOVERSION}
+   VERSION ${KNEWSTUFF_VERSION_STRING}
+   SOVERSION ${KNEWSTUFF_SOVERSION}
 )
 
 install(TARGETS knewstuff3 EXPORT KNewStuffTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
