@@ -15,10 +15,6 @@ if(NOT kdelibs_SOURCE_DIR)
   find_package(KI18n 5.0.0 REQUIRED)
 endif()
 
-
-add_subdirectory( src )
-add_subdirectory( tests )
-
 # create a Config.cmake and a ConfigVersion.cmake file and install them
 set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KPty")
 
@@ -34,12 +30,14 @@ ecm_setup_version(
   PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KPtyConfigVersion.cmake"
 )
 
-
 configure_package_config_file(
   "${CMAKE_CURRENT_SOURCE_DIR}/KPtyConfig.cmake.in"
   "${CMAKE_CURRENT_BINARY_DIR}/KPtyConfig.cmake"
   INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
 )
+
+add_subdirectory( src )
+add_subdirectory( tests )
 
 install(FILES
   "${CMAKE_CURRENT_BINARY_DIR}/KPtyConfig.cmake"
