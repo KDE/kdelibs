@@ -28,10 +28,10 @@
 #ifndef _KEMAILSETTINGS_H
 #define _KEMAILSETTINGS_H
 
-#include <QtCore/QString>
+#include <QtCore/QCoreApplication> // Q_DECLARE_TR_FUNCTIONS
 #include <QtCore/QStringList>
 
-#include <kio/kiocore_export.h>
+#include <kconfigcore_export.h>
 
 class KEMailSettingsPrivate;
 
@@ -45,7 +45,8 @@ class KEMailSettingsPrivate;
   *
   * @author Alex Zepeda zipzippy@sonic.net
   **/
-class KIOCORE_EXPORT KEMailSettings {
+class KCONFIGCORE_EXPORT KEMailSettings {
+    Q_DECLARE_TR_FUNCTIONS(KEMailSettings)
 public:
 	/**
 	  * The list of settings that I thought of when I wrote this 
@@ -131,7 +132,7 @@ public:
 	  * Returns the name of the current profile.
 	  * @returns what profile we're currently using
 	  **/
-	KIOCORE_DEPRECATED QString currentProfileName() const;
+	KCONFIGCORE_DEPRECATED QString currentProfileName() const;
 #endif
 
 	/**

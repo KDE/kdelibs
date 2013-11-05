@@ -28,7 +28,6 @@
 
 #include <kconfig.h>
 #include <kconfiggroup.h>
-#include <klocalizedstring.h>
 
 class KEMailSettingsPrivate {
 public:
@@ -46,7 +45,7 @@ QString KEMailSettings::defaultProfileName() const
 
 QString KEMailSettings::getSetting(KEMailSettings::Setting s) const
 {
-        KConfigGroup cg( p->m_pConfig, QString("PROFILE_")+p->m_sCurrentProfile);
+        KConfigGroup cg(p->m_pConfig, QStringLiteral("PROFILE_") + p->m_sCurrentProfile);
 	switch (s) {
 		case ClientProgram: {
 			return cg.readEntry("EmailClient");
@@ -125,14 +124,14 @@ QString KEMailSettings::getSetting(KEMailSettings::Setting s) const
 }
 void KEMailSettings::setSetting(KEMailSettings::Setting s, const QString  &v)
 {
-        KConfigGroup cg( p->m_pConfig, QString("PROFILE_")+p->m_sCurrentProfile);
+        KConfigGroup cg(p->m_pConfig, QStringLiteral("PROFILE_") + p->m_sCurrentProfile);
 	switch (s) {
 		case ClientProgram: {
 			cg.writePathEntry("EmailClient", v);
 			break;
 		}
 		case ClientTerminal: {
-			cg.writeEntry("TerminalClient", (v == "true") );
+			cg.writeEntry("TerminalClient", (v == QLatin1String("true")));
 			break;
 		}
 		case RealName: {
@@ -172,7 +171,7 @@ void KEMailSettings::setSetting(KEMailSettings::Setting s, const QString  &v)
 			break;
 		}
 		case OutServerTLS: {
-			cg.writeEntry("OutgoingServerTLS", (v == "true") );
+			cg.writeEntry("OutgoingServerTLS", (v == QLatin1String("true")));
 			break;
 		}
 		case InServer: {
@@ -196,7 +195,7 @@ void KEMailSettings::setSetting(KEMailSettings::Setting s, const QString  &v)
 			break;
 		}
 		case InServerTLS: {
-			cg.writeEntry("IncomingServerTLS", (v == "true") );
+			cg.writeEntry("IncomingServerTLS", (v == QLatin1String("true")));
 			break;
 		}
 	};
@@ -213,7 +212,7 @@ void KEMailSettings::setDefault(const QString &s)
 
 void KEMailSettings::setProfile (const QString &s)
 {
-	QString groupname="PROFILE_";
+	QString groupname = QStringLiteral("PROFILE_");
 	groupname.append(s);
 	p->m_sCurrentProfile=s;
 	if (!p->m_pConfig->hasGroup(groupname)) { // Create a group if it doesn't exist
@@ -240,7 +239,7 @@ KEMailSettings::KEMailSettings()
 {
 	p->m_sCurrentProfile.clear();
 
-	p->m_pConfig = new KConfig("emaildefaults");
+	p->m_pConfig = new KConfig(QStringLiteral("emaildefaults"));
 
 	const QStringList groups = p->m_pConfig->groupList();
 	for (QStringList::ConstIterator it = groups.begin(); it != groups.end(); ++it) {
@@ -249,17 +248,17 @@ KEMailSettings::KEMailSettings()
 	}
 
         KConfigGroup cg( p->m_pConfig, "Defaults");
-	p->m_sDefaultProfile = cg.readEntry("Profile", i18n("Default"));
+	p->m_sDefaultProfile = cg.readEntry("Profile", tr("Default"));
 	if (!p->m_sDefaultProfile.isNull()) {
-		if (!p->m_pConfig->hasGroup(QString("PROFILE_")+p->m_sDefaultProfile))
-			setDefault(i18n("Default"));
+		if (!p->m_pConfig->hasGroup(QStringLiteral("PROFILE_") + p->m_sDefaultProfile))
+			setDefault(tr("Default"));
 		else
 			setDefault(p->m_sDefaultProfile);
 	} else {
 			if (p->profiles.count()) {
 				setDefault(p->profiles[0]);
 			} else
-				setDefault(i18n("Default"));
+				setDefault(tr("Default"));
 	}
 	setProfile(defaultProfileName());
 }

@@ -12,6 +12,7 @@ set(libkconfigcore_SRCS
    ksharedconfig.cpp
    kcoreconfigskeleton.cpp
    kauthorized.cpp
+   kemailsettings.cpp
 )
 
 add_library(KConfigCore ${libkconfigcore_SRCS})
@@ -45,5 +46,6 @@ install( FILES
    ksharedconfig.h
    kcoreconfigskeleton.h
    kauthorized.h
+   kemailsettings.h
    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )

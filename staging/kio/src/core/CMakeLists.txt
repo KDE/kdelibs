@@ -26,7 +26,6 @@ set(kiocore_SRCS
   connection.cpp
   krecentdocument.cpp
   kfileitemlistproperties.cpp
-  kemailsettings.cpp
   tcpslavebase.cpp
   directorysizejob.cpp
   forwardingslavebase.cpp
@@ -172,7 +171,6 @@ install(FILES
   kacl.h
   kurlauthorized.h
   kcoredirlister.h
-  kemailsettings.h
   kremoteencoding.h
   kdiskfreespaceinfo.h
   kdirnotify.h
