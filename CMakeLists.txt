@@ -112,8 +112,6 @@ add_subdirectory( cmake )
 add_subdirectory( licenses   )
 add_subdirectory( kioslave   )
 
-add_subdirectory( khtml  )
-
 add_subdirectory( interfaces  )
 add_subdirectory( includes )
 add_subdirectory( doc )
