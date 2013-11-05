@@ -14,7 +14,7 @@ include(KDECompilerSettings)
 include(KDECMakeSettings)
 
 if(NOT kdelibs_SOURCE_DIR)
-    find_package(KConfigCore ${KF5_VERSION} REQUIRED)
+    find_package(KConfig ${KF5_VERSION} REQUIRED)
     find_package(KWindowSystem ${KF5_VERSION} REQUIRED)
 endif()
 
