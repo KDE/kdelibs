@@ -540,7 +540,6 @@ target_link_libraries(KHtml
     KF5::KIOCore
     KF5::KJS
     KF5::KI18n
-    KF5::KBookmarks
     KF5::KParts
   PRIVATE
     ${PHONON_LIBRARIES}
