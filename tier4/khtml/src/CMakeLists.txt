@@ -556,6 +556,7 @@ target_link_libraries(KHtml
     KF5::KWallet
     KF5::KIconThemes
     KF5::KNotifications
+    KF5::KBookmarks
     KF5::KIOWidgets # KUrlRequester
 )
 if (KJS_DEBUGGER)
