@@ -39,7 +39,7 @@ kde4support_unit_tests(
   kdatetimetest
   klocaletimeformattest
   ktimezonestest
-  ktimezonewidget_unittest
+  k4timezonewidget_unittest
   kdebugtest
   kbuttongrouptest
   kdialog_unittest

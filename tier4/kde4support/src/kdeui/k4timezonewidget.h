@@ -40,14 +40,14 @@ class KTimeZones;
  * \code
  *
  *  // This adds a time zone widget to a dialog.
- *  m_timezones = new KTimeZoneWidget(this);
+ *  m_timezones = new K4TimeZoneWidget(this);
  *  ...
  * \endcode
  *
  * To use the class to implement a multiple-choice custom time zone selector:
  * \code
  *
- *  m_timezones = new KTimeZoneWidget( this, "Time zones", vcalendarTimezones );
+ *  m_timezones = new K4TimeZoneWidget( this, "Time zones", vcalendarTimezones );
  *  m_timezones->setSelectionMode( QTreeView::MultiSelection );
  *  ...
  * \endcode
@@ -56,7 +56,7 @@ class KTimeZones;
  *
  * @author S.R.Haque <srhaque@iee.org>
  */
-class KDE4SUPPORT_EXPORT KTimeZoneWidget : public QTreeWidget
+class KDE4SUPPORT_EXPORT K4TimeZoneWidget : public QTreeWidget
 {
     Q_OBJECT
     Q_PROPERTY(bool itemsCheckable READ itemsCheckable WRITE setItemsCheckable)
@@ -70,12 +70,12 @@ class KDE4SUPPORT_EXPORT KTimeZoneWidget : public QTreeWidget
      * @param timeZones The time zone database to use. If 0, the system time zone
      *                  database is used.
      */
-    explicit KTimeZoneWidget( QWidget *parent = 0, KTimeZones *timeZones = 0 );
+    explicit K4TimeZoneWidget( QWidget *parent = 0, KTimeZones *timeZones = 0 );
 
     /**
      * Destroys the time zone selection widget.
      */
-    virtual ~KTimeZoneWidget();
+    virtual ~K4TimeZoneWidget();
 
     /**
      * Makes all items show a checkbox, so that the user can select multiple
@@ -95,7 +95,7 @@ class KDE4SUPPORT_EXPORT KTimeZoneWidget : public QTreeWidget
 
     /**
      * Allows to select multiple timezones. This is the same as
-     * setSelectionMode(KTimeZoneWidget::MultiSelection) normally,
+     * setSelectionMode(K4TimeZoneWidget::MultiSelection) normally,
      * but in "items checkable" mode, this is rather about allowing to
      * check multiple items. In that case, the actual QTreeWidget selection
      * mode remains unchanged.
@@ -113,7 +113,7 @@ class KDE4SUPPORT_EXPORT KTimeZoneWidget : public QTreeWidget
      * Returns the currently selected time zones. See QTreeView::selectionChanged().
      *
      * @return a list of time zone names, in the format used by the database
-     *         supplied to the {@link KTimeZoneWidget() } constructor.
+     *         supplied to the {@link K4TimeZoneWidget() } constructor.
      */
     QStringList selection() const;
 

@@ -18,7 +18,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "ktimezonewidget.h"
+#include "k4timezonewidget.h"
 
 #include <QDebug>
 #include <QtCore/QFile>
@@ -29,7 +29,7 @@
 #include <ksystemtimezone.h>
 #include <ktimezone.h>
 
-class KTimeZoneWidget::Private
+class K4TimeZoneWidget::Private
 {
 public:
     Private() : itemsCheckable(false), singleSelection(true) {}
@@ -55,9 +55,9 @@ static bool localeLessThan (const QString &a, const QString &b)
     return QString::localeAwareCompare(a, b) < 0;
 }
 
-KTimeZoneWidget::KTimeZoneWidget( QWidget *parent, KTimeZones *db )
+K4TimeZoneWidget::K4TimeZoneWidget( QWidget *parent, KTimeZones *db )
   : QTreeWidget( parent ),
-    d(new KTimeZoneWidget::Private)
+    d(new K4TimeZoneWidget::Private)
 {
   // If the user did not provide a timezone database, we'll use the system default.
   setRootIsDecorated(false);
@@ -125,12 +125,12 @@ KTimeZoneWidget::KTimeZoneWidget( QWidget *parent, KTimeZones *db )
   }
 }
 
-KTimeZoneWidget::~KTimeZoneWidget()
+K4TimeZoneWidget::~K4TimeZoneWidget()
 {
     delete d;
 }
 
-void KTimeZoneWidget::setItemsCheckable(bool enable)
+void K4TimeZoneWidget::setItemsCheckable(bool enable)
 {
     d->itemsCheckable = enable;
     const int count = topLevelItemCount();
@@ -141,17 +141,17 @@ void KTimeZoneWidget::setItemsCheckable(bool enable)
     QTreeWidget::setSelectionMode(QAbstractItemView::NoSelection);
 }
 
-bool KTimeZoneWidget::itemsCheckable() const
+bool K4TimeZoneWidget::itemsCheckable() const
 {
     return d->itemsCheckable;
 }
 
-QString KTimeZoneWidget::displayName( const KTimeZone &zone )
+QString K4TimeZoneWidget::displayName( const KTimeZone &zone )
 {
     return i18n( zone.name().toUtf8() ).replace( '_', ' ' );
 }
 
-QStringList KTimeZoneWidget::selection() const
+QStringList K4TimeZoneWidget::selection() const
 {
     QStringList selection;
 
@@ -159,7 +159,7 @@ QStringList KTimeZoneWidget::selection() const
     // Do not use selectedItems() because it skips hidden items, making it
     // impossible to use a KTreeWidgetSearchLine.
     // There is no QTreeWidgetItemConstIterator, hence the const_cast :/
-    QTreeWidgetItemIterator it(const_cast<KTimeZoneWidget*>(this), d->itemsCheckable ? QTreeWidgetItemIterator::Checked : QTreeWidgetItemIterator::Selected);
+    QTreeWidgetItemIterator it(const_cast<K4TimeZoneWidget*>(this), d->itemsCheckable ? QTreeWidgetItemIterator::Checked : QTreeWidgetItemIterator::Selected);
     for (; *it; ++it) {
         selection.append( (*it)->data( Private::CityColumn, Private::ZoneRole ).toString() );
     }
@@ -167,7 +167,7 @@ QStringList KTimeZoneWidget::selection() const
     return selection;
 }
 
-void KTimeZoneWidget::setSelected( const QString &zone, bool selected )
+void K4TimeZoneWidget::setSelected( const QString &zone, bool selected )
 {
     bool found = false;
 
@@ -213,7 +213,7 @@ void KTimeZoneWidget::setSelected( const QString &zone, bool selected )
         qDebug() << "No such zone: " << zone;
 }
 
-void KTimeZoneWidget::clearSelection()
+void K4TimeZoneWidget::clearSelection()
 {
     if (d->itemsCheckable) {
         // Un-select all items
@@ -228,7 +228,7 @@ void KTimeZoneWidget::clearSelection()
     }
 }
 
-void KTimeZoneWidget::setSelectionMode(QAbstractItemView::SelectionMode mode)
+void K4TimeZoneWidget::setSelectionMode(QAbstractItemView::SelectionMode mode)
 {
     d->singleSelection = (mode == QAbstractItemView::SingleSelection);
     if (!d->itemsCheckable) {
@@ -236,7 +236,7 @@ void KTimeZoneWidget::setSelectionMode(QAbstractItemView::SelectionMode mode)
     }
 }
 
-QAbstractItemView::SelectionMode KTimeZoneWidget::selectionMode() const
+QAbstractItemView::SelectionMode K4TimeZoneWidget::selectionMode() const
 {
     if (d->itemsCheckable) {
         return d->singleSelection ? QTreeWidget::SingleSelection : QTreeWidget::MultiSelection;

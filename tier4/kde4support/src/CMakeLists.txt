@@ -145,7 +145,7 @@ set(libkde4support_SRCS
     kdeui/kglobalsettings.cpp
     kdeui/kdatetimewidget.cpp
     kdeui/kdatewidget.cpp
-    kdeui/ktimezonewidget.cpp
+    kdeui/k4timezonewidget.cpp
 
     kio/kfilemetainfowidget.cpp
     kio/kdiskfreespace.cpp
@@ -501,7 +501,7 @@ install(FILES
     kdeui/kglobalsettings.h
     kdeui/kdatetimewidget.h
     kdeui/kdatewidget.h
-    kdeui/ktimezonewidget.h
+    kdeui/k4timezonewidget.h
     ${CMAKE_CURRENT_BINARY_DIR}/kde4support_export.h
     ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h
     ${CMAKE_CURRENT_BINARY_DIR}/kdeversion.h

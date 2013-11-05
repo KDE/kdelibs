@@ -241,9 +241,9 @@ ToolTip=Improved QTextEdit (KDE)
 WhatsThis=An improved version of the QTextEdit with mail or system browser invocation support
 Group=Input (KDE)
 
-[KTimeZoneWidget]
+[K4TimeZoneWidget]
 ToolTip=This widget can be used to display or allow user selection of timezones. (KDE)
-IncludeFile=ktimezonewidget.h
+IncludeFile=k4timezonewidget.h
 ConstructorArgs=(parent, new KTimeZones())
 Group=Input (KDE)
 

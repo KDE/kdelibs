@@ -18,12 +18,12 @@
 */
 
 #include <QtTest/QtTest>
-#include <ktimezonewidget.h>
+#include <k4timezonewidget.h>
 #include <ksystemtimezone.h>
 #include <kconfiggroup.h>
 #include "ktimezonestest_p.h"
 
-class KTimeZoneWidgetTest : public QObject
+class K4TimeZoneWidgetTest : public QObject
 {
     Q_OBJECT
 
@@ -48,12 +48,12 @@ private Q_SLOTS:
             QSKIP("ktimezoned not available, check that kded5 is running and /modules/ktimezoned is available");
         }
 
-        KTimeZoneWidget tzw;
+        K4TimeZoneWidget tzw;
         QVERIFY(tzw.topLevelItemCount() > 0);
         QVERIFY(tzw.selectedItems().isEmpty());
 
         // Single selection mode (default)
-        QVERIFY(tzw.selectionMode() == KTimeZoneWidget::SingleSelection);
+        QVERIFY(tzw.selectionMode() == K4TimeZoneWidget::SingleSelection);
         tzw.setSelected("Europe/Paris", true);
         QCOMPARE(tzw.selectedItems().count(), 1);
         QCOMPARE(tzw.selection(), QStringList() << "Europe/Paris");
@@ -62,7 +62,7 @@ private Q_SLOTS:
         QCOMPARE(tzw.selection(), QStringList() << "Africa/Cairo");
 
         // Multiple selections explicitly allowed
-        tzw.setSelectionMode(KTimeZoneWidget::MultiSelection);
+        tzw.setSelectionMode(K4TimeZoneWidget::MultiSelection);
         tzw.clearSelection();
         QVERIFY(tzw.selectedItems().isEmpty());
         tzw.setSelected("Europe/Paris", true);
@@ -79,14 +79,14 @@ private Q_SLOTS:
             QSKIP("ktimezoned not available, check that kded5 is running and /modules/ktimezoned is available");
         }
 
-        KTimeZoneWidget tzw;
+        K4TimeZoneWidget tzw;
         tzw.setItemsCheckable(true);
         QVERIFY(tzw.topLevelItemCount() > 0);
         QVERIFY(tzw.selectedItems().isEmpty());
         QVERIFY(tzw.selection().isEmpty());
 
         // Single selection mode (default)
-        QVERIFY(tzw.selectionMode() == KTimeZoneWidget::SingleSelection);
+        QVERIFY(tzw.selectionMode() == K4TimeZoneWidget::SingleSelection);
         tzw.setSelected("Europe/Paris", true);
         QCOMPARE(tzw.selectedItems().count(), 0); // it got checked, not selected
         QCOMPARE(tzw.selection(), QStringList() << "Europe/Paris");
@@ -94,7 +94,7 @@ private Q_SLOTS:
         QCOMPARE(tzw.selection(), QStringList() << "Africa/Cairo");
 
         // Multiple selections explicitly allowed
-        tzw.setSelectionMode(KTimeZoneWidget::MultiSelection);
+        tzw.setSelectionMode(K4TimeZoneWidget::MultiSelection);
         tzw.clearSelection();
         tzw.setSelected("Europe/Paris", true);
         QCOMPARE(tzw.selection(), QStringList() << "Europe/Paris");
@@ -113,6 +113,6 @@ private:
 // Ideally unit tests should talk to their own kded instance,
 // but that means starting a new DBus session bus for all (each?) unit tests, somehow...
 
-QTEST_MAIN(KTimeZoneWidgetTest)
+QTEST_MAIN(K4TimeZoneWidgetTest)
 
-#include "ktimezonewidget_unittest.moc"
+#include "k4timezonewidget_unittest.moc"
