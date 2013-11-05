@@ -53,7 +53,7 @@ public Q_SLOTS:
 
 private:
     bool running;
-    QQueue<QSharedPointer<MessageBoxData*> > queue;
+    QQueue<QSharedPointer<MessageBoxData> > queue;
 };
 
 KDialogJobUiDelegate::Private::Private(QObject* parent)
@@ -64,7 +64,7 @@ KDialogJobUiDelegate::Private::Private(QObject* parent)
 
 KDialogJobUiDelegate::Private::~Private()
 {
-    qDeleteAll(queue);
+    queue.clear();
 }
 
 void KDialogJobUiDelegate::Private::next()
@@ -74,7 +74,7 @@ void KDialogJobUiDelegate::Private::next()
         return;
     }
 
-    QSharedPointer<MessageBoxData*> data = queue.dequeue();
+    QSharedPointer<MessageBoxData> data = queue.dequeue();
     KMessageBox::messageBox(data->widget, data->type, data->msg);
 
     QMetaObject::invokeMethod(this, "next", Qt::QueuedConnection);
@@ -82,7 +82,7 @@ void KDialogJobUiDelegate::Private::next()
 
 void KDialogJobUiDelegate::Private::queuedMessageBox(QWidget* widget, KMessageBox::DialogType type, const QString& msg)
 {
-    QSharedPointer<MessageBoxData*> data = new MessageBoxData;
+    QSharedPointer<MessageBoxData> data(new MessageBoxData);
     data->type = type;
     data->widget = widget;
     data->msg = msg;
