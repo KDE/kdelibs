@@ -24,8 +24,8 @@ target_link_libraries(KBookmarks PUBLIC Qt5::Widgets Qt5::Xml)
 target_link_libraries(KBookmarks PRIVATE
                                         KF5::KCoreAddons
                                         KF5::KWidgetsAddons
-                                        KConfigWidgets # for KStandardAction
-                                        XmlGui # for KActionCollection
+                                        KF5::KConfigWidgets # for KStandardAction
+                                        KF5::XmlGui # for KActionCollection
                                         KF5::KIconThemes # for SmallIcon
 )
 
