@@ -60,9 +60,9 @@ public:
     KDirWatch_UnitTest()
     {
         m_path = m_tempDir.path() + QLatin1Char('/');
-
         // Speed up the test by making the kdirwatch timer (to compress changes) faster
         qputenv("KDIRWATCH_POLLINTERVAL", "50");
+        qputenv("KDIRWATCH_METHOD", KDIRWATCH_TEST_METHOD);
         KDirWatch foo;
         m_slow = (foo.internalMethod() == KDirWatch::FAM || foo.internalMethod() == KDirWatch::Stat);
         qDebug() << "Using method" << methodToString(foo.internalMethod());
