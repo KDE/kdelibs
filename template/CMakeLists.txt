@@ -9,6 +9,9 @@ set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR})
 include(FeatureSummary)
 include(ECMSetupVersion)
 include(CMakePackageConfigHelpers)
+include(KDEInstallDirs)
+include(KDECompilerSettings)
+include(KDECMakeSettings)
 
 set(KF5_VERSION "5.0.0")
 
@@ -24,9 +27,6 @@ set(REQUIRED_QT_VERSION "5.2.0")
 
 # Required Qt5 components to build this framework
 find_package(Qt5 ${REQUIRED_QT_VERSION} NO_MODULE REQUIRED Core)
-include(KDEInstallDirs)
-include(KDECompilerSettings)
-include(KDECMakeSettings)
 
 # TODO: Add all required find_package() calls here
 
