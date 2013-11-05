@@ -1,3 +1,5 @@
+add_subdirectory(ksendbugmail)
+
 set(LibAttica_MIN_VERSION "1.0.0" CACHE STRING "The LibAttica Minimum version")
 find_package(LibAttica ${LibAttica_MIN_VERSION} NO_MODULE)
 set_package_properties(LibAttica PROPERTIES DESCRIPTION "A Qt library that implements the Open Collaboration Services API"

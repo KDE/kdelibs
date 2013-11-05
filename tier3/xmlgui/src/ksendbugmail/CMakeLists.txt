@@ -15,7 +15,5 @@ target_link_libraries(ksendbugmail
    KF5::KI18n
 )
 
-set_target_properties(ksendbugmail PROPERTIES COMPILE_FLAGS -DKIO_EXPORT=)
-
 install(TARGETS ksendbugmail DESTINATION ${LIBEXEC_INSTALL_DIR} )
 

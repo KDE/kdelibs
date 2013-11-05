@@ -13,7 +13,4 @@ include(FeatureSummary)
 include(CMakePackageConfigHelpers)
 include(ECMSetupVersion)
 
-########### next target ###############
-
-add_subdirectory( misc )
 
