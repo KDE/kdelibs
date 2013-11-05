@@ -10,16 +10,23 @@ include(KDEInstallDirs)
 include(KDECompilerSettings)
 include(KDECMakeSettings)
 
+set(KF5_VERSION "5.0.0")
+
 set(QT_REQUIRED_VERSION 5.2.0)
 find_package(Qt5 ${QT_REQUIRED_VERSION} CONFIG REQUIRED Widgets DBus)
 
 find_package(X11)
 set(HAVE_X11 ${X11_FOUND})
 
+if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
+    find_package(KCoreAddons ${KF5_VERSION} REQUIRED)
+    find_package(KWidgetsAddons ${KF5_VERSION} REQUIRED)
+endif()
+
 include(FeatureSummary)
 include(ECMSetupVersion)
 
-ecm_setup_version(5.0.0 VARIABLE_PREFIX KJOBWIDGETS
+ecm_setup_version(${KF5_VERSION} VARIABLE_PREFIX KJOBWIDGETS
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kjobwidgets_version.h"
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KJobWidgetsConfigVersion.cmake")
 
