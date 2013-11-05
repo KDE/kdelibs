@@ -467,10 +467,6 @@ void KDirWatch_UnitTest::testDeleteAndRecreateFile() // Useful for /etc/localtim
     // (This emulates the /etc/localtime case)
     createFile(file1);
 
-    // gamin does not signal the change in this case; probably because it uses polling internally...
-    if (watch.internalMethod() == KDirWatch::FAM || watch.internalMethod() == KDirWatch::Stat) {
-        QSKIP("Deleting and recreating a file is not detected by FAM (at least with gamin) or Stat");
-    }
     //QCOMPARE(KDE::stat(QFile::encodeName(file1), &stat_buf), 0);
     //qDebug() << "new inode" << stat_buf.st_ino; // same!
 
@@ -479,12 +475,6 @@ void KDirWatch_UnitTest::testDeleteAndRecreateFile() // Useful for /etc/localtim
         QVERIFY(waitForOneSignal(watch, SIGNAL(created(QString)), file1));
     } else {
         QVERIFY(waitForOneSignal(watch, SIGNAL(dirty(QString)), file1));
-    }
-
-    // QFileSystemWatcher, as documented, stops watching when the file is deleted
-    // so the appendToFile below will fail. Or further changes to /etc/localtime...
-    if (watch.internalMethod() == KDirWatch::QFSWatch) {
-        QSKIP("Limitation of QFSWatcher: it stops watching when deleting+recreating the file");
     }
 
     waitUntilMTimeChange(file1);
