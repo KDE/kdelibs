@@ -26,18 +26,18 @@ target_include_directories(KTextWidgets PUBLIC "$<BUILD_INTERFACE:${ktextwidgets
 target_link_libraries(KTextWidgets
 PUBLIC
   Qt5::Widgets
-  SonnetUi
+  KF5::SonnetUi
 PRIVATE
   Qt5::DBus
-  SonnetCore
+  KF5::SonnetCore
   KF5::KI18n
   KF5::KWidgetsAddons
   KF5::KService
   KF5::KConfigCore
-  KConfigWidgets
+  KF5::KConfigWidgets
   KF5::KWindowSystem
   KF5::KIconThemes
-  KCompletion
+  KF5::KCompletion
 )
 
 set_target_properties(KTextWidgets PROPERTIES VERSION ${KTEXTWIDGETS_VERSION_STRING}

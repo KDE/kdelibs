@@ -35,9 +35,9 @@
 #include <QDBusConnectionInterface>
 #include <QDebug>
 
-#include <configdialog.h>
-#include <dialog.h>
-#include <backgroundchecker.h>
+#include <sonnet/configdialog.h>
+#include <sonnet/dialog.h>
+#include <sonnet/backgroundchecker.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <kcursor.h>
