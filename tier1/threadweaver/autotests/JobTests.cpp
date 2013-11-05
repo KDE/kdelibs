@@ -7,6 +7,7 @@
 #include <QSignalSpy>
 
 #include <Queueing.h>
+#include <QueueStream.h>
 #include <JobSequence.h>
 #include <Lambda.h>
 #include <ThreadWeaver.h>
@@ -967,6 +968,19 @@ void JobTests::JobManualExitStatusTest()
     SuccessfulJob successful;
     successful.blockingExecute();
     QCOMPARE(successful.status(), Job::Status_Success);
+}
+
+void JobTests::QueueStreamLifecycletest()
+{
+    QString sequence;
+    using namespace ThreadWeaver;
+    using namespace ThreadWeaver::Queueing;
+    WaitForIdleAndFinished w(Weaver::instance()); Q_UNUSED(w);
+    queue() << make_job(new AppendCharacterJob('a', &sequence)) // enqueues JobPointer
+            << new AppendCharacterJob('b', &sequence) // enqueues JobInterface*
+            << make_job(new AppendCharacterJob('c', &sequence));
+    Weaver::instance()->finish();
+    QCOMPARE(sequence.count(), 3);
 }
 
 QTEST_MAIN ( JobTests )
