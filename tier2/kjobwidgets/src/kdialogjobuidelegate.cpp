@@ -21,23 +21,89 @@
 
 #include "kdialogjobuidelegate.h"
 
+#include <QWidget>
+#include <QQueue>
+
+#include <kmessagebox.h>
 #include <kjob.h>
 #include <kjobwidgets.h>
-#include <QWidget>
 
 #include <config-kjobwidgets.h>
 #if HAVE_X11
 #include <QX11Info>
 #endif
 
+struct MessageBoxData
+{
+    QWidget *widget;
+    KMessageBox::DialogType type;
+    QString msg;
+};
+
+class KDialogJobUiDelegate::Private : public QObject
+{
+    Q_OBJECT
+public:
+    explicit Private(QObject* parent = 0);
+    virtual ~Private();
+    void queuedMessageBox(QWidget *widget, KMessageBox::DialogType type, const QString &msg);
+
+public Q_SLOTS:
+    void next();
+
+private:
+    bool running;
+    QQueue<QSharedPointer<MessageBoxData*> > queue;
+};
+
+KDialogJobUiDelegate::Private::Private(QObject* parent)
+    : QObject(parent)
+    , running(false)
+{
+}
+
+KDialogJobUiDelegate::Private::~Private()
+{
+    qDeleteAll(queue);
+}
+
+void KDialogJobUiDelegate::Private::next()
+{
+    if (queue.isEmpty()) {
+        running = false;
+        return;
+    }
+
+    QSharedPointer<MessageBoxData*> data = queue.dequeue();
+    KMessageBox::messageBox(data->widget, data->type, data->msg);
+
+    QMetaObject::invokeMethod(this, "next", Qt::QueuedConnection);
+}
+
+void KDialogJobUiDelegate::Private::queuedMessageBox(QWidget* widget, KMessageBox::DialogType type, const QString& msg)
+{
+    QSharedPointer<MessageBoxData*> data = new MessageBoxData;
+    data->type = type;
+    data->widget = widget;
+    data->msg = msg;
+
+    queue.enqueue(data);
+
+    if (!running) {
+        running = true;
+        QMetaObject::invokeMethod(this, "next", Qt::QueuedConnection);
+    }
+}
+
+
 KDialogJobUiDelegate::KDialogJobUiDelegate()
-    : d(0)
+    : d(new KDialogJobUiDelegate::Private)
 {
 }
 
 KDialogJobUiDelegate::~KDialogJobUiDelegate()
 {
-    //delete d;
+    delete d;
 }
 
 bool KDialogJobUiDelegate::setJob(KJob *job)
@@ -78,8 +144,7 @@ void KDialogJobUiDelegate::showErrorMessage()
 {
     if ( job()->error() != KJob::KilledJobError )
     {
-#pragma message("KDE5 TODO: Implement queueing here when jobs will get splitted from kdeui")
-//         KMessageBox::queuedMessageBox(window(), KMessageBox::Error, job()->errorString());
+        d->queuedMessageBox(window(), KMessageBox::Error, job()->errorString());
     }
 }
 
@@ -87,7 +152,8 @@ void KDialogJobUiDelegate::slotWarning(KJob* /*job*/, const QString &plain, cons
 {
     if (isAutoWarningHandlingEnabled())
     {
-#pragma message("KDE5 TODO: Implement queueing here when jobs will get splitted from kdeui")
-// 	KMessageBox::queuedMessageBox(window(), KMessageBox::Information, plain);
+        d->queuedMessageBox(window(), KMessageBox::Information, plain);
     }
 }
+
+#include "kdialogjobuidelegate.moc"

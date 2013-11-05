@@ -18,6 +18,7 @@
   */
 
 #include "kjobtrackerstest.h"
+#include "kdialogjobuidelegate.h"
 
 #include <QApplication>
 #include <QMainWindow>
@@ -27,6 +28,7 @@
 #include <kwidgetjobtracker.h>
 #include <kstatusbarjobtracker.h>
 #include <kuiserverjobtracker.h>
+#include <kjobwidgets.h>
 
 KTestJob::KTestJob(int numberOfDirs)
     : KJob(), m_numberOfDirs(numberOfDirs), m_currentSpeed(1000), m_state(Stopped)
@@ -83,6 +85,7 @@ void KTestJob::stateNextDir()
     setTotalAmount(KJob::Files, totalAmount(KJob::Directories)*10);
     setTotalAmount(KJob::Bytes, totalAmount(KJob::Files)*1000);
 
+    emit warning(this, directory_name, directory_name);
     emit description(this, QString("Stating"), qMakePair(QString("Stating"), QString("file:/src/"+directory_name)));
 }
 
@@ -167,6 +170,9 @@ int main(int argc, char **argv)
 
     KUiServerJobTracker *tracker3 = new KUiServerJobTracker(main);
     tracker3->registerJob(testJob);
+
+    KJobWidgets::setWindow(testJob, main);
+    testJob->setUiDelegate(new KDialogJobUiDelegate());
 
     testJob->start();
 

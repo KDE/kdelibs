@@ -28,6 +28,8 @@
 
 /**
  * A UI delegate using KMessageBox for interaction (showing errors and warnings).
+ *
+ * The KMessageBox will use window as a parent in an application-modal.
  */
 class KJOBWIDGETS_EXPORT KDialogJobUiDelegate : public KJobUiDelegate
 {
