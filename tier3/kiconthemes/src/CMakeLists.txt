@@ -20,8 +20,8 @@ target_link_libraries(KIconThemes
     Qt5::Svg
     KF5::KI18n          # for i18n in KIconDialog
     KF5::KWidgetsAddons # for KPixmapSequence family
-    ItemViews      # for KListWidgetSearchLine
-    KConfigWidgets # for KColorScheme
+    KF5::ItemViews      # for KListWidgetSearchLine
+    KF5::KConfigWidgets # for KColorScheme
 )
 
 set_target_properties(KIconThemes PROPERTIES VERSION   ${KICONTHEMES_VERSION_STRING}
