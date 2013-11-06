@@ -16,9 +16,15 @@ include(FeatureSummary)
 
 include(ECMSetupVersion)
 
-ecm_setup_version(5.0.0 VARIABLE_PREFIX KUNITCONVERSION
+set(KF5_VERSION "5.0.0")
+ecm_setup_version(${KF5_VERSION} VARIABLE_PREFIX KUNITCONVERSION
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kunitconversion_version.h"
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KUnitConversionConfigVersion.cmake")
+
+if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
+  find_package(KI18n ${KF5_VERSION} REQUIRED)
+  find_package(KConfig ${KF5_VERSION} REQUIRED)
+endif()
 
 remove_definitions(-DQT_NO_CAST_TO_ASCII)
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
