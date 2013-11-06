@@ -30,6 +30,8 @@ remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
 ########### next target ###############
 
+# Enable when kdoctools will be usable from the outside (macros are broken ATM)
+#add_subdirectory(docs)
 add_subdirectory(src)
 
 # Create a Config.cmake and a ConfigVersion.cmake file and install them
