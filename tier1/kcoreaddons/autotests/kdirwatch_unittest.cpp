@@ -480,6 +480,9 @@ void KDirWatch_UnitTest::testDeleteAndRecreateFile() // Useful for /etc/localtim
     waitUntilMTimeChange(file1);
 
     appendToFile(file1);
+    if (watch.internalMethod() == KDirWatch::QFSWatch) {
+        QSKIP("Limitation of QFSWatcher: it stops watching when deleting+recreating the file");
+    }
     QVERIFY(waitForOneSignal(watch, SIGNAL(dirty(QString)), file1));
 }
 
