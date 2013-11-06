@@ -30,6 +30,8 @@ ecm_setup_version(5.0.0 VARIABLE_PREFIX KCONFIGWIDGETS
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 remove_definitions(-DQT_NO_CAST_FROM_BYTEARRAY)
 
+# Enable when kdoctools will be usable from the outside (macros are broken ATM)
+#add_subdirectory(docs)
 add_subdirectory(src)
 add_subdirectory(tests)
 add_subdirectory(autotests)
