@@ -18,13 +18,13 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "entryinternal.h"
+#include "entryinternal_p.h"
 
 #include <QtCore/QStringList>
 #include <QImage>
 #include <QDebug>
 
-#include "core/xmlloader.h"
+#include "core/xmlloader_p.h"
 #include "entry_p.h"
 
 

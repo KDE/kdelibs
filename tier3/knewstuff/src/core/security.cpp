@@ -18,7 +18,7 @@
 */
 
 //app includes
-#include "security.h"
+#include "security_p.h"
 
 //qt includes
 #include <QtCore/QFile>

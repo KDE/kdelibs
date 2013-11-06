@@ -15,7 +15,7 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "atticahelper.h"
+#include "atticahelper_p.h"
 #include <QImage>
 
 #include <QDebug>

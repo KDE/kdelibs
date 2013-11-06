@@ -33,9 +33,9 @@
 #include <klocalizedstring.h>
 #include <QDebug>
 
-#include "ui/itemsmodel.h"
-#include "ui/itemsviewdelegate.h"
-#include "ui/itemsgridviewdelegate.h"
+#include "ui/itemsmodel_p.h"
+#include "ui/itemsviewdelegate_p.h"
+#include "ui/itemsgridviewdelegate_p.h"
 
 using namespace KNS3;
 

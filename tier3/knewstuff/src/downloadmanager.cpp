@@ -20,7 +20,7 @@
 #include <QCoreApplication>
 #include <QDebug>
 
-#include "core/engine.h"
+#include "core/engine_p.h"
 
 namespace KNS3 {
 class DownloadManager::Private

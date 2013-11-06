@@ -16,7 +16,7 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "imageloader.h"
+#include "imageloader_p.h"
 
 #include <kio/job.h>
 #include <kio/scheduler.h>

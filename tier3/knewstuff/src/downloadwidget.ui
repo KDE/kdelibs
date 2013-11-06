@@ -618,13 +618,13 @@
   <customwidget>
    <class>KNS3::ProgressIndicator</class>
    <extends>QFrame</extends>
-   <header>ui/progressindicator.h</header>
+   <header>ui/progressindicator_p.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>KNS3::ItemsView</class>
    <extends>QListView</extends>
-   <header>ui/itemsview.h</header>
+   <header>ui/itemsview_p.h</header>
   </customwidget>
   <customwidget>
    <class>KRatingWidget</class>
@@ -635,7 +635,7 @@
   <customwidget>
    <class>KNS3::ImagePreviewWidget</class>
    <extends>QWidget</extends>
-   <header>ui/imagepreviewwidget.h</header>
+   <header>ui/imagepreviewwidget_p.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

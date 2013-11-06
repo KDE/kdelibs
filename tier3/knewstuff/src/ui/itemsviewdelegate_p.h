@@ -21,7 +21,7 @@
 #ifndef KNEWSTUFF3_UI_ITEMSVIEWDELEGATE_H
 #define KNEWSTUFF3_UI_ITEMSVIEWDELEGATE_H
 
-#include "itemsviewbasedelegate.h"
+#include "itemsviewbasedelegate_p.h"
 
 namespace KNS3
 {

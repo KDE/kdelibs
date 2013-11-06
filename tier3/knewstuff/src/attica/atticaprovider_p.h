@@ -23,7 +23,7 @@
 #include <attica/providermanager.h>
 #include <attica/provider.h>
 
-#include "core/provider.h"
+#include "core/provider_p.h"
 
 namespace Attica {
     class BaseJob;

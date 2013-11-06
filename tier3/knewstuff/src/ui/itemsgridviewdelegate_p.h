@@ -20,7 +20,7 @@
 #ifndef KNEWSTUFF3_UI_ITEMSGRIDVIEWDELEGATE_H
 #define KNEWSTUFF3_UI_ITEMSGRIDVIEWDELEGATE_H
 
-#include "itemsviewbasedelegate.h"
+#include "itemsviewbasedelegate_p.h"
 class QToolButton;
 namespace KNS3
 {

@@ -15,14 +15,14 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "entrydetailsdialog.h"
+#include "entrydetailsdialog_p.h"
 
 #include <QMenu>
 #include <QDebug>
 #include <klocalizedstring.h>
 
-#include "core/engine.h"
-#include "ui/imageloader.h"
+#include "core/engine_p.h"
+#include "ui/imageloader_p.h"
 #include <attica/provider.h>
 
 using namespace KNS3;

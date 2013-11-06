@@ -15,7 +15,7 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "itemsview.h"
+#include "itemsview_p.h"
 
 #include <QScrollBar>
 

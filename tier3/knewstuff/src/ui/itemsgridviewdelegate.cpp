@@ -17,7 +17,7 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "itemsgridviewdelegate.h"
+#include "itemsgridviewdelegate_p.h"
 
 #include <QPainter>
 #include <QSortFilterProxyModel>
@@ -33,7 +33,7 @@
 #include <kratingwidget.h>
 #include <ksqueezedtextlabel.h>
 
-#include "itemsmodel.h"
+#include "itemsmodel_p.h"
 
 namespace KNS3
 {
