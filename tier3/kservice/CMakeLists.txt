@@ -34,6 +34,7 @@ if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
   find_package(KCrash ${KF5_VERSION} REQUIRED)
   find_package(KDBusAddons ${KF5_VERSION} REQUIRED)
   find_package(KI18n ${KF5_VERSION} REQUIRED)
+  find_package(KDocTools REQUIRED)
 endif()
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
@@ -58,6 +59,8 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/KServiceConfig.cmake"
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/kservice_version.h
         DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
 
+# Enable when kdoctools will be usable from the outside (macros are broken ATM)
+#add_subdirectory(docs)
 add_subdirectory(src)
 add_subdirectory(autotests)
 add_subdirectory(tests)
