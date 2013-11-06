@@ -1,6 +1,6 @@
 [Global]
 PluginName=KDEWidgets
-Includes=classpreviews.h,ktimezone.h
+Includes=classpreviews.h
 Init=
 
 [KActionSelector]
@@ -64,29 +64,9 @@ ToolTip=This widget can be used to display or edit the date and time. (KDE)
 IncludeFile=kdatetimeedit.h
 Group=Date/Time (KDE)
 
-[KDateTimeWidget]
-ToolTip=This widget can be used to display or allow user selection of date and time. (KDE)
-IncludeFile=kdatetimewidget.h
-Group=Date/Time (KDE)
-
-[KDateWidget]
-ToolTip=Date preview (KDE)
-Group=Date/Time (KDE)
-
-[KDoubleNumInput]
-ToolTip=Floating Point Number Input Widget (KDE)
-WhatsThis=An input widget for floating point numbers, consisting of a spinbox and a slider.
-IncludeFile=knuminput.h
-Group=Input (KDE)
-
 [KEditListWidget]
 ToolTip=Fullfeatured edit box with buttons (KDE)
 Group=Views (KDE)
-
-[KFileMetaDataWidget]
-ToolTip=File Meta Data Display
-WhatsThis=Shows the meta data of one or more file items.
-Group=Display (KDE)
 
 [KFilterProxySearchLine]
 IncludeFile=kfilterproxysearchline.h
@@ -95,7 +75,7 @@ WhatsThis=A search line widget which works on a QSortFilterProxyModel
 Group=Input (KDE)
 
 [KFontChooser]
-IncludeFile=kfontdialog.h
+IncludeFile=kfontchooser.h
 IconSet=kfontcombo.png
 ToolTip=Font Chooser (KDE)
 WhatsThis=A font type, size and style selection widget complete with preview
@@ -231,20 +211,9 @@ WhatsThis=If the text is too long to fit into the label it is divided into remai
 ConstructorArgs=("KSqueezedTextLabel", parent)
 Group=Display (KDE)
 
-[KTabBar]
-ToolTip=KDE Tab Bar
-WhatsThis=A QTabBar with extended features.
-Group=Display (KDE)
-
 [KTextEdit]
 ToolTip=Improved QTextEdit (KDE)
 WhatsThis=An improved version of the QTextEdit with mail or system browser invocation support
-Group=Input (KDE)
-
-[K4TimeZoneWidget]
-ToolTip=This widget can be used to display or allow user selection of timezones. (KDE)
-IncludeFile=k4timezonewidget.h
-ConstructorArgs=(parent, new KTimeZones())
 Group=Input (KDE)
 
 [KTitleWidget]

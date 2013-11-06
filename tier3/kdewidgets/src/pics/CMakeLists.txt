@@ -4,7 +4,6 @@
 install( FILES
  klineedit.png
  kpasswordedit.png
- kdatewidget.png
  kfontrequester.png
  kurlrequester.png
  kcombobox.png
@@ -33,5 +32,4 @@ install( FILES
  kpalettetable.png
  kactionselector.png
  kdatetable.png
- kdatetimewidget.png
  DESTINATION  ${DATA_INSTALL_DIR}/kdewidgets/pics )

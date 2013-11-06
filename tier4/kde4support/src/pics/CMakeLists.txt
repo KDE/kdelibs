@@ -2,6 +2,8 @@
 ########### install files ###############
 
 install( FILES
+ kdatewidget.png
+ kdatetimewidget.png
  ktextbrowser.png
  kintspinbox.png
  kdoublenuminput.png

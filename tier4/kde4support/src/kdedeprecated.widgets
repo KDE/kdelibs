@@ -56,6 +56,12 @@ WhatsThis=An input widget for integer numbers, consisting of a spinbox and a sli
 IncludeFile=knuminput.h
 Group=Input (KDE)
 
+[KDoubleNumInput]
+ToolTip=Floating Point Number Input Widget (KDE)
+WhatsThis=An input widget for floating point numbers, consisting of a spinbox and a slider.
+IncludeFile=knuminput.h
+Group=Input (KDE)
+
 [KIntSpinBox]
 IncludeFile=knuminput.h
 ToolTip=Enhanced Spinbox for Integer Values (KDE)
@@ -69,6 +75,11 @@ Group=Buttons (KDE)
 [KRestrictedLine]
 ToolTip=Line Edit for restricted input (KDE)
 Group=Input (KDE)
+
+[KTabBar]
+ToolTip=KDE Tab Bar
+WhatsThis=A QTabBar with extended features.
+Group=Display (KDE)
 
 [KTabWidget]
 IncludeFile=ktabwidget.h
@@ -92,3 +103,25 @@ IncludeFile=kfontcombobox.h
 ToolTip=Font Combo Box (KDE)
 WhatsThis=A combo box for font selection with language-specific previews
 Group=Input (KDE)
+
+[K4TimeZoneWidget]
+ToolTip=This widget can be used to display or allow user selection of timezones. (KDE)
+IncludeFile=k4timezonewidget.h
+ConstructorArgs=(parent, new KTimeZones())
+Group=Input (KDE)
+
+[KFileMetaDataWidget]
+ToolTip=File Meta Data Display
+WhatsThis=Shows the meta data of one or more file items.
+Group=Display (KDE)
+
+[KDateTimeWidget]
+ToolTip=This widget can be used to display or allow user selection of date and time. (KDE)
+IncludeFile=kdatetimewidget.h
+Group=Date/Time (KDE)
+
+[KDateWidget]
+ToolTip=Date preview (KDE)
+Group=Date/Time (KDE)
+
+

@@ -1,5 +1,7 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
+<file>pics/kdatewidget.png</file>
+<file>pics/kdatetimewidget.png</file>
 <file>pics/keditlistbox.png</file>
 <file>pics/kdialog.png</file>
 <file>pics/kdoublenuminput.png</file>
