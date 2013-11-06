@@ -2,11 +2,14 @@
 
 # Any changes in this ".cmake" file will be overwritten by CMake, the source is the ".cmake.in" file.
 
+find_dependency(KBookmarks "@KF5_VERSION@")
+find_dependency(KCompletion "@KF5_VERSION@")
 find_dependency(KJobWidgets "@KF5_VERSION@")
 find_dependency(KService "@KF5_VERSION@")
-find_dependency(KCompletion "@KF5_VERSION@")
-find_dependency(Qt5Network "@QT_REQUIRED_VERSION@")
+find_dependency(Solid "@KF5_VERSION@")
+find_dependency(XmlGui "@KF5_VERSION@")
 
+find_dependency(Qt5Network "@QT_REQUIRED_VERSION@")
 
 include("${CMAKE_CURRENT_LIST_DIR}/KIOTargets.cmake")
 

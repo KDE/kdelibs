@@ -1,7 +1,16 @@
 @PACKAGE_INIT@
 
-find_dependency(KCoreAddons "@KF5_VERSION@")
 find_dependency(KConfigWidgets "@KF5_VERSION@")
+find_dependency(KCoreAddons "@KF5_VERSION@")
+find_dependency(KCrash "@KF5_VERSION@")
+find_dependency(KGuiAddons "@KF5_VERSION@")
+find_dependency(KIconThemes "@KF5_VERSION@")
+find_dependency(KNotifications "@KF5_VERSION@")
+find_dependency(KParts "@KF5_VERSION@")
+find_dependency(KTextWidgets "@KF5_VERSION@")
+find_dependency(KUnitConversion "@KF5_VERSION@")
+find_dependency(KWindowSystem "@KF5_VERSION@")
+
 find_dependency(Qt5DBus @QT_REQUIRED_VERSION@)
 find_dependency(Qt5Xml @QT_REQUIRED_VERSION@)
 
