@@ -84,6 +84,8 @@ install(EXPORT KDE4SupportTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/kde4support_version.h
         DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
 
+# Enable when kdoctools will be usable from the outside (macros are broken ATM)
+#add_subdirectory(docs)
 add_subdirectory(src)
 add_subdirectory(autotests)
 add_subdirectory(tests)
