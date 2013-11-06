@@ -30,6 +30,8 @@ add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0)
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 remove_definitions(-DQT_NO_CAST_FROM_BYTEARRAY)
 
+# Enable when kdoctools will be usable from the outside (macros are broken ATM)
+#add_subdirectory(docs)
 add_subdirectory(src)
 add_subdirectory(examples/kjsconsole)
 
