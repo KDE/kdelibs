@@ -2,14 +2,26 @@ cmake_minimum_required(VERSION 2.8.12)
 
 project(XmlGui)
 
+# ECM setup
 find_package(ECM 0.0.9 REQUIRED NO_MODULE)
 
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR})
 
+include(ECMMarkNonGuiExecutable)
+include(ECMSetupVersion)
+include(FeatureSummary)
 include(KDEInstallDirs)
 include(KDECompilerSettings)
 include(KDECMakeSettings)
 
+set(KF5_VERSION "5.0.0")
+
+ecm_setup_version(${KF5_VERSION}
+                  VARIABLE_PREFIX XMLGUI
+                  VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/xmlgui_version.h"
+                  PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/XmlGuiConfigVersion.cmake")
+
+# Dependencies
 set(QT_REQUIRED_VERSION 5.2.0)
 find_package(Qt5 ${QT_REQUIRED_VERSION} CONFIG REQUIRED Widgets DBus Xml Network PrintSupport)
 
@@ -21,13 +33,18 @@ if(NOT WIN32)
     set(HAVE_X11 ${X11_FOUND})
 endif(NOT WIN32)
 
-include(FeatureSummary)
-include(ECMSetupVersion)
+if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
+    find_package(ItemViews ${KF5_VERSION} REQUIRED)
+    find_package(KConfig ${KF5_VERSION} REQUIRED)
+    find_package(KConfigWidgets ${KF5_VERSION} REQUIRED)
+    find_package(KI18n ${KF5_VERSION} REQUIRED)
+    find_package(KIconThemes ${KF5_VERSION} REQUIRED)
+    find_package(KTextWidgets ${KF5_VERSION} REQUIRED)
+    find_package(KWidgetsAddons ${KF5_VERSION} REQUIRED)
+    find_package(KWindowSystem ${KF5_VERSION} REQUIRED)
+endif()
 
-ecm_setup_version(5.0.0 VARIABLE_PREFIX XMLGUI
-                        VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/xmlgui_version.h"
-                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/XmlGuiConfigVersion.cmake")
-
+# Subdirectories
 add_subdirectory(src)
 add_subdirectory(tests)
 add_subdirectory(autotests)

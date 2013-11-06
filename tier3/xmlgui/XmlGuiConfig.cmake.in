@@ -1,6 +1,6 @@
 @PACKAGE_INIT@
 
-find_dependency(KCoreAddons "@KF5_VERSION@")
+find_dependency(KConfig "@KF5_VERSION@")
 find_dependency(KConfigWidgets "@KF5_VERSION@")
 find_dependency(Qt5DBus @QT_REQUIRED_VERSION@)
 find_dependency(Qt5Xml @QT_REQUIRED_VERSION@)

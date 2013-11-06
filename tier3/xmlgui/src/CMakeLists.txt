@@ -97,16 +97,16 @@ PUBLIC
     Qt5::Xml            #To parse the configuration (QDomDocument etc)
     Qt5::Widgets        #QWidget is used everywhere
     KF5::KConfigCore         #Reading config for ToolbarIcons, Shortcut Schemes...
-    KConfigWidgets      #KStandardAction, KToggleAction...
+    KF5::KConfigWidgets      #KStandardAction, KToggleAction...
 PRIVATE
     Qt5::Network        #QNetworkAccessManager in kaboutapplicationpersonmodel_p
     Qt5::PrintSupport   #QPrinter in kshortcutseditor
     Qt5::X11Extras      #QX11Info in kglobalaccel, QX11Info::appTime, appUserTime, setAppUserTime
     KF5::KWidgetsAddons
-    ItemViews           #KWidgetItemDelegate in KAboutApplicationPersonListDelegate
+    KF5::ItemViews           #KWidgetItemDelegate in KAboutApplicationPersonListDelegate
     KF5::KI18n               #i18n and i18nc in many places
     KF5::KIconThemes         #KIconLoader and KIconThemes in KToolBar
-    KTextWidgets        #KTextEdit in kbugreport
+    KF5::KTextWidgets        #KTextEdit in kbugreport
     KF5::KWindowSystem       #KKeyServer in kkeysequencewidget
     ${XMLGUI_EXTRA_LIBS}
 )
