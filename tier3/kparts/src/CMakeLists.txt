@@ -17,6 +17,15 @@ set(KParts_LIB_SRCS
     listingextension.cpp
 )
 
+include(ECMGenerateHeaders)
+ecm_generate_headers(
+    Part Plugin PartManager MainWindow Event
+    BrowserExtension HistoryProvider BrowserInterface
+    BrowserRun StatusBarExtension BrowserOpenOrSaveQuestion
+    ScriptableExtension TextExtension HtmlExtension FileInfoExtension
+    ListingExtension
+)
+install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/KParts DESTINATION  ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
 set(KParts_HEADERS
     part.h plugin.h partmanager.h mainwindow.h event.h
     browserextension.h historyprovider.h browserinterface.h
@@ -24,13 +33,6 @@ set(KParts_HEADERS
     scriptableextension.h textextension.h htmlextension.h fileinfoextension.h
     listingextension.h
 )
-
-foreach(_KPARTS_HEADER ${KParts_HEADERS})
-    set(HEADER_NAME ${KParts_BINARY_DIR}/kparts/${_KPARTS_HEADER})
-    if (NOT EXISTS ${HEADER_NAME})
-        file(WRITE ${HEADER_NAME} "#include \"${CMAKE_CURRENT_SOURCE_DIR}/${_KPARTS_HEADER}\"\n")
-    endif()
-endforeach()
 
 add_library(KParts ${KParts_LIB_SRCS})
 generate_export_header(KParts EXPORT_FILE_NAME ${KParts_BINARY_DIR}/kparts/kparts_export.h)
