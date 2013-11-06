@@ -31,6 +31,8 @@ find_package(Qt5 ${QT_REQUIRED_VERSION} CONFIG REQUIRED Widgets DBus Network Con
 find_package(X11)
 set(HAVE_X11 ${X11_FOUND})
 
+# Enable when kdoctools will be usable from the outside (macros are broken ATM)
+#add_subdirectory(docs)
 add_subdirectory(src)
 add_subdirectory(autotests)
 add_subdirectory(tests)
