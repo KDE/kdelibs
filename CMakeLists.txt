@@ -112,7 +112,6 @@ add_subdirectory( cmake )
 add_subdirectory( licenses   )
 
 add_subdirectory( interfaces  )
-add_subdirectory( doc )
 
 ################# write dependency file which will be installed #################
 
