@@ -51,7 +51,7 @@ if (NOT EXISTS ${_INCDIR}/kntlm.h)
 endif()
 
 add_subdirectory(kntlm)
-add_subdirectory(kioslave)
+add_subdirectory(ioslaves)
 
 if ( NOT WINCE )
     add_subdirectory(kssld)
