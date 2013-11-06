@@ -56,6 +56,10 @@ remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
 set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KDocTools")
 
+set(_kdeBootStrapping TRUE)
+include(KDocToolsMacros.cmake)
+
+add_subdirectory(docs)
 add_subdirectory(src)
 
 configure_file(checkXML.in.cmake ${CMAKE_CURRENT_BINARY_DIR}/checkXML )
