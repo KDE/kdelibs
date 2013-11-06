@@ -1,5 +1,7 @@
 set(PARTS_TEST_LIBRARY_DEPENDENCIES KF5::KParts Qt5::Test KF5::XmlGui)
 
+include(ECMMarkAsTest)
+
 MACRO(KPARTS_UNIT_TESTS)
        FOREACH(_testname ${ARGN})
             add_executable(${_testname} ${_testname}.cpp)
