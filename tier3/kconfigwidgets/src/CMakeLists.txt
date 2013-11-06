@@ -1,6 +1,7 @@
 set(kconfigwidgets_SRCS
   kcodecaction.cpp
   kcolorscheme.cpp
+  kcolorschememanager.cpp
   kconfigdialog.cpp
   kconfigviewstatesaver.cpp
   kconfigdialogmanager.cpp
@@ -38,6 +39,7 @@ install(TARGETS KConfigWidgets EXPORT KConfigWidgetsTargets ${INSTALL_TARGETS_DE
 install(FILES
   kcodecaction.h
   kcolorscheme.h
+  kcolorschememanager.h
   kconfigdialog.h
   kconfigviewstatesaver.h
   kviewstatemaintainer.h
