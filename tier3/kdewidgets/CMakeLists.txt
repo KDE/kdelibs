@@ -16,6 +16,8 @@ remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
 set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KDEWidgets")
 
+# Enable when kdoctools will be usable from the outside (macros are broken ATM)
+#add_subdirectory(docs)
 add_subdirectory(src)
 add_subdirectory(tests)
 
