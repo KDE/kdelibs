@@ -1,9 +1,4 @@
 
-find_package(Qt5PrintSupport 5.2.0 NO_MODULE)
-set_package_properties(Qt5PrintSupport PROPERTIES DESCRIPTION "Support for Qt printing, necessary for the EPS format"
-                       TYPE OPTIONAL
-                      )
-
 find_package(Jasper)
 set_package_properties(Jasper PROPERTIES DESCRIPTION "Support for JPEG-2000 images"
                        URL "http://www.ece.uvic.ca/~mdadams/jasper"
@@ -37,16 +32,24 @@ endif(JASPER_FOUND)
 
 ##################################
 
-if (Qt5PrintSupport_FOUND)
+# EPS support depends on the gs utility; non-UNIX systems are unlikely to have
+# this available in PATH
+if (UNIX)
+   find_package(Qt5PrintSupport 5.2.0 NO_MODULE)
+   set_package_properties(Qt5PrintSupport PROPERTIES
+      DESCRIPTION "Support for Qt printing, necessary for the EPS format"
+      TYPE OPTIONAL
+   )
 
-    set(kimg_eps_LIB_SRCS eps.cpp)
-    add_library(kimg_eps MODULE ${kimg_eps_LIB_SRCS})
-    set_target_properties(kimg_eps PROPERTIES PREFIX "")
-    target_link_libraries(kimg_eps  Qt5::Gui Qt5::PrintSupport)
+   if (Qt5PrintSupport_FOUND)
+      set(kimg_eps_LIB_SRCS eps.cpp)
+      add_library(kimg_eps MODULE ${kimg_eps_LIB_SRCS})
+      set_target_properties(kimg_eps PROPERTIES PREFIX "")
+      target_link_libraries(kimg_eps  Qt5::Gui Qt5::PrintSupport)
 
-    install(TARGETS kimg_eps  DESTINATION ${QT_PLUGIN_INSTALL_DIR}/imageformats/ )
-    install(FILES eps.desktop DESTINATION  ${SERVICES_INSTALL_DIR}/qimageioplugins/ )
-
+      install(TARGETS kimg_eps  DESTINATION ${QT_PLUGIN_INSTALL_DIR}/imageformats/)
+      install(FILES eps.desktop DESTINATION  ${SERVICES_INSTALL_DIR}/qimageioplugins/)
+   endif()
 endif()
 
 ##################################
