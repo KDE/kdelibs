@@ -1938,7 +1938,31 @@ void KDirWatch::setDeleted(const QString &_file)
 
 KDirWatch::Method KDirWatch::internalMethod() const
 {
-  return d->m_preferredMethod;
+    // This reproduces the logic in KDirWatchPrivate::addWatch
+    switch (d->m_preferredMethod) {
+#if HAVE_FAM
+    case KDirWatch::FAM: if (d->use_fam) return KDirWatch::FAM;
+#endif
+#if HAVE_SYS_INOTIFY_H
+    case KDirWatch::INotify: if (d->supports_inotify) return KDirWatch::INotify;
+#endif
+#if HAVE_QFILESYSTEMWATCHER
+    case KDirWatch::QFSWatch: return KDirWatch::QFSWatch;
+#endif
+    case KDirWatch::Stat: return KDirWatch::Stat;
+    default: break;
+    }
+
+#if HAVE_SYS_INOTIFY_H
+    if (d->supports_inotify) return KDirWatch::INotify;
+#endif
+#if HAVE_FAM
+    if (d->use_fam) return KDirWatch::FAM;
+#endif
+#if HAVE_QFILESYSTEMWATCHER
+    return KDirWatch::QFSWatch;
+#endif
+    return KDirWatch::Stat;
 }
 
 
