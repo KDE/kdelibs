@@ -29,7 +29,6 @@
 #include <QWidgetList>
 
 #include <kde4support_export.h>
-#include <QX11Info>
 #include <X11/Xlib.h>
 
 class KXErrorHandlerPrivate;
@@ -60,18 +59,20 @@ class KXErrorHandlerPrivate;
 class KDE4SUPPORT_DEPRECATED_EXPORT KXErrorHandler
     {
     public:
+        /** This function simply wraps QX11Info::display(), to make sure the public interface doesn't require QtX11Extras */
+        static Display* display();
         /**
          * Creates error handler that will set error flag after encountering
          * any X error.
          */
-        explicit KXErrorHandler( Display* dpy = QX11Info::display());
+        explicit KXErrorHandler( Display* dpy = display());
         /**
          * This constructor takes pointer to a function whose prototype matches
          * the one that's used with the XSetErrorHandler() Xlib function.
          * NOTE: For the error flag to be set, the function must return a non-zero
          * value.
          */
-        explicit KXErrorHandler( int (*handler)( Display*, XErrorEvent* ), Display* dpy = QX11Info::display());
+        explicit KXErrorHandler( int (*handler)( Display*, XErrorEvent* ), Display* dpy = display());
         /**
          * This constructor takes pointer to a function that will get request number,
          * error code number and resource id of the failed request, as provided
@@ -79,7 +80,7 @@ class KDE4SUPPORT_DEPRECATED_EXPORT KXErrorHandler
          * @deprecated Use the variant with XErrorEvent.
          */
 #ifndef KDE_NO_DEPRECATED
-        explicit KXErrorHandler( bool (*handler)( int request, int error_code, unsigned long resource_id ), Display* dpy = QX11Info::display()) KDE4SUPPORT_DEPRECATED;
+        explicit KXErrorHandler( bool (*handler)( int request, int error_code, unsigned long resource_id ), Display* dpy = display()) KDE4SUPPORT_DEPRECATED;
 #endif
         /**
          * This function returns true if the error flag is set (i.e. no custom handler
@@ -101,7 +102,7 @@ class KDE4SUPPORT_DEPRECATED_EXPORT KXErrorHandler
          * as it is meant for debugging.
          * @since 4.0.1
          */
-        static QByteArray errorMessage( const XErrorEvent& e, Display* dpy = QX11Info::display());
+        static QByteArray errorMessage( const XErrorEvent& e, Display* dpy = display());
         ~KXErrorHandler();
     private:
         void addHandler();

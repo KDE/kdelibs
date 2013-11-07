@@ -27,6 +27,7 @@
 #include "netwm_def.h"
 
 #include <stdio.h>
+#include <QX11Info>
 
 class KXErrorHandlerPrivate
 {
@@ -254,3 +255,8 @@ QByteArray KXErrorHandler::errorMessage( const XErrorEvent& event, Display* dpy 
 #endif
     return ret;
     }
+
+Display* KXErrorHandler::display()
+{
+    return QX11Info::display();
+}

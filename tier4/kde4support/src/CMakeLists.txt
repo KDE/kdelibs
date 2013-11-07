@@ -265,9 +265,6 @@ target_link_libraries(KDE4Support
 PUBLIC
    Qt5::Widgets
    Qt5::DBus
-   Qt5::Test # for qtest_kde.cpp
-   Qt5::X11Extras
-   Qt5::Svg
    Qt5::PrintSupport
    KF5::KCoreAddons
    KCrash
@@ -286,6 +283,9 @@ PUBLIC
    KTextWidgets
    KParts
 PRIVATE
+   Qt5::X11Extras
+   Qt5::Svg
+   Qt5::Test # for qtest_kde.cpp
    ${KIO_EXTRA_LIBS}
    ${X11_LIBRARIES}
    ${libkde4support_OPTIONAL_LIBS}
