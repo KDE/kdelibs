@@ -17,3 +17,7 @@ knotifications_executable_tests(
     kpassivepopuptest
     kstatusnotifieritemtest
 )
+
+if(X11_FOUND)
+   target_link_libraries(kpassivepopuptest Qt5::X11Extras KF5::KWindowSystem)
+endif()

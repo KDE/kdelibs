@@ -28,6 +28,9 @@ include(KDECMakeSettings)
 find_package(X11)
 set(HAVE_X11 ${X11_FOUND})
 set(HAVE_XTEST ${X11_XTest_FOUND})
+if(X11_FOUND)
+   find_package(Qt5X11Extras 5.2.0 REQUIRED NO_MODULE)
+endif()
 
 if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
   # Content of this block is only executed when building the framework
