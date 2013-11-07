@@ -1,3 +1,5 @@
+add_subdirectory(includes)
+
 if(NOT HAVE_NEPOMUK)
    set(KIO_NO_NEPOMUK TRUE)
 endif(NOT HAVE_NEPOMUK)
