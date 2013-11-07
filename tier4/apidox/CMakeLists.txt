@@ -9,4 +9,5 @@ set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR})
 include(KDEInstallDirs)
 
 add_subdirectory( common )
+add_subdirectory( licenses )
 

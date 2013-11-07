@@ -109,8 +109,6 @@ set(CMAKECONFIG_INSTALL_DIR ${LIB_INSTALL_DIR}/cmake/KDELibs4)
 add_subdirectory( cmake )
 # For convenience only. Move down/remove and find dependencies with more locality instead.
 
-add_subdirectory( licenses   )
-
 add_subdirectory( interfaces  )
 
 ################# write dependency file which will be installed #################
