@@ -15,6 +15,20 @@ cmake_minimum_required(VERSION ${reqd_cmake})
 
 project(kdelibs)
 
+add_subdirectory( tier1 )
+
+# tier1/ already builds standalone, so it should not get any include dirs from here.
+
+if(MSVC)
+  # Only build-tested up to here.
+  return()
+endif()
+
+add_subdirectory( tier2 )
+add_subdirectory( tier3 )
+add_subdirectory( tier4 )
+add_subdirectory( staging )
+
 # Make CPack available to easy generate binary packages
 include(CPack)
 
@@ -54,20 +68,6 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules" ${ECM_MODULE_PATH} ${E
 include(KDEInstallDirs)
 include(KDECompilerSettings)
 include(KDECMakeSettings)
-
-add_subdirectory( tier1 )
-
-# tier1/ already builds standalone, so it should not get any include dirs from here.
-
-if(MSVC)
-  # Only build-tested up to here.
-  return()
-endif()
-
-add_subdirectory( tier2 )
-add_subdirectory( tier3 )
-add_subdirectory( tier4 )
-add_subdirectory( staging )
 
 ################# write platform profile file which will be installed #################
 include(CreateKDEPlatformProfile.cmake)
