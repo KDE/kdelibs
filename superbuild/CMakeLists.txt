@@ -40,7 +40,6 @@ sb_add_project(tier3/ktextwidgets DEPENDS sonnet ki18n kwidgetsaddons kservice k
 sb_add_project(tier3/kunitconversion DEPENDS kconfig ki18n)
 sb_add_project(tier3/xmlgui DEPENDS kconfig kconfigwidgets kwidgetsaddons itemviews ki18n kiconthemes ktextwidgets kwindowsystem)
 sb_add_project(tier3/kjsembed DEPENDS kjs ki18n)
-
 sb_add_project(tier3/kbookmarks DEPENDS kconfigwidgets kcoreaddons kiconthemes kwidgetsaddons xmlgui)
 sb_add_project(tier3/kemoticons DEPENDS karchive kservice)
 # Enable commented modules when kio can be built separately
@@ -52,6 +51,7 @@ sb_add_project(tier3/kdesu DEPENDS kcoreaddons kservice kpty)
 # sb_add_project(tier3/kdewebkit DEPENDS kcoreaddons kwallet kio kparts)
 # sb_add_project(tier3/knotifyconfig DEPENDS kio ki18n knotifications)
 # sb_add_project(tier3/knewstuff DEPENDS ki18n itemviews karchive kiconthemes ktextwidgets xmlgui solid kbookmarks kio)
+# sb_add_project(tier3/kprintutils DEPENDS kcoreaddons ki18n kparts)
 
 sb_add_project(tier4/kcmutils DEPENDS itemviews kconfigwidgets kcoreaddons ki18n kiconthemes kservice xmlgui)
 
