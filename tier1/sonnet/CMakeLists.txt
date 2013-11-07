@@ -28,6 +28,8 @@ ecm_setup_version(5.0.0 VARIABLE_PREFIX SONNET
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/SonnetConfigVersion.cmake")
 
 
+# Enable when kdoctools will be usable from the outside (macros are broken ATM)
+#add_subdirectory(docs)
 add_subdirectory(src)
 add_subdirectory(autotests)
 add_subdirectory(tests)
