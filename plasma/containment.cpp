@@ -1214,7 +1214,6 @@ void ContainmentPrivate::showDropZoneDelayed()
 
 void Containment::dragMoveEvent(QGraphicsSceneDragDropEvent *event)
 {
-    QGraphicsItem *item = scene()->itemAt(event->scenePos());
     //event->setAccepted(item == this || item == d->toolBox.data() || !item);
     //kDebug() << event->isAccepted() << d->showDropZoneDelayTimer->isActive();
     if (!event->isAccepted()) {
