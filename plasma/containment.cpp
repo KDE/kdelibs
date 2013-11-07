@@ -728,7 +728,8 @@ void ContainmentPrivate::addAppletActions(KMenu &desktopMenu, Applet *applet, QE
         }
     }
 
-    if (q->immutability() == Mutable) {
+    if (q->immutability() == Mutable &&
+        !q->property("hideCloseAppletInContextMenu").toBool()) {
         QAction *closeApplet = applet->d->actions->action("remove");
         //kDebug() << "checking for removal" << closeApplet;
         if (closeApplet) {
