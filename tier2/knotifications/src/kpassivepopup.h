@@ -35,8 +35,8 @@ class QSystemTrayIcon;
  * methods. The position the popup appears at depends on the type of the parent window:
  *
  * @li Normal Windows: The popup is placed adjacent to the icon of the window.
- * @li System Tray Windows: The popup is placed adjact to the system tray window itself.
- * @li Skip Taskbar Windows: The popup is placed adjact to the window
+ * @li System Tray Windows: The popup is placed adjacent to the system tray window itself.
+ * @li Skip Taskbar Windows: The popup is placed adjacent to the window
  *     itself if it is visible, and at the edge of the desktop otherwise.
  *
  * You also have the option of calling show with a QPoint as a parameter that
@@ -85,9 +85,8 @@ class QSystemTrayIcon;
 class KNOTIFICATIONS_EXPORT KPassivePopup : public QFrame
 {
     Q_OBJECT
-    Q_PROPERTY (bool autoDelete READ autoDelete WRITE setAutoDelete )
-    Q_PROPERTY (int timeout READ timeout WRITE setTimeout )
-    Q_PROPERTY (QRect defaultArea READ defaultArea )
+    Q_PROPERTY (bool autoDelete READ autoDelete WRITE setAutoDelete)
+    Q_PROPERTY (int timeout READ timeout WRITE setTimeout)
 
 public:
     /**
@@ -97,7 +96,6 @@ public:
     {
         Boxed,             ///< Information will appear in a framed box (default)
         Balloon,           ///< Information will appear in a comic-alike balloon
-	CustomStyle=128    ///< Ids greater than this are reserved for use by subclasses
     };
 
     /**
@@ -109,20 +107,6 @@ public:
      * Creates a popup for the specified window.
      */
     explicit KPassivePopup( WId parent );
-
-#if 0 // These break macos and win32 where the definition of WId makes them ambiguous
-    /**
-     * Creates a popup for the specified widget.
-     * THIS WILL BE REMOVED, USE setPopupStyle().
-     */
-    explicit KPassivePopup( int popupStyle, QWidget *parent=0, Qt::WindowFlags f=0 ) KWIDGETSADDONS_DEPRECATED;
-
-    /**
-     * Creates a popup for the specified window.
-     * THIS WILL BE REMOVED, USE setPopupStyle().
-     */
-    KPassivePopup( int popupStyle, WId parent, Qt::WindowFlags f=0 ) KWIDGETSADDONS_DEPRECATED;
-#endif
 
     /**
      * Cleans up.
@@ -179,28 +163,19 @@ public:
     int timeout() const;
 
     /**
-     * Enables / disables auto-deletion of this widget when the timeout
-     * occurs.
-     * The default is false. If you use the class-methods message(),
-     * auto-deletion is turned on by default.
+     * Sets whether the popup will be deleted when it is hidden.
+     *
+     * The default is false (unless created by one of the static
+     * message() overloads).
      */
     virtual void setAutoDelete( bool autoDelete );
 
     /**
-     * @returns true if the widget auto-deletes itself when the timeout occurs.
+     * Returns whether the popup will be deleted when it is hidden.
+     *
      * @see setAutoDelete
      */
     bool autoDelete() const;
-
-    /**
-     * If no relative window (eg taskbar button, system tray window) is
-     * available, use this rectangle (pass it to moveNear()).
-     * This is the available area of the desktop with width and height
-     * set to 0 so that moveNear uses the upper-left position.
-     * @return The QRect to be passed to moveNear() if no other is
-     * available.
-     */
-    QRect defaultArea() const;
 
     /**
      * Returns the position to which this popup is anchored.
@@ -208,8 +183,9 @@ public:
     QPoint anchor() const;
 
     /**
-     * Sets the anchor of this popup. The popup tries automatically to adjust
-     * itself somehow around the point.
+     * Sets the anchor of this popup.
+     *
+     * The popup is placed near to the anchor.
      */
     void setAnchor( const QPoint& anchor );
 
@@ -340,6 +316,9 @@ public:
                                    const QPixmap &icon, WId parent, int timeout = -1,
                                    const QPoint& p = QPoint() );
 
+    // we create an overloaded version of show()
+    using QFrame::show;
+
 
 public Q_SLOTS:
     /**
@@ -359,15 +338,11 @@ public Q_SLOTS:
     void setPopupStyle( int popupstyle );
 
     /**
-     * Reimplemented to reposition the popup.
-     */
-    void show();
-
-    /**
      * Shows the popup in the given point
      */
     void show(const QPoint &p);
 
+    /** @reimp */
     virtual void setVisible(bool visible) Q_DECL_OVERRIDE;
 
 Q_SIGNALS:
@@ -383,45 +358,47 @@ Q_SIGNALS:
 
 protected:
     /**
-     * This method positions the popup.
+     * Positions the popup.
+     *
+     * The default implementation attempts to place it by the taskbar
+     * entry; failing that it places it by the window of the associated
+     * widget; failing that it places it at the location given by
+     * defaultLocation().
+     *
+     * @see moveNear()
      */
     virtual void positionSelf();
 
     /**
-     * Reimplemented to destroy the object when autoDelete() is
-     * enabled.
+     * Returns a default location for popups when a better placement
+     * cannot be found.
+     *
+     * The default implementation returns the top-left corner of the
+     * available work area of the desktop (ie: minus panels, etc).
      */
-    virtual void hideEvent( QHideEvent * );
+    virtual QPoint defaultLocation() const;
 
     /**
-     * Moves the popup to be adjacent to the icon of the specified rectangle.
+     * Moves the popup to be adjacent to @p target.
+     *
+     * The popup will be placed adjacent to, but outside of, @p target,
+     * without going off the current desktop.
+     *
+     * Reimplementations of positionSelf() can use this to actually
+     * position the popup.
      */
-    void moveNear( const QRect &target );
+    void moveNear(const QRect &target);
 
-    /**
-     * Calculates the position to place the popup near the specified rectangle.
-     */
-    QPoint calculateNearbyPoint( const QRect &target);
+    /** @reimp */
+    virtual void hideEvent(QHideEvent *) Q_DECL_OVERRIDE;
 
-    /**
-     * Reimplemented to detect mouse clicks.
-     */
-    virtual void mouseReleaseEvent( QMouseEvent *e );
+    /** @reimp */
+    virtual void mouseReleaseEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
 
-    /**
-     * Updates the transparency mask. Unused if PopupStyle == Boxed
-     */
-    void updateMask();
-
-    /**
-     * Overwrite to paint the border when PopupStyle == Balloon.
-     * Unused if PopupStyle == Boxed
-     */
-    virtual void paintEvent( QPaintEvent* pe );
+    /** @reimp */
+    virtual void paintEvent(QPaintEvent* pe) Q_DECL_OVERRIDE;
 
 private:
-    void init( WId window );
-
     /* @internal */
     class Private;
     Private *const d;
