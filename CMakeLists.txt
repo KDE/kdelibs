@@ -110,7 +110,6 @@ add_subdirectory( cmake )
 # For convenience only. Move down/remove and find dependencies with more locality instead.
 
 add_subdirectory( licenses   )
-add_subdirectory( kioslave   )
 
 add_subdirectory( interfaces  )
 add_subdirectory( includes )

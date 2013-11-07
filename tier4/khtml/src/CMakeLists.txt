@@ -518,7 +518,7 @@ qt5_generate_dbus_interface(khtml_iface.h org.kde.KHtmlPart.xml)
 
 if(kdelibs_SOURCE_DIR)
     set(kcookiejar_XML ${CMAKE_CURRENT_BINARY_DIR}/org.kde.KCookieServer.xml)
-    qt5_generate_dbus_interface(${CMAKE_SOURCE_DIR}/kioslave/http/kcookiejar/kcookieserver.h org.kde.KCookieServer.xml)
+    qt5_generate_dbus_interface(${CMAKE_SOURCE_DIR}/staging/kio/src/kioslave/http/kcookiejar/kcookieserver.h org.kde.KCookieServer.xml)
 else (kdelibs_SOURCE_DIR)
     set(kcookiejar_XML ${DBUS_INTERFACES_INSTALL_DIR}/org.kde.KCookieServer.xml)
 endif(kdelibs_SOURCE_DIR)
