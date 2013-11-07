@@ -39,6 +39,7 @@ sb_add_project(tier3/kiconthemes DEPENDS kconfigwidgets ki18n kwidgetsaddons ite
 sb_add_project(tier3/ktextwidgets DEPENDS sonnet ki18n kwidgetsaddons kservice kconfig kconfigwidgets kwindowsystem kiconthemes kcompletion)
 sb_add_project(tier3/kunitconversion DEPENDS kconfig ki18n)
 sb_add_project(tier3/xmlgui DEPENDS kconfig kconfigwidgets kwidgetsaddons itemviews ki18n kiconthemes ktextwidgets kwindowsystem)
+sb_add_project(tier3/kjsembed DEPENDS kjs ki18n)
 
 if(SB_EVERYTHING_DISABLED)
   message(STATUS "All projects are disabled. You may consider running make edit_cache or cmake-gui to enable some.")

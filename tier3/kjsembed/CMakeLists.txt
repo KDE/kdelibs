@@ -16,10 +16,15 @@ include(FeatureSummary)
 include(CMakePackageConfigHelpers)
 include(ECMSetupVersion)
 
-ecm_setup_version(5.0.0 VARIABLE_PREFIX KJSEMBED
+set(KF5_VERSION "5.0.0")
+ecm_setup_version(${KF5_VERSION} VARIABLE_PREFIX KJSEMBED
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kjsembed_version.h"
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KJsEmbedConfigVersion.cmake")
 
+if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
+  find_package(KJS ${KF5_VERSION} REQUIRED)
+  find_package(KI18n ${KF5_VERSION} REQUIRED)
+endif()
 
 add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0)
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
