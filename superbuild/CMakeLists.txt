@@ -30,6 +30,9 @@ sb_add_project(tier2/kdoctools DEPENDS karchive)
 sb_add_project(tier2/ki18n DEPENDS kjs)
 sb_add_project(tier2/knotifications DEPENDS kwindowsystem)
 
+# When adding a new framework, make sure it is listed *after* all its
+# dependencies, otherwise superbuild will not pick up the standalone version of
+# the framework build
 sb_add_project(tier3/kconfigwidgets DEPENDS kauth kcoreaddons kcodecs kconfig kguiaddons ki18n kwidgetsaddons)
 sb_add_project(tier3/kservice DEPENDS kauth kcoreaddons kcrash kdbusaddons ki18n)
 sb_add_project(tier3/kiconthemes DEPENDS kconfigwidgets ki18n kwidgetsaddons itemviews)
