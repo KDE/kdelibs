@@ -28,6 +28,7 @@
  */
 
 #include <kde4support_export.h>
+#include <kde4support_version.h>
 
 /**
  * @def KDE_VERSION_STRING
@@ -44,26 +45,26 @@
  * or for a protocol (e.g. http) be careful that it is appropriate.
  * (Fictional) example: "4.0.90 (>=20070101)"
  */
-#cmakedefine KDE_VERSION_STRING "@KDE_VERSION_STRING@"
+#define KDE_VERSION_STRING KDE4SUPPORT_VERSION_STRING
 
 /**
  * @def KDE_VERSION_MAJOR
  * @ingroup KDEMacros
  * @brief Major version of KDE, at compile time
  */
-#cmakedefine KDE_VERSION_MAJOR @KDE_VERSION_MAJOR@
+#define KDE_VERSION_MAJOR KDE4SUPPORT_VERSION_MAJOR
 /**
  * @def KDE_VERSION_MINOR
  * @ingroup KDEMacros
  * @brief Minor version of KDE, at compile time
  */
-#cmakedefine KDE_VERSION_MINOR @KDE_VERSION_MINOR@
+#define KDE_VERSION_MINOR KDE4SUPPORT_VERSION_MINOR
 /**
  * @def KDE_VERSION_RELEASE
  * @ingroup KDEMacros
  * @brief Release version of KDE, at compile time
  */
-#cmakedefine KDE_VERSION_RELEASE @KDE_VERSION_RELEASE@
+#define KDE_VERSION_RELEASE KDE4SUPPORT_VERSION_PATCH
 
 /**
  * @ingroup KDEMacros

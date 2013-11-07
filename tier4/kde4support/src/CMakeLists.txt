@@ -247,9 +247,6 @@ add_library(KDE4Support ${libkde4support_SRCS})
 generate_export_header(KDE4Support)
 add_library(KF5::KDE4Support ALIAS KDE4Support)
 
-# Generate kdeversion.h
-configure_file(kdecore/kdeversion.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdeversion.h )
-
 target_include_directories(KDE4Support PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/../../..")
 
 set(kde4support_INCLUDES
@@ -259,6 +256,7 @@ set(kde4support_INCLUDES
   "${CMAKE_CURRENT_SOURCE_DIR}/kssl"
   "${CMAKE_CURRENT_BINARY_DIR}/kssl" # ksslconfig.h
   "${CMAKE_CURRENT_SOURCE_DIR}/kparts"
+  "${CMAKE_CURRENT_BINARY_DIR}/.." # kde4support_version.h
   "${CMAKE_SOURCE_DIR}"
 )
 target_include_directories(KDE4Support PUBLIC "$<BUILD_INTERFACE:${kde4support_INCLUDES}>")
@@ -506,7 +504,7 @@ install(FILES
     kdeui/k4timezonewidget.h
     ${CMAKE_CURRENT_BINARY_DIR}/kde4support_export.h
     ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h
-    ${CMAKE_CURRENT_BINARY_DIR}/kdeversion.h
+    kdecore/kdeversion.h
     DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
 
