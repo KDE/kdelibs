@@ -26,7 +26,7 @@
 QMutex s_GlobalMutex;
 
 //Ensure that after the object is created, the weaver is idle and resumed.
-//Upon desruction, ensure the weaver is idle and suspended.
+//Upon destruction, ensure the weaver is idle and suspended.
 class WaitForIdleAndFinished {
 public:
     explicit WaitForIdleAndFinished(ThreadWeaver::Weaver* weaver)
