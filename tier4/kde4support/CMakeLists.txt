@@ -53,6 +53,8 @@ remove_definitions(-DQT_NO_CAST_TO_ASCII)
 
 # This one won't be needed when CMake 2.8.13 is depended on.
 add_definitions(
+  -DKDE4SUPPORT_DEPRECATED= # if KDE4SUPPORT_DEPRECATED is already defined the other deprecated macros won't be defined
+  -DKDE4SUPPORT_DEPRECATED_NO_EXPORT=KDE4SUPPORT_NO_EXPORT
   -DKDE4SUPPORT_DEPRECATED_EXPORT=KDE4SUPPORT_EXPORT
 )
 
