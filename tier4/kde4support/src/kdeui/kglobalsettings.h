@@ -666,7 +666,7 @@ Q_SIGNALS:
      * @deprecated since 5.0, use KIconLoader::iconChanged(int)
      */
 #ifndef KDE_NO_DEPRECATED
-    void iconChanged(int group);
+    QT_MOC_COMPAT void iconChanged(int group);
 #endif
 
     /**
