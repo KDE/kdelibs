@@ -4504,7 +4504,7 @@ void NETWinInfo::setBlockingCompositing(bool active)
     p->blockCompositing = active;
     if (active) {
         uint32_t d = 1;
-        xcb_change_property(p->conn, XCB_PROP_MODE_REPLACE, p->root, kde_net_wm_block_compositing,
+        xcb_change_property(p->conn, XCB_PROP_MODE_REPLACE, p->window, kde_net_wm_block_compositing,
                             XCB_ATOM_CARDINAL, 32, 1, (const void *) &d);
     } else
         xcb_delete_property(p->conn, p->window, kde_net_wm_block_compositing);
