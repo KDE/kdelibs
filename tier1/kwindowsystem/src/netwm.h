@@ -176,13 +176,6 @@ public:
     const char *wmName() const;
 
     /**
-       Returns the screenNumber.
-
-       @return the screen number
-    **/
-    int screenNumber() const;
-
-    /**
       Sets the given property if on is true, and clears the property otherwise.
       In WindowManager mode this function updates _NET_SUPPORTED.
       In Client mode this function does nothing.

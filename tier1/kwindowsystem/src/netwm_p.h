@@ -90,7 +90,6 @@ struct NETRootInfoPrivate {
     Window root;
     Window supportwindow;
     const char *name;
-    int screen;
 
     uint32_t *temp_buf;
     size_t temp_buf_size;

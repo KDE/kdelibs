@@ -2428,11 +2428,6 @@ const char *NETRootInfo::wmName() const {
     return p->name; }
 
 
-int NETRootInfo::screenNumber() const {
-    return p->screen;
-}
-
-
 
 const unsigned long* NETRootInfo::supportedProperties() const {
     return p->properties;
