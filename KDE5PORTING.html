@@ -432,6 +432,13 @@ toolbar->setProperty("otherToolbar", true);</pre>
    Settings from "Other toolbars" will only work on  a widget style that derives from KStyle
 </li>
 </ul>
+<li>NETWinInfo2 class got removed. All methods are merged into NETWinInfo. Use NETWinInfo instead of NETWinInfo2.</li>
+<li>NETRootInfo and NETWinInfo use xcb datatypes instead of XLib datatypes. Inheriting classes need to adjust
+    the method arguments.</li>
+<li>Constructor of NETRootInfo and NETWinInfo expect an xcb_connection_t* instead of Display*.</li>
+<li>Method NETRootInfo::screenNumber has been removed.</li>
+<li>Desktop argument in NETRootInfo::desktopGeometry() and NETRootInfo::setDesktopGeometry() has been removed.</li>
+</ul>
 
 <h4 align="right"><a href="#TOC">Return to the Table of Contents</a></h4>
 
