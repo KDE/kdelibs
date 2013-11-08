@@ -3278,7 +3278,7 @@ void NETWinInfo::setVisibleName(const char *visibleName)
     p->visible_name = nstrdup(visibleName);
 
     if (p->visible_name[0] != '\0')
-        xcb_change_property(p->conn, XCB_PROP_MODE_REPLACE, p->window, net_wm_name,
+        xcb_change_property(p->conn, XCB_PROP_MODE_REPLACE, p->window, net_wm_visible_name,
                             UTF8_STRING, 8, strlen(p->visible_name),
                             (const void *) p->visible_name);
     else
