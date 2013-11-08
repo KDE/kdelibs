@@ -104,6 +104,21 @@ public:
    */
   virtual void sendInput( const QString& text ) = 0;
 
+  /**
+   * Return terminal PID
+   */
+  virtual int terminalProcessId() = 0;
+
+  /**
+   * Return foregound PID, If there is no foreground process running, returns -1
+   */
+  virtual int foregroundProcessId() = 0;
+
+  /**
+   * Returns sub process name. If there is no sub process running, returns empty QString
+   */
+  virtual QString foregroundProcessName() = 0;
+
 };
 
 Q_DECLARE_INTERFACE(TerminalInterface, "org.kde.TerminalInterface")
