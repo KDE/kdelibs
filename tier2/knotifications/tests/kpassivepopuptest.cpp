@@ -99,7 +99,7 @@ int main( int argc, char **argv )
     pb6->setText( QLatin1String("By window (with caption, balloon)") );
     pb6->connect( pb6, SIGNAL(clicked()), t, SLOT(showIt6()) );
     pb6->show();
-    NETWinInfo ni(QX11Info::display(), pb6->effectiveWinId(),
+    NETWinInfo ni(QX11Info::connection(), pb6->effectiveWinId(),
                   QX11Info::appRootWindow(), NET::WMState);
     ni.setState(NET::SkipTaskbar, NET::SkipTaskbar);
 #endif

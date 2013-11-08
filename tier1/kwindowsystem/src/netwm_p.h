@@ -84,7 +84,6 @@ struct NETRootInfoPrivate {
     NET::Role role;
 
     // information about the X server
-    Display *display;
     xcb_connection_t *conn;
     NETSize rootSize;
     xcb_window_t root;
@@ -126,7 +125,6 @@ struct NETRootInfoPrivate {
 struct NETWinInfoPrivate {
     NET::Role role;
 
-    Display *display;
     xcb_connection_t *conn;
     xcb_window_t window, root;
     NET::MappingState mapping_state;

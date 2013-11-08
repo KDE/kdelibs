@@ -125,7 +125,7 @@ private:
 
 KWindowSystemPrivate::KWindowSystemPrivate(int _what)
     : QWidget(0),
-      NETRootInfo( QX11Info::display(),
+      NETRootInfo( QX11Info::connection(),
                    _what >= KWindowSystem::INFO_WINDOWS ? windows_properties : desktop_properties,
                    2, -1, false ),
       QAbstractNativeEventFilter(),
@@ -250,7 +250,7 @@ bool KWindowSystemPrivate::nativeEventFilter(xcb_generic_event_t *ev)
             emit s_q->showingDesktopChanged( showingDesktop());
         }
     } else if (windows.contains(eventWindow)) {
-        NETWinInfo ni(QX11Info::display(), eventWindow, QX11Info::appRootWindow(), 0);
+        NETWinInfo ni(QX11Info::connection(), eventWindow, QX11Info::appRootWindow(), 0);
         unsigned long dirty[ 2 ];
         ni.event( ev, dirty, 2 );
         if (eventType == XCB_PROPERTY_NOTIFY) {
@@ -316,7 +316,7 @@ void KWindowSystemPrivate::addClient(Window w)
     bool emit_strutChanged = false;
 
     if( strutSignalConnected ) {
-        NETWinInfo info( QX11Info::display(), w, QX11Info::appRootWindow(), NET::WMStrut | NET::WMDesktop );
+        NETWinInfo info( QX11Info::connection(), w, QX11Info::appRootWindow(), NET::WMStrut | NET::WMDesktop );
         NETStrut strut = info.strut();
         if ( strut.left || strut.top || strut.right || strut.bottom ) {
             strutWindows.append( StrutData( w, strut, info.desktop()));
@@ -337,7 +337,7 @@ void KWindowSystemPrivate::removeClient(Window w)
 
     bool emit_strutChanged = removeStrutWindow( w );
     if( strutSignalConnected && possibleStrutWindows.contains( w )) {
-        NETWinInfo info( QX11Info::display(), w, QX11Info::appRootWindow(), NET::WMStrut );
+        NETWinInfo info( QX11Info::connection(), w, QX11Info::appRootWindow(), NET::WMStrut );
         NETStrut strut = info.strut();
         if ( strut.left || strut.top || strut.right || strut.bottom ) {
             emit_strutChanged = true;
@@ -502,7 +502,7 @@ QList<WId> KWindowSystem::stackingOrder()
 
 int KWindowSystem::currentDesktop()
 {
-    if (!QX11Info::display())
+    if (!QX11Info::connection())
       return 1;
 
     if( mapViewport()) {
@@ -515,13 +515,13 @@ int KWindowSystem::currentDesktop()
     KWindowSystemPrivate* const s_d = s_d_func();
     if( s_d )
         return s_d->currentDesktop( true );
-    NETRootInfo info( QX11Info::display(), NET::CurrentDesktop );
+    NETRootInfo info( QX11Info::connection(), NET::CurrentDesktop );
     return info.currentDesktop( true );
 }
 
 int KWindowSystem::numberOfDesktops()
 {
-    if (!QX11Info::display())
+    if (!QX11Info::connection())
       return 1;
 
     if( mapViewport()) {
@@ -534,7 +534,7 @@ int KWindowSystem::numberOfDesktops()
     KWindowSystemPrivate* const s_d = s_d_func();
     if( s_d )
         return s_d->numberOfDesktops( true );
-    NETRootInfo info( QX11Info::display(), NET::NumberOfDesktops );
+    NETRootInfo info( QX11Info::connection(), NET::NumberOfDesktops );
     return info.numberOfDesktops( true );
 }
 
@@ -543,7 +543,7 @@ void KWindowSystem::setCurrentDesktop( int desktop )
     if( mapViewport()) {
         init( INFO_BASIC );
         KWindowSystemPrivate* const s_d = s_d_func();
-        NETRootInfo info( QX11Info::display(), 0 );
+        NETRootInfo info( QX11Info::connection(), 0 );
         QPoint pos = desktopToViewport( desktop, true );
         NETPoint p;
         p.x = pos.x();
@@ -551,7 +551,7 @@ void KWindowSystem::setCurrentDesktop( int desktop )
         info.setDesktopViewport( s_d->currentDesktop( true ), p );
         return;
     }
-    NETRootInfo info( QX11Info::display(), 0 );
+    NETRootInfo info( QX11Info::connection(), 0 );
     info.setCurrentDesktop( desktop, true );
 }
 
@@ -564,11 +564,11 @@ void KWindowSystem::setOnAllDesktops( WId win, bool b )
             clearState( win, NET::Sticky );
         return;
     }
-    NETWinInfo info( QX11Info::display(), win, QX11Info::appRootWindow(), NET::WMDesktop );
+    NETWinInfo info( QX11Info::connection(), win, QX11Info::appRootWindow(), NET::WMDesktop );
     if ( b )
 	info.setDesktop( NETWinInfo::OnAllDesktops, true );
     else if ( info.desktop( true )  == NETWinInfo::OnAllDesktops ) {
-	NETRootInfo rinfo( QX11Info::display(), NET::CurrentDesktop );
+	NETRootInfo rinfo( QX11Info::connection(), NET::CurrentDesktop );
 	info.setDesktop( rinfo.currentDesktop( true ), true );
     }
 }
@@ -607,7 +607,7 @@ void KWindowSystem::setOnDesktop( WId win, int desktop )
         s_d->moveResizeWindowRequest( win, flags, p.x(), p.y(), w, h );
         return;
     }
-    NETWinInfo info( QX11Info::display(), win, QX11Info::appRootWindow(), NET::WMDesktop );
+    NETWinInfo info( QX11Info::connection(), win, QX11Info::appRootWindow(), NET::WMDesktop );
     info.setDesktop( desktop, true );
 }
 
@@ -616,13 +616,13 @@ WId KWindowSystem::activeWindow()
     KWindowSystemPrivate* const s_d = s_d_func();
     if( s_d )
         return s_d->activeWindow();
-    NETRootInfo info( QX11Info::display(), NET::ActiveWindow );
+    NETRootInfo info( QX11Info::connection(), NET::ActiveWindow );
     return info.activeWindow();
 }
 
 void KWindowSystem::activateWindow( WId win, long time )
 {
-    NETRootInfo info( QX11Info::display(), 0 );
+    NETRootInfo info( QX11Info::connection(), 0 );
     if( time == 0 )
         time = QX11Info::appUserTime();
     info.setActiveWindow( win, NET::FromApplication, time,
@@ -631,7 +631,7 @@ void KWindowSystem::activateWindow( WId win, long time )
 
 void KWindowSystem::forceActiveWindow( WId win, long time )
 {
-    NETRootInfo info( QX11Info::display(), 0 );
+    NETRootInfo info( QX11Info::connection(), 0 );
     if( time == 0 )
         time = QX11Info::appTime();
     info.setActiveWindow( win, NET::FromTool, time, 0 );
@@ -639,7 +639,7 @@ void KWindowSystem::forceActiveWindow( WId win, long time )
 
 void KWindowSystem::demandAttention( WId win, bool set )
 {
-    NETWinInfo info( QX11Info::display(), win, QX11Info::appRootWindow(), NET::WMState );
+    NETWinInfo info( QX11Info::connection(), win, QX11Info::appRootWindow(), NET::WMState );
     info.setState( set ? NET::DemandsAttention : 0, NET::DemandsAttention );
 }
 
@@ -693,7 +693,7 @@ QPixmap KWindowSystem::icon( WId win, int width, int height, bool scale, int fla
     KXErrorHandler handler; // ignore badwindow
     QPixmap result;
     if( flags & NETWM ) {
-        NETWinInfo info( QX11Info::display(), win, QX11Info::appRootWindow(), NET::WMIcon );
+        NETWinInfo info( QX11Info::connection(), win, QX11Info::appRootWindow(), NET::WMIcon );
         NETIcon ni = info.icon( width, height );
         if ( ni.data && ni.size.width > 0 && ni.size.height > 0 ) {
     	    QImage img( (uchar*) ni.data, (int) ni.size.width, (int) ni.size.height, QImage::Format_ARGB32 );
@@ -782,7 +782,7 @@ void KWindowSystem::setIcons( WId win, const QPixmap& icon, const QPixmap& miniI
 {
     if ( icon.isNull() )
 	return;
-    NETWinInfo info( QX11Info::display(), win, QX11Info::appRootWindow(), 0 );
+    NETWinInfo info( QX11Info::connection(), win, QX11Info::appRootWindow(), 0 );
     QImage img = icon.toImage().convertToFormat( QImage::Format_ARGB32 );
     NETIcon ni;
     ni.size.width = img.size().width();
@@ -802,19 +802,19 @@ void KWindowSystem::setIcons( WId win, const QPixmap& icon, const QPixmap& miniI
 
 void KWindowSystem::setType( WId win, NET::WindowType windowType )
 {
-    NETWinInfo info( QX11Info::display(), win, QX11Info::appRootWindow(), 0 );
+    NETWinInfo info( QX11Info::connection(), win, QX11Info::appRootWindow(), 0 );
     info.setWindowType( windowType );
 }
 
 void KWindowSystem::setState( WId win, unsigned long state )
 {
-    NETWinInfo info( QX11Info::display(), win, QX11Info::appRootWindow(), NET::WMState );
+    NETWinInfo info( QX11Info::connection(), win, QX11Info::appRootWindow(), NET::WMState );
     info.setState( state, state );
 }
 
 void KWindowSystem::clearState( WId win, unsigned long state )
 {
-    NETWinInfo info( QX11Info::display(), win, QX11Info::appRootWindow(), NET::WMState );
+    NETWinInfo info( QX11Info::connection(), win, QX11Info::appRootWindow(), NET::WMState );
     info.setState( 0, state );
 }
 
@@ -840,7 +840,7 @@ void KWindowSystem::unminimizeWindow( WId win, bool animation )
 
 void KWindowSystem::raiseWindow( WId win )
 {
-    NETRootInfo info( QX11Info::display(), NET::Supported );
+    NETRootInfo info( QX11Info::connection(), NET::Supported );
     if( info.isSupported( NET::WM2RestackWindow ))
         info.restackRequest( win, NET::FromTool, None, Above, QX11Info::appUserTime());
     else
@@ -849,7 +849,7 @@ void KWindowSystem::raiseWindow( WId win )
 
 void KWindowSystem::lowerWindow( WId win )
 {
-    NETRootInfo info( QX11Info::display(), NET::Supported );
+    NETRootInfo info( QX11Info::connection(), NET::Supported );
     if( info.isSupported( NET::WM2RestackWindow ))
         info.restackRequest( win, NET::FromTool, None, Below, QX11Info::appUserTime());
     else
@@ -922,7 +922,7 @@ QRect KWindowSystem::workArea( const QList<WId>& exclude, int desktop )
                 strut = (*it2).strut;
             } else if( s_d->possibleStrutWindows.contains( *it1 ) ) {
 
-                NETWinInfo info( QX11Info::display(), (*it1), QX11Info::appRootWindow(), NET::WMStrut | NET::WMDesktop);
+                NETWinInfo info( QX11Info::connection(), (*it1), QX11Info::appRootWindow(), NET::WMStrut | NET::WMDesktop);
                 strut = info.strut();
                 s_d->possibleStrutWindows.removeAll( *it1 );
                 s_d->strutWindows.append( KWindowSystemPrivate::StrutData( *it1, info.strut(), info.desktop()));
@@ -973,7 +973,7 @@ void KWindowSystem::setDesktopName( int desktop, const QString& name )
         return;
     }
 
-    NETRootInfo info( QX11Info::display(), 0 );
+    NETRootInfo info( QX11Info::connection(), 0 );
     info.setDesktopName( desktop, name.toUtf8().constData() );
 }
 
@@ -985,7 +985,7 @@ bool KWindowSystem::showingDesktop()
 
 void KWindowSystem::setUserTime( WId win, long time )
 {
-    NETWinInfo info( QX11Info::display(), win, QX11Info::appRootWindow(), 0 );
+    NETWinInfo info( QX11Info::connection(), win, QX11Info::appRootWindow(), 0 );
     info.setUserTime( time );
 }
 
@@ -993,7 +993,7 @@ void KWindowSystem::setExtendedStrut( WId win, int left_width, int left_start, i
     int right_width, int right_start, int right_end, int top_width, int top_start, int top_end,
     int bottom_width, int bottom_start, int bottom_end )
 {
-    NETWinInfo info( QX11Info::display(), win, QX11Info::appRootWindow(), 0 );
+    NETWinInfo info( QX11Info::connection(), win, QX11Info::appRootWindow(), 0 );
     NETExtendedStrut strut;
     strut.left_width = left_width;
     strut.right_width = right_width;
@@ -1028,7 +1028,7 @@ bool KWindowSystem::icccmCompliantMappingState()
 {
     static enum { noidea, yes, no } wm_is_1_2_compliant = noidea;
     if( wm_is_1_2_compliant == noidea ) {
-        NETRootInfo info( QX11Info::display(), NET::Supported );
+        NETRootInfo info( QX11Info::connection(), NET::Supported );
         wm_is_1_2_compliant = info.isSupported( NET::Hidden ) ? yes : no;
     }
     return wm_is_1_2_compliant == yes;
@@ -1038,7 +1038,7 @@ bool KWindowSystem::allowedActionsSupported()
 {
     static enum { noidea, yes, no } wm_supports_allowed_actions = noidea;
     if( wm_supports_allowed_actions == noidea ) {
-        NETRootInfo info( QX11Info::display(), NET::Supported );
+        NETRootInfo info( QX11Info::connection(), NET::Supported );
         wm_supports_allowed_actions = info.isSupported( NET::WM2AllowedActions ) ? yes : no;
     }
     return wm_supports_allowed_actions == yes;
@@ -1075,7 +1075,7 @@ void KWindowSystem::allowExternalProcessWindowActivation( int pid )
 
 void KWindowSystem::setBlockingCompositing( WId window, bool active )
 {
-    NETWinInfo info( QX11Info::display(), window, QX11Info::appRootWindow(), 0 );
+    NETWinInfo info( QX11Info::connection(), window, QX11Info::appRootWindow(), 0 );
     info.setBlockingCompositing( active );
 }
 
@@ -1086,10 +1086,10 @@ bool KWindowSystem::mapViewport()
     if( s_d )
         return s_d->mapViewport();
     // avoid creating KWindowSystemPrivate
-    NETRootInfo infos( QX11Info::display(), NET::Supported );
+    NETRootInfo infos( QX11Info::connection(), NET::Supported );
     if( !infos.isSupported( NET::DesktopViewport ))
         return false;
-    NETRootInfo info( QX11Info::display(), NET::NumberOfDesktops | NET::CurrentDesktop | NET::DesktopGeometry );
+    NETRootInfo info( QX11Info::connection(), NET::NumberOfDesktops | NET::CurrentDesktop | NET::DesktopGeometry );
     if( info.numberOfDesktops( true ) <= 1
         && ( info.desktopGeometry().width > QApplication::desktop()->width()
             || info.desktopGeometry().height > QApplication::desktop()->height()))

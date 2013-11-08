@@ -686,7 +686,7 @@ void KStartupInfo::setNewStartupId( QWidget* window, const QByteArray& startup_i
         {
         if( !startup_id.isEmpty() && startup_id != "0" )
             {
-            NETRootInfo i( QX11Info::display(), NET::Supported );
+            NETRootInfo i( QX11Info::connection(), NET::Supported );
             if( i.isSupported( NET::WM2StartupId ))
                 {
                 KStartupInfo::setWindowStartupId( window->winId(), startup_id );
@@ -752,7 +752,7 @@ KStartupInfo::startup_t KStartupInfo::Private::check_startup_internal( WId w_P, 
         return find_id( id, id_O, data_O ) ? Match : NoMatch;
         }
 #if HAVE_X11
-    NETWinInfo info( QX11Info::display(),  w_P, QX11Info::appRootWindow(),
+    NETWinInfo info( QX11Info::connection(),  w_P, QX11Info::appRootWindow(),
         NET::WMWindowType | NET::WMPid | NET::WMState );
     pid_t pid = info.pid();
     if( pid > 0 )

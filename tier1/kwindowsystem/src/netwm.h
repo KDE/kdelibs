@@ -39,7 +39,6 @@
 struct NETRootInfoPrivate;
 struct NETWinInfoPrivate;
 template <class Z> class NETRArray;
-typedef struct _XDisplay Display;
 
 /**
    Common API for root window properties/protocols.
@@ -68,7 +67,7 @@ public:
        The application role is automatically set to WindowManager
        when using this constructor.
 
-       @param display An X11 Display struct.
+       @param connection XCB connection
 
        @param supportWindow The Window id of the supportWindow.  The supportWindow
        must be created by the window manager as a child of the rootWindow.  The
@@ -93,7 +92,7 @@ public:
 
        @param doActivate true to activate the window
     **/
-    NETRootInfo(Display *display, xcb_window_t supportWindow, const char *wmName,
+    NETRootInfo(xcb_connection_t *connection, xcb_window_t supportWindow, const char *wmName,
 		const unsigned long properties[], int properties_size,
                 int screen = -1, bool doActivate = true);
 
@@ -103,7 +102,7 @@ public:
        will be used to query information set on the root window. The application
        role is automatically set to Client when using this constructor.
 
-       @param display An X11 Display struct.
+       @param connection XCB connection
 
        @param properties An array of elements listing all protocols the client
        is interested in. The elements contain OR'ed values of constants
@@ -119,7 +118,7 @@ public:
        @param doActivate true to call activate() to do an initial data read/update
        of the query information.
     **/
-    NETRootInfo(Display *display, const unsigned long properties[], int properties_size,
+    NETRootInfo(xcb_connection_t *connection, const unsigned long properties[], int properties_size,
                 int screen = -1, bool doActivate = true);
 
     /**
@@ -128,7 +127,7 @@ public:
         to the first element of the properties array in the above constructor,
         and therefore you cannot read all root window properties using it.
     **/
-    NETRootInfo(Display *display, unsigned long properties, int screen = -1,
+    NETRootInfo(xcb_connection_t *connection, unsigned long properties, int screen = -1,
 		bool doActivate = true);
 
     /**
@@ -144,11 +143,11 @@ public:
     virtual ~NETRootInfo();
 
     /**
-       Returns the X11 Display struct used.
+       Returns the xcb connection used.
 
-       @return the X11 Display
+       @return the XCB connection
     **/
-    Display *x11Display() const;
+    xcb_connection_t *xcbConnection() const;
 
     /**
        Returns the Window id of the rootWindow.
@@ -819,7 +818,7 @@ public:
        Create a NETWinInfo object, which will be used to set/read/change
        information stored on an application window.
 
-       @param display An X11 Display struct.
+       @param connection XCB connection
 
        @param window The Window id of the application window.
 
@@ -837,7 +836,7 @@ public:
        @param role Select the application role.  If this argument is omitted,
        the role will default to Client.
     **/
-    NETWinInfo(Display *display, xcb_window_t window, xcb_window_t rootWindow,
+    NETWinInfo(xcb_connection_t *connection, xcb_window_t window, xcb_window_t rootWindow,
                const unsigned long properties[], int properties_size,
 	       Role role = Client);
 
@@ -847,7 +846,7 @@ public:
         is equivalent to the first element of the properties array
         in the above constructor.
     **/
-    NETWinInfo(Display *display, xcb_window_t window,
+    NETWinInfo(xcb_connection_t *connection, xcb_window_t window,
 	       xcb_window_t rootWindow, unsigned long properties,
 	       Role role = Client);
 

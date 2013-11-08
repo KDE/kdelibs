@@ -67,7 +67,7 @@ KWindowInfo::KWindowInfo( WId _win, unsigned long properties, unsigned long prop
 	properties |= NET::WMGeometry; // for viewports, the desktop (workspace) is determined from the geometry
     properties |= NET::XAWMState; // force to get error detection for valid()
     unsigned long props[ 2 ] = { properties, properties2 };
-    d->info = new NETWinInfo( QX11Info::display(), _win, QX11Info::appRootWindow(), props, 2 );
+    d->info = new NETWinInfo( QX11Info::connection(), _win, QX11Info::appRootWindow(), props, 2 );
     d->win_ = _win;
     if( properties & NET::WMName ) {
         if( d->info->name() && d->info->name()[ 0 ] != '\0' )
@@ -310,7 +310,7 @@ bool KWindowInfo::onAllDesktops() const
     if( KWindowSystem::mapViewport()) {
         if( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMState )
             return d->info->state() & NET::Sticky;
-        NETWinInfo info( QX11Info::display(), d->win_, QX11Info::appRootWindow(), NET::WMState );
+        NETWinInfo info( QX11Info::connection(), d->win_, QX11Info::appRootWindow(), NET::WMState );
         return info.state() & NET::Sticky;
     }
     return d->info->desktop() == NET::OnAllDesktops;

@@ -32,8 +32,6 @@
 
 #include "netwm_p.h"
 
-#include <X11/Xlib-xcb.h>
-
 #include <QWidget>
 #include <config-kwindowsystem.h>
 #if HAVE_X11 //FIXME
@@ -47,8 +45,6 @@
 #include <stdio.h>
 #include <assert.h>
 #include <stdlib.h>
-
-#include <X11/Xmd.h>
 
 
 // This struct is defined here to avoid a dependency on xcb-icccm
@@ -627,7 +623,7 @@ Z &NETRArray<Z>::operator[](int index) {
 
 // Construct a new NETRootInfo object.
 
-NETRootInfo::NETRootInfo(Display *display, xcb_window_t supportWindow, const char *wmName,
+NETRootInfo::NETRootInfo(xcb_connection_t *connection, xcb_window_t supportWindow, const char *wmName,
 			 const unsigned long properties[], int properties_size,
                          int screen, bool doActivate)
 {
@@ -639,10 +635,9 @@ NETRootInfo::NETRootInfo(Display *display, xcb_window_t supportWindow, const cha
     p = new NETRootInfoPrivate;
     p->ref = 1;
 
-    p->display = display;
     p->name = nstrdup(wmName);
 
-    p->conn = XGetXCBConnection(display);
+    p->conn = connection;
 
     p->temp_buf = 0;
     p->temp_buf_size = 0;
@@ -687,7 +682,7 @@ NETRootInfo::NETRootInfo(Display *display, xcb_window_t supportWindow, const cha
 }
 
 
-NETRootInfo::NETRootInfo(Display *display, const unsigned long properties[], int properties_size,
+NETRootInfo::NETRootInfo(xcb_connection_t *connection, const unsigned long properties[], int properties_size,
                          int screen, bool doActivate)
 {
 
@@ -700,8 +695,7 @@ NETRootInfo::NETRootInfo(Display *display, const unsigned long properties[], int
 
     p->name = 0;
 
-    p->display = display;
-    p->conn = XGetXCBConnection(display);
+    p->conn = connection;
 
     p->temp_buf = 0;
     p->temp_buf_size = 0;
@@ -753,7 +747,7 @@ NETRootInfo::NETRootInfo(Display *display, const unsigned long properties[], int
     if (doActivate) activate();
 }
 
-NETRootInfo::NETRootInfo(Display *display, unsigned long properties, int screen,
+NETRootInfo::NETRootInfo(xcb_connection_t *connection, unsigned long properties, int screen,
 			 bool doActivate)
 {
 
@@ -766,8 +760,7 @@ NETRootInfo::NETRootInfo(Display *display, unsigned long properties, int screen,
 
     p->name = 0;
 
-    p->display = display;
-    p->conn = XGetXCBConnection(display);
+    p->conn = connection;
 
     p->temp_buf = 0;
     p->temp_buf_size = 0;
@@ -2375,8 +2368,8 @@ void NETRootInfo::update(const unsigned long dirty_props[])
 }
 
 
-Display *NETRootInfo::x11Display() const {
-    return p->display;
+xcb_connection_t *NETRootInfo::xcbConnection() const {
+    return p->conn;
 }
 
 
@@ -2592,7 +2585,7 @@ xcb_window_t NETRootInfo::activeWindow() const {
 
 const int NETWinInfo::OnAllDesktops = NET::OnAllDesktops;
 
-NETWinInfo::NETWinInfo(Display *display, xcb_window_t window, xcb_window_t rootWindow,
+NETWinInfo::NETWinInfo(xcb_connection_t *connection, xcb_window_t window, xcb_window_t rootWindow,
 		       const unsigned long properties[], int properties_size,
                        Role role)
 {
@@ -2605,8 +2598,7 @@ NETWinInfo::NETWinInfo(Display *display, xcb_window_t window, xcb_window_t rootW
     p = new NETWinInfoPrivate;
     p->ref = 1;
 
-    p->display = display;
-    p->conn = XGetXCBConnection(p->display);
+    p->conn = connection;
     p->window = window;
     p->root = rootWindow;
     p->mapping_state = Withdrawn;
@@ -2660,7 +2652,7 @@ NETWinInfo::NETWinInfo(Display *display, xcb_window_t window, xcb_window_t rootW
 }
 
 
-NETWinInfo::NETWinInfo(Display *display, xcb_window_t window, xcb_window_t rootWindow,
+NETWinInfo::NETWinInfo(xcb_connection_t *connection, xcb_window_t window, xcb_window_t rootWindow,
 		       unsigned long properties, Role role)
 {
 
@@ -2672,8 +2664,7 @@ NETWinInfo::NETWinInfo(Display *display, xcb_window_t window, xcb_window_t rootW
     p = new NETWinInfoPrivate;
     p->ref = 1;
 
-    p->display = display;
-    p->conn = XGetXCBConnection(p->display);
+    p->conn = connection;
     p->window = window;
     p->root = rootWindow;
     p->mapping_state = Withdrawn;

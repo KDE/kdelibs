@@ -494,7 +494,7 @@ void KDialog::setPlainCaption( const QString &caption )
     if (QWidget *win = window()) {
         win->setWindowTitle( caption );
 #if HAVE_X11
-        NETWinInfo info( QX11Info::display(), win->winId(), QX11Info::appRootWindow(), 0 );
+        NETWinInfo info( QX11Info::connection(), win->winId(), QX11Info::appRootWindow(), 0 );
         info.setName( caption.toUtf8().constData() );
 #endif
     }
@@ -562,7 +562,7 @@ void KDialog::centerOnScreen( QWidget *widget, int screen )
 
 #if HAVE_X11
   if( !( widget->windowFlags() & Qt::X11BypassWindowManagerHint ) && widget->windowType() != Qt::Popup
-      && NETRootInfo( QX11Info::display(), NET::Supported ).isSupported( NET::WM2FullPlacement )) {
+      && NETRootInfo( QX11Info::connection(), NET::Supported ).isSupported( NET::WM2FullPlacement )) {
       return; // the WM can handle placement much better
   }
 #endif

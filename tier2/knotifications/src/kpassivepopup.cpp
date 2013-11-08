@@ -437,7 +437,7 @@ void KPassivePopup::positionSelf()
         target = QRect(defaultLocation(), QSize(0, 0));
 #if HAVE_X11
     } else if ( QX11Info::isPlatformX11() ) {
-        NETWinInfo ni( QX11Info::display(), d->window, QX11Info::appRootWindow(),
+        NETWinInfo ni( QX11Info::connection(), d->window, QX11Info::appRootWindow(),
                        NET::WMIconGeometry | NET::WMState );
 
         // Try to put the popup by the taskbar entry
