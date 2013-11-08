@@ -1,3 +1,5 @@
+include(ECMAddTests)
+
 find_package(Qt5Test REQUIRED)
 macro(kemoticons_unit_tests)
    foreach(_testname ${ARGN})
