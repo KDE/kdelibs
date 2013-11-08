@@ -47,6 +47,7 @@
 #include <kstartupinfo.h>
 #include <netwm.h>
 #include <X11/Xlib.h>
+#include <fixx11h.h>
 #endif
 
 /* I don't know why, but I end up with complaints about

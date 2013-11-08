@@ -206,10 +206,10 @@ static char *nstrndup(const char *s1, int l) {
 }
 
 
-static Window *nwindup(const Window *w1, int n) {
-    if (! w1 || n == 0) return (Window *) 0;
+static xcb_window_t *nwindup(const xcb_window_t *w1, int n) {
+    if (! w1 || n == 0) return (xcb_window_t *) 0;
 
-    Window *w2 = new Window[n];
+    xcb_window_t *w2 = new xcb_window_t[n];
     while (n--)	w2[n] = w1[n];
     return w2;
 }
@@ -266,19 +266,6 @@ static void refdec_nwi(NETWinInfoPrivate *p) {
 	    delete [] p->icons[i].data;
         delete [] p->icon_sizes;
     }
-}
-
-
-// KDE5: Remove this when we use xcb types everywhere
-static uint32_t *get_temp_buf(NETRootInfoPrivate *p, size_t count)
-{
-    if (p->temp_buf_size < count) {
-        delete [] p->temp_buf;
-        p->temp_buf_size = (count + 63) & ~63;
-        p->temp_buf = new uint32_t[p->temp_buf_size];
-    }
-
-    return p->temp_buf;
 }
 
 
@@ -640,7 +627,7 @@ Z &NETRArray<Z>::operator[](int index) {
 
 // Construct a new NETRootInfo object.
 
-NETRootInfo::NETRootInfo(Display *display, Window supportWindow, const char *wmName,
+NETRootInfo::NETRootInfo(Display *display, xcb_window_t supportWindow, const char *wmName,
 			 const unsigned long properties[], int properties_size,
                          int screen, bool doActivate)
 {
@@ -671,8 +658,8 @@ NETRootInfo::NETRootInfo(Display *display, Window supportWindow, const char *wmN
     p->root = it.data->root;
     p->supportwindow = supportWindow;
     p->number_of_desktops = p->current_desktop = 0;
-    p->active = None;
-    p->clients = p->stacking = p->virtual_roots = (Window *) 0;
+    p->active = XCB_WINDOW_NONE;
+    p->clients = p->stacking = p->virtual_roots = (xcb_window_t *) 0;
     p->clients_count = p->stacking_count = p->virtual_roots_count = 0;
     p->showing_desktop = false;
     p->desktop_layout_orientation = OrientationHorizontal;
@@ -731,10 +718,10 @@ NETRootInfo::NETRootInfo(Display *display, const unsigned long properties[], int
     p->rootSize.width = it.data->width_in_pixels;
     p->rootSize.height = it.data->height_in_pixels;
 
-    p->supportwindow = None;
+    p->supportwindow = XCB_WINDOW_NONE;
     p->number_of_desktops = p->current_desktop = 0;
-    p->active = None;
-    p->clients = p->stacking = p->virtual_roots = (Window *) 0;
+    p->active = XCB_WINDOW_NONE;
+    p->clients = p->stacking = p->virtual_roots = (xcb_window_t *) 0;
     p->clients_count = p->stacking_count = p->virtual_roots_count = 0;
     p->showing_desktop = false;
     p->desktop_layout_orientation = OrientationHorizontal;
@@ -797,10 +784,10 @@ NETRootInfo::NETRootInfo(Display *display, unsigned long properties, int screen,
     p->rootSize.width = it.data->width_in_pixels;
     p->rootSize.height = it.data->height_in_pixels;
 
-    p->supportwindow = None;
+    p->supportwindow = XCB_WINDOW_NONE;
     p->number_of_desktops = p->current_desktop = 0;
-    p->active = None;
-    p->clients = p->stacking = p->virtual_roots = (Window *) 0;
+    p->active = XCB_WINDOW_NONE;
+    p->clients = p->stacking = p->virtual_roots = (xcb_window_t *) 0;
     p->clients_count = p->stacking_count = p->virtual_roots_count = 0;
     p->showing_desktop = false;
     p->desktop_layout_orientation = OrientationHorizontal;
@@ -880,7 +867,7 @@ void NETRootInfo::activate() {
 }
 
 
-void NETRootInfo::setClientList(const Window *windows, unsigned int count)
+void NETRootInfo::setClientList(const xcb_window_t *windows, unsigned int count)
 {
     if (p->role != WindowManager)
         return;
@@ -895,19 +882,13 @@ void NETRootInfo::setClientList(const Window *windows, unsigned int count)
 	    p->clients_count);
 #endif
 
-    // KDE5: Remove this when the parameter type is changed to xcb_window_t.
-    // Window is 64 bits on a 64 bit system, while the actual data is 32 bits.
-    uint32_t *data = get_temp_buf(p, count);
-    for (unsigned int i = 0; i < count; i++)
-        data[i] = windows[i];
-
     xcb_change_property(p->conn, XCB_PROP_MODE_REPLACE, p->root, net_client_list,
                         XCB_ATOM_WINDOW, 32, p->clients_count,
-                        (const void *) data);
+                        (const void *) windows);
 }
 
 
-void NETRootInfo::setClientListStacking(const Window *windows, unsigned int count)
+void NETRootInfo::setClientListStacking(const xcb_window_t *windows, unsigned int count)
 {
     if (p->role != WindowManager)
         return;
@@ -922,15 +903,9 @@ void NETRootInfo::setClientListStacking(const Window *windows, unsigned int coun
 	    p->clients_count);
 #endif
 
-    // KDE5: Remove this when the parameter type is changed to xcb_window_t.
-    // Window is 64 bits on a 64 bit system, while the actual data is 32 bits.
-    uint32_t *data = get_temp_buf(p, count);
-    for (unsigned int i = 0; i < count; i++)
-        data[i] = windows[i];
-
     xcb_change_property(p->conn, XCB_PROP_MODE_REPLACE, p->root, net_client_list_stacking,
                         XCB_ATOM_WINDOW, 32, p->stacking_count,
-                        (const void *) data);
+                        (const void *) windows);
 }
 
 
@@ -1350,7 +1325,7 @@ void NETRootInfo::setSupported()
                         (const void *) p->name);
 }
 
-void NETRootInfo::updateSupportedProperties( Atom atom )
+void NETRootInfo::updateSupportedProperties(xcb_atom_t atom)
 {
     if( atom == net_supported )
         p->properties[ PROTOCOLS ] |= Supported;
@@ -1576,14 +1551,14 @@ void NETRootInfo::updateSupportedProperties( Atom atom )
 }
 
 
-void NETRootInfo::setActiveWindow(Window window)
+void NETRootInfo::setActiveWindow(xcb_window_t window)
 {
-    setActiveWindow(window, FromUnknown, QX11Info::appUserTime(), None);
+    setActiveWindow(window, FromUnknown, QX11Info::appUserTime(), XCB_WINDOW_NONE);
 }
 
 
-void NETRootInfo::setActiveWindow(Window window, NET::RequestSource src,
-                                  Time timestamp, Window active_window)
+void NETRootInfo::setActiveWindow(xcb_window_t window, NET::RequestSource src,
+                                  xcb_timestamp_t timestamp, xcb_window_t active_window)
 {
 #ifdef NETWMDEBUG
     fprintf(stderr, "NETRootInfo::setActiveWindow(0x%lx) (%s)\n",
@@ -1636,7 +1611,7 @@ void NETRootInfo::setWorkArea(int desktop, const NETRect &workarea)
 }
 
 
-void NETRootInfo::setVirtualRoots(const Window *windows, unsigned int count)
+void NETRootInfo::setVirtualRoots(const xcb_window_t *windows, unsigned int count)
 {
     if (p->role != WindowManager)
         return;
@@ -1650,15 +1625,9 @@ void NETRootInfo::setVirtualRoots(const Window *windows, unsigned int count)
 	    p->virtual_roots_count);
 #endif
 
-    // KDE5: Remove this when the parameter type is changed to xcb_window_t.
-    // Window is 64 bits on a 64 bit system, while the actual data is 32 bits.
-    uint32_t *data = get_temp_buf(p, count);
-    for (unsigned int i = 0; i < count; i++)
-        data[i] = windows[i];
-
     xcb_change_property(p->conn, XCB_PROP_MODE_REPLACE, p->root, net_virtual_roots,
                         XCB_ATOM_WINDOW, 32, p->virtual_roots_count,
-                        (const void *) data);
+                        (const void *) windows);
 }
 
 
@@ -1708,7 +1677,7 @@ bool NETRootInfo::showingDesktop() const
 }
 
 
-void NETRootInfo::closeWindowRequest(Window window)
+void NETRootInfo::closeWindowRequest(xcb_window_t window)
 {
 #ifdef NETWMDEBUG
     fprintf(stderr, "NETRootInfo::closeWindowRequest: requesting close for 0x%lx\n",
@@ -1720,7 +1689,7 @@ void NETRootInfo::closeWindowRequest(Window window)
 }
 
 
-void NETRootInfo::moveResizeRequest(Window window, int x_root, int y_root,
+void NETRootInfo::moveResizeRequest(xcb_window_t window, int x_root, int y_root,
 				    Direction direction)
 {
 #ifdef NETWMDEBUG
@@ -1737,7 +1706,7 @@ void NETRootInfo::moveResizeRequest(Window window, int x_root, int y_root,
 }
 
 
-void NETRootInfo::moveResizeWindowRequest(Window window, int flags, int x, int y, int width, int height)
+void NETRootInfo::moveResizeWindowRequest(xcb_window_t window, int flags, int x, int y, int width, int height)
 {
 #ifdef NETWMDEBUG
     fprintf(stderr,
@@ -1753,7 +1722,7 @@ void NETRootInfo::moveResizeWindowRequest(Window window, int flags, int x, int y
 }
 
 
-void NETRootInfo::restackRequest(Window window, RequestSource src, Window above, int detail, Time timestamp )
+void NETRootInfo::restackRequest(xcb_window_t window, RequestSource src, xcb_window_t above, int detail, xcb_timestamp_t timestamp )
 {
 #ifdef NETWMDEBUG
     fprintf(stderr,
@@ -1769,7 +1738,7 @@ void NETRootInfo::restackRequest(Window window, RequestSource src, Window above,
 }
 
 
-void NETRootInfo::sendPing(Window window, Time timestamp)
+void NETRootInfo::sendPing(xcb_window_t window, xcb_timestamp_t timestamp)
 {
     if (p->role != WindowManager)
         return;
@@ -1787,7 +1756,7 @@ void NETRootInfo::sendPing(Window window, Time timestamp)
 }
 
 
-void NETRootInfo::takeActivity(Window window, Time timestamp, long flags)
+void NETRootInfo::takeActivity(xcb_window_t window, xcb_timestamp_t timestamp, long flags)
 {
     if (p->role != WindowManager)
         return;
@@ -2137,8 +2106,8 @@ void NETRootInfo::update(const unsigned long dirty_props[])
     }
 
     if (dirty & ClientList) {
-        QList<Window> clientsToRemove;
-        QList<Window> clientsToAdd;
+        QList<xcb_window_t> clientsToRemove;
+        QList<xcb_window_t> clientsToAdd;
 
         QVector<xcb_window_t> clients = get_array_reply<xcb_window_t>(p->conn, cookies[c++], XCB_ATOM_WINDOW);
         qSort(clients);
@@ -2180,10 +2149,9 @@ void NETRootInfo::update(const unsigned long dirty_props[])
             }
         }
 
-        // KDE5: Change the clients type to xcb_window_t
         if (clients.count() > 0) {
             p->clients_count = clients.count();
-            p->clients = new Window[clients.count()];
+            p->clients = new xcb_window_t[clients.count()];
             for (int i = 0; i < clients.count(); i++)
                 p->clients[i] = clients.at(i);
         }
@@ -2210,10 +2178,9 @@ void NETRootInfo::update(const unsigned long dirty_props[])
 
         const QVector<xcb_window_t> wins = get_array_reply<xcb_window_t>(p->conn, cookies[c++], XCB_ATOM_WINDOW);
 
-        // KDE5: Change the stacking type to xcb_window_t
         if (wins.count() > 0) {
             p->stacking_count = wins.count();
-            p->stacking = new Window[wins.count()];
+            p->stacking = new xcb_window_t[wins.count()];
             for (int i = 0; i < wins.count(); i++)
                 p->stacking[i] = wins.at(i);
         }
@@ -2225,7 +2192,7 @@ void NETRootInfo::update(const unsigned long dirty_props[])
     }
 
     if (dirty & NumberOfDesktops) {
-        p->number_of_desktops = get_value_reply<uint32_t>(p->conn, cookies[c++], XA_CARDINAL, 0);
+        p->number_of_desktops = get_value_reply<uint32_t>(p->conn, cookies[c++], XCB_ATOM_CARDINAL, 0);
 
 #ifdef NETWMDEBUG
         fprintf(stderr, "NETRootInfo::update: number of desktops = %d\n",
@@ -2348,10 +2315,9 @@ void NETRootInfo::update(const unsigned long dirty_props[])
 
         const QVector<xcb_window_t> wins = get_array_reply<xcb_window_t>(p->conn, cookies[c++], XCB_ATOM_CARDINAL);
 
-        // KDE5: Change the virtual_roots type to xcb_window_t
         if (wins.count() > 0) {
             p->virtual_roots_count = wins.count();
-            p->virtual_roots = new Window[wins.count()];
+            p->virtual_roots = new xcb_window_t[wins.count()];
             for (int i = 0; i < wins.count(); i++)
                 p->virtual_roots[i] = wins.at(i);
         }
@@ -2414,12 +2380,12 @@ Display *NETRootInfo::x11Display() const {
 }
 
 
-Window NETRootInfo::rootWindow() const {
+xcb_window_t NETRootInfo::rootWindow() const {
     return p->root;
 }
 
 
-Window NETRootInfo::supportWindow() const {
+xcb_window_t NETRootInfo::supportWindow() const {
     return p->supportwindow;
 }
 
@@ -2524,7 +2490,7 @@ bool NETRootInfo::isSupported( NET::Action action ) const {
     return p->properties[ ACTIONS ] & action;
 }
 
-const Window *NETRootInfo::clientList() const {
+const xcb_window_t *NETRootInfo::clientList() const {
     return p->clients;
 }
 
@@ -2534,7 +2500,7 @@ int NETRootInfo::clientListCount() const {
 }
 
 
-const Window *NETRootInfo::clientListStacking() const {
+const xcb_window_t *NETRootInfo::clientListStacking() const {
     return p->stacking;
 }
 
@@ -2578,7 +2544,7 @@ const char *NETRootInfo::desktopName(int desktop) const {
 }
 
 
-const Window *NETRootInfo::virtualRoots( ) const {
+const xcb_window_t *NETRootInfo::virtualRoots( ) const {
     return p->virtual_roots;
 }
 
@@ -2617,7 +2583,7 @@ int NETRootInfo::currentDesktop( bool ignore_viewport ) const {
 }
 
 
-Window NETRootInfo::activeWindow() const {
+xcb_window_t NETRootInfo::activeWindow() const {
     return p->active;
 }
 
@@ -2626,7 +2592,7 @@ Window NETRootInfo::activeWindow() const {
 
 const int NETWinInfo::OnAllDesktops = NET::OnAllDesktops;
 
-NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
+NETWinInfo::NETWinInfo(Display *display, xcb_window_t window, xcb_window_t rootWindow,
 		       const unsigned long properties[], int properties_size,
                        Role role)
 {
@@ -2655,9 +2621,9 @@ NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
     p->handled_icons = false;
     p->user_time = -1U;
     p->startup_id = NULL;
-    p->transient_for = None;
+    p->transient_for = XCB_NONE;
     p->opacity = 0xffffffffU;
-    p->window_group = None;
+    p->window_group = XCB_NONE;
     p->allowed_actions = 0;
     p->has_net_support = false;
     p->class_class = (char*) 0;
@@ -2694,7 +2660,7 @@ NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
 }
 
 
-NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
+NETWinInfo::NETWinInfo(Display *display, xcb_window_t window, xcb_window_t rootWindow,
 		       unsigned long properties, Role role)
 {
 
@@ -2722,9 +2688,9 @@ NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
     p->handled_icons = false;
     p->user_time = -1U;
     p->startup_id = NULL;
-    p->transient_for = None;
+    p->transient_for = XCB_NONE;
     p->opacity = 0xffffffffU;
-    p->window_group = None;
+    p->window_group = XCB_NONE;
     p->allowed_actions = 0;
     p->has_net_support = false;
     p->class_class = (char*) 0;
@@ -2796,7 +2762,7 @@ void NETWinInfo::setIcon(NETIcon icon, bool replace)
 }
 
 
-void NETWinInfo::setIconInternal(NETRArray<NETIcon> &icons, int &icon_count, Atom property, NETIcon icon, bool replace)
+void NETWinInfo::setIconInternal(NETRArray<NETIcon> &icons, int &icon_count, xcb_atom_t property, NETIcon icon, bool replace)
 {
     if (p->role != Client)
         return;
@@ -3156,13 +3122,13 @@ void NETWinInfo::setWindowType(WindowType type)
 
     case  Dialog:
 	data[0] = net_wm_window_type_dialog;
-	data[1] = None;
+	data[1] = XCB_NONE;
 	len = 1;
 	break;
 
     case Menu:
 	data[0] = net_wm_window_type_menu;
-	data[1] = None;
+	data[1] = XCB_NONE;
 	len = 1;
 	break;
 
@@ -3176,19 +3142,19 @@ void NETWinInfo::setWindowType(WindowType type)
 
     case Toolbar:
 	data[0] = net_wm_window_type_toolbar;
-	data[1] = None;
+	data[1] = XCB_NONE;
 	len = 1;
 	break;
 
     case Dock:
 	data[0] = net_wm_window_type_dock;
-	data[1] = None;
+	data[1] = XCB_NONE;
 	len = 1;
 	break;
 
     case Desktop:
 	data[0] = net_wm_window_type_desktop;
-	data[1] = None;
+	data[1] = XCB_NONE;
 	len = 1;
 	break;
 
@@ -3218,7 +3184,7 @@ void NETWinInfo::setWindowType(WindowType type)
 
     case Tooltip:
 	data[0] = net_wm_window_type_tooltip;
-	data[1] = None;
+	data[1] = XCB_NONE;
 	len = 1;
 	break;
 
@@ -3230,20 +3196,20 @@ void NETWinInfo::setWindowType(WindowType type)
 
     case ComboBox:
 	data[0] = net_wm_window_type_combobox;
-	data[1] = None;
+	data[1] = XCB_NONE;
 	len = 1;
 	break;
 
     case DNDIcon:
 	data[0] = net_wm_window_type_dnd;
-	data[1] = None;
+	data[1] = XCB_NONE;
 	len = 1;
 	break;
 
     default:
     case Normal:
 	data[0] = net_wm_window_type_normal;
-	data[1] = None;
+	data[1] = XCB_NONE;
 	len = 1;
 	break;
     }
@@ -3574,7 +3540,7 @@ NETIcon NETWinInfo::iconInternal(NETRArray<NETIcon>& icons, int icon_count, int 
     return result;
 }
 
-void NETWinInfo::setUserTime(Time time)
+void NETWinInfo::setUserTime(xcb_timestamp_t time)
 {
     if (p->role != Client)
         return;
@@ -4450,7 +4416,7 @@ int NETWinInfo::pid() const {
     return p->pid;
 }
 
-Time NETWinInfo::userTime() const {
+xcb_timestamp_t NETWinInfo::userTime() const {
     return p->user_time;
 }
 
@@ -4470,11 +4436,11 @@ bool NETWinInfo::hasNETSupport() const {
     return p->has_net_support;
 }
 
-Window NETWinInfo::transientFor() const {
+xcb_window_t NETWinInfo::transientFor() const {
     return p->transient_for;
 }
 
-Window NETWinInfo::groupLeader() const {
+xcb_window_t NETWinInfo::groupLeader() const {
     return p->window_group;
 }
 

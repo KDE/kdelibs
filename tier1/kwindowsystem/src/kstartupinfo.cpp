@@ -62,6 +62,9 @@ DEALINGS IN THE SOFTWARE.
 #if HAVE_X11
 #include <kwindowsystem.h>
 #include <kxmessages.h>
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#include <fixx11h.h>
 #endif
 
 static const char* const NET_STARTUP_MSG = "_NET_STARTUP_INFO";

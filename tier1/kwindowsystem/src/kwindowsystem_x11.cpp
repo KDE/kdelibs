@@ -37,6 +37,7 @@
 #include <QX11Info>
 
 #include <X11/Xatom.h>
+#include <X11/Xutil.h>
 #include <xcb/xcb.h>
 #include <xcb/xfixes.h>
 

@@ -87,8 +87,8 @@ struct NETRootInfoPrivate {
     Display *display;
     xcb_connection_t *conn;
     NETSize rootSize;
-    Window root;
-    Window supportwindow;
+    xcb_window_t root;
+    xcb_window_t supportwindow;
     const char *name;
 
     uint32_t *temp_buf;
@@ -99,8 +99,8 @@ struct NETRootInfoPrivate {
     NETRArray<NETPoint> viewport;
     NETRArray<NETRect> workarea;
     NETSize geometry;
-    Window active;
-    Window *clients, *stacking, *virtual_roots;
+    xcb_window_t active;
+    xcb_window_t *clients, *stacking, *virtual_roots;
     NETRArray<const char *> desktop_names;
     int number_of_desktops;
     int current_desktop;
@@ -128,7 +128,7 @@ struct NETWinInfoPrivate {
 
     Display *display;
     xcb_connection_t *conn;
-    Window window, root;
+    xcb_window_t window, root;
     NET::MappingState mapping_state;
     bool mapping_state_dirty;
 
@@ -147,10 +147,10 @@ struct NETWinInfoPrivate {
     int desktop;
     int pid;
     bool handled_icons;
-    Time user_time;
+    xcb_timestamp_t user_time;
     char* startup_id;
     unsigned long opacity;
-    Window transient_for, window_group;
+    xcb_window_t transient_for, window_group;
     unsigned long allowed_actions;
     char* class_class, *class_name, *window_role, *client_machine;
 
