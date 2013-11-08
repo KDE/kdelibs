@@ -1,5 +1,3 @@
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
-
 find_package(Qt5Test REQUIRED)
 find_package(Qt5Widgets REQUIRED)
 

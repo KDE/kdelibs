@@ -4,8 +4,6 @@ find_package(KDE4 REQUIRED)
 include_directories(${KDE4_INCLUDES})
 
 include(ECMMarkAsTest)
-set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
-
 
 ########### next target ###############
 

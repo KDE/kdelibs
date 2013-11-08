@@ -1,8 +1,6 @@
 # TODO
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
-set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
-
 include(ECMMarkAsTest)
 
 add_executable(kbookmarkdialogtest kbookmarkdialogtest.cpp)
