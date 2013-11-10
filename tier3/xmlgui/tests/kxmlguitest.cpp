@@ -23,7 +23,7 @@
 #include <QApplication>
 #include <QLineEdit>
 #include <QtCore/QDir>
-#include <QtTest/QtTest>
+#include <QTest>
 
 #include <kmainwindow.h>
 #include <kxmlguifactory.h>

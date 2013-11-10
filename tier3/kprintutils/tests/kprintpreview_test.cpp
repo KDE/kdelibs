@@ -18,7 +18,7 @@
  **/
 
 #include <QApplication>
-#include <QtTest/QtTest>
+#include <QTest>
 #include <QPrinter>
 #include <QPainter>
 

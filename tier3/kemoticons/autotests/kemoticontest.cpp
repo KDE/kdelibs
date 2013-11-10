@@ -18,7 +18,7 @@
 
 #include "kemoticontest.h"
 
-#include <QtTest/QtTest>
+#include <QTest>
 #include <QDir>
 #include <QFile>
 #include <QTextStream>

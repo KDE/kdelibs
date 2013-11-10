@@ -16,7 +16,7 @@
 #include <QDialogButtonBox>
 #include <QStatusBar>
 #include <QVBoxLayout>
-#include <QtTest/QtTest>
+#include <QTest>
 
 // ------------------------------------------------------------------------
 

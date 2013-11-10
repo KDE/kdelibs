@@ -21,7 +21,7 @@
 #include <QTimer>
 #include <QApplication>
 #include <QStandardPaths>
-#include <QtTest/QtTest>
+#include <QTest>
 
 #include <kxmlguiwindow.h>
 #include <kactioncollection.h>

@@ -22,7 +22,7 @@
 #include "testxmlguiwindow.h"
 #include "testguiclient.h"
 
-#include <QtTest/QtTest>
+#include <QTest>
 #include <QAction>
 #include <QDialogButtonBox>
 #include <QShowEvent>
@@ -36,6 +36,7 @@
 #include <kxmlguibuilder.h>
 #include <kxmlguiclient.h>
 #include <kxmlguiversionhandler.cpp> // it's not exported, so we need to include the code here
+#include <QDir>
 
 QTEST_MAIN(KXmlGui_UnitTest)
 

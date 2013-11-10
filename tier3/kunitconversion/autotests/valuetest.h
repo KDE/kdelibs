@@ -21,7 +21,7 @@
 #define VALUE_TEST_H
 
 #include <QtCore/QObject>
-#include <QtTest/QtTest>
+#include <QTest>
 #include <kunitconversion/converter.h>
 
 using namespace KUnitConversion;

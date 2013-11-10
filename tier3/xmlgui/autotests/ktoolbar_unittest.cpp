@@ -21,7 +21,8 @@
 #include "testxmlguiwindow.h"
 #include "testguiclient.h"
 
-#include <QtTest/QtTest>
+#include <QTest>
+#include <QSignalSpy>
 #include <QDBusConnection>
 #include <QToolButton>
 
