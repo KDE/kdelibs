@@ -17,5 +17,6 @@ endmacro()
 kcompletion_tests(
    kcompletioncoretest
    klineedit_unittest
+   kcombobox_unittest
    ksortablelisttest
 )
