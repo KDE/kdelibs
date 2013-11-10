@@ -40,8 +40,9 @@ qt5_add_dbus_adaptor( kded_kcookiejar_SRCS ${CMAKE_CURRENT_BINARY_DIR}/org.kde.K
 add_library(kded_kcookiejar MODULE ${kded_kcookiejar_SRCS})
 
 target_link_libraries(kded_kcookiejar
-   KF5::KIOCore
    KF5::KWindowSystem
+   KF5::KConfigCore
+   KF5::KService # kpluginfactory
    KF5::KCoreAddons
    KF5::KDBusAddons
    KF5::KI18n
