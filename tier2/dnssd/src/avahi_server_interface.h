@@ -18,7 +18,9 @@
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 #include <QtCore/QVariant>
-#include <QtDBus/QtDBus>
+#include <QDBusConnection>
+#include <QDBusReply>
+#include <QDBusAbstractInterface>
 
 // wait 100ms after last service
 #define TIMEOUT_LAST_SERVICE 100

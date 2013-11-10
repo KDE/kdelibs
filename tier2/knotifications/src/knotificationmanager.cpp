@@ -22,7 +22,7 @@
 #include <QDebug>
 #include <QHash>
 #include <QWidget>
-#include <QtDBus/QtDBus>
+#include <QDBusConnection>
 #include <QPointer>
 
 #include "knotify_interface.h"
