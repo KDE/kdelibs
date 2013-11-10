@@ -9,7 +9,6 @@
 #include <QRegExpValidator>
 
 #include <klineedit.h>
-#include <kcompletionbox.h>
 
 #include "klineedittest.h"
 
@@ -70,10 +69,6 @@ KLineEditTest::KLineEditTest ( QWidget* widget )
     m_btnPlaceholderText = new QPushButton( "Place Holder Text", this);
     m_btnPlaceholderText->setCheckable (true);
     connect( m_btnPlaceholderText, SIGNAL(toggled(bool)), SLOT(slotPlaceholderText(bool)) );
-
-    m_btnClickMessage = new QPushButton( "Clicked Message - DEPRECATED", this);
-    m_btnClickMessage->setCheckable (true);
-    connect( m_btnClickMessage, SIGNAL(toggled(bool)), SLOT(slotClickMessage(bool)) );
 
     QPushButton *btnStyle = new QPushButton( "Stylesheet", this);
     connect( btnStyle, SIGNAL(clicked()), SLOT(slotSetStyleSheet()));
@@ -162,17 +157,6 @@ void KLineEditTest::slotPlaceholderText(bool click)
         m_lineedit->setPlaceholderText("Click in this lineedit");
     }
 }
-
-#ifndef KDE_NO_DEPRECATED
-void KLineEditTest::slotClickMessage(bool click)
-{
-	if( click )
-	{
-		m_lineedit->setText(""); // Clear before to add message
-		m_lineedit->setClickMessage ("Click in this lineedit");
-	}
-}
-#endif
 
 void KLineEditTest::slotHide()
 {

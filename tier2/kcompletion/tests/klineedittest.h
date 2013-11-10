@@ -33,7 +33,6 @@ private Q_SLOTS:
    void resultOutput( const QString& );
    void slotReturnPressed( const QString& );
    void slotPlaceholderText(bool click);
-   void slotClickMessage(bool click);
    void slotInvalidChar(int);
    void slotSetStyleSheet();
 
