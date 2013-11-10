@@ -120,4 +120,3 @@ void KTranscriptTest::test()
     QCOMPARE(result, expected);
 }
 
-#include <ktranscripttest.h>
