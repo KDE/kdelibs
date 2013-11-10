@@ -194,6 +194,7 @@ endif ()
 
 if (X11_FOUND)
    set(libkde4support_SRCS ${libkde4support_SRCS} kdeui/kxerrorhandler.cpp )
+   list(APPEND libkde4support_OPTIONAL_LIBS Qt5::X11Extras ${X11_LIBRARIES})
 endif ()
 
 if (WIN32)
@@ -283,11 +284,9 @@ PUBLIC
    KTextWidgets
    KParts
 PRIVATE
-   Qt5::X11Extras
    Qt5::Svg
    Qt5::Test # for qtest_kde.cpp
    ${KIO_EXTRA_LIBS}
-   ${X11_LIBRARIES}
    ${libkde4support_OPTIONAL_LIBS}
 )
 
