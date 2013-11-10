@@ -29,8 +29,10 @@
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 #include <QtCore/QVariant>
-#include <QtDBus/QtDBus>
+#include <QtDBus/QDBusAbstractInterface>
 #include <kio/kiocore_export.h>
+
+class QDBusConnection;
 
 /**
  * \class OrgKdeKDirNotifyInterface kdirnotify.h KDirNotify

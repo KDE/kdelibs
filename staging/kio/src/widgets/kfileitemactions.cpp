@@ -33,7 +33,10 @@
 #include <qmimedatabase.h>
 #include <QtAlgorithms>
 
-#include <QtDBus/QtDBus>
+#include <QDBusConnection>
+#include <QDBusConnectionInterface>
+#include <QDBusInterface>
+#include <QDBusMessage>
 
 static bool KIOSKAuthorizedAction(const KConfigGroup& cfg)
 {

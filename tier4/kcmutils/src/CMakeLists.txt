@@ -22,6 +22,7 @@ target_link_libraries(KCMUtils
     KConfigWidgets  # KCModule
     KF5::KService        # KService
   PRIVATE
+	Qt5::DBus       # dbus usage in kcmoduleproxy.cpp
     KF5::KCoreAddons
     KF5::KI18n
     KF5::KIconThemes     # KIconLoader

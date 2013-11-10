@@ -28,6 +28,7 @@
 #include <QApplication>
 #include <QHeaderView>
 #include <QListView>
+#include <QMimeData>
 #include <QResizeEvent>
 #include <QScrollBar>
 

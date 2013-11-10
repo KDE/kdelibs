@@ -25,9 +25,8 @@
 
 #include <QDebug>
 #include <QTimer>
-#include <QtDBus/QtDBus>
-
-
+#include <QDBusConnection>
+#include <QDBusObjectPath>
 
 class KDEDModulePrivate
 {

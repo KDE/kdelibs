@@ -48,6 +48,8 @@
 #include <qtemporaryfile.h>
 #include <QtCore/QTimer>
 #include <QtCore/QFile>
+#include <QtCore/QFileInfo>
+#include <QLinkedList>
 #include <sys/stat.h> // mode_t
 #include <QPointer>
 

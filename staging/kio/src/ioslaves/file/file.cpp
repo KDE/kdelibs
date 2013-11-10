@@ -53,6 +53,8 @@
 #include <kconfiggroup.h>
 #include <kshell.h>
 #include <kmountpoint.h>
+#include <QMimeDatabase>
+#include <QStandardPaths>
 
 #if HAVE_VOLMGT
 #include <volmgt.h>

@@ -44,10 +44,11 @@
 #include <QtCore/QProcess>
 #include <QtCore/QDateTime>
 #include <QUrl>
-#include <QtDBus/QtDBus>
+#include <QDBusConnection>
 
 #include <kservice.h>
 #include <connection_p.h> // from KIO
+#include <QDBusMessage>
 
 class IdleSlave : public QObject
 {

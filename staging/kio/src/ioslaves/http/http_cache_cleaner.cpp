@@ -33,7 +33,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <QtCore/QDir>
 #include <QtCore/QString>
 #include <QtCore/QTime>
-#include <QtDBus/QtDBus>
+#include <QDBusConnection>
 #include <QtNetwork/QLocalServer>
 #include <QtNetwork/QLocalSocket>
 
@@ -47,6 +47,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <qstandardpaths.h>
 #include <qcommandlineparser.h>
 #include <qcommandlineoption.h>
+#include <QCryptographicHash>
+#include <QDBusError>
 
 QDateTime g_currentDate;
 int g_maxCacheAge;

@@ -30,7 +30,8 @@
 #include <QApplication>
 #include <QClipboard>
 #include <QMenu>
-#include <QtDBus/QtDBus>
+#include <QDBusInterface>
+#include <QDBusReply>
 
 class KPasteTextActionPrivate
 {
@@ -130,8 +131,8 @@ void KPasteTextActionPrivate::_k_slotTriggered(QAction* action)
         return;
       QString clipboardText = reply;
       reply = klipper.call("setClipboardContents", clipboardText);
-      if (reply.isValid())
-        qDebug() << "Clipboard: " << qApp->clipboard()->text(QClipboard::Clipboard);
+      //if (reply.isValid())
+      //  qDebug() << "Clipboard: " << qApp->clipboard()->text(QClipboard::Clipboard);
     }
 }
 

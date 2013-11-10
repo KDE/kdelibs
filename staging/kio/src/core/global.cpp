@@ -24,7 +24,10 @@
 #include <klocalizedstring.h>
 #include <ksharedconfig.h>
 #include <qmimedatabase.h>
-#include <QtDBus/QtDBus>
+#include <QDBusInterface>
+#include <QDBusReply>
+#include <QUrl>
+#include <QDebug>
 #include <QHash>
 #include <QLocale>
 #include <QFileInfo>

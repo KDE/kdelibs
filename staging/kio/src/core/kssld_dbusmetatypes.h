@@ -23,6 +23,8 @@
 #define KSSLD_DBUSMETATYPES_H
 
 #include <qglobal.h>
+#include <QDBusArgument>
+#include <QDBusMetaType>
 
 Q_DECLARE_METATYPE(KSslCertificateRule)
 Q_DECLARE_METATYPE(KSslError::Error)

@@ -32,7 +32,10 @@
 
 #include <QImage>
 
-#include <QtDBus/QtDBus>
+#include <QDBusConnection>
+#include <QDBusConnectionInterface>
+#include <QDBusInterface>
+#include <QDBusReply>
 
 #include <kaboutdata.h>
 #include <kcmodule.h>
@@ -153,7 +156,7 @@ void KCModuleProxyPrivate::loadModule()
 
 		/* Figure out the name of where the module is already loaded */
 		QDBusInterface proxy( dbusService, dbusPath, QStringLiteral("org.kde.internal.KSettingsWidget"));
-		QDBusReply<QString> reply = proxy.call(QStringLiteral("applicationName"));
+        QDBusReply<QString> reply = proxy.call(QStringLiteral("applicationName"));
 
 		if( reply.isValid() )
 		{

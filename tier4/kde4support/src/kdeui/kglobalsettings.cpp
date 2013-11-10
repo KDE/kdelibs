@@ -36,12 +36,15 @@
 #include <QPixmap>
 #include <QPixmapCache>
 #include <QApplication>
-#include <QtDBus/QtDBus>
+#include <QDBusConnection>
 #include <QStyleFactory>
+#include <QDebug>
 #include <qstandardpaths.h>
 
 // next two needed so we can set their palettes
+#include <QDBusMessage>
 #include <QToolTip>
+#include <QUrl>
 #include <QWhatsThis>
 
 #ifdef Q_OS_WIN

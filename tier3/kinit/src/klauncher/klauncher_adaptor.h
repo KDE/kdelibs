@@ -24,7 +24,9 @@
 #define KLAUNCHER_ADAPTOR_H_18181148166088
 
 #include <QtCore/QObject>
-#include <QtDBus/QtDBus>
+#include <QDBusAbstractAdaptor>
+#include <QDBusMessage>
+
 template<class T> class QList;
 template<class Key, class Value> class QMap;
 class QString;

@@ -34,7 +34,7 @@
 #include <kio/jobuidelegate.h>
 
 #include <QDateTime>
-#include <QtDBus/QtDBus>
+#include <QDBusConnection>
 
 #include <assert.h>
 

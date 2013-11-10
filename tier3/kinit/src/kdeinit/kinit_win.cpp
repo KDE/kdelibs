@@ -38,7 +38,7 @@
 #include <QtCore/QFileInfo>
 // Under wince interface is defined, so undef it otherwise it breaks it
 #undef interface
-#include <QtDBus/QtDBus>
+#include <QDBusConnection>
 
 #include <kstandarddirs.h> // TODO REMOVE
 #include <kcoreaddons_version.h>

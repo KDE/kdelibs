@@ -34,7 +34,10 @@
 #include <QtCore/QFile>
 #include <QtCore/QTimer>
 
-#include <QtDBus/QtDBus>
+#include <QDBusConnection>
+#include <QDBusInterface>
+#include <QDBusServiceWatcher>
+#include <QDBusPendingCall>
 
 #include <kdbusservice.h>
 #include <qapplication.h>

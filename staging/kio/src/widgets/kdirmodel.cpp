@@ -29,6 +29,8 @@
 #include <kurlmimedata.h>
 #include <kiconloader.h>
 #include <QMimeData>
+#include <QBitArray>
+#include <QDebug>
 #include <QFile>
 #include <QFileInfo>
 #include <QDir>

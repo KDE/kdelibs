@@ -26,6 +26,7 @@
 
 #include <QtCore/QTimer>
 #include <QtCore/QFile>
+#include <QLinkedList>
 
 #include <kurlauthorized.h>
 #include <klocalizedstring.h>

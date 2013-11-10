@@ -40,8 +40,11 @@
 #include <QHash>
 #include <QList>
 #include <QListView>
+#include <QMimeData>
 #include <QPainter>
 #include <QPixmap>
+#include <QPointer>
+#include <QTimer>
 #include <QScrollBar>
 #include <QIcon>
 

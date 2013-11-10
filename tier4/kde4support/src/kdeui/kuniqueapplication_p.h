@@ -20,7 +20,8 @@
 #ifndef KUNIQUEAPPLICATION_P_H
 #define KUNIQUEAPPLICATION_P_H
 
-#include <QtDBus/QtDBus>
+#include <QDBusAbstractAdaptor>
+#include <QDBusConnection>
 
 class KUniqueApplication::Private
 {

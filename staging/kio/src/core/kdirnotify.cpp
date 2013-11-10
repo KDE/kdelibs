@@ -21,6 +21,7 @@
 
 #include "kdirnotify.h"
 #include <kdbusconnectionpool.h> // HAND-EDIT
+#include <QUrl>
 
 /*
  * Implementation of interface class OrgKdeKDirNotifyInterface
@@ -59,6 +60,7 @@ void OrgKdeKDirNotifyInterface::emitFilesAdded(const QUrl &directory)
     emitSignal(QLatin1String("FilesAdded"), QVariantList() << directory.toString());
 }
 
+// HAND-EDIT
 static QStringList urlListToStringList(const QList<QUrl> &urls)
 {
     QStringList lst;

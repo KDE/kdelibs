@@ -101,9 +101,12 @@ using namespace DOM;
 #include <kcodecaction.h>
 #include <kselectaction.h>
 
+#include <QDBusConnection>
 #include <ksslinfodialog.h>
 #include <ksslsettings.h>
 
+#include <QDBusInterface>
+#include <QMimeData>
 #include <kfileitem.h>
 #include <kurifilter.h>
 #include <kurllabel.h>

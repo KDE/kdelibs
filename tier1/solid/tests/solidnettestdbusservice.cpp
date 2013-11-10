@@ -19,7 +19,7 @@
 */
 
 #include <QtCore/QCoreApplication>
-#include <QtDBus/QtDBus>
+#include <QDBusConnection>
 #include <QtCore/QTimer>
 
 #include <solid/networking.h>

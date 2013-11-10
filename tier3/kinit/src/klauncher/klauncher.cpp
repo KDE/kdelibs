@@ -37,7 +37,10 @@
 #include <X11/Xlib.h>
 #endif
 
-#include <QtCore/QFile>
+#include <QDBusConnectionInterface>
+#include <QDBusMessage>
+#include <QFile>
+#include <QFileInfo>
 #include <QUrl>
 #include <qplatformdefs.h>
 

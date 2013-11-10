@@ -21,7 +21,7 @@
 #ifndef KBOOKMARKMANAGERADAPTOR_H
 #define KBOOKMARKMANAGERADAPTOR_H
 
-#include <QtDBus/QtDBus>
+#include <QDBusAbstractAdaptor>
 class KBookmarkManager;
 
 class KBookmarkManagerAdaptor: public QDBusAbstractAdaptor

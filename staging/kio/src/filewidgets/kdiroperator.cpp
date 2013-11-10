@@ -36,11 +36,14 @@
 #include <QHeaderView>
 #include <QListView>
 #include <QMenu>
+#include <QMimeData>
 #include <QProgressBar>
 #include <QScrollBar>
 #include <QSplitter>
 #include <QWheelEvent>
+#include <QTimer>
 #include <QDebug>
+#include <QMimeDatabase>
 
 #include <kdirlister.h>
 #include <kfileitemdelegate.h>

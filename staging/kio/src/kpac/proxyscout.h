@@ -25,7 +25,7 @@
 
 #include <QUrl>
 #include <QtCore/QMap>
-#include <QtDBus/QtDBus>
+#include <QDBusConnection>
 
 class QFileSystemWatcher;
 

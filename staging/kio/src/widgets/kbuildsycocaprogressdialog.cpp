@@ -19,7 +19,8 @@
 #include <ksycoca.h>
 #include <qstandardpaths.h>
 #include <klocalizedstring.h>
-#include <QtDBus/QtDBus>
+#include <QDBusConnection>
+#include <QDBusInterface>
 #include <QtCore/QProcess>
 
 class KBuildSycocaProgressDialogPrivate

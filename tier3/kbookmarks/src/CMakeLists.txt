@@ -22,6 +22,7 @@ add_library(KF5::KBookmarks ALIAS KBookmarks)
 
 target_link_libraries(KBookmarks PUBLIC Qt5::Widgets Qt5::Xml)
 target_link_libraries(KBookmarks PRIVATE
+										Qt5::DBus # dbus usage in kbookmarkmanager.cpp
                                         KF5::KCoreAddons
                                         KF5::KWidgetsAddons
                                         KF5::KConfigWidgets # for KStandardAction
