@@ -20,7 +20,6 @@
 
 #include <QClipboard>
 #include <QtTest/QtTest>
-#include <qtestevent.h>
 #include <klineedit.h>
 #include <kcompletionbox.h>
 

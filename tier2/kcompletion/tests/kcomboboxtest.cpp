@@ -14,7 +14,6 @@
 #include <QBoxLayout>
 #include <QDebug>
 
-#include <kcombobox.h>
 #include <khistorycombobox.h>
 
 KComboBoxTest::KComboBoxTest(QWidget* widget)

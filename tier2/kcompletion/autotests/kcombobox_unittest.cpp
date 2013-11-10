@@ -19,8 +19,6 @@
 */
 
 #include <QtTest/QtTest>
-#include <qtestevent.h>
-#include <kcombobox.h>
 #include <khistorycombobox.h>
 #include <klineedit.h>
 
