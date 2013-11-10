@@ -1,4 +1,5 @@
 include(CheckTypeSize)
+include(CheckIncludeFiles)
 
 check_function_exists(setpriority HAVE_SETPRIORITY)
 check_function_exists(getpeereid HAVE_GETPEEREID)
@@ -30,7 +31,7 @@ target_include_directories(KDESu PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/..)
 
 target_link_libraries(KDESu
   PUBLIC
-    KPty
+    KF5::KPty
   PRIVATE
     KF5::KCoreAddons # KUser::loginName
     KF5::KService # KToolInvocation::kdeinitExecWait
