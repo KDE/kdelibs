@@ -61,6 +61,15 @@ void KNSBookmarkImporterImpl::parse()
                continue;
             }
             QByteArray t = s.trimmed();
+
+            if (t.left(4).toUpper() == "<HR>") {
+              emit newSeparator();
+              t = t.mid(4).trimmed();
+              if (t.isEmpty()) {
+                continue;
+              }
+            }
+
             if(t.left(12).toUpper() == "<DT><A HREF=" ||
                t.left(16).toUpper() == "<DT><H3><A HREF=") {
 
@@ -95,10 +104,9 @@ void KNSBookmarkImporterImpl::parse()
                                 !folded,
                                 QByteArray() );
             }
-            else if(t.left(4).toUpper() == "<HR>")
-                emit newSeparator();
-            else if(t.left(8).toUpper() == "</DL><P>")
+            else if(t.left(8).toUpper() == "</DL><P>") {
                 emit endFolder();
+            }
         }
 
         f.close();
