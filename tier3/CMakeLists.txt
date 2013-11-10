@@ -19,6 +19,7 @@ add_subdirectory(knotifyconfig)
 add_subdirectory(kded)
 add_subdirectory(kross)
 
+find_package(Qt5WebKitWidgets NO_MODULE)
 if(Qt5WebKitWidgets_FOUND)
     add_subdirectory(kdewebkit)
 endif()
