@@ -675,15 +675,6 @@ install( FILES
   KAccelGen/Deref_Key
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KAccelGen COMPONENT Devel)
 
-
-install( FILES
-  KHE/CharColumnInterface
-  KHE/ClipboardInterface
-  KHE/ValueColumnInterface
-  KHE/ZoomInterface
-DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KHE COMPONENT Devel)
-
-
 install( FILES
   KIO/AccessManager
   KIO/AuthInfo
