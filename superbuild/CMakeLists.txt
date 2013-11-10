@@ -44,6 +44,7 @@ sb_add_project(tier3/kbookmarks DEPENDS kconfigwidgets kcoreaddons kiconthemes k
 sb_add_project(tier3/kemoticons DEPENDS karchive kservice)
 # Enable kross when kio and kparts are ready
 #sb_add_project(tier3/kross DEPENDS ki18n kiconthemes kio kparts)
+sb_add_project(tier3/kpty DEPENDS kcoreaddons ki18n)
 
 if(SB_EVERYTHING_DISABLED)
   message(STATUS "All projects are disabled. You may consider running make edit_cache or cmake-gui to enable some.")

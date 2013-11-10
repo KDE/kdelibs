@@ -121,6 +121,7 @@ install(FILES
     io/kdirwatch.h
     io/kmessage.h
     io/kprocess.h
+    io/kprocess_p.h # Needed for building kpty
     io/kbackup.h
     io/kurlmimedata.h
     jobs/kcompositejob.h
