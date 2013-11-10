@@ -34,7 +34,6 @@ target_link_libraries(KDeclarative
     KF5::KI18n       #i18n bindings
     KF5::KIOWidgets     #KIO::AccessManager
     KF5::KIconThemes #KIconProvider
-    KF5::KCoreAddons #qscriptnonguibookkeeping.cpp
 )
 target_include_directories(KDeclarative PUBLIC "$<BUILD_INTERFACE:${KDeclarative_BINARY_DIR}>")
 
