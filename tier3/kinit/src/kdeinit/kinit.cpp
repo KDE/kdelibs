@@ -71,7 +71,7 @@
 #include <CoreFoundation/CFURL.h>
 #endif
 
-#include <kcoreaddons_version.h>
+#include <kinit_version.h>
 
 #include "klauncher_cmds.h"
 
@@ -1760,7 +1760,7 @@ int main(int argc, char **argv, char **envp)
       if (strcmp(safe_argv[i], "--version") == 0)
       {
 	 printf("Qt: %s\n", qVersion());
-	 printf("KDE: %s\n", KCOREADDONS_VERSION_STRING);
+	 printf("KDE: %s\n", KINIT_VERSION_STRING);
 	 exit(0);
       }
 #if KDEINIT_OOM_PROTECT
