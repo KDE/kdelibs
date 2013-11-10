@@ -25,7 +25,7 @@ endmacro(KSERVICE_UNIT_TESTS)
 add_library(fakeplugin MODULE nsaplugin.cpp)
 ecm_mark_as_test(fakeplugin)
 set_target_properties(fakeplugin PROPERTIES PREFIX "")
-target_link_libraries(fakeplugin KService KF5::KCoreAddons)
+target_link_libraries(fakeplugin KService)
 
 
 kservice_unit_tests(

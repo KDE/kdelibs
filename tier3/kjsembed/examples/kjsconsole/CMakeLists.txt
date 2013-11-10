@@ -8,6 +8,6 @@ set(console_SRCS
 qt5_wrap_ui(console_SRCS jsconsole.ui)
 qt5_add_resources(console_SRCS console.qrc )
 add_executable(kjsconsole ${console_SRCS})
-target_link_libraries(kjsconsole KJsEmbed KF5::KJS Qt5::Widgets)
+target_link_libraries(kjsconsole KJsEmbed Qt5::Widgets)
 
 install(TARGETS kjsconsole DESTINATION ${BIN_INSTALL_DIR} )
