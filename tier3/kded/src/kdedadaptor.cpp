@@ -20,7 +20,6 @@
 
 #include "kdedadaptor.h"
 #include "kded.h"
-#include <kconfig.h>
 #include <QCoreApplication>
 
 KdedAdaptor::KdedAdaptor(QObject *parent)

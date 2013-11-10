@@ -29,7 +29,6 @@
 #include <QtDBus/QtDBus>
 
 #include <ksycoca.h>
-#include <ksycocatype.h>
 #include <kdedmodule.h>
 #include <kservice.h>
 
