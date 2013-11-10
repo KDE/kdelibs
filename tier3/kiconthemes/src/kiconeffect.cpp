@@ -33,7 +33,6 @@
 #include <QImage>
 #include <QColor>
 
-#include <ksharedconfig.h>
 #include <kcolorscheme.h>
 #include <kicontheme.h>
 #include <kconfiggroup.h>

@@ -42,7 +42,6 @@
 #include <klocalizedstring.h> // KLocalizedString::localizedFilePath. Need such functionality in, hmm, QLocale? QStandardPaths?
 
 #include <ksharedconfig.h>
-#include <kconfig.h>
 
 #include <kconfiggroup.h>
 
