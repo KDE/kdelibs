@@ -49,6 +49,7 @@ sb_add_project(tier3/kemoticons DEPENDS karchive kservice)
 sb_add_project(tier3/kpty DEPENDS kcoreaddons ki18n)
 sb_add_project(tier3/kdesu DEPENDS kcoreaddons kservice kpty)
 # sb_add_project(tier3/kparts DEPENDS kio xmlgui ktextwidgets ki18n knotifications kiconthemes)
+# sb_add_project(tier3/kdewebkit DEPENDS kcoreaddons kwallet kio kparts)
 
 if(SB_EVERYTHING_DISABLED)
   message(STATUS "All projects are disabled. You may consider running make edit_cache or cmake-gui to enable some.")
