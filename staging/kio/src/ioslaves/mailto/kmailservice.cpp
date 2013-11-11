@@ -16,7 +16,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <QApplication>
+#include <QGuiApplication>
 #include <qdesktopservices.h>
 #include <qurl.h>
 #include <stdio.h>
