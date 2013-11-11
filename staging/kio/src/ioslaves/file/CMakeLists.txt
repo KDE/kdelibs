@@ -22,7 +22,7 @@ set_package_properties(ACL PROPERTIES DESCRIPTION "LibACL" URL "ftp://oss.sgi.co
 
 add_library(kio_file MODULE ${kio_file_PART_SRCS})
 set_target_properties(kio_file PROPERTIES PREFIX "")
-target_link_libraries(kio_file KIOCore KF5::KCoreAddons KF5::KI18n)
+target_link_libraries(kio_file KIOCore KF5::KI18n)
 
 # This flag is needed in order to be able to support files > 2GB even on
 # 32bit platforms. The default is to use the non-64bit aware syscalls on

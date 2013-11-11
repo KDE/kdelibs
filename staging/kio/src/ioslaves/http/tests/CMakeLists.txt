@@ -23,8 +23,6 @@ ecm_add_test(httpauthenticationtest.cpp
    Qt5::Widgets
    KF5::KI18n
    KF5::KIOCore
-   KF5::KConfigCore
-   KF5::KCoreAddons
    kntlm
 )
 
@@ -49,7 +47,6 @@ ecm_add_test(${httpobjecttest_SRCS}
    Qt5::Xml # QDomElement
    KF5::KI18n
    KF5::KIOCore
-   KF5::KConfigCore
    kntlm
    KF5::KArchive
    KF5::Solid)

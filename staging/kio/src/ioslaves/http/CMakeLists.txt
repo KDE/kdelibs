@@ -58,7 +58,6 @@ target_link_libraries(kdeinit_kio_http_cache_cleaner
    Qt5::Network # QLocalSocket
    ${ZLIB_LIBRARY}
    KF5::KIOCore # KProtocolManager
-   KF5::KCoreAddons
    KF5::KI18n)
 
 install(TARGETS kdeinit_kio_http_cache_cleaner ${INSTALL_TARGETS_DEFAULT_ARGS})
@@ -89,7 +88,6 @@ target_link_libraries(kio_http
    KF5::Solid
    kntlm
    ${ZLIB_LIBRARY}
-   KF5::KCoreAddons
    KF5::KI18n
 )
 if(GSSAPI_FOUND)

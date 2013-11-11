@@ -6,7 +6,7 @@ include(ECMAddTests)
 
 ecm_add_test(kcookiejartest.cpp
     NAME_PREFIX "kioslave-"
-    LINK_LIBRARIES  Qt5::Test KF5::KIOCore KF5::KCoreAddons
+    LINK_LIBRARIES  Qt5::Test KF5::KIOCore
 )
 
 ########### install files ###############
