@@ -15,6 +15,17 @@ find_package(Qt5 ${REQUIRED_QT_VERSION} NO_MODULE REQUIRED COMPONENTS DBus Netwo
 # Not part of kdelibs
 if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
 find_package(KF5 CONFIG REQUIRED
+  #dependencies, remove once depending on 3.0.0
+  KGuiAddons
+  KWidgetsAddons
+  KDBusAddons
+  KI18n
+  KConfigWidgets
+  KCompletion
+  KService
+  KWindowSystem
+
+  #actual dependencies
   KI18n
   ItemViews
   KArchive

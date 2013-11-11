@@ -51,6 +51,7 @@ sb_add_project(tier3/kdesu DEPENDS kcoreaddons kservice kpty)
 # sb_add_project(tier3/kparts DEPENDS kio xmlgui ktextwidgets ki18n knotifications kiconthemes)
 # sb_add_project(tier3/kdewebkit DEPENDS kcoreaddons kwallet kio kparts)
 # sb_add_project(tier3/knotifyconfig DEPENDS kio ki18n knotifications)
+# sb_add_project(tier3/knewstuff DEPENDS ki18n itemviews karchive kiconthemes ktextwidgets xmlgui solid kbookmarks kio)
 
 if(SB_EVERYTHING_DISABLED)
   message(STATUS "All projects are disabled. You may consider running make edit_cache or cmake-gui to enable some.")
