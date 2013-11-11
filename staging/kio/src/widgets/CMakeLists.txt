@@ -86,6 +86,7 @@ add_library(KF5::KIOWidgets ALIAS KIOWidgets)
 target_include_directories(KIOWidgets PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/..>" # kio_version.h
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/../include>" # kio/global.h
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/../include/kio>" # krun.h
 )
 
 target_link_libraries(KIOWidgets
