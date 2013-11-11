@@ -290,6 +290,9 @@ namespace KIO {
          */
         virtual bool removeSubjob( KJob *job );
 
+    protected:
+        JobPrivate *const d_ptr;
+
     private:
         /**
          * Forward signal from subjob.

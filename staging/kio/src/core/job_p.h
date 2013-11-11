@@ -25,7 +25,6 @@
 #define KIO_JOB_P_H
 
 #include "job.h"
-#include "kcompositejob_p.h"
 #include "kjobtrackerinterface.h"
 #include <kio/jobuidelegateextension.h>
 #include <kio/jobuidelegatefactory.h>
@@ -37,7 +36,7 @@
 namespace KIO {
     class Slave;
 
-    class JobPrivate: public KCompositeJobPrivate
+    class JobPrivate
     {
     public:
         JobPrivate()
@@ -45,6 +44,9 @@ namespace KIO {
             m_uiDelegateExtension(KIO::defaultJobUiDelegateExtension())
             {
             }
+
+        virtual ~JobPrivate()
+        {}
 
         /**
          * Some extra storage space for jobs that don't have their own
@@ -64,6 +66,7 @@ namespace KIO {
         MetaData m_internalMetaData;
         MetaData m_outgoingMetaData;
         JobUiDelegateExtension *m_uiDelegateExtension;
+        Job *q_ptr;
 
         void slotSpeed( KJob *job, unsigned long speed );
 
