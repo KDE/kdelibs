@@ -2,6 +2,8 @@ project(knotifytest)
 
 ########### knotifytest ###############
 
+include(ECMMarkAsTest)
+
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
 set(knotifytest_SRCS main.cpp knotifytestwindow.cpp )

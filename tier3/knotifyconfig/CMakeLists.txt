@@ -17,8 +17,30 @@ include(KDECMakeSettings)
 find_package(Phonon4Qt5 4.6.60 NO_MODULE)
 
 if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
+  # Due to a CMake bug, we need to explicitly find private dependencies of our dependencies
+  # Remove when we depend on CMake 3.0.0 (which should fix this)
+  find_package(KI18n ${KF5_VERSION} REQUIRED)
+  find_package(KCoreAddons ${KF5_VERSION} REQUIRED)
+  find_package(KGuiAddons ${KF5_VERSION} REQUIRED)
+  find_package(KWidgetsAddons ${KF5_VERSION} REQUIRED)
+  find_package(KDBusAddons ${KF5_VERSION} REQUIRED)
+  find_package(KConfigWidgets ${KF5_VERSION} REQUIRED)
+  find_package(Solid ${KF5_VERSION} REQUIRED)
+  find_package(ItemViews ${KF5_VERSION} REQUIRED)
+  find_package(KIconThemes ${KF5_VERSION} REQUIRED)
+  find_package(KWindowSystem ${KF5_VERSION} REQUIRED)
+  find_package(KCompletion ${KF5_VERSION} REQUIRED)
+  find_package(KService ${KF5_VERSION} REQUIRED)
+  find_package(KTextWidgets ${KF5_VERSION} REQUIRED)
+  find_package(XmlGui ${KF5_VERSION} REQUIRED)
+  find_package(KBookmarks ${KF5_VERSION} REQUIRED)
+
+  #library dependencies
   find_package(KIO ${KF5_VERSION} REQUIRED)
   find_package(KI18n ${KF5_VERSION} REQUIRED)
+
+  #test dependency
+  find_package(KNotifications ${KF5_VERSION} REQUIRED)
 endif()
 
 # Includes
