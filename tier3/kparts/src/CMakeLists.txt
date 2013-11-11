@@ -39,11 +39,10 @@ generate_export_header(KParts EXPORT_FILE_NAME ${KParts_BINARY_DIR}/kparts/kpart
 add_library(KF5::KParts ALIAS KParts)
 
 target_include_directories(KParts PUBLIC "$<BUILD_INTERFACE:${KParts_BINARY_DIR}>")
-target_link_libraries(KParts PUBLIC  KF5::KIOCore # essential to the technology
+target_link_libraries(KParts PUBLIC  KF5::KIOWidgets #browserrun.h uses krun.h
                                      KF5::XmlGui # essential to the technology
                                      KF5::KTextWidgets # needed for KFind, as interface
-                             PRIVATE KF5::KIOWidgets #browserextension.cpp uses kurifilter.h
-                                     KF5::KI18n #few uses of i18n and i18nc, can be probably stripped down
+                             PRIVATE KF5::KI18n #few uses of i18n and i18nc, can be probably stripped down
                                      KF5::KNotifications #needed by browseropenorsavequestion.cpp
                                      KF5::KIconThemes #only used by KPart::iconLoader()
                       )
