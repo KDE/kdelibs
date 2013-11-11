@@ -16,7 +16,6 @@ configure_file(config-kpac.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kpac.h)
 
 if (Qt5Script_FOUND)
 
-    find_package(KF5 COMPONENTS KNotifications REQUIRED)
     set(kded_proxyscout_PART_SRCS
       proxyscout.cpp
       script.cpp

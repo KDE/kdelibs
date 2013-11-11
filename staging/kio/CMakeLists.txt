@@ -41,6 +41,7 @@ if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
   find_package(KTextWidgets ${KF5_VERSION} REQUIRED)
   find_package(XmlGui ${KF5_VERSION} REQUIRED)
   find_package(KBookmarks ${KF5_VERSION} REQUIRED)
+  find_package(KNotifications ${KF5_VERSION} REQUIRED) #needed for kpac
 endif()
 
 # TODO: Remove these
