@@ -19,15 +19,15 @@ generate_export_header(KCMUtils)
 target_link_libraries(KCMUtils
   PUBLIC
     Qt5::Widgets
-    KConfigWidgets  # KCModule
+    KF5::KConfigWidgets  # KCModule
     KF5::KService        # KService
   PRIVATE
 	Qt5::DBus       # dbus usage in kcmoduleproxy.cpp
     KF5::KCoreAddons
     KF5::KI18n
     KF5::KIconThemes     # KIconLoader
-    ItemViews       # KWidgetItemDelegate
-    XmlGui          # KAboutApplicationDialog
+    KF5::ItemViews       # KWidgetItemDelegate
+    KF5::XmlGui          # KAboutApplicationDialog
 )
 set_target_properties(KCMUtils PROPERTIES
                       VERSION ${KCMUTILS_VERSION_STRING}
