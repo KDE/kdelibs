@@ -25,7 +25,7 @@
 
 #include <QUrl>
 #include <QtCore/QMap>
-#include <QDBusConnection>
+#include <QDBusMessage>
 
 class QFileSystemWatcher;
 
@@ -76,7 +76,6 @@ namespace KPAC
         typedef QMap< QString, qint64 > BlackList;
         BlackList m_blackList;
         qint64 m_suspendTime;
-        int m_debugArea;
         QFileSystemWatcher* m_watcher;
     };
 }

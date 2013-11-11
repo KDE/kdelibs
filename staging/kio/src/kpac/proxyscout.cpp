@@ -37,6 +37,7 @@
 #endif
 
 #include <QtCore/QFileSystemWatcher>
+#include <QDBusConnection>
 
 #include <cstdlib>
 #include <ctime>
@@ -80,7 +81,6 @@ namespace KPAC
           m_downloader( 0 ),
           m_script( 0 ),
           m_suspendTime( 0 ),
-          m_debugArea (KDebug::registerArea("proxyscout")),
           m_watcher( 0 )
     {
 #if ! KPAC_NO_SOLID
@@ -356,5 +356,5 @@ namespace KPAC
     }
 }
 
-
+#include "proxyscout.moc"
 // vim: ts=4 sw=4 et

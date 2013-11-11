@@ -24,7 +24,6 @@
 
 #include <QtCore/QTextCodec>
 
-#include <kcharsets.h>
 #include <klocalizedstring.h>
 #include <kio/job.h>
 
@@ -81,9 +80,13 @@ namespace KPAC
     {
         if ( !job->error() && !hasErrorPage(job) )
         {
-            bool dummy;
-            m_script = KCharsets::charsets()->codecForName(
-                static_cast<KIO::Job*>( job )->queryMetaData( "charset" ), dummy )->toUnicode( m_data );
+            const QString charset = static_cast<KIO::Job*>(job)->queryMetaData("charset");
+            QTextCodec *codec = QTextCodec::codecForName(charset.toLatin1());
+            if (!codec) {
+                codec = QTextCodec::codecForUtfText(m_data);
+                Q_ASSERT(codec);
+            }
+            m_script = codec->toUnicode( m_data );
             emit result( true );
         }
         else
