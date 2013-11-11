@@ -26,12 +26,10 @@ set(cmakeFiles
                FindAGG.cmake
                FindAkode.cmake
                FindAlsa.cmake
-               FindAvahi.cmake
                FindBerkeleyDB.cmake
                FindBlitz.cmake
                FindBlueZ.cmake
                FindCarbon.cmake
-               FindDNSSD.cmake
                FindENCHANT.cmake
                FindEigen.cmake
                FindEigen2.cmake
