@@ -43,6 +43,7 @@ sb_add_project(tier3/kjsembed DEPENDS kjs ki18n)
 sb_add_project(tier3/kbookmarks DEPENDS kconfigwidgets kcoreaddons kiconthemes kwidgetsaddons xmlgui)
 sb_add_project(tier3/kemoticons DEPENDS karchive kservice)
 # Enable kross when kio and kparts are ready
+# sb_add_project(staging/kio DEPENDS kcoreaddons kwidgetsaddons ki18n kinit kservice karchive kded kservice solid kjobwidgets kiconthemes kwindowsystem kcompletion kdoctools ktextwidgets xmlgui kbookmarks)
 #sb_add_project(tier3/kross DEPENDS ki18n kiconthemes kio kparts)
 sb_add_project(tier3/kpty DEPENDS kcoreaddons ki18n)
 sb_add_project(tier3/kdesu DEPENDS kcoreaddons kservice kpty)

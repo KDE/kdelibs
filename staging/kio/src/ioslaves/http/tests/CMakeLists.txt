@@ -52,7 +52,7 @@ ecm_add_test(${httpobjecttest_SRCS}
    KF5::KConfigCore
    kntlm
    KF5::KArchive
-   Solid)
+   KF5::Solid)
 if(GSSAPI_FOUND)
   target_link_libraries(kioslave-httpobjecttest ${GSSAPI_LIBS})
 endif(GSSAPI_FOUND)

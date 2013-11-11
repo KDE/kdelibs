@@ -91,16 +91,16 @@ target_include_directories(KIOWidgets PUBLIC
 target_link_libraries(KIOWidgets
   PUBLIC
     KIOCore
-    KJobWidgets
-    Qt5::Network  # SSL
-    KCompletion   # KUrlCompletion uses KCompletion
+    KF5::KJobWidgets
+    Qt5::Network        # SSL
+    KF5::KCompletion    # KUrlCompletion uses KCompletion
     KF5::KWidgetsAddons # keditlistwidget
   PRIVATE
     Qt5::DBus
     KF5::KI18n
     KF5::KIconThemes   # KIconLoader
     KF5::KWindowSystem # KStartupInfo
-    KConfigWidgets # KColorScheme
+    KF5::KConfigWidgets # KColorScheme
 )
 
 if(ACL_FOUND)

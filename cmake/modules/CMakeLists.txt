@@ -40,7 +40,6 @@ set(cmakeFiles
                FindGLIB2.cmake
                FindGMP.cmake
                FindGObject.cmake
-               FindGSSAPI.cmake
                FindGStreamer.cmake
                FindGettext.cmake
                FindGphoto2.cmake
