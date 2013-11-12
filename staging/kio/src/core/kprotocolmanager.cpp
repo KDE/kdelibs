@@ -31,10 +31,13 @@
 #include <sys/utsname.h>
 
 #include <QtCore/QCoreApplication>
+#include <QUrl>
 #include <QtNetwork/QSslSocket>
 #include <QtNetwork/QHostAddress>
 #include <QtNetwork/QHostInfo>
-#include <QtDBus/QtDBus>
+#include <QDBusConnection>
+#include <QDBusReply>
+#include <QDBusInterface>
 #include <QtCore/QCache>
 #include <QLocale>
 #include <qstandardpaths.h>

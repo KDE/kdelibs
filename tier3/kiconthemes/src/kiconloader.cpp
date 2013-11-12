@@ -47,7 +47,6 @@
 #include <QPixmapCache>
 
 // kdecore
-#include <kconfig.h>
 #include <kconfiggroup.h>
 #include <kshareddatacache.h>
 #include <ksharedconfig.h>

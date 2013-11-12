@@ -30,7 +30,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <QtCore/QTimer>
 #include <QtCore/QFile>
-#include <QtDBus/QtDBus>
+#include <QDBusConnection>
 
 #include <kconfig.h>
 #include <QDebug>

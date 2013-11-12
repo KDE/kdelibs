@@ -21,7 +21,7 @@
 
 #include <ksharedconfig.h>
 #include <kparts/part.h>
-#include <QtTest/QtTest>
+#include <QTest>
 #include <QWidget>
 
 QTEST_MAIN(PartTest)

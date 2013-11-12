@@ -23,16 +23,21 @@
 #include "kbookmarkmanager.h"
 
 #include <QtCore/QDebug>
+#include <QtCore/QDir>
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
 #include <QtCore/QFileSystemWatcher>
 #include <QtCore/QProcess>
 #include <QtCore/QRegExp>
 #include <QtCore/QTextStream>
-#include <QtDBus/QtDBus>
+#include <QTextCodec>
+#include <QDBusConnection>
 #include <QMessageBox>
 #include <QApplication>
+#include <QReadWriteLock>
+#include <QThread>
 
+#include <QDBusMessage>
 #include <kbackup.h>
 #include <kconfiggroup.h>
 #include <qsavefile.h>

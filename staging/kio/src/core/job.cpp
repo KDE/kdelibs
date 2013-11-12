@@ -26,6 +26,7 @@
 
 #include <QtCore/QTimer>
 #include <QtCore/QFile>
+#include <QLinkedList>
 
 #include <kurlauthorized.h>
 #include <klocalizedstring.h>
@@ -51,18 +52,23 @@ static inline Slave *jobSlave(SimpleJob *job)
 //this will update the report dialog with 5 Hz, I think this is fast enough, aleXXX
 #define REPORT_TIMEOUT 200
 
-Job::Job() : KCompositeJob(*new JobPrivate, 0)
+Job::Job() : KCompositeJob(0)
+    , d_ptr(new JobPrivate)
 {
+    d_ptr->q_ptr = this;
     setCapabilities( KJob::Killable | KJob::Suspendable );
 }
 
-Job::Job(JobPrivate &dd) : KCompositeJob(dd, 0)
+Job::Job(JobPrivate &dd) : KCompositeJob(0)
+    , d_ptr(&dd)
 {
+    d_ptr->q_ptr = this;
     setCapabilities( KJob::Killable | KJob::Suspendable );
 }
 
 Job::~Job()
 {
+    delete d_ptr;
 }
 
 // Exists for historical reasons only
@@ -1082,7 +1088,7 @@ void TransferJobPrivate::internalSuspend()
 void TransferJobPrivate::internalResume()
 {
     m_internalSuspended = false;
-    if ( m_slave && !suspended )
+    if ( m_slave && !q_func()->isSuspended() )
         m_slave->resume();
 }
 

@@ -26,8 +26,8 @@
 #include <QtCore/QObject>
 #include <QImage>
 
-#include "core/engine.h"
-#include "core/entryinternal.h"
+#include "core/engine_p.h"
+#include "core/entryinternal_p.h"
 
 #include <kwidgetitemdelegate.h>
 

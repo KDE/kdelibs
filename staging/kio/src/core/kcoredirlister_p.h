@@ -27,6 +27,8 @@
 #include <QtCore/QCache>
 #include <QtCore/QSet>
 #include <QtCore/QTimer>
+#include <QCoreApplication>
+#include <QFileInfo>
 #include <QUrl>
 
 #include <kio/global.h>

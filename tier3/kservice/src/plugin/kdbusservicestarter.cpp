@@ -21,7 +21,9 @@
 #include "kservice.h"
 #include <klocalizedstring.h>
 #include <ktoolinvocation.h>
-#include "QtDBus/QtDBus"
+#include <QDBusConnection>
+#include <QDBusConnectionInterface>
+#include <QDebug>
 
 class KDBusServiceStarterPrivate
 {

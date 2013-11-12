@@ -29,7 +29,7 @@
 
 #include <QtCore/QFile>
 #include <QtCore/QTimer>
-#include <QtDBus/QtDBus>
+#include <QDBusConnection>
 #include <QtCore/QProcess>
 
 #include <klocalizedstring.h>

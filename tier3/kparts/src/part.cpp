@@ -28,6 +28,7 @@
 
 #include <QApplication>
 #include <QFileDialog>
+#include <QPointer>
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
 #include <qtemporaryfile.h>

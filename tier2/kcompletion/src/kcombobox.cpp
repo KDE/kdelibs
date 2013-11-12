@@ -29,7 +29,6 @@
 #include <QUrl>
 
 #include <kcompletionbox.h>
-#include <kcursor.h>
 #include <klineedit.h>
 
 

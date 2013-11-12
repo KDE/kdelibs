@@ -26,7 +26,7 @@ QTEST_MAIN( KGlobalSettingsTest )
 #include <kglobalsettings.h>
 #include <QtCore/QProcess>
 #include <QtCore/QEventLoop>
-#include <QtDBus/QtDBus>
+#include <QDBusConnection>
 
 /**
  * The strategy of this test is:

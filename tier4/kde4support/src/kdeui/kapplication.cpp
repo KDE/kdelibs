@@ -30,8 +30,11 @@
 #include <QtCore/QTimer>
 #include <QWidget>
 #include <QIcon>
+#include <QPointer>
 #include <QtCore/QList>
-#include <QtDBus/QtDBus>
+#include <QDBusConnection>
+#include <QDBusConnectionInterface>
+#include <QDBusInterface>
 #include <QtCore/QMetaType>
 
 #include "kauthorized.h"

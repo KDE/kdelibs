@@ -20,7 +20,6 @@
 #include <QPointer>
 #include <QListWidget>
 
-#include <kiconloader.h>
 
 class QComboBox;
 class QProgressBar;

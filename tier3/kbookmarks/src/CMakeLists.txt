@@ -22,11 +22,10 @@ add_library(KF5::KBookmarks ALIAS KBookmarks)
 
 target_link_libraries(KBookmarks PUBLIC Qt5::Widgets Qt5::Xml)
 target_link_libraries(KBookmarks PRIVATE
-                                        KF5::KCoreAddons
-                                        KF5::KWidgetsAddons
-                                        KConfigWidgets # for KStandardAction
-                                        XmlGui # for KActionCollection
-                                        KF5::KIconThemes # for SmallIcon
+    Qt5::DBus # dbus usage in kbookmarkmanager.cpp
+    KF5::KConfigWidgets # for KStandardAction
+    KF5::XmlGui # for KActionCollection
+    KF5::KIconThemes # for SmallIcon
 )
 
 set_target_properties(KBookmarks PROPERTIES VERSION   ${KBOOKMARKS_VERSION_STRING}

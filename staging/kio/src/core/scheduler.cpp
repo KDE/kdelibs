@@ -32,7 +32,10 @@
 //#include <kjobwidgets.h>
 
 #include <QtCore/QHash>
-#include <QtDBus/QtDBus>
+#include <QThread>
+#include <QCoreApplication>
+#include <QDBusConnection>
+#include <QDBusMessage>
 
 // Slaves may be idle for a certain time (3 minutes) before they are killed.
 static const int s_idleSlaveLifetime = 3 * 60;

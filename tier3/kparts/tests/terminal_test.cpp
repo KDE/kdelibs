@@ -1,10 +1,17 @@
-#include "main.h"
+#include <QMainWindow>
+
+class Window : public QMainWindow
+{
+    Q_OBJECT
+public:
+    Window();
+};
 
 #include <QtCore/QDir>
 
 #include <kde_terminal_interface.h>
-#include <KParts/Part>
-#include <KService>
+#include <kparts/part.h>
+#include <kservice.h>
 #include <QApplication>
 
 Window::Window()
@@ -34,3 +41,4 @@ int main( int argc, char** argv )
     return app.exec();
 };
 
+#include "terminal_test.moc"

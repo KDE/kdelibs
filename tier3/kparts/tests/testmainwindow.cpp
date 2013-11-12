@@ -35,7 +35,7 @@
 #include <klocalizedstring.h>
 #include <kparts/partmanager.h>
 #include <qstandardpaths.h>
-#include <QtTest/QtTest>
+#include <QTest>
 
 TestMainWindow::TestMainWindow()
     : KParts::MainWindow()

@@ -23,7 +23,7 @@
 #include "udisks2.h"
 
 #include <QDomDocument>
-#include <QtDBus/QtDBus>
+#include <QDBusConnection>
 #include <QApplication>
 #include <QWidget>
 

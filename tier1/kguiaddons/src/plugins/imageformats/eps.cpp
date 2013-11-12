@@ -1,84 +1,88 @@
 /**
 * QImageIO Routines to read/write EPS images.
 * copyright (c) 1998 Dirk Schoenberger <dirk.schoenberger@freenet.de>
+* Copyright (c) 2013 Alex Merry <alex.merry@kdemail.net>
+* Includes code by Sven Wiegand <SWiegand@tfh-berlin.de> from KSnapshot
 *
 * This library is distributed under the conditions of the GNU LGPL.
 */
 #include "eps.h"
-#include <unistd.h>
-#include <stdio.h>
+
+#include <QDebug>
 #include <QImage>
-#include <QtCore/QFile>
+#include <QImageReader>
+#include <QLoggingCategory>
 #include <QPainter>
 #include <QPrinter>
-#include <QtCore/QTextStream>
-#include <QtCore/QTemporaryFile>
-// #include <QDebug>
+#include <QProcess>
+#include <QTemporaryFile>
 
-#define BUFLEN 200
+Q_LOGGING_CATEGORY(EPSPLUGIN, "epsplugin")
+//#define EPS_PERFORMANCE_DEBUG 1
 
+#define BBOX_BUFLEN 200
 #define BBOX "%%BoundingBox:"
 #define BBOX_LEN strlen(BBOX)
 
-static bool seekToCodeStart(QIODevice * io, quint32 & ps_offset, quint32 & ps_size)
+static bool seekToCodeStart(QIODevice *io, qint64 &ps_offset, qint64 &ps_size)
 {
     char buf[4]; // We at most need to read 4 bytes at a time
     ps_offset = 0L;
     ps_size = 0L;
 
     if (io->read(buf, 2) != 2) { // Read first two bytes
-//         qDebug() << "kimgio EPS: EPS file has less than 2 bytes." << endl;
+        qCDebug(EPSPLUGIN) << "EPS file has less than 2 bytes.";
         return false;
     }
 
     if (buf[0] == '%' && buf[1] == '!') { // Check %! magic
-//         qDebug() << "kimgio EPS: normal EPS file";
+        qCDebug(EPSPLUGIN) << "normal EPS file";
     } else if (buf[0] == char(0xc5) && buf[1] == char(0xd0)) { // Check start of MS-DOS EPS magic
         // May be a MS-DOS EPS file
         if (io->read(buf + 2, 2) != 2) { // Read further bytes of MS-DOS EPS magic
-//             qDebug() << "kimgio EPS: potential MS-DOS EPS file has less than 4 bytes." << endl;
+            qCDebug(EPSPLUGIN) << "potential MS-DOS EPS file has less than 4 bytes.";
             return false;
         }
         if (buf[2] == char(0xd3) && buf[3] == char(0xc6)) { // Check last bytes of MS-DOS EPS magic
             if (io->read(buf, 4) != 4) { // Get offset of PostScript code in the MS-DOS EPS file.
-//                 qDebug() << "kimgio EPS: cannot read offset of MS-DOS EPS file" << endl;
+                qCDebug(EPSPLUGIN) << "cannot read offset of MS-DOS EPS file";
                 return false;
             }
             ps_offset // Offset is in little endian
-                = ((unsigned char) buf[0])
-                  + ((unsigned char) buf[1] << 8)
-                  + ((unsigned char) buf[2] << 16)
-                  + ((unsigned char) buf[3] << 24);
+                = qint64(  ((unsigned char)buf[0])
+                         + ((unsigned char)buf[1] << 8)
+                         + ((unsigned char)buf[2] << 16)
+                         + ((unsigned char)buf[3] << 24));
             if (io->read(buf, 4) != 4) { // Get size of PostScript code in the MS-DOS EPS file.
-//                 qDebug() << "kimgio EPS: cannot read size of MS-DOS EPS file" << endl;
+                qCDebug(EPSPLUGIN) << "cannot read size of MS-DOS EPS file";
                 return false;
             }
             ps_size // Size is in little endian
-                = ((unsigned char) buf[0])
-                  + ((unsigned char) buf[1] << 8)
-                  + ((unsigned char) buf[2] << 16)
-                  + ((unsigned char) buf[3] << 24);
-//             qDebug() << "kimgio EPS: Offset: " << ps_offset <<" Size: " << ps_size;
+                = qint64(  ((unsigned char)buf[0])
+                         + ((unsigned char)buf[1] << 8)
+                         + ((unsigned char)buf[2] << 16)
+                         + ((unsigned char)buf[3] << 24));
+            qCDebug(EPSPLUGIN) << "Offset: " << ps_offset <<" Size: " << ps_size;
             if (!io->seek(ps_offset)) { // Get offset of PostScript code in the MS-DOS EPS file.
-//                 qDebug() << "kimgio EPS: cannot seek in MS-DOS EPS file" << endl;
+                qCDebug(EPSPLUGIN) << "cannot seek in MS-DOS EPS file";
                 return false;
             }
             if (io->read(buf, 2) != 2) { // Read first two bytes of what should be the Postscript code
-//                 qDebug() << "kimgio EPS: PostScript code has less than 2 bytes." << endl;
+                qCDebug(EPSPLUGIN) << "PostScript code has less than 2 bytes.";
                 return false;
             }
             if (buf[0] == '%' && buf[1] == '!') { // Check %! magic
-//                 qDebug() << "kimgio EPS: MS-DOS EPS file";
+                qCDebug(EPSPLUGIN) << "MS-DOS EPS file";
             } else {
-//                 qDebug() << "kimgio EPS: supposed Postscript code of a MS-DOS EPS file doe not start with %!." << endl;
+                qCDebug(EPSPLUGIN) << "supposed Postscript code of a MS-DOS EPS file doe not start with %!.";
                 return false;
             }
         } else {
-//             qDebug() << "kimgio EPS: wrong magic for potential MS-DOS EPS file!" << endl;
+            qCDebug(EPSPLUGIN) << "wrong magic for potential MS-DOS EPS file!";
             return false;
         }
     } else {
-//         qDebug() << "kimgio EPS: not an EPS file!" << endl;
+        qCDebug(EPSPLUGIN) << "not an EPS file!";
         return false;
     }
     return true;
@@ -86,19 +90,22 @@ static bool seekToCodeStart(QIODevice * io, quint32 & ps_offset, quint32 & ps_si
 
 static bool bbox(QIODevice *io, int *x1, int *y1, int *x2, int *y2)
 {
-    char buf[BUFLEN + 1];
+    char buf[BBOX_BUFLEN + 1];
 
     bool ret = false;
 
-    while (io->readLine(buf, BUFLEN) > 0) {
+    while (io->readLine(buf, BBOX_BUFLEN) > 0) {
         if (strncmp(buf, BBOX, BBOX_LEN) == 0) {
             // Some EPS files have non-integer values for the bbox
             // We don't support that currently, but at least we parse it
             float _x1, _y1, _x2, _y2;
             if (sscanf(buf, "%*s %f %f %f %f",
                        &_x1, &_y1, &_x2, &_y2) == 4) {
-//                                 qDebug() << "kimgio EPS BBOX: " << _x1 << " " << _y1 << " " << _x2 << " " << _y2;
-                *x1 = (int)_x1; *y1 = (int)_y1; *x2 = (int)_x2; *y2 = (int)_y2;
+                qCDebug(EPSPLUGIN) << "BBOX: " << _x1 << " " << _y1 << " " << _x2 << " " << _y2;
+                *x1 = int(_x1);
+                *y1 = int(_y1);
+                *x2 = int(_x2);
+                *y2 = int(_y2);
                 ret = true;
                 break;
             }
@@ -123,41 +130,42 @@ bool EPSHandler::canRead() const
 
 bool EPSHandler::read(QImage *image)
 {
-//     qDebug() << "kimgio EPS: starting...";
+    qCDebug(EPSPLUGIN) << "starting...";
 
-    FILE * ghostfd;
     int x1, y1, x2, y2;
-    //QTime dt;
-    //dt.start();
-
-    QString cmdBuf;
-    QString tmp;
+#ifdef EPS_PERFORMANCE_DEBUG
+    QTime dt;
+    dt.start();
+#endif
 
     QIODevice* io = device();
-    quint32 ps_offset, ps_size;
+    qint64 ps_offset, ps_size;
 
     // find start of PostScript code
     if (!seekToCodeStart(io, ps_offset, ps_size))
         return false;
 
+    qCDebug(EPSPLUGIN) << "Offset:" << ps_offset << "; size:" << ps_size;
+
     // find bounding box
     if (!bbox(io, &x1, &y1, &x2, &y2)) {
-//         qDebug() << "kimgio EPS: no bounding box found!" << endl;
+        qCDebug(EPSPLUGIN) << "no bounding box found!";
         return false;
     }
 
     QTemporaryFile tmpFile;
     if (!tmpFile.open()) {
-//         qDebug() << "kimgio EPS: no temp file!" << endl;
+        qWarning() << "Could not create the temporary file" << tmpFile.fileName();
         return false;
     }
+    qCDebug(EPSPLUGIN) << "temporary file:" << tmpFile.fileName();
 
     // x1, y1 -> translation
     // x2, y2 -> new size
 
     x2 -= x1;
     y2 -= y1;
-    //qDebug() << "origin point: " << x1 << "," << y1 << "  size:" << x2 << "," << y2;
+    qCDebug(EPSPLUGIN) << "origin point: " << x1 << "," << y1 << "  size:" << x2 << "," << y2;
     double xScale = 1.0;
     double yScale = 1.0;
     int wantedWidth = x2;
@@ -165,79 +173,92 @@ bool EPSHandler::read(QImage *image)
 
     // create GS command line
 
-    cmdBuf = QLatin1String("gs -sOutputFile=");
-    cmdBuf += tmpFile.fileName();
-    cmdBuf += QLatin1String(" -q -g");
-    tmp.setNum(wantedWidth);
-    cmdBuf += tmp;
-    tmp.setNum(wantedHeight);
-    cmdBuf += QLatin1Char('x');
-    cmdBuf += tmp;
-    cmdBuf += QLatin1String(" -dSAFER -dPARANOIDSAFER -dNOPAUSE -sDEVICE=ppm -c "
-                            "0 0 moveto "
-                            "1000 0 lineto "
-                            "1000 1000 lineto "
-                            "0 1000 lineto "
-                            "1 1 254 255 div setrgbcolor fill "
-                            "0 0 0 setrgbcolor - -c showpage quit");
+    QStringList gsArgs;
+    gsArgs << QLatin1String("-sOutputFile=") + tmpFile.fileName()
+           << QStringLiteral("-q")
+           << QString(QStringLiteral("-g%1x%2")).arg(wantedWidth).arg(wantedHeight)
+           << QStringLiteral("-dSAFER")
+           << QStringLiteral("-dPARANOIDSAFER")
+           << QStringLiteral("-dNOPAUSE")
+           << QStringLiteral("-sDEVICE=ppm")
+           << QStringLiteral("-c")
+           << QStringLiteral("0 0 moveto "
+                             "1000 0 lineto "
+                             "1000 1000 lineto "
+                             "0 1000 lineto "
+                             "1 1 254 255 div setrgbcolor fill "
+                             "0 0 0 setrgbcolor")
+           << QStringLiteral("-")
+           << QStringLiteral("-c")
+           << QStringLiteral("showpage quit");
+    qCDebug(EPSPLUGIN) << "Running gs with args" << gsArgs;
 
-    // run ghostview
-
-    ghostfd = popen(QFile::encodeName(cmdBuf).constData(), "w");
-
-    if (ghostfd == 0) {
-//         qDebug() << "kimgio EPS: no GhostScript?" << endl;
+    QProcess converter;
+    converter.setProcessChannelMode(QProcess::ForwardedErrorChannel);
+    converter.start(QStringLiteral("gs"), gsArgs);
+    if (!converter.waitForStarted(3000)) {
+        qWarning() << "Reading EPS files requires gs (from GhostScript)";
         return false;
     }
 
-    fprintf(ghostfd, "\n%d %d translate\n", -qRound(x1 * xScale), -qRound(y1 * yScale));
+    QByteArray intro = "\n";
+    intro += QByteArray::number(-qRound(x1*xScale));
+    intro += " ";
+    intro += QByteArray::number(-qRound(y1*yScale));
+    intro += " translate\n";
+    converter.write(intro);
 
-    // write image to gs
-
-    io->reset(); // Go back to start of file to give all the file to GhostScript
-    if (ps_offset > 0L) // We have an offset
+    io->reset();
+    if (ps_offset > 0)
         io->seek(ps_offset);
-    QByteArray buffer(io->readAll());
 
-    // If we have no MS-DOS EPS file or if the size seems wrong, then choose the buffer size
-    if (ps_size <= 0 || ps_size > (unsigned int)buffer.size())
-        ps_size = buffer.size();
-
-    fwrite(buffer.data(), sizeof(char), ps_size, ghostfd);
-    buffer.resize(0);
-
-    pclose(ghostfd);
-
-    // load image
-    if (image->load(tmpFile.fileName())) {
-//         qDebug() << "kimgio EPS: success!";
-        //qDebug() << "Loading EPS took " << (float)(dt.elapsed()) / 1000 << " seconds";
-        return true;
+    QByteArray buffer;
+    buffer.resize(4096);
+    bool limited = ps_size > 0;
+    qint64 remaining = ps_size;
+    qint64 count = io->read(buffer.data(), buffer.size());
+    while (count > 0) {
+        if (limited) {
+            if (count > remaining) {
+                count = remaining;
+            }
+            remaining -= count;
+        }
+        converter.write(buffer.constData(), count);
+        if (!limited || remaining > 0) {
+            count = io->read(buffer.data(), buffer.size());
+        }
     }
 
-//     qDebug() << "kimgio EPS: no image!" << endl;
-    return false;
+    converter.closeWriteChannel();
+    converter.waitForFinished(-1);
+
+    QImageReader ppmReader(tmpFile.fileName(), "ppm");
+    if (ppmReader.read(image)) {
+        qCDebug(EPSPLUGIN) << "success!";
+#ifdef EPS_PERFORMANCE_DEBUG
+        qCDebug(EPSPLUGIN) << "Loading EPS took " << (float)(dt.elapsed()) / 1000 << " seconds";
+#endif
+        return true;
+    } else {
+        qCDebug(EPSPLUGIN) << "Reading failed:" << ppmReader.errorString();
+        return false;
+    }
 }
 
 
-// Sven Wiegand <SWiegand@tfh-berlin.de> -- eps output filter (from KSnapshot)
 bool EPSHandler::write(const QImage &image)
 {
     QPrinter psOut(QPrinter::PrinterResolution);
     QPainter p;
 
-    // making some definitions (papersize, output to file, filename):
-    psOut.setCreator(QLatin1String("KDE"));
-    if (psOut.outputFileName().isEmpty())
-        psOut.setOutputFileName(QLatin1String("untitled_printer_document"));
-
-    // Extension must be .eps so that Qt generates EPS file
-    QTemporaryFile tmpFile(QLatin1String("XXXXXXXX.eps"));
+    QTemporaryFile tmpFile(QStringLiteral("XXXXXXXX.pdf"));
     if (!tmpFile.open())
         return false;
 
+    psOut.setCreator(QStringLiteral("KDE EPS image plugin"));
     psOut.setOutputFileName(tmpFile.fileName());
-#warning QT5 Port to whatever replaces this?
+    psOut.setOutputFormat(QPrinter::PdfFormat);
     psOut.setFullPage(true);
     psOut.setPaperSize(image.size(), QPrinter::DevicePixel);
 
@@ -246,25 +267,42 @@ bool EPSHandler::write(const QImage &image)
     p.drawImage(QPoint(0, 0), image);
     p.end();
 
-    // Copy file to imageio struct
-    QFile inFile(tmpFile.fileName());
-    if (!inFile.open(QIODevice::ReadOnly))
-        return false;
+    QProcess converter;
+    converter.setProcessChannelMode(QProcess::ForwardedErrorChannel);
+    converter.setReadChannel(QProcess::StandardOutput);
 
-    QTextStream in(&inFile);
-    in.setCodec("ISO-8859-1");
-    QTextStream out(device());
-    out.setCodec("ISO-8859-1");
+    // pdftops comes with Poppler and produces much smaller EPS files than GhostScript
+    QStringList pdftopsArgs;
+    pdftopsArgs << QStringLiteral("-eps")
+                << tmpFile.fileName()
+                << QStringLiteral("-");
+    qCDebug(EPSPLUGIN) << "Running pdftops with args" << pdftopsArgs;
+    converter.start(QStringLiteral("pdftops"), pdftopsArgs);
 
-    QString szInLine = in.readLine();
-    out << szInLine << '\n';
+    if (!converter.waitForStarted()) {
+        // GhostScript produces huge files, and takes a long time doing so
+        QStringList gsArgs;
+        gsArgs << QStringLiteral("-q") << QStringLiteral("-P-")
+               << QStringLiteral("-dNOPAUSE") << QStringLiteral("-dBATCH")
+               << QStringLiteral("-dSAFER")
+               << QStringLiteral("-sDEVICE=epswrite")
+               << QStringLiteral("-sOutputFile=-")
+               << QStringLiteral("-c")
+               << QStringLiteral("save") << QStringLiteral("pop")
+               << QStringLiteral("-f")
+               << tmpFile.fileName();
+        qCDebug(EPSPLUGIN) << "Failed to start pdftops; trying gs with args" << gsArgs;
+        converter.start(QStringLiteral("gs"), gsArgs);
 
-    while (!in.atEnd()) {
-        szInLine = in.readLine();
-        out << szInLine << '\n';
+        if (!converter.waitForStarted(3000)) {
+            qWarning() << "Creating EPS files requires pdftops (from Poppler) or gs (from GhostScript)";
+            return false;
+        }
     }
 
-    inFile.close();
+    while (converter.bytesAvailable() || (converter.state() == QProcess::Running && converter.waitForReadyRead(2000))) {
+        device()->write(converter.readAll());
+    }
 
     return true;
 }

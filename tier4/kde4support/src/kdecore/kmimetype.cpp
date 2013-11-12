@@ -29,9 +29,11 @@
 #include <klocalizedstring.h>
 #include <qstandardpaths.h>
 #include <kurl.h>
+#include <QDBusInterface>
+#include <QDBusConnection>
+#include <QDBusReply>
 
 #include <QtCore/QFile>
-#include <QtDBus/QtDBus>
 #include <QBuffer>
 
 #ifndef S_ISSOCK

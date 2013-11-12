@@ -3,6 +3,7 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  ${KDE4_ENABLE_EXCEPTIONS}")
 
 set(ThreadWeaver_LIB_SRCS
     Queue.cpp
+    QueueStream.cpp
     QueueAPI.cpp
     Exception.cpp
     Weaver.cpp
@@ -49,6 +50,7 @@ install(TARGETS ThreadWeaver EXPORT ThreadWeaverTargets ${INSTALL_TARGETS_DEFAUL
 
 install(FILES
     ThreadWeaver.h
+    QueueStream.h
     Queueing.h
     Exception.h
     WeaverInterface.h

@@ -34,7 +34,9 @@
 #include <QStatusBar>
 #include <QTableWidget>
 #include <QVBoxLayout>
-#include <QtDBus/QtDBus>
+#include <QDBusInterface>
+#include <QDBusReply>
+#include <QDBusConnection>
 
 #include <kurlauthorized.h>
 #include <kaboutdata.h>

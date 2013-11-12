@@ -28,7 +28,7 @@
 #include <QtCore/QCoreApplication>
 #include <QtCore/QHash>
 #include <QtCore/QStringList>
-#include <QtDBus/QtDBus>
+#include <QDBusConnection>
 
 namespace DNSSD
 {

@@ -195,13 +195,16 @@ void DeviceBackend::checkCache(const QString& key) const
 
 void DeviceBackend::slotPropertiesChanged(const QString& ifaceName, const QVariantMap& changedProps, const QStringList& invalidatedProps)
 {
+    if (!ifaceName.startsWith(UD2_DBUS_SERVICE)) {
+        return;
+    }
     //qDebug() << m_udi << "'s interface" << ifaceName << "changed props:";
 
     QMap<QString, int> changeMap;
 
     Q_FOREACH(const QString & key, invalidatedProps) {
         m_propertyCache.remove(key);
-        changeMap.insert(key, Solid::GenericInterface::PropertyRemoved);
+        changeMap.insert(key, Solid::GenericInterface::PropertyModified);
         //qDebug() << "\t invalidated:" << key;
     }
 

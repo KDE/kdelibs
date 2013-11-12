@@ -15,7 +15,7 @@ PUBLIC
     Qt5::Widgets # for QPixmap
     KF5::KService     # for KService::Ptr, KServiceTypeTrader
 PRIVATE
-    KArchive    # for KTar, KZip
+    KF5::KArchive    # for KTar, KZip
 )
 
 set_target_properties(KEmoticons PROPERTIES

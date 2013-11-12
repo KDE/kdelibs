@@ -35,7 +35,11 @@
 #include <QtCore/QLocale>
 #include <QtCore/QTimer>
 #include <QtCore/QDebug>
-#include <QtDBus/QtDBus>
+#include <QDBusConnection>
+#include <QDBusMessage>
+#include <QDBusConnectionInterface>
+#include <QDirIterator>
+#include <QDateTime>
 #include <qsavefile.h>
 #include <errno.h>
 

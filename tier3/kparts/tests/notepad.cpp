@@ -27,7 +27,7 @@
 #include <QSplitter>
 #include <QtCore/QFile>
 #include <QtCore/QTextStream>
-#include <QtTest/QtTest>
+#include <QTest>
 #include <QStatusBar>
 #include <QTextEdit>
 

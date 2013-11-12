@@ -18,7 +18,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include "upload.h"
+#include "upload_p.h"
 
 /*
 bool Engine::uploadEntry(Provider *provider, const Entry& entry)

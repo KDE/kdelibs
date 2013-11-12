@@ -19,8 +19,6 @@
 */
 
 #include <QtTest/QtTest>
-#include <qtestevent.h>
-#include <kcombobox.h>
 #include <khistorycombobox.h>
 #include <klineedit.h>
 
@@ -122,11 +120,16 @@ private Q_SLOTS:
 
     void testSelectionResetOnReturn()
     {
+        // void QComboBoxPrivate::_q_returnPressed() calls lineEdit->deselect()
         KHistoryComboBox *testCombo= new KHistoryComboBox( true, 0);
+        QCOMPARE(testCombo->insertPolicy(), QComboBox::NoInsert); // not the Qt default; KHistoryComboBox changes that
         QTest::keyClicks(testCombo, "Hello world");
         testCombo->lineEdit()->setSelection(5, 3);
         QVERIFY(testCombo->lineEdit()->hasSelectedText());
         QTest::keyClick(testCombo, Qt::Key_Return);
+        // Changed in Qt5: it only does that if insertionPolicy isn't NoInsert.
+        // Should we add a lineEdit()->deselect() in KHistoryComboBox? Why does this matter?
+        QEXPECT_FAIL("", "Qt5: QComboBox doesn't deselect text anymore on returnPressed", Continue);
         QVERIFY(!testCombo->lineEdit()->hasSelectedText());
     }
 };

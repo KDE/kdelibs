@@ -5,6 +5,8 @@ if(kdelibs_BINARY_DIR)
     set(KDED_DBUS_INTERFACE "${CMAKE_CURRENT_BINARY_DIR}/org.kde.kded5.xml")
 endif()
 
+include(ECMMarkNonGuiExecutable)
+
 ####### kcookiejar: command line tool for talking to the kded kcookiejar module #######
 qt5_add_dbus_interfaces(kcookiejar_SRCS ${KDED_DBUS_INTERFACE})
 
@@ -14,17 +16,16 @@ set_source_files_properties(${kcookieserver_xml} PROPERTIES INCLUDE "kcookiejar_
 qt5_add_dbus_interfaces(kcookiejar_SRCS ${kcookieserver_xml})
 
 set(kcookiejar_SRCS ${kcookiejar_SRCS} main.cpp)
-add_executable( kcookiejar4 ${kcookiejar_SRCS})
-ecm_mark_nongui_executable(kcookiejar4)
+add_executable( kcookiejar5 ${kcookiejar_SRCS})
+ecm_mark_nongui_executable(kcookiejar5)
 
-target_link_libraries( kcookiejar4
+target_link_libraries( kcookiejar5
    Qt5::DBus
-   KF5::KCoreAddons
    KF5::KI18n
    KF5::KWidgetsAddons
 )
 
-install(TARGETS kcookiejar4 ${INSTALL_TARGETS_DEFAULT_ARGS} )
+install(TARGETS kcookiejar5 ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
 ########### kded kcookiejar module ###############
 
@@ -40,9 +41,8 @@ qt5_add_dbus_adaptor( kded_kcookiejar_SRCS ${CMAKE_CURRENT_BINARY_DIR}/org.kde.K
 add_library(kded_kcookiejar MODULE ${kded_kcookiejar_SRCS})
 
 target_link_libraries(kded_kcookiejar
-   KF5::KIOCore
    KF5::KWindowSystem
-   KF5::KCoreAddons
+   KF5::KService # kpluginfactory
    KF5::KDBusAddons
    KF5::KI18n
    KF5::KWidgetsAddons

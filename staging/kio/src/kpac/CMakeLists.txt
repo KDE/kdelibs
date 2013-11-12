@@ -15,6 +15,7 @@ configure_file(config-kpac.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kpac.h)
 ########### next target ###############
 
 if (Qt5Script_FOUND)
+
     set(kded_proxyscout_PART_SRCS
       proxyscout.cpp
       script.cpp
@@ -25,10 +26,13 @@ if (Qt5Script_FOUND)
     add_library(kded_proxyscout MODULE ${kded_proxyscout_PART_SRCS})
 
     target_link_libraries(kded_proxyscout
+       Qt5::Network
        Qt5::Script
        ${KPAC_EXTRA_LIBS}
-       KF5::KIOCore
-       KF5::KCoreAddons
+       KF5::KIOCore      # KIO::get
+       KF5::KDBusAddons  # KDEDModule
+       KF5::KI18n
+       KF5::KNotifications # proxyscout.cpp uses KNotifications
     )
 
     # this needs -lresolv e.g on Slackware, but not on FreeBSD

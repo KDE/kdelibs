@@ -16,9 +16,16 @@ else(NOT WIN32)
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${_custom_dtd_kdex}.install DESTINATION ${DATA_INSTALL_DIR}/ksgmltools2/customization/dtd RENAME ${_custom_dtd_kdex_name})
 endif(NOT WIN32)
 
-ADD_LIBRARY( xslt_kde STATIC xslt.cpp xslt_kde.cpp)
-
-target_link_libraries(xslt_kde Qt5::Core KF5::KArchive)
+# needed by KIO, need to export it
+add_library(XsltKde STATIC xslt.cpp xslt_kde.cpp)
+add_library(KF5::XsltKde ALIAS XsltKde)
+target_link_libraries(XsltKde Qt5::Core KF5::KArchive)
+install(TARGETS XsltKde ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(FILES
+    xslt.h xslt_kde.h
+    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
+)
+install(TARGETS XsltKde EXPORT KDocToolsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 ########### next target ###############
 

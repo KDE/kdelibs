@@ -3,6 +3,8 @@ include(CheckIncludeFiles)
 include(CheckSymbolExists)
 include(CheckCXXSymbolExists)
 include(CheckFunctionExists)
+include(CheckLibraryExists)
+include(CheckStructHasMember)
 
 check_include_files(sys/time.h    HAVE_SYS_TIME_H)
 

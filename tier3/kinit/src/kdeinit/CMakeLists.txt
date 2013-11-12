@@ -10,6 +10,8 @@ else (WIN32)
   set(kdeinit_LIBS "")
 endif (WIN32)
 
+include_directories(${KInit_BINARY_DIR}) # for kinit_version.h
+
 # on win32 kdeinit5 has to be a console application
 # to be able to catch stderr based --verbose output
 add_executable(kdeinit5 ${kdeinit_SRCS})
@@ -25,7 +27,6 @@ endif (APPLE)
 target_link_libraries(kdeinit5 ${kdeinit_LIBS} ${KINIT_SOCKET_LIBRARY}
     Qt5::Gui #QFont::initialize
     KF5::KService #KLibrary
-    KF5::KCoreAddons #kcoreaddons_version.h
     KF5::KWindowSystem # KStartupInfo
     KF5::KCrash # KCrash::loadedByKdeinit
     KF5::KI18n #i18n() used on some error messages

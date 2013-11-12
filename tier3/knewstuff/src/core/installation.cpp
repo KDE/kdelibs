@@ -17,7 +17,7 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "installation.h"
+#include "installation_p.h"
 
 #include <QDir>
 #include <QFile>
@@ -38,7 +38,7 @@
 #include "klocalizedstring.h"
 #include "QDebug"
 
-#include "core/security.h"
+#include "core/security_p.h"
 #ifdef Q_OS_WIN
 #include <windows.h>
 #include <shlobj.h>

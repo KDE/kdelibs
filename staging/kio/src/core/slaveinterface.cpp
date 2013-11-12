@@ -33,7 +33,7 @@
 
 #include <QDebug>
 
-#include <QtDBus/QtDBus>
+#include <QDBusConnection>
 #include <QtCore/QPointer>
 #include <QtNetwork/QSslCertificate>
 #include <QtNetwork/QSslError>

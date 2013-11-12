@@ -35,8 +35,10 @@
 #include "ktoolbar.h"
 
 #include <QCloseEvent>
+#include <QDBusConnection>
 #include <QtXml/QDomDocument>
 #include <QLayout>
+#include <QDebug>
 #include <QMenuBar>
 #include <QObject>
 #include <QStatusBar>

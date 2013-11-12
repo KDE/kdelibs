@@ -22,7 +22,9 @@
 #include "kptyprocesstest.h"
 
 #include <kptydevice.h>
-#include <QtTest/QtTest>
+#include <QTest>
+#include <QSignalSpy>
+#include <QThread>
 
 void KPtyProcessTest::test_suspend_pty()
 {

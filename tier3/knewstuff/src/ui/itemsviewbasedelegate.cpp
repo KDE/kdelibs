@@ -16,10 +16,10 @@
     You should have received a copy of the GNU Lesser General Public
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "itemsviewbasedelegate.h"
+#include "itemsviewbasedelegate_p.h"
 
-#include "itemsmodel.h"
-#include "entrydetailsdialog.h"
+#include "itemsmodel_p.h"
+#include "entrydetailsdialog_p.h"
 
 #include <QDebug>
 #include <qstandardpaths.h>

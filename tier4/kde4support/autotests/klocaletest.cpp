@@ -29,8 +29,8 @@
 #include "ksystemtimezone.h"
 #include <QtCore/QString>
 #include <QtCore/QDate>
-#include <QtDBus/QtDBus>
-
+#include <QDBusConnection>
+#include <QDBusConnectionInterface>
 
 
 void

@@ -37,7 +37,7 @@
 #include <QtNetwork/QTcpSocket>
 #include <QtNetwork/QHostInfo>
 #include <QtNetwork/QSslConfiguration>
-#include <QtDBus/QtDBus>
+#include <QDBusConnection>
 
 
 using namespace KIO;

@@ -31,9 +31,7 @@ PRIVATE
   Qt5::DBus
   KF5::SonnetCore
   KF5::KI18n
-  KF5::KWidgetsAddons
   KF5::KService
-  KF5::KConfigCore
   KF5::KConfigWidgets
   KF5::KWindowSystem
   KF5::KIconThemes

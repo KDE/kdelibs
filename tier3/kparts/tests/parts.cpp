@@ -30,10 +30,10 @@
 #include <QtCore/QFile>
 #include <QtCore/QDir>
 #include <QtCore/QTextStream>
-#include <QtTest/QtTest>
+#include <QTest>
 #include <QTextEdit>
 #include <QLineEdit>
-#include <QtTest/QtTest>
+#include <QTest>
 
 #include <QDebug>
 #include <klocalizedstring.h>

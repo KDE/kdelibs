@@ -19,9 +19,9 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "staticxmlprovider.h"
+#include "staticxmlprovider_p.h"
 
-#include "core/xmlloader.h"
+#include "core/xmlloader_p.h"
 
 #include <QDebug>
 #include <klocalizedstring.h>

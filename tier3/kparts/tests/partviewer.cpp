@@ -29,7 +29,7 @@
 #include <QWidget>
 #include <QtCore/QDir>
 #include <QtCore/QFile>
-#include <QtTest/QtTest>
+#include <QTest>
 
 #include "partviewer.h"
 #include <kmimetypetrader.h>

@@ -30,9 +30,14 @@
 #include <QtCore/QDataStream>
 #include <QtCore/QCoreApplication>
 #include <QtCore/QFile>
+#include <QtCore/QFileInfo>
 #include <QtCore/QBuffer>
 #include <QProcess>
-#include <QtDBus/QtDBus>
+#include <QDebug>
+#include <QDBusConnection>
+#include <QDBusConnectionInterface>
+#include <QDBusInterface>
+#include <QDBusReply>
 
 #include <stdlib.h>
 #include <fcntl.h>

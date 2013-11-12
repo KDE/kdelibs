@@ -23,7 +23,6 @@
 
 #include <kdeclarative/kdeclarative.h>
 
-#include "testobject_p.h"
 
 #include <QtTest/qtestcase.h>
 

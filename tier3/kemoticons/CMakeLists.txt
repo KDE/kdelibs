@@ -14,13 +14,19 @@ include(KDECompilerSettings)
 include(KDECMakeSettings)
 
 include(FeatureSummary)
-
 include(ECMSetupVersion)
+include(CMakePackageConfigHelpers)
 
-ecm_setup_version(5.0.0 VARIABLE_PREFIX KEMOTICONS
+set(KF5_VERSION "5.0.0")
+
+ecm_setup_version(${KF5_VERSION} VARIABLE_PREFIX KEMOTICONS
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kemoticons_version.h"
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KEmoticonsConfigVersion.cmake")
 
+if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
+  find_package(KArchive ${KF5_VERSION} REQUIRED)
+  find_package(KService ${KF5_VERSION} REQUIRED)
+endif()
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/kemoticons_version.h
         DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
@@ -36,8 +42,6 @@ add_subdirectory(tests)
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
 set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KEmoticons")
-
-include(CMakePackageConfigHelpers)
 
 configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/KEmoticonsConfig.cmake.in"
                               "${CMAKE_CURRENT_BINARY_DIR}/KEmoticonsConfig.cmake"

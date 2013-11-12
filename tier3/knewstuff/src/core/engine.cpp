@@ -19,12 +19,12 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "engine.h"
+#include "engine_p.h"
 
 #include "entry.h"
-#include "core/installation.h"
-#include "core/xmlloader.h"
-#include "ui/imageloader.h"
+#include "core/installation_p.h"
+#include "core/xmlloader_p.h"
+#include "ui/imageloader_p.h"
 
 #include <kconfig.h>
 #include <kconfiggroup.h>
@@ -50,9 +50,9 @@
 #include <qstandardpaths.h>
 
 // own
-#include "attica/atticaprovider.h"
-#include "core/cache.h"
-#include "staticxml/staticxmlprovider.h"
+#include "attica/atticaprovider_p.h"
+#include "core/cache_p.h"
+#include "staticxml/staticxmlprovider_p.h"
 
 using namespace KNS3;
 

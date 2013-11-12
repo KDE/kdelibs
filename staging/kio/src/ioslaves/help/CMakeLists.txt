@@ -45,7 +45,7 @@ target_link_libraries(kio_help
    KF5::KI18n
    KF5::KArchive
    KF5::KIOCore
-   xslt_kde
+   KF5::XsltKde
    ${LIBXML2_LIBRARIES}
    ${LIBXSLT_LIBRARIES}
    ${LIBXSLT_EXSLT_LIBRARIES}
@@ -66,7 +66,7 @@ target_link_libraries(kio_ghelp
    KF5::KI18n
    KF5::KArchive
    KF5::KIOCore
-   xslt_kde
+   KF5::XsltKde
    ${LIBXML2_LIBRARIES}
    ${LIBXSLT_LIBRARIES}
    ${LIBXSLT_EXSLT_LIBRARIES}

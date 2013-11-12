@@ -21,7 +21,7 @@
 #define __khtml_Iface_h__
 
 #include <khtml_part.h>
-#include <QtDBus/QtDBus>
+#include <QDBusAbstractAdaptor>
 
 class KHTMLPart;
 

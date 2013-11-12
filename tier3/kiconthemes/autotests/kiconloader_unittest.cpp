@@ -17,15 +17,9 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "qtest_gui.h"
 #include <kiconloader.h>
-#include <qprocess.h>
-#include <qregexp.h>
 #include <qstandardpaths.h>
-#include <QFile>
-#include <QFileInfo>
-#include <QDir>
-#include <QtTest/QtTest>
+#include <QtTest/QTest>
 #include <qtemporarydir.h>
 #include <kpixmapsequence.h>
 

@@ -11,23 +11,32 @@ include(KDECompilerSettings)
 include(KDECMakeSettings)
 
 set(REQUIRED_QT_VERSION "5.2.0")
-find_package(Qt5Widgets ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE)
+find_package(Qt5 ${QT_REQUIRED_VERSION} NO_MODULE REQUIRED Widgets DBus)
 
 include(FeatureSummary)
-
 include(ECMSetupVersion)
+include(CMakePackageConfigHelpers)
 
-ecm_setup_version(5.0.0 VARIABLE_PREFIX KCMUTILS
+set(KF5_VERSION "5.0.0")
+ecm_setup_version(${KF5_VERSION} VARIABLE_PREFIX KCMUTILS
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kcmutils_version.h"
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KCMUtilsConfigVersion.cmake")
+
+if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
+    find_package(ItemViews ${KF5_VERSION} REQUIRED)
+    find_package(KConfigWidgets ${KF5_VERSION} REQUIRED)
+    find_package(KCoreAddons ${KF5_VERSION} REQUIRED)
+    find_package(KI18n ${KF5_VERSION} REQUIRED)
+    find_package(KIconThemes ${KF5_VERSION} REQUIRED)
+    find_package(KService ${KF5_VERSION} REQUIRED)
+    find_package(XmlGui ${KF5_VERSION} REQUIRED)
+endif()
 
 add_subdirectory(src)
 
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
 set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KCMUtils")
-
-include(CMakePackageConfigHelpers)
 
 configure_package_config_file(
   "${CMAKE_CURRENT_SOURCE_DIR}/KCMUtilsConfig.cmake.in"

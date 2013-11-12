@@ -1,0 +1,9 @@
+@PACKAGE_INIT@
+
+find_dependency(Qt5Core @REQUIRED_QT_VERSION@)
+find_dependency(KArchive "@KF5_VERSION@")
+
+
+include("${CMAKE_CURRENT_LIST_DIR}/KDocToolsTargets.cmake")
+
+include(${CMAKE_CURRENT_LIST_DIR}/KDocToolsMacros.cmake)

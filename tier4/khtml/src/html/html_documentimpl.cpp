@@ -43,7 +43,7 @@
 #include "dom/dom_exception.h"
 
 #include <QDebug>
-#include <QtDBus/QtDBus>
+#include <QDBusConnection>
 #include <kcookiejar_interface.h>
 
 #include "css/cssproperties.h"

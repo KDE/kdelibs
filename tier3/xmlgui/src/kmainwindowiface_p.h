@@ -21,7 +21,7 @@
 #ifndef KMAINWINDOWIFACE_P_H
 #define KMAINWINDOWIFACE_P_H
 
-#include <QtDBus/QtDBus>
+#include <QDBusAbstractAdaptor>
 #include <QtCore/QMap>
 
 class KXmlGuiWindow;

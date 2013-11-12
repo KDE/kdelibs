@@ -18,7 +18,7 @@
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 #include <QtCore/QVariant>
-#include <QtDBus/QtDBus>
+#include <QDBusConnection>
 
 #include "../udisks2.h"
 

@@ -14,7 +14,6 @@
 #include <QBoxLayout>
 #include <QDebug>
 
-#include <kcombobox.h>
 #include <khistorycombobox.h>
 
 KComboBoxTest::KComboBoxTest(QWidget* widget)
@@ -23,7 +22,7 @@ KComboBoxTest::KComboBoxTest(QWidget* widget)
   QVBoxLayout *vbox = new QVBoxLayout (this);
 
   // Qt combobox
-  QHBoxLayout* hbox = new QHBoxLayout(this);
+  QHBoxLayout* hbox = new QHBoxLayout();
   QLabel* lbl = new QLabel("&QCombobox:", this);
   lbl->setSizePolicy (QSizePolicy::Maximum, QSizePolicy::Preferred);
   hbox->addWidget(lbl);
@@ -37,7 +36,7 @@ KComboBoxTest::KComboBoxTest(QWidget* widget)
   vbox->addLayout (hbox);
 
   // Read-only combobox
-  hbox = new QHBoxLayout(this);
+  hbox = new QHBoxLayout();
   lbl = new QLabel("&Read-Only Combo:", this);
   lbl->setSizePolicy (QSizePolicy::Maximum, QSizePolicy::Preferred);
   hbox->addWidget(lbl);
@@ -52,7 +51,7 @@ KComboBoxTest::KComboBoxTest(QWidget* widget)
   vbox->addLayout(hbox);
 
   // Read-write combobox
-  hbox = new QHBoxLayout(this);
+  hbox = new QHBoxLayout();
   lbl = new QLabel("&Editable Combo:", this);
   lbl->setSizePolicy (QSizePolicy::Maximum, QSizePolicy::Preferred);
   hbox->addWidget(lbl);
@@ -68,7 +67,7 @@ KComboBoxTest::KComboBoxTest(QWidget* widget)
   vbox->addLayout(hbox);
 
   // History combobox...
-  hbox = new QHBoxLayout(this);
+  hbox = new QHBoxLayout();
   lbl = new QLabel("&History Combo:", this);
   lbl->setSizePolicy (QSizePolicy::Maximum, QSizePolicy::Preferred);
   hbox->addWidget(lbl);
@@ -84,7 +83,7 @@ KComboBoxTest::KComboBoxTest(QWidget* widget)
   vbox->addLayout(hbox);
 
   // Read-write combobox that is a replica of code in konqueror...
-  hbox = new QHBoxLayout(this);
+  hbox = new QHBoxLayout();
   lbl = new QLabel( "&Konq's Combo:", this);
   lbl->setSizePolicy (QSizePolicy::Maximum, QSizePolicy::Preferred);
   hbox->addWidget(lbl);
@@ -98,7 +97,7 @@ KComboBoxTest::KComboBoxTest(QWidget* widget)
   vbox->addLayout(hbox);
 
   // Create an exit button
-  hbox = new QHBoxLayout(this);
+  hbox = new QHBoxLayout();
   m_btnExit = new QPushButton( "E&xit", this );
   QObject::connect( m_btnExit, SIGNAL(clicked()), SLOT(quitApp()) );
   hbox->addWidget(m_btnExit);

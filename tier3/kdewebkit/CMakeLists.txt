@@ -16,9 +16,35 @@ include(FeatureSummary)
 
 include(ECMSetupVersion)
 
-ecm_setup_version(5.0.0 VARIABLE_PREFIX KDEWebKit
+set(KF5_VERSION "5.0.0")
+ecm_setup_version(${KF5_VERSION} VARIABLE_PREFIX KDEWebKit
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kdewebkit_version.h"
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KDEWebKitConfigVersion.cmake")
+
+if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
+  #dependencies of dependencies, remove when depending on cmake 3.0.0
+  find_package(KI18n ${KF5_VERSION} REQUIRED)
+  find_package(KDBusAddons ${KF5_VERSION} REQUIRED)
+  find_package(KWidgetsAddons ${KF5_VERSION} REQUIRED)
+  find_package(KCoreAddons ${KF5_VERSION} REQUIRED)
+  find_package(KGuiAddons ${KF5_VERSION} REQUIRED)
+  find_package(KService ${KF5_VERSION} REQUIRED)
+  find_package(KWindowSystem ${KF5_VERSION} REQUIRED)
+  find_package(ItemViews ${KF5_VERSION} REQUIRED)
+  find_package(KConfigWidgets ${KF5_VERSION} REQUIRED)
+  find_package(KIconThemes ${KF5_VERSION} REQUIRED)
+  find_package(Solid ${KF5_VERSION} REQUIRED)
+  find_package(KCompletion ${KF5_VERSION} REQUIRED)
+  find_package(KTextWidgets ${KF5_VERSION} REQUIRED)
+  find_package(XmlGui ${KF5_VERSION} REQUIRED)
+  find_package(KBookmarks ${KF5_VERSION} REQUIRED)
+
+  #actual dependencies
+  find_package(KCoreAddons ${KF5_VERSION} REQUIRED)
+  find_package(KWallet ${KF5_VERSION} REQUIRED)
+  find_package(KIO ${KF5_VERSION} REQUIRED)
+  find_package(KParts ${KF5_VERSION} REQUIRED)
+endif()
 
 remove_definitions(-DQT_NO_CAST_TO_ASCII)
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)

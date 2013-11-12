@@ -45,6 +45,7 @@
 #include <QStatusBar>
 #include <QStyle>
 #include <QWidget>
+#include <QDBusConnection>
 
 #include <ktoggleaction.h>
 #include <kaboutdata.h>

@@ -21,7 +21,8 @@
 #ifndef KDED_KDEDADAPTOR_H
 #define KDED_KDEDADAPTOR_H
 
-#include <QtDBus/QtDBus>
+#include <QDBusAbstractAdaptor>
+class QDBusMessage;
 
 class KdedAdaptor: public QDBusAbstractAdaptor
 {

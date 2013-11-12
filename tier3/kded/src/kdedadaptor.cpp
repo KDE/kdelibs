@@ -20,8 +20,8 @@
 
 #include "kdedadaptor.h"
 #include "kded.h"
-#include <kconfig.h>
 #include <QCoreApplication>
+#include <QDBusMessage>
 
 KdedAdaptor::KdedAdaptor(QObject *parent)
    : QDBusAbstractAdaptor(parent)

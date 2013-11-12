@@ -13,6 +13,9 @@
 # Redistribution and use is allowed according to the terms of the BSD license.
 # For details see the accompanying COPYING-CMAKE-SCRIPTS file.
 
+include(CMakePushCheckState)
+include(CheckFunctionExists)
+
 FIND_PATH(DNSSD_INCLUDE_DIR dns_sd.h
   /usr/include/avahi-compat-libdns_sd/
 )
@@ -24,11 +27,11 @@ if (DNSSD_INCLUDE_DIR)
     FIND_LIBRARY(DNSSD_LIBRARIES NAMES dns_sd )
   endif (APPLE)
 
-  MACRO_PUSH_REQUIRED_VARS()
+  cmake_push_check_state()
   set(CMAKE_REQUIRED_INCLUDES ${DNSSD_INCLUDE_DIR})
   set(CMAKE_REQUIRED_LIBRARIES ${DNSSD_LIBRARIES})
   CHECK_FUNCTION_EXISTS(DNSServiceRefDeallocate DNSSD_FUNCTION_FOUND)
-  MACRO_POP_REQUIRED_VARS()
+  cmake_pop_check_state()
 
   if (DNSSD_INCLUDE_DIR AND DNSSD_LIBRARIES AND DNSSD_FUNCTION_FOUND)
      set(DNSSD_FOUND TRUE)

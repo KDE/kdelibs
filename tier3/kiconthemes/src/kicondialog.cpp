@@ -16,7 +16,6 @@
 
 #include <klistwidgetsearchline.h>
 #include <klocalizedstring.h>
-#include <kiconloader.h>
 #ifndef _WIN32_WCE
 #include <QtSvg/QSvgRenderer>
 #endif

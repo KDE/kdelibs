@@ -15,14 +15,14 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "imagepreviewwidget.h"
+#include "imagepreviewwidget_p.h"
 
 #include <QPaintEvent>
 #include <QPainter>
 
 #include <qstandardpaths.h>
 
-#include <core/entryinternal.h>
+#include <core/entryinternal_p.h>
 
 using namespace KNS3;
 

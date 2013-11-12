@@ -42,7 +42,8 @@
 #include <QtCore/QHash>
 #include <QtCore/QDebug>
 #include <QtCore/QFile>
-#include <QtDBus/QtDBus>
+#include <QUrl>
+#include <QUrlQuery>
 
 static QStringList splitEmailAddressList( const QString & aStr )
 {

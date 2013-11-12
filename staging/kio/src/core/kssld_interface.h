@@ -27,7 +27,9 @@
 #include <QtCore/QList>
 #include <QtCore/QString>
 #include <QtCore/QVariant>
-#include <QtDBus/QtDBus>
+#include <QDBusConnection>
+#include <QDBusAbstractInterface>
+#include <QDBusReply>
 
 #include "kssld_dbusmetatypes.h"
 

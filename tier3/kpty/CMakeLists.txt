@@ -1,3 +1,5 @@
+cmake_minimum_required(VERSION 2.8.12)
+
 project(KPty)
 
 find_package(ECM 0.0.9 REQUIRED NO_MODULE)
@@ -10,9 +12,9 @@ include(KDECompilerSettings)
 include(KDECMakeSettings)
 find_package(Qt5 "${REQUIRED_QT_VERSION}" CONFIG REQUIRED Test)
 
-if(NOT kdelibs_SOURCE_DIR)
-  find_package(KCoreAddons 5.0.0 REQUIRED)
-  find_package(KI18n 5.0.0 REQUIRED)
+if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
+  find_package(KCoreAddons ${KF5_VERSION} REQUIRED)
+  find_package(KI18n ${KF5_VERSION} REQUIRED)
 endif()
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them

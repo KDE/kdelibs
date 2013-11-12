@@ -27,7 +27,7 @@
 #include <QProcess>
 #include <QtCore/QCoreApplication>
 #include <QtCore/QHash>
-#include <QtDBus/QtDBus>
+#include <QDBusConnection>
 
 #include "windows.h"
 #include "shellapi.h"

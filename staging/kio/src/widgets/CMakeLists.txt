@@ -86,21 +86,22 @@ add_library(KF5::KIOWidgets ALIAS KIOWidgets)
 target_include_directories(KIOWidgets PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/..>" # kio_version.h
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/../include>" # kio/global.h
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/../include/kio>" # krun.h
 )
 
 target_link_libraries(KIOWidgets
   PUBLIC
     KIOCore
-    KJobWidgets
-    Qt5::Network  # SSL
-    KCompletion   # KUrlCompletion uses KCompletion
+    KF5::KJobWidgets
+    Qt5::Network        # SSL
+    KF5::KCompletion    # KUrlCompletion uses KCompletion
     KF5::KWidgetsAddons # keditlistwidget
   PRIVATE
     Qt5::DBus
     KF5::KI18n
     KF5::KIconThemes   # KIconLoader
     KF5::KWindowSystem # KStartupInfo
-    KConfigWidgets # KColorScheme
+    KF5::KConfigWidgets # KColorScheme
 )
 
 if(ACL_FOUND)

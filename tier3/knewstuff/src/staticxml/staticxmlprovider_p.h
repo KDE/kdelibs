@@ -20,7 +20,7 @@
 #ifndef KNEWSTUFF3_STATICXML_PROVIDER_H
 #define KNEWSTUFF3_STATICXML_PROVIDER_H
 
-#include "core/provider.h"
+#include "core/provider_p.h"
 #include <QMap>
 
 namespace KNS3

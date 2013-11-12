@@ -19,7 +19,7 @@
 #include "kautostarttest.h"
 
 #include <qstandardpaths.h>
-#include <QtTest/QtTest>
+#include <QTest>
 
 #include <QtCore/QFile>
 

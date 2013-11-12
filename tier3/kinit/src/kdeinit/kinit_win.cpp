@@ -38,10 +38,10 @@
 #include <QtCore/QFileInfo>
 // Under wince interface is defined, so undef it otherwise it breaks it
 #undef interface
-#include <QtDBus/QtDBus>
+#include <QDBusConnection>
 
 #include <kstandarddirs.h> // TODO REMOVE
-#include <kcoreaddons_version.h>
+#include <kinit_version.h>
 
 //#define ENABLE_SUICIDE
 //#define ENABLE_EXIT
@@ -508,7 +508,7 @@ int main(int argc, char **argv, char **envp)
         if (strcmp(safe_argv[i], "--version") == 0)
         {
             printf("Qt: %s\n",qVersion());
-            printf("KDE: %s\n", KCOREADDONS_VERSION_STRING);
+            printf("KDE: %s\n", KINIT_VERSION_STRING);
             exit(0);
         }
         if (strcmp(safe_argv[i], "--help") == 0)

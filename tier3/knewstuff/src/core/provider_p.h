@@ -24,7 +24,7 @@
 #include <QtCore/QString>
 #include <QUrl>
 
-#include "entryinternal.h"
+#include "entryinternal_p.h"
 
 class KJob;
 

@@ -10,15 +10,24 @@ include(FeatureSummary)
 include(CMakePackageConfigHelpers)
 include(ECMSetupVersion)
 
-set(REQUIRED_QT_VERSION "5.2")
 include(KDEInstallDirs)
 include(KDECompilerSettings)
 include(KDECMakeSettings)
-find_package(Qt5 ${REQUIRED_QT_VERSION} CONFIG REQUIRED Core Test Script Xml Widgets UiTools)
 
-ecm_setup_version(5.0.0 VARIABLE_PREFIX KROSS
+set(KF5_VERSION "5.0.0")
+ecm_setup_version(${KF5_VERSION} VARIABLE_PREFIX KROSS
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kross_version.h"
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KrossConfigVersion.cmake")
+
+set(REQUIRED_QT_VERSION "5.2")
+find_package(Qt5 ${REQUIRED_QT_VERSION} CONFIG REQUIRED Core Test Script Xml Widgets UiTools)
+
+if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
+    find_package(KI18n ${KF5_VERSION} REQUIRED)
+    find_package(KIconThemes ${KF5_VERSION} REQUIRED)
+    find_package(KIO ${KF5_VERSION} REQUIRED)
+    find_package(KParts ${KF5_VERSION} REQUIRED)
+endif()
 
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 

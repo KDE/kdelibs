@@ -25,8 +25,8 @@
 #include <QtCore/QString>
 #include <QtCore/QMap>
 
-#include "provider.h"
-#include "entryinternal.h"
+#include "provider_p.h"
+#include "entryinternal_p.h"
 
 class QTimer;
 class KJob;

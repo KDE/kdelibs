@@ -32,6 +32,7 @@
 #include "klauncher_cmds.h"
 #include <QtCore/QCoreApplication>
 #include <QDebug>
+#include <QDBusConnectionInterface>
 
 #ifndef USE_KPROCESS_FOR_KIOSLAVES
 static int sigpipe[ 2 ];

@@ -47,7 +47,6 @@
 #include <kurlcompletion.h>
 #include <kurlrequester.h>
 #include <kservicegroup.h>
-#include <kserviceoffer.h>
 #include <QDebug>
 
 #include <assert.h>

@@ -22,7 +22,7 @@
 
 #include "kglobalshortcuttest.h"
 #include <qdbusinterface.h>
-#include <QtTest/QtTest>
+#include <QTest>
 #include <QAction>
 #include <kglobalaccel.h>
 #include <qstandardpaths.h>

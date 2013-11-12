@@ -23,7 +23,7 @@
 #include "udisks.h"
 
 #include <QtCore/QProcess>
-#include <QtDBus/QtDBus>
+#include <QDBusConnection>
 #include <QApplication>
 #include <QWidget>
 

@@ -1,5 +1,3 @@
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
-
 find_package(Qt5Test REQUIRED)
 find_package(Qt5Widgets REQUIRED)
 
@@ -25,8 +23,6 @@ ecm_add_test(httpauthenticationtest.cpp
    Qt5::Widgets
    KF5::KI18n
    KF5::KIOCore
-   KF5::KConfigCore
-   KF5::KCoreAddons
    kntlm
 )
 
@@ -51,10 +47,9 @@ ecm_add_test(${httpobjecttest_SRCS}
    Qt5::Xml # QDomElement
    KF5::KI18n
    KF5::KIOCore
-   KF5::KConfigCore
    kntlm
    KF5::KArchive
-   Solid)
+   KF5::Solid)
 if(GSSAPI_FOUND)
   target_link_libraries(kioslave-httpobjecttest ${GSSAPI_LIBS})
 endif(GSSAPI_FOUND)

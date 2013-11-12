@@ -16,14 +16,14 @@
     License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "itemsmodel.h"
+#include "itemsmodel_p.h"
 
 #include "QDebug"
 #include "klocalizedstring.h"
 
-#include "core/entryinternal.h"
-#include "core/engine.h"
-#include "imageloader.h"
+#include "core/entryinternal_p.h"
+#include "core/engine_p.h"
+#include "imageloader_p.h"
 
 namespace KNS3
 {

@@ -23,6 +23,7 @@
 #include <kdirnotify.h>
 #include <kjobuidelegate.h>
 #include <kmountpoint.h>
+#include <QDebug>
 
 /***********************************************************************
  *

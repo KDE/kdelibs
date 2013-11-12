@@ -23,14 +23,16 @@
 #include "kcoredirlister.h"
 #include "kcoredirlister_p.h"
 
-#include <QtCore/QRegExp>
-
 #include <klocalizedstring.h>
 #include <kio/job.h>
 #include "kprotocolmanager.h"
 #include "kmountpoint.h"
 
+#include <QtCore/QRegExp>
+#include <QFileInfo>
 #include <QFile>
+#include <QDir>
+#include <QLinkedList>
 #include <qmimedatabase.h>
 #include <QDebug>
 

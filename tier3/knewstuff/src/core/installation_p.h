@@ -24,7 +24,7 @@
 
 #include <kconfiggroup.h>
 
-#include "entryinternal.h"
+#include "entryinternal_p.h"
 
 class KArchiveDirectory;
 class KJob;

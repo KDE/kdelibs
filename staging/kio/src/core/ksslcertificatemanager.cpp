@@ -28,8 +28,12 @@
 #include <klocalizedstring.h>
 
 #include <QDebug>
-#include <QtDBus/QtDBus>
 #include <qstandardpaths.h>
+#include <QFile>
+#include <QDir>
+#include <QDBusConnection>
+#include <QDBusReply>
+#include <QDBusConnectionInterface>
 
 #include "kssld_interface.h"
 

@@ -10,21 +10,33 @@ include(KDEInstallDirs)
 include(KDECompilerSettings)
 include(KDECMakeSettings)
 
-set(QT_REQUIRED_VERSION 5.2.0)
-find_package(Qt5 ${QT_REQUIRED_VERSION} NO_MODULE REQUIRED Widgets Xml)
-
 include(FeatureSummary)
 
 include(ECMSetupVersion)
 
-ecm_setup_version(5.0.0 VARIABLE_PREFIX KBOOKMARKS
-                        VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kbookmarks_version.h"
-                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KBookmarksConfigVersion.cmake")
+set(KF5_VERSION "5.0.0")
+
+ecm_setup_version(${KF5_VERSION}
+                  VARIABLE_PREFIX KBOOKMARKS
+                  VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kbookmarks_version.h"
+                  PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KBookmarksConfigVersion.cmake")
+
+# Dependencies
+set(QT_REQUIRED_VERSION 5.2.0)
+
+find_package(Qt5 ${QT_REQUIRED_VERSION} NO_MODULE REQUIRED Widgets Xml DBus)
+
+if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
+  find_package(KConfigWidgets ${KF5_VERSION} REQUIRED)
+  find_package(KCoreAddons ${KF5_VERSION} REQUIRED)
+  find_package(KIconThemes ${KF5_VERSION} REQUIRED)
+  find_package(KWidgetsAddons ${KF5_VERSION} REQUIRED)
+  find_package(XmlGui ${KF5_VERSION} REQUIRED)
+endif()
 
 add_subdirectory(src)
 add_subdirectory(tests)
 add_subdirectory(autotests)
-
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
 set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KBookmarks")

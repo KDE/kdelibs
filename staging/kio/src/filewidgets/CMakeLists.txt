@@ -49,13 +49,13 @@ target_include_directories(KIOFileWidgets PUBLIC
 target_link_libraries(KIOFileWidgets
   PUBLIC
     KIOWidgets
-    KBookmarks    # in KFilePlacesModel's API
-    XmlGui        # for KActionCollection, used by KFileWidget/KDirOperator
-    KF5::Solid    # KFilePlacesModel/KFilePlacesView
+    KF5::KBookmarks    # in KFilePlacesModel's API
+    KF5::XmlGui        # for KActionCollection, used by KFileWidget/KDirOperator
+    KF5::Solid         # KFilePlacesModel/KFilePlacesView
   PRIVATE
     KF5::KIconThemes   # KIconLoader
     KF5::KI18n
-    ItemViews     # kdirsortfilterproxymodel
+    KF5::ItemViews     # kdirsortfilterproxymodel
 )
 
 set_target_properties(KIOFileWidgets PROPERTIES VERSION ${KIO_VERSION_STRING}

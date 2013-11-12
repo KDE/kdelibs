@@ -45,6 +45,9 @@
 #include <solid/block.h>
 #endif
 
+#include <QDBusInterface>
+#include <QDBusReply>
+
 enum BuiltinServiceType { ST_MOUNT = 0x0E1B05B0, ST_UNMOUNT = 0x0E1B05B1 }; // random numbers
 
 static bool runFSDevice( const QUrl& _url, const KDesktopFile &cfg );

@@ -11,10 +11,12 @@ find_package(Qt5Widgets ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE)
 include(KDEInstallDirs)
 include(KDECompilerSettings)
 include(KDECMakeSettings)
-if(NOT kdelibs_SOURCE_DIR)
-  find_package(KCoreAddons 5.0.0 REQUIRED)
-  find_package(KService 5.0.0 REQUIRED)
-  find_package(KPty 5.0.0 REQUIRED)
+
+set(KF5_VERSION "5.0.0")
+if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
+  find_package(KCoreAddons ${KF5_VERSION} REQUIRED)
+  find_package(KService ${KF5_VERSION} REQUIRED)
+  find_package(KPty ${KF5_VERSION} REQUIRED)
 endif()
 
 #optional features
@@ -24,7 +26,7 @@ set(HAVE_X11 ${X11_FOUND})
 include(FeatureSummary)
 include(ECMSetupVersion)
 
-ecm_setup_version(5.0.0 VARIABLE_PREFIX KDESU
+ecm_setup_version(${KF5_VERSION} VARIABLE_PREFIX KDESU
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kdesu_version.h"
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KDESuConfigVersion.cmake")
 

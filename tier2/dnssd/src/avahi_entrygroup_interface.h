@@ -18,7 +18,9 @@
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 #include <QtCore/QVariant>
-#include <QtDBus/QtDBus>
+#include <QDBusConnection>
+#include <QDBusAbstractInterface>
+#include <QDBusReply>
 
 /*
  * Proxy class for interface org.freedesktop.Avahi.EntryGroup

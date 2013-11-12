@@ -26,13 +26,14 @@
 #include <QtCore/QHash>
 #include <QtCore/QSet>
 
-#include <QtDBus/QtDBus>
+#include <QDBusConnection>
+#include <QDBusAbstractAdaptor>
 
 #include <ksycoca.h>
-#include <ksycocatype.h>
 #include <kdedmodule.h>
 #include <kservice.h>
 
+class QDBusMessage;
 class QDBusServiceWatcher;
 class KDirWatch;
 

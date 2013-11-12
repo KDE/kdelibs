@@ -32,7 +32,10 @@
 #include <QtCore/QFile>
 #include <QtCore/QList>
 #include <QtCore/QTimer>
-#include <QtDBus/QtDBus>
+#include <QDBusConnection>
+#include <QDBusConnectionInterface>
+#include <QDBusError>
+#include <QDBusReply>
 
 #include <kcmdlineargs.h>
 #include <klocalizedstring.h>
