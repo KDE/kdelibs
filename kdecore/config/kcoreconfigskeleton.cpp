@@ -1081,11 +1081,11 @@ void KCoreConfigSkeleton::writeConfig()
   }
   usrWriteConfig();
 
-  d->mConfig->sync();
-
-  readConfig();
-
-  emit configChanged();
+  if (d->mConfig->isDirty()) {
+    d->mConfig->sync();
+    readConfig();
+    emit configChanged();
+  }
 }
 
 bool KCoreConfigSkeleton::usrUseDefaults(bool)

@@ -492,7 +492,7 @@ void KConfig::markAsClean()
         it->bDirty = false;
 }
 
-bool KConfig::isDirty() const // only exists for the unittest
+bool KConfig::isDirty() const
 {
     Q_D(const KConfig);
     return d->bDirty;
