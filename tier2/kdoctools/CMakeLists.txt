@@ -7,6 +7,7 @@ find_package(ECM 0.0.9 REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR})
 
 include(FeatureSummary)
+include(ECMSetupVersion)
 
 set(KF5_VERSION "5.0.0")
 ecm_setup_version(${KF5_VERSION} VARIABLE_PREFIX KDOCTOOLS
@@ -57,11 +58,16 @@ set_package_properties(DocBookXSL PROPERTIES DESCRIPTION "DocBook XSL"
 
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
-set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KDocTools")
-
 set(_kdeBootStrapping TRUE)
+set(KDOCTOOLS_CUSTOMIZATION_DIR "${CMAKE_CURRENT_BINARY_DIR}/src/customization/")
+if (WIN32)
+    set(KDOCTOOLS_MEINPROC_EXECUTABLE          ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/meinproc5 )
+else ()
+    set(KDOCTOOLS_MEINPROC_EXECUTABLE          ${CMAKE_CURRENT_BINARY_DIR}/src/meinproc5${CMAKE_EXECUTABLE_SUFFIX} )
+endif ()
 include(KDocToolsMacros.cmake)
 
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KDocTools")
 add_subdirectory(docs)
 add_subdirectory(src)
 

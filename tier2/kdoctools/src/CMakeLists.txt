@@ -47,7 +47,8 @@ else ()
     add_executable(meinproc5 meinproc.cpp meinproc_common.cpp xslt.cpp ${meinproc_additional_SRCS})
     target_link_libraries(meinproc5 Qt5::Core ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} ${LIBXSLT_EXSLT_LIBRARIES} ${meinproc_additional_LIBS})
 
-    install(TARGETS meinproc5 ${INSTALL_TARGETS_DEFAULT_ARGS})
+    install(TARGETS meinproc5 EXPORT KDocToolsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+    add_executable(KF5::meinproc5 ALIAS meinproc5)
 
 #    # export this binary for cross-compilation
 #    export(TARGETS meinproc5 FILE ${CMAKE_BINARY_DIR}/ImportMeinProc4Executable.cmake)

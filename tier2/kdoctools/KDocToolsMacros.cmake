@@ -24,27 +24,14 @@
 # The following variables are defined for the various tools required to
 # compile KDE software:
 #
-#  KDE4_MEINPROC_EXECUTABLE - the meinproc5 executable
+#  KDOCTOOLS_MEINPROC_EXECUTABLE - the meinproc5 executable
 #
 
-if (WIN32)
-    # CMAKE_CFG_INTDIR is the output subdirectory created e.g. by XCode and MSVC
-    if (NOT WINCE)
-        set(KDOCTOOLS_MEINPROC_EXECUTABLE          ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/meinproc5 )
-    else (NOT WINCE)
-        set(KDOCTOOLS_MEINPROC_EXECUTABLE          ${HOST_BINDIR}/${CMAKE_CFG_INTDIR}/meinproc5 )
-    endif(NOT WINCE)
-
-    set(KDOCTOOLS_MEINPROC_EXECUTABLE          ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/meinproc5 )
-else (WIN32)
-    set(KDOCTOOLS_MEINPROC_EXECUTABLE          ${CMAKE_BINARY_DIR}/tier2/kdoctools/src/meinproc5${CMAKE_EXECUTABLE_SUFFIX} )
-endif (WIN32)
-
-set( _KDOCTOOLS_MEINPROC_EXECUTABLE_DEP meinproc5)
+set(KDOCTOOLS_MEINPROC_EXECUTABLE "KF5::meinproc5")
 
 if(KDE4_SERIALIZE_TOOL)
     # parallel build with many meinproc invocations can consume a huge amount of memory
-    set(KDOCTOOLS_MEINPROC_EXECUTABLE ${KDE4_SERIALIZE_TOOL} ${KDE4_MEINPROC_EXECUTABLE})
+    set(KDOCTOOLS_MEINPROC_EXECUTABLE ${KDE4_SERIALIZE_TOOL} ${KDOCTOOLS_MEINPROC_EXECUTABLE})
 endif(KDE4_SERIALIZE_TOOL)
 
 macro (KDOCTOOLS_CREATE_HANDBOOK _docbook)
@@ -53,12 +40,11 @@ macro (KDOCTOOLS_CREATE_HANDBOOK _docbook)
 
    #Bootstrap
    if (_kdeBootStrapping)
-      set(_ssheet "${CMAKE_BINARY_DIR}/tier2/kdoctools/src/customization/kde-chunk.xsl")
-      set(_bootstrapOption "--srcdir=${CMAKE_BINARY_DIR}/tier2/kdoctools/src")
-   else (_kdeBootStrapping)
-       set(_ssheet "${KDE4_DATA_INSTALL_DIR}/ksgmltools2/customization/kde-chunk.xsl")
+      set(_bootstrapOption "--srcdir=${KDocTools_BINARY_DIR}/src")
+   else ()
       set(_bootstrapOption)
-   endif (_kdeBootStrapping)
+   endif ()
+   set(_ssheet "${KDOCTOOLS_CUSTOMIZATION_DIR}/kde-chunk.xsl")
 
    file(GLOB _docs *.docbook)
 
@@ -70,7 +56,7 @@ macro (KDOCTOOLS_CREATE_HANDBOOK _docbook)
 
    add_custom_command(OUTPUT ${_doc}
       COMMAND ${KDOCTOOLS_MEINPROC_EXECUTABLE} --check ${_bootstrapOption} --cache ${_doc} ${_input}
-      DEPENDS ${_docs} ${_KDOCTOOLS_MEINPROC_EXECUTABLE_DEP} ${_ssheet}
+      DEPENDS ${_docs} ${_ssheet}
       WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
    )
    get_filename_component(_targ ${CMAKE_CURRENT_SOURCE_DIR} NAME)
@@ -81,7 +67,7 @@ macro (KDOCTOOLS_CREATE_HANDBOOK _docbook)
       set(_htmlDoc ${CMAKE_CURRENT_SOURCE_DIR}/index.html)
       add_custom_command(OUTPUT ${_htmlDoc}
          COMMAND ${KDOCTOOLS_MEINPROC_EXECUTABLE} --check ${_bootstrapOption} -o ${_htmlDoc} ${_input}
-         DEPENDS ${_input} ${_KDOCTOOLS_MEINPROC_EXECUTABLE_DEP} ${_ssheet}
+         DEPENDS ${_input} ${_ssheet}
          WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
       )
       add_custom_target(htmlhandbook DEPENDS ${_htmlDoc})
@@ -132,12 +118,11 @@ macro (KDOCTOOLS_CREATE_MANPAGE _docbook _section)
 
    #Bootstrap
    if (_kdeBootStrapping)
-      set(_ssheet "${CMAKE_BINARY_DIR}/tier2/kdoctools/src/customization/kde-include-man.xsl")
-      set(_bootstrapOption "--srcdir=${CMAKE_BINARY_DIR}/tier2/kdoctools/src/")
-   else (_kdeBootStrapping)
-      set(_ssheet "${KDOCTOOLS_DATA_INSTALL_DIR}/ksgmltools2/customization/kde-include-man.xsl")
+      set(_bootstrapOption "--srcdir=${KDocTools_BINARY_DIR}/src")
+   else ()
       set(_bootstrapOption)
-   endif (_kdeBootStrapping)
+   endif ()
+   set(_ssheet "${KDOCTOOLS_CUSTOMIZATION_DIR}/kde-include-man.xsl")
 
 #   if (CMAKE_CROSSCOMPILING)
 #      set(IMPORT_MEINPROC4_EXECUTABLE "${KDE_HOST_TOOLS_PATH}/ImportMeinProc4Executable.cmake" CACHE FILEPATH "Point it to the export file of meinproc5 from a native build")
@@ -147,7 +132,7 @@ macro (KDOCTOOLS_CREATE_MANPAGE _docbook _section)
 
    add_custom_command(OUTPUT ${_outdoc}
       COMMAND ${KDOCTOOLS_MEINPROC_EXECUTABLE} --stylesheet ${_ssheet} --check ${_bootstrapOption} ${_input}
-      DEPENDS ${_input} ${_KDOCTOOLS_MEINPROC_EXECUTABLE_DEP} ${_ssheet}
+      DEPENDS ${_input} ${_ssheet}
    )
    get_filename_component(_targ ${CMAKE_CURRENT_SOURCE_DIR} NAME)
    set(_targ "${_targ}-manpage-${_base}")
