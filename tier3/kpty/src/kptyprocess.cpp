@@ -21,7 +21,6 @@
 
 
 #include "kptyprocess.h"
-#include "kprocess_p.h"
 
 #include <kuser.h>
 #include <kptydevice.h>
@@ -33,7 +32,7 @@
 // private data //
 //////////////////
 
-struct KPtyProcessPrivate : KProcessPrivate {
+struct KPtyProcessPrivate {
     KPtyProcessPrivate() :
         ptyChannels(KPtyProcess::NoChannels),
         addUtmp(false)
@@ -52,7 +51,7 @@ struct KPtyProcessPrivate : KProcessPrivate {
 };
 
 KPtyProcess::KPtyProcess(QObject *parent) :
-    KProcess(new KPtyProcessPrivate, parent)
+    KProcess(parent), d_ptr(new KPtyProcessPrivate)
 {
     Q_D(KPtyProcess);
 
@@ -63,7 +62,7 @@ KPtyProcess::KPtyProcess(QObject *parent) :
 }
 
 KPtyProcess::KPtyProcess(int ptyMasterFd, QObject *parent) :
-    KProcess(new KPtyProcessPrivate, parent)
+    KProcess(parent), d_ptr(new KPtyProcessPrivate)
 {
     Q_D(KPtyProcess);
 
@@ -83,6 +82,7 @@ KPtyProcess::~KPtyProcess()
                    this, SLOT(_k_onStateChanged(QProcess::ProcessState)));
     }
     delete d->pty;
+    delete d_ptr;
 }
 
 void KPtyProcess::setPtyChannels(PtyChannels channels)

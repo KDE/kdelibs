@@ -128,10 +128,12 @@ protected:
     /**
      * @reimp
      */
-    virtual void setupChildProcess();
+    virtual void setupChildProcess() Q_DECL_OVERRIDE;
 
 private:
     Q_PRIVATE_SLOT(d_func(), void _k_onStateChanged(QProcess::ProcessState))
+
+    KPtyProcessPrivate *const d_ptr;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KPtyProcess::PtyChannels)
