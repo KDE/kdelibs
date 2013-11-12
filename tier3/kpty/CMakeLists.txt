@@ -39,7 +39,7 @@ configure_package_config_file(
 )
 
 add_subdirectory( src )
-add_subdirectory( tests )
+add_subdirectory( autotests )
 
 install(FILES
   "${CMAKE_CURRENT_BINARY_DIR}/KPtyConfig.cmake"
