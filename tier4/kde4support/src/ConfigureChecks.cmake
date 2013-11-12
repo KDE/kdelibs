@@ -2,7 +2,7 @@
 include(CheckIncludeFiles)
 include(CheckFunctionExists)
 # TODO: check whether CheckPrototypeExists.cmake is actually necessary or whether something else can be used. Alex
-include(${CMAKE_SOURCE_DIR}/cmake/modules/CheckPrototypeExists.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/../cmake/modules/CheckPrototypeExists.cmake)
 include(CheckSymbolExists)
 include(CheckTypeSize)
 include(CheckStructHasMember)
