@@ -18,6 +18,11 @@ project(kdelibs)
 # Make CPack available to easy generate binary packages
 include(CPack)
 
+option(BUILD_TESTING "Build the testing tree." ON)
+if(BUILD_TESTING)
+    enable_testing()
+endif()
+
 add_subdirectory( tier1 )
 
 # tier1/ already builds standalone, so it should not get any include dirs from here.
