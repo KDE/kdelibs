@@ -21,68 +21,56 @@
 // used in advertising or otherwise to promote the sale, use or other dealings
 // in this Software without prior written authorization from the author(s).
 
-#include <kmediaplayer/view.h>
+#include "player.h"
+#include "kmediaplayeradaptor_p.h"
 
-struct KMediaPlayer::View::Data
+KMediaPlayer::Player::Player(QWidget *, const char *, QObject *parent)
+	: KParts::ReadOnlyPart(parent)
+	, currentLooping(false)
+	, currentState(Empty)
+	, d(0)
 {
-	Data() : videoWidget(0L) {}
+	(void)new KMediaPlayerAdaptor(this);
+}
 
-	QWidget *videoWidget;
-};
+KMediaPlayer::Player::Player(QObject *parent )
+	: KParts::ReadOnlyPart(parent)
+	, currentLooping(false)
+	, currentState(Empty)
+	, d(0)
+{
+	(void)new KMediaPlayerAdaptor(this);
+}
 
-KMediaPlayer::View::View(QWidget *parent)
-	: QWidget(parent)
-	, currentButtons((int)All)
-	, d(new Data())
+KMediaPlayer::Player::~Player(void)
 {
 }
 
-KMediaPlayer::View::~View(void)
+void KMediaPlayer::Player::setLooping(bool b)
 {
-	delete d;
-}
-
-int KMediaPlayer::View::buttons(void)
-{
-	return currentButtons;
-}
-
-void KMediaPlayer::View::setButtons(int buttons)
-{
-	if(buttons != currentButtons)
+	if(b != currentLooping)
 	{
-		currentButtons = buttons;
-		emit buttonsChanged(buttons);
+		currentLooping = b;
+		emit loopingChanged(b);
 	}
 }
 
-bool KMediaPlayer::View::button(int b)
+bool KMediaPlayer::Player::isLooping(void) const
 {
-	return currentButtons & b;
+	return currentLooping;
 }
 
-void KMediaPlayer::View::showButton(int b)
+void KMediaPlayer::Player::setState(int s)
 {
-	setButtons(currentButtons | b);
+	if(s != currentState)
+	{
+		currentState = (State)s;
+		emit stateChanged(s);
+	}
 }
 
-void KMediaPlayer::View::hideButton(int b)
+int KMediaPlayer::Player::state(void) const
 {
-	setButtons(currentButtons & ~b);
-}
-
-void KMediaPlayer::View::toggleButton(int b)
-{
-	setButtons(currentButtons ^ b);
-}
-
-void KMediaPlayer::View::setVideoWidget(QWidget *videoWidget)
-{
-	d->videoWidget = videoWidget;
-}
-
-QWidget* KMediaPlayer::View::videoWidget()
-{
-	return d->videoWidget;
+	return (int)currentState;
 }
 

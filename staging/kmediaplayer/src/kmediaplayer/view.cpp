@@ -21,56 +21,68 @@
 // used in advertising or otherwise to promote the sale, use or other dealings
 // in this Software without prior written authorization from the author(s).
 
-#include <kmediaplayer/player.h>
-#include <kmediaplayer/kmediaplayeradaptor_p.h>
+#include "view.h"
 
-KMediaPlayer::Player::Player(QWidget *, const char *, QObject *parent)
-	: KParts::ReadOnlyPart(parent)
-	, currentLooping(false)
-	, currentState(Empty)
-	, d(0)
+struct KMediaPlayer::View::Data
 {
-	(void)new KMediaPlayerAdaptor(this);
-}
+	Data() : videoWidget(0L) {}
 
-KMediaPlayer::Player::Player(QObject *parent )
-	: KParts::ReadOnlyPart(parent)
-	, currentLooping(false)
-	, currentState(Empty)
-	, d(0)
-{
-	(void)new KMediaPlayerAdaptor(this);
-}
+	QWidget *videoWidget;
+};
 
-KMediaPlayer::Player::~Player(void)
+KMediaPlayer::View::View(QWidget *parent)
+	: QWidget(parent)
+	, currentButtons((int)All)
+	, d(new Data())
 {
 }
 
-void KMediaPlayer::Player::setLooping(bool b)
+KMediaPlayer::View::~View(void)
 {
-	if(b != currentLooping)
+	delete d;
+}
+
+int KMediaPlayer::View::buttons(void)
+{
+	return currentButtons;
+}
+
+void KMediaPlayer::View::setButtons(int buttons)
+{
+	if(buttons != currentButtons)
 	{
-		currentLooping = b;
-		emit loopingChanged(b);
+		currentButtons = buttons;
+		emit buttonsChanged(buttons);
 	}
 }
 
-bool KMediaPlayer::Player::isLooping(void) const
+bool KMediaPlayer::View::button(int b)
 {
-	return currentLooping;
+	return currentButtons & b;
 }
 
-void KMediaPlayer::Player::setState(int s)
+void KMediaPlayer::View::showButton(int b)
 {
-	if(s != currentState)
-	{
-		currentState = (State)s;
-		emit stateChanged(s);
-	}
+	setButtons(currentButtons | b);
 }
 
-int KMediaPlayer::Player::state(void) const
+void KMediaPlayer::View::hideButton(int b)
 {
-	return (int)currentState;
+	setButtons(currentButtons & ~b);
+}
+
+void KMediaPlayer::View::toggleButton(int b)
+{
+	setButtons(currentButtons ^ b);
+}
+
+void KMediaPlayer::View::setVideoWidget(QWidget *videoWidget)
+{
+	d->videoWidget = videoWidget;
+}
+
+QWidget* KMediaPlayer::View::videoWidget()
+{
+	return d->videoWidget;
 }
 
