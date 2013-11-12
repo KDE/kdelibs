@@ -12,9 +12,23 @@ include(KDEInstallDirs)
 include(KDECompilerSettings)
 include(KDECMakeSettings)
 
-if(NOT kdelibs_SOURCE_DIR)
-  find_package(KCoreAddons 5.0.0 REQUIRED)
+if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
+  #NOTE: here the dependencies of dependencies are displayed as well, this shouldn't be needed
+  #after cmake 3.0.0 is released
   find_package(KI18n 5.0.0 REQUIRED)
+  find_package(KGuiAddons 5.0.0 REQUIRED)
+  find_package(KWidgetsAddons 5.0.0 REQUIRED)
+  find_package(KDBusAddons 5.0.0 REQUIRED)
+  find_package(KConfigWidgets 5.0.0 REQUIRED)
+  find_package(ItemViews 5.0.0 REQUIRED)
+  find_package(KIconThemes 5.0.0 REQUIRED)
+  find_package(KWindowSystem 5.0.0 REQUIRED)
+  find_package(KService 5.0.0 REQUIRED)
+  find_package(KCompletion 5.0.0 REQUIRED)
+  find_package(KTextWidgets 5.0.0 REQUIRED)
+
+  find_package(KCoreAddons 5.0.0 REQUIRED)
+#   find_package(KI18n 5.0.0 REQUIRED)
   find_package(KParts 5.0.0 REQUIRED)
 endif()
 

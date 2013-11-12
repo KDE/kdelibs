@@ -31,11 +31,12 @@ if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
   find_package(KInit ${KF5_VERSION} REQUIRED)
   find_package(KService ${KF5_VERSION} REQUIRED)
   find_package(KArchive ${KF5_VERSION} REQUIRED)
-  find_package(KDED ${KF5_VERSION} REQUIRED) # for org.kde.kded5.xml
   find_package(Solid ${KF5_VERSION} REQUIRED)
   find_package(KJobWidgets ${KF5_VERSION} REQUIRED)
   find_package(KIconThemes ${KF5_VERSION} REQUIRED)
   find_package(KWindowSystem ${KF5_VERSION} REQUIRED)
+  find_package(KCrash ${KF5_VERSION} REQUIRED)
+  find_package(KDED ${KF5_VERSION} REQUIRED) # for org.kde.kded5.xml
   find_package(KCompletion ${KF5_VERSION} REQUIRED)
   find_package(KDocTools ${KF5_VERSION} REQUIRED)
   find_package(KTextWidgets ${KF5_VERSION} REQUIRED)

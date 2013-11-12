@@ -24,6 +24,12 @@ ecm_setup_version(${KF5_VERSION} VARIABLE_PREFIX KEMOTICONS
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KEmoticonsConfigVersion.cmake")
 
 if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
+  #NOTE: here the dependencies of dependencies are displayed as well, this shouldn't be needed
+  #after cmake 3.0.0 is released
+  find_package(KCoreAddons ${KF5_VERSION} REQUIRED)
+  find_package(KDBusAddons ${KF5_VERSION} REQUIRED)
+  find_package(KI18n ${KF5_VERSION} REQUIRED)
+
   find_package(KArchive ${KF5_VERSION} REQUIRED)
   find_package(KService ${KF5_VERSION} REQUIRED)
 endif()
