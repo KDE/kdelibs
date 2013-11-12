@@ -193,6 +193,10 @@ public:
     /// @reimp
     void sync();
 
+    /// Returns true if sync has any changes to write out.
+    /// @since 4.12
+    bool isDirty() const;
+
     /// @reimp
     void markAsClean();
 
@@ -401,7 +405,6 @@ protected:
     KConfig(KConfigPrivate &d);
 
 private:
-    bool isDirty() const;
     friend class KConfigTest;
 
     QStringList keyList(const QString& aGroup=QString()) const;
