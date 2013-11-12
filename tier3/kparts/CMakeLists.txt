@@ -42,6 +42,7 @@ if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
     find_package(KIO ${KF5_VERSION} REQUIRED)
     find_package(XmlGui ${KF5_VERSION} REQUIRED)
     find_package(KTextWidgets ${KF5_VERSION} REQUIRED)
+    find_package(KNotifications ${KF5_VERSION} REQUIRED)
 endif()
 
 remove_definitions(-DQT_NO_CAST_TO_ASCII)
