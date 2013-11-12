@@ -25,12 +25,10 @@ find_package(Qt5Designer)
 if(Qt5Designer_FOUND)
 
   include_directories(${Qt5Designer_INCLUDE_DIRS})
-  # get the name of the generated wrapper script (which sets up LD_LIBRARY_PATH)
-  get_target_property(MAKEKDEWIDGETS_EXECUTABLE makekdewidgets LOCATION)
 
   add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/kdewidgets.cpp
-    COMMAND "${MAKEKDEWIDGETS_EXECUTABLE}" -o ${CMAKE_CURRENT_BINARY_DIR}/kdewidgets.cpp ${CMAKE_CURRENT_SOURCE_DIR}/kde.widgets
-    MAIN_DEPENDENCY kde.widgets DEPENDS makekdewidgets)
+    COMMAND makekdewidgets -o ${CMAKE_CURRENT_BINARY_DIR}/kdewidgets.cpp ${CMAKE_CURRENT_SOURCE_DIR}/kde.widgets
+    MAIN_DEPENDENCY kde.widgets)
 
   set(kdewidgets_PART_SRCS
      classpreviews.cpp
