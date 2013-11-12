@@ -210,6 +210,7 @@ set(kjs_SRCS kjs.cpp)
 set (kjs_bin_OUTPUT_NAME kjs)
 
 # 'kjs_bin' because cmake doesn't like having a lib and app with the same name
+# This is a developer tool, not intended for normal user installs
 add_executable(kjs_bin ${kjs_SRCS})
 
 set_target_properties(kjs_bin PROPERTIES RUNTIME_OUTPUT_NAME ${kjs_bin_OUTPUT_NAME})

@@ -49,6 +49,7 @@
 
 <para><command>kross</command> executes kross scripts written in &kde; Javascript, Python, Ruby, Java and Falcon.
 </para>
+<para>This command line tool is used for any non-GUI scripts, e.g. Calligra Sheets has some of these.</para>
 </refsect1>
 
 <refsect1>
