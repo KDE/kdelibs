@@ -29,20 +29,20 @@
 </refentryinfo>
 
 <refmeta>
-<refentrytitle><command>kcookiejar4</command></refentrytitle>
+<refentrytitle><command>kcookiejar5</command></refentrytitle>
 <manvolnum>8</manvolnum>
 </refmeta>
 
 <refnamediv>
-<refname><command>kcookiejar4</command></refname>
-<refpurpose>&kde; HTTP cookie daemon</refpurpose>
+<refname><command>kcookiejar5</command></refname>
+<refpurpose>Command line interface to the &kde; HTTP cookie daemon</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>
 <title>Synopsis</title>
 
 <cmdsynopsis>
-<command>kcookiejar4</command>
+<command>kcookiejar5</command>
 
 <arg choice="opt">--help</arg>
 <arg choice="opt">Generic-options</arg>
@@ -58,7 +58,7 @@
 <refsect1>
 <title>Description</title>
 
-<para><command>kcookiejar4</command> handles the HTTP cookies providing
+<para><command>kcookiejar5</command> is a command line interface to the HTTP cookie store used by KDE,
 a D-BUS service to store/retrieve/clean cookies.
 </para>
 </refsect1>
@@ -167,17 +167,12 @@ Reloads the configuration file.
 
 <refsect1>
 <title>Usage</title>
+<para><command>kcookiejar5</command> is a command line tool to access the kded module which manages cookies in <command>Konqueror</command> and other KDE applications.
 <para>
-KDE web browser <command>konqueror</command> uses <command>kcookiejar4</command> for 
-storing and managing cookies using the D-Bus service <command>kcookiejar4</command>
-provides.
+When started without parameters it loads the kded module to provide the dbus interface to store cookies.
 </para>
 <para>
-When <command>kcookiejar4</command> is started without parameters, it provides a D-BUS service
-to handle HTTP cookies.
-</para>
-<para>
-When <command>kcookiejar4</command> is started with some parameters, it does
+When <command>kcookiejar5</command> is started with some parameters, it does
 additional tasks to the cookies jar it provides, like removing the cookies from one
 <parameter>domain</parameter>.
 </para>
@@ -187,7 +182,7 @@ additional tasks to the cookies jar it provides, like removing the cookies from 
 <refsect1>
 <title>See Also</title>
 <para><replaceable>kdeoptions</replaceable>(7), <replaceable>qtoptions</replaceable>(7)
-<!--, <replaceable>kded4</replaceable>(8), <replaceable>konqueror</replaceable>(8)--></para>
+</para>
 </refsect1>
 
 <refsect1>
