@@ -29,7 +29,6 @@
 #include <QTreeWidgetItem>
 #include <QDebug>
 
-#include <kstringhandler.h>
 #if 0
 #include <kgesturemap.h>
 #endif
