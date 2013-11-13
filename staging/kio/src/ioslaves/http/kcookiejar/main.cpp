@@ -22,12 +22,18 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 #include <QDBusConnection>
+#include <QDBusInterface>
 
 #include <klocalizedstring.h>
 #include <qcommandlineparser.h>
 #include <qcommandlineoption.h>
 #include "kcookieserverinterface.h"
-#include "kded5interface.h"
+
+static void callKded(const QString &arg1, const QString &arg2)
+{
+    QDBusInterface iface("org.kde.kded5", "/kded", "org.kde.kded5");
+    iface.call(arg1, arg2);
+}
 
 int main(int argc, char *argv[])
 {
@@ -56,13 +62,11 @@ int main(int argc, char *argv[])
       kcookiejar->deleteCookiesFromDomain(domain);
     }
     if (parser.isSet("shutdown")) {
-      org::kde::kded5 kded("org.kde.kded5", "/kded", QDBusConnection::sessionBus());
-      kded.unloadModule("kcookiejar");
+      callKded("unloadModule", "kcookiejar");
     } else if (parser.isSet("reload-config")) {
       kcookiejar->reloadPolicy();
     } else {
-      org::kde::kded5 kded("org.kde.kded5", "/kded", QDBusConnection::sessionBus());
-      kded.loadModule("kcookiejar");
+      callKded("loadModule", "kcookiejar");
     }
     delete kcookiejar;
 
