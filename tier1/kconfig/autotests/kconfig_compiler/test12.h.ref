@@ -3,7 +3,7 @@
 #ifndef TEST12_H
 #define TEST12_H
 
-#include <kglobal.h>
+#include <qglobal.h>
 #include <kconfigskeleton.h>
 #include <QCoreApplication>
 #include <QDebug>
@@ -19,7 +19,7 @@ class Test12 : public KConfigSkeleton
     /**
       Get RnRSource
     */
-    KUrl::List rnRSource() const
+    QList<QUrl> rnRSource() const
     {
       return mRnRSource;
     }
@@ -27,7 +27,7 @@ class Test12 : public KConfigSkeleton
   protected:
 
     // muon
-    KUrl::List mRnRSource;
+    QList<QUrl> mRnRSource;
 
   private:
 };
