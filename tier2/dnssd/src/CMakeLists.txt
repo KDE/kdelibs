@@ -61,9 +61,9 @@ generate_export_header(KDNSSD
 )
 
 target_link_libraries(KDNSSD PUBLIC Qt5::Network)
-if(AVAHI_FOUND)
-  target_link_libraries(KDNSSD PRIVATE Qt5::DBus)
-elseif (DNSSD_FOUND)
+target_link_libraries(KDNSSD PRIVATE Qt5::DBus)
+
+if (DNSSD_FOUND)
   target_link_libraries(KDNSSD PRIVATE ${DNSSD_LIBRARIES}
                                             KF5::KConfigCore # settings.kcfgc
                        )

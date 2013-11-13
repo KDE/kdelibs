@@ -54,8 +54,8 @@ DomainBrowser::~DomainBrowser()
 
 void DomainBrowser::startBrowse()
 {
-	QStringList::const_iterator itEnd = d->m_domains.end();
-	for (QStringList::const_iterator it=d->m_domains.begin(); it!=itEnd; ++it ) emit domainAdded(*it);
+	QStringList::const_iterator itEnd = d->m_domains.cend();
+	for (QStringList::const_iterator it=d->m_domains.cbegin(); it!=itEnd; ++it ) emit domainAdded(*it);
 	if (d->isRunning()) return;
 	DNSServiceRef ref;
 	if (DNSServiceEnumerateDomains(&ref,(d->m_type==Browsing) ? kDNSServiceFlagsBrowseDomains:kDNSServiceFlagsBrowseDomains,
@@ -85,8 +85,8 @@ void DomainBrowserPrivate::domainListChanged()
 	bool was_running = m_running;
 	m_running = false;
 	if (was_running) {
-		QStringList::const_iterator itEnd = m_domains.end();
-		for (QStringList::const_iterator it=m_domains.begin(); it!=itEnd; ++it )
+		QStringList::const_iterator itEnd = m_domains.cend();
+		for (QStringList::const_iterator it=m_domains.cbegin(); it!=itEnd; ++it )
 			emit m_parent->domainRemoved(*it);
 	}
 	m_domains.clear();

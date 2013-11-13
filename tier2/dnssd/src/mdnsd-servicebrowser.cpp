@@ -148,10 +148,10 @@ void ServiceBrowserPrivate::customEvent(QEvent* event)
 		else {
 
                 	RemoteService::Ptr found=find(svr, m_duringResolve);
-                	if (!found.isNull()) m_duringResolve.removeAll(found);
+                	if (found) m_duringResolve.removeAll(found);
                 	else {
                         	found=find(svr, m_services);
-                        	if (!found.isNull()) {
+                        	if (found) {
 	                        	emit m_parent->serviceRemoved(found);
                         	        m_services.removeAll(found);
                         	}

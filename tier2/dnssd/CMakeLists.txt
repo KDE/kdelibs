@@ -36,9 +36,7 @@ set_package_properties(Avahi PROPERTIES DESCRIPTION "Facilities for service disc
                        TYPE OPTIONAL
                        PURPOSE "Either Avahi or DNSSD is required for KDE applications to make use of multicast DNS/DNS-SD service discovery"
                       )
-if(AVAHI_FOUND)
-	find_package(Qt5 ${REQUIRED_QT_VERSION} CONFIG REQUIRED DBus)
-endif()
+find_package(Qt5 ${REQUIRED_QT_VERSION} CONFIG REQUIRED DBus)
 
 if(NOT AVAHI_FOUND)
     find_package(DNSSD)
