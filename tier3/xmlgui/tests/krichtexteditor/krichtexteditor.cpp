@@ -24,7 +24,6 @@
 
 #include <kactioncollection.h>
 #include <kstandardaction.h>
-#include <kmessagebox.h>
 
 #include <QApplication>
 #include <QFileDialog>
