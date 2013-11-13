@@ -6,10 +6,10 @@ set_package_properties(Jasper PROPERTIES DESCRIPTION "Support for JPEG-2000 imag
                       )
 
 find_package(OpenEXR)
-set_package_properties(OpenEXR PROPERTIES DESCRIPTION "Support for OpenEXR images"
-                       URL "http://www.openexr.com"
-                       TYPE OPTIONAL
-                      )
+set_package_properties(OpenEXR PROPERTIES
+   TYPE OPTIONAL
+   PURPOSE "QImage plugin for OpenEXR images"
+)
 
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${KDE4_ENABLE_EXCEPTIONS}")
 
@@ -134,14 +134,14 @@ install(FILES xv.desktop DESTINATION  ${SERVICES_INSTALL_DIR}/qimageioplugins/ )
 
 ##################################
 
-if(OPENEXR_FOUND)
+if(OpenEXR_FOUND)
 
-    include_directories( ${OPENEXR_INCLUDE_DIR} )
-    add_definitions(${OPENEXR_DEFINITIONS})
+    include_directories(${OpenEXR_INCLUDE_DIR})
+    add_definitions(${OpenEXR_DEFINITIONS})
     set(kimg_exr_LIB_SRCS exr.cpp)
     add_library(kimg_exr MODULE ${kimg_exr_LIB_SRCS})
     set_target_properties(kimg_exr PROPERTIES PREFIX "")
-    target_link_libraries(kimg_exr Qt5::Gui ${OPENEXR_LIBRARIES} )
+    target_link_libraries(kimg_exr Qt5::Gui ${OpenEXR_LIBRARIES})
 
     install(TARGETS kimg_exr  DESTINATION ${QT_PLUGIN_INSTALL_DIR}/imageformats/ )
     install(FILES exr.desktop DESTINATION  ${SERVICES_INSTALL_DIR}/qimageioplugins/ )

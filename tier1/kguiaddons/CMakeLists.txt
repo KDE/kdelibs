@@ -4,7 +4,8 @@ project(KGuiAddons)
 
 find_package(ECM 0.0.9 REQUIRED NO_MODULE)
 
-set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR} ${CMAKE_SOURCE_DIR}/cmake/modules) #TODO: remove cmake/modules when extra-cmake-modules is done. OpenEXR
+# Add our own CMake dir for FindOpenEXR.cmake
+set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 include(KDEInstallDirs)
 include(KDECompilerSettings)

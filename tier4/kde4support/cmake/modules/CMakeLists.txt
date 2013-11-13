@@ -65,7 +65,6 @@ set(cmakeFiles
                FindNepomuk.cmake
                FindNetworkManager.cmake
                FindOggVorbis.cmake
-               FindOpenEXR.cmake
                FindPlasma.cmake
                FindPopplerQt4.cmake
                FindPulseAudio.cmake
