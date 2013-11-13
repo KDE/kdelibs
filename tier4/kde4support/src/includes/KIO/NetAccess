@@ -1,1 +1,1 @@
-#include "../../netaccess.h"
+#include "../../kio/netaccess.h"
