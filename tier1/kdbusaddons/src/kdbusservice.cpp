@@ -31,12 +31,15 @@
 #include <QtDBus/QDBusReply>
 
 #include "kdbusservice_adaptor.h"
+#include "kdbusserviceextensions_adaptor.h"
 
 class KDBusServicePrivate
 {
 public:
     KDBusServicePrivate()
-        : registered(false) {}
+        : registered(false),
+          exitValue(0)
+    {}
 
     QString generateServiceName()
     {
@@ -60,12 +63,14 @@ public:
     bool registered;
     QString serviceName;
     QString errorMessage;
+    int exitValue;
 };
 
 KDBusService::KDBusService(StartupOptions options, QObject *parent)
     : QObject(parent), d(new KDBusServicePrivate)
 {
     new KDBusServiceAdaptor(this);
+    new KDBusServiceExtensionsAdaptor(this);
     QDBusConnectionInterface *bus = 0;
 
     if (!QDBusConnection::sessionBus().isConnected() || !(bus = QDBusConnection::sessionBus().interface())) {
@@ -103,9 +108,9 @@ KDBusService::KDBusService(StartupOptions options, QObject *parent)
 
                 // TODO getter for startup id in qapp (documented to be empty after showing the first window)
                 // platform_data.insert("desktop-startup-id", ?);
-                QDBusReply<void> reply = iface.call(QLatin1String("Activate"), platform_data);
+                QDBusReply<int> reply = iface.call(QLatin1String("CommandLine"), QCoreApplication::arguments(), platform_data);
                 if (reply.isValid()) {
-                    exit(0);
+                    exit(reply.value());
                 } else {
                     d->errorMessage = reply.error().message();
                 }
@@ -143,6 +148,11 @@ QString KDBusService::errorMessage() const
     return d->errorMessage;
 }
 
+void KDBusService::setExitValue(int value)
+{
+    d->exitValue = value;
+}
+
 void KDBusService::unregister()
 {
     QDBusConnectionInterface *bus = 0;
@@ -155,7 +165,7 @@ void KDBusService::unregister()
 void KDBusService::Activate(const QVariantMap &platform_data)
 {
     // TODO (via hook) KStartupInfo::setStartupId(platform_data.value("desktop-startup-id"))
-    emit activateRequested();
+    emit activateRequested(QStringList());
     // TODO (via hook) KStartupInfo::appStarted(platform_data.value("desktop-startup-id"))
 }
 
@@ -173,4 +183,13 @@ void KDBusService::ActivateAction(const QString &action_name, const QVariantList
     const QVariant param = maybeParameter.count() == 1 ? maybeParameter.first() : QVariant();
     emit activateActionRequested(action_name, param);
     // TODO (via hook) KStartupInfo::appStarted(platform_data.value("desktop-startup-id"))
+}
+
+int KDBusService::CommandLine(const QStringList &arguments, const QVariantMap &platform_data)
+{
+    d->exitValue = 0;
+    // TODO (via hook) KStartupInfo::setStartupId(platform_data.value("desktop-startup-id"))
+    emit activateRequested(arguments);
+    // TODO (via hook) KStartupInfo::appStarted(platform_data.value("desktop-startup-id"))
+    return d->exitValue;
 }

@@ -48,15 +48,19 @@ class KDBusServicePrivate;
  *
  * In Unique mode, only one instance of this application can ever run.
  * The first instance of the application registers with D-Bus without the PID,
- * and any attempt to run the application again will call the D-Bus method
- * "Activate" in the running instance, and then quit.
+ * and any attempt to run the application again will cause the
+ * activateRequested() signal to be emitted in the already-running instance; the
+ * duplicate instance will then quit.
  *
- * In order to allow for activation over D-Bus, applications should connect to
- * the signals emitted by this class.  In particular, the activateRequested()
- * signal should normally be connected to a slot that raises the main window of
- * the application.  This is particularly important for Unique-mode
- * applications, but the activation interface will also be exported to D-Bus for
- * Multiple-mode applications.
+ * Unique-mode applications should usually delay parsing command-line arguments
+ * until after creating a KDBusService object; that way they know they are the
+ * original instance of the application.
+ *
+ * Applications that set the D-Bus activation entries in their desktop files
+ * should use Unique mode and connect to the signals emitted by this class.
+ * Note that the D-Bus interface is exported for Multiple-mode applications as
+ * well, so it also makes sense for such applications to connect to the signals
+ * emitted by this class.
  *
  * @note In order to avoid a race, the application should export its objects to
  * D-Bus before allowing the event loop to run (for example, by calling
@@ -154,18 +158,44 @@ public:
      */
     QString errorMessage() const;
 
+    /**
+     * Sets the exit value to be used for a duplicate instance.
+     *
+     * If this is a @c Unique application, a slot connected to
+     * activateRequested() can use this to specify a non-zero exit value for the
+     * duplicate instance.  This would typically be done if invalid command-line
+     * arguments are passed.
+     *
+     * Note that this will only work if the signal-slot connection type is
+     * Qt::DirectConnection.
+     *
+     * @param value  The exit value for the duplicate instance.
+     */
+    void setExitValue(int value);
+
 Q_SIGNALS:
     /**
      * Signals that the application is to be activated.
      *
-     * In a @c Unique application, this signal will typically be emitted in the
-     * first instance of the application to be run when a second instance is
-     * run.
+     * If this is a @c Unique application, when KDBusService is constructed in
+     * subsequent instances of the application (ie: when the executable is run
+     * when an instance is already running), it will cause this signal to be
+     * emitted in the already-running instance (with the arguments passed to the
+     * duplicate instance), and the duplicate instance will then exit.
+     *
+     * If this application's desktop file indicates that it supports D-Bus
+     * activation, a command launcher may also call the Activate() D-Bus method
+     * to trigger this signal.  In this case, @p args will be empty.
      *
      * In single-window applications, the connected signal should typically
      * raise the window.
+     *
+     * @param arguments  The arguments the executable was called with.
+     *                   See QCoreApplication::arguments().
+     *
+     * @see setExitValue()
      */
-    void activateRequested();
+    void activateRequested(const QStringList &arguments);
 
     /**
      * Signals that one or more files should be opened in the application.
@@ -197,6 +227,9 @@ private:
     void Open(const QStringList &uris, const QVariantMap &platform_data);
     void ActivateAction(const QString &action_name, const QVariantList &maybeParameter, const QVariantMap &platform_data);
     friend class KDBusServiceAdaptor;
+    // org.kde.Application
+    int CommandLine(const QStringList &arguments, const QVariantMap &platform_data);
+    friend class KDBusServiceExtensionsAdaptor;
 
 private:
     KDBusServicePrivate * const d;

@@ -7,7 +7,18 @@ set(libkdbusaddons_SRCS
     kdeinit_interface.cpp
 )
 
-qt5_add_dbus_adaptor(libkdbusaddons_SRCS org.freedesktop.Application.xml kdbusservice.h KDBusService kdbusservice_adaptor KDBusServiceAdaptor)
+qt5_add_dbus_adaptor(libkdbusaddons_SRCS
+   org.freedesktop.Application.xml
+   kdbusservice.h
+   KDBusService
+   kdbusservice_adaptor
+   KDBusServiceAdaptor)
+qt5_add_dbus_adaptor(libkdbusaddons_SRCS
+   org.kde.KDBusService.xml
+   kdbusservice.h
+   KDBusService
+   kdbusserviceextensions_adaptor
+   KDBusServiceExtensionsAdaptor)
 
 add_library(KDBusAddons ${libkdbusaddons_SRCS})
 generate_export_header(KDBusAddons)

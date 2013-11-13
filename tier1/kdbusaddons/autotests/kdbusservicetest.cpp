@@ -20,11 +20,12 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <QtCore/QCoreApplication>
-#include <QtCore/QDebug>
-#include <QtCore/QFile>
-#include <QtCore/QProcess>
-#include <QtCore/QTimer>
+#include <QCoreApplication>
+#include <QDebug>
+#include <QFile>
+#include <QMetaObject>
+#include <QProcess>
+#include <QTimer>
 
 #include <kdbusservice.h>
 
@@ -34,29 +35,69 @@ class TestObject : public QObject
 {
     Q_OBJECT
 public:
-    TestObject()
-        : m_callCount(0) { }
+    TestObject(KDBusService *service)
+        : m_callCount(0),
+          m_service(service)
+    {}
 
     int callCount() const { return m_callCount; }
 
 private Q_SLOTS:
-    void slotActivateRequested()
+    void slotActivateRequested(const QStringList &args)
     {
-        qDebug();
+        qDebug() << "Application executed with args" << args;
 
         ++m_callCount;
 
-        if (m_callCount == 2) { // OK, all done, quit
+        if (m_callCount == 1) {
+            Q_ASSERT(args.count() == 1);
+            Q_ASSERT(args.at(0) == QLatin1String("dummy call"));
+        } else if (m_callCount == 2) {
+            Q_ASSERT(args.count() == 2);
+            Q_ASSERT(args.at(1) == QLatin1String("bad call"));
+            m_service->setExitValue(4);
+        } else if (m_callCount == 3) {
+            Q_ASSERT(args.count() == 3);
+            Q_ASSERT(args.at(1) == QLatin1String("real call"));
+            Q_ASSERT(args.at(2) == QLatin1String("second arg"));
+            // OK, all done, quit
             QCoreApplication::instance()->quit();
         }
     }
 
-    void executeNewChild()
+    void slotProcessFinished(int exitCode, QProcess::ExitStatus exitStatus)
+    {
+        Q_UNUSED(exitStatus)
+        qDebug() << "Process exited with code" << exitCode;
+        if (m_callCount == 2) {
+            Q_ASSERT(exitCode == 4);
+            secondCall();
+        }
+    }
+
+    void firstCall()
+    {
+        QStringList args;
+        args << "bad call";
+        executeNewChild(args);
+    }
+
+    void secondCall()
+    {
+        QStringList args;
+        args << "real call" << "second arg";
+        executeNewChild(args);
+    }
+
+private:
+    void executeNewChild(const QStringList &args)
     {
         qDebug();
 
         // Duplicated from kglobalsettingstest.cpp - make a shared helper method?
         QProcess* proc = new QProcess(this);
+        connect(proc, SIGNAL(finished(int,QProcess::ExitStatus)),
+                this, SLOT(slotProcessFinished(int,QProcess::ExitStatus)));
         QString appName = "kdbusservicetest";
 #ifdef Q_OS_WIN
         appName+= ".exe";
@@ -68,11 +109,11 @@ private Q_SLOTS:
             appName = "./" + appName;
         }
 #endif
-        proc->startDetached(appName);
+        proc->start(appName, args);
     }
 
-private:
     int m_callCount;
+    KDBusService *m_service;
 };
 
 
@@ -84,24 +125,28 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationDomain("kde.org");
 
     KDBusService service(KDBusService::Unique);
-    TestObject testObject;
-    QObject::connect(&service, SIGNAL(activateRequested()), &testObject, SLOT(slotActivateRequested()));
+    TestObject testObject(&service);
+    QObject::connect(&service, SIGNAL(activateRequested(QStringList)),
+                     &testObject, SLOT(slotActivateRequested(QStringList)));
 
     // Testcase for the problem coming from the old fork-on-startup solution:
     // the "Activate" D-Bus call would time out if the app took too much time
     // to be ready.
     //printf("Sleeping.\n");
     //sleep(200);
+    QStringList args;
+    args << "dummy call";
 
-    QTimer::singleShot( 0, &service, SIGNAL(activateRequested()) );
-    QTimer::singleShot( 400, &testObject, SLOT(executeNewChild()) );
+    QMetaObject::invokeMethod(&service, "activateRequested",
+            Qt::QueuedConnection, Q_ARG(QStringList,args) );
+    QTimer::singleShot( 400, &testObject, SLOT(firstCall()) );
 
     qDebug() << "Running.";
     a.exec();
     qDebug() << "Terminating.";
 
-    Q_ASSERT(testObject.callCount() == 2);
-    const bool ok = testObject.callCount() == 2;
+    Q_ASSERT(testObject.callCount() == 3);
+    const bool ok = testObject.callCount() == 3;
 
     return ok ? 0 : 1;
 }
