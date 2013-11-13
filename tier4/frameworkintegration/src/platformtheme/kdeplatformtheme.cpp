@@ -30,11 +30,8 @@
 #include <QStringList>
 #include <QVariant>
 
-#include <kcolorscheme.h>
-#include <kconfiggroup.h>
 #include <kiconengine_p.h>
 #include <kiconloader.h>
-#include <ksharedconfig.h>
 #include <kstandardshortcut.h>
 
 KdePlatformTheme::KdePlatformTheme()
