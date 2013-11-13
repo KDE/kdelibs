@@ -35,11 +35,8 @@
 #include "kswitchlanguagedialog_p.h"
 
 #include <klanguagebutton.h>
-#include <kconfig.h>
-#include <kconfiggroup.h>
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
-#include <ksharedconfig.h>
 
 // Believe it or not we can't use KConfig from here
 // (we need KConfig during QCoreApplication ctor which is too early for it)
