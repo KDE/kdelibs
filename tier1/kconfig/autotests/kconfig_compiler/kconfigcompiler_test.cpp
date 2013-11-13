@@ -43,6 +43,7 @@ static CompilerTestSet testCases =
 	"test10.h", "test10.cpp",
 	"test11.h", "test11.cpp",
 	"test11a.h", "test11a.cpp",
+	"test12.h", "test12.cpp",
 	"test_dpointer.cpp", "test_dpointer.h",
 	"test_signal.cpp", "test_signal.h",
 	NULL
@@ -62,6 +63,7 @@ static CompilerTestSet testCasesToRun =
     "test9",
     "test10",
     "test11",
+    "test12",
     "test_dpointer",
     "test_signal",
     0
