@@ -41,7 +41,6 @@
 
 #include "kaboutapplicationdialog.h"
 #include "kaboutkdedialog_p.h"
-#include "kactioncollection.h"
 #include "kbugreport.h"
 #include "kswitchlanguagedialog_p.h"
 
