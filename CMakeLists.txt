@@ -38,3 +38,8 @@ add_subdirectory( tier4 )
 
 add_subdirectory( interfaces  )
 
+feature_summary(WHAT ALL
+                INCLUDE_QUIET_PACKAGES
+                FATAL_ON_MISSING_REQUIRED_PACKAGES
+)
+
