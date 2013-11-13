@@ -32,7 +32,6 @@
 #include <kdebug.h>
 #include <klocalizedstring.h>
 #include <kglobal.h>
-#include <kcmdlineargs.h>
 #include <klocale.h>
 #include <ktemporaryfile.h>
 #include <ktempdir.h>
