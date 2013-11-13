@@ -139,7 +139,6 @@ install(FILES
   ktoolbarpopupaction.h
   ktoolbarspaceraction.h
   kpagedialog.h
-  kpagedialog_p.h
   kpagemodel.h
   kpageview.h
   kpagewidget.h

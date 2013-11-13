@@ -28,15 +28,16 @@
 class KCModuleProxy;
 class KPageWidgetItem;
 
-class KCMultiDialogPrivate : public KPageDialogPrivate
+class KCMultiDialogPrivate
 {
     Q_DECLARE_PUBLIC(KCMultiDialog)
     protected:
         KCMultiDialogPrivate(KCMultiDialog *parent)
-            : KPageDialogPrivate(parent),
-              currentModule(0)
+            : currentModule(0), q_ptr(parent)
         {
         }
+
+        virtual ~KCMultiDialogPrivate() {}
 
         KCModuleProxy *currentModule;
 
@@ -55,6 +56,7 @@ class KCMultiDialogPrivate : public KPageDialogPrivate
         void _k_dialogClosed();
         void _k_updateHeader(bool use, const QString &message);
 
+        KCMultiDialog * q_ptr;
     private:
         void init();
         void apply();

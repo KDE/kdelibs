@@ -118,12 +118,14 @@ class KCMUTILS_EXPORT KCMultiDialog : public KPageDialog
      */
     void configCommitted( const QByteArray & componentName );
 
-    protected:
-        /**
-         * This constructor can be used by subclasses to provide a custom KPageWidget.
-         */
-        KCMultiDialog(KPageWidget *pageWidget, QWidget *parent, Qt::WindowFlags flags = 0);
-        KCMultiDialog(KCMultiDialogPrivate &dd, KPageWidget *pageWidget, QWidget *parent, Qt::WindowFlags flags = 0);
+  protected:
+    /**
+     * This constructor can be used by subclasses to provide a custom KPageWidget.
+     */
+    KCMultiDialog(KPageWidget *pageWidget, QWidget *parent, Qt::WindowFlags flags = 0);
+    KCMultiDialog(KCMultiDialogPrivate &dd, KPageWidget *pageWidget, QWidget *parent, Qt::WindowFlags flags = 0);
+
+    KCMultiDialogPrivate * const d_ptr;
 
   protected Q_SLOTS:
     /**

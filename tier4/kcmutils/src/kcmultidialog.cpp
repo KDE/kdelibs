@@ -246,25 +246,29 @@ void KCMultiDialogPrivate::init()
 }
 
 KCMultiDialog::KCMultiDialog( QWidget *parent )
-    : KPageDialog(*new KCMultiDialogPrivate(this), NULL, parent)
+    : KPageDialog(parent)
+    , d_ptr(new KCMultiDialogPrivate(this))
 {
     d_func()->init();
 }
 
 KCMultiDialog::KCMultiDialog(KPageWidget *pageWidget, QWidget *parent, Qt::WindowFlags flags)
-    : KPageDialog(*new KCMultiDialogPrivate(this), pageWidget, parent, flags)
+    : KPageDialog(pageWidget, parent, flags)
+    , d_ptr(new KCMultiDialogPrivate(this))
 {
     d_func()->init();
 }
 
 KCMultiDialog::KCMultiDialog(KCMultiDialogPrivate &dd, KPageWidget *pageWidget, QWidget *parent, Qt::WindowFlags flags)
-    : KPageDialog(dd, pageWidget, parent, flags)
+    : KPageDialog(pageWidget, parent, flags)
+    , d_ptr(&dd)
 {
     d_func()->init();
 }
 
 KCMultiDialog::~KCMultiDialog()
 {
+    delete d_ptr;
 }
 
 void KCMultiDialog::slotDefaultClicked()
