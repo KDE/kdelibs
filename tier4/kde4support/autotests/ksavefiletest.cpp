@@ -31,7 +31,6 @@
 
 #include <kdebug.h>
 #include <klocalizedstring.h>
-#include <kglobal.h>
 #include <klocale.h>
 #include <ktemporaryfile.h>
 #include <ktempdir.h>
