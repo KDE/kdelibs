@@ -33,6 +33,7 @@
 #include <QToolButton>
 #include <QApplication>
 #include <QDialogButtonBox>
+#include <QStandardPaths>
 
 #include <QDBusConnection>
 #include <QDBusInterface>

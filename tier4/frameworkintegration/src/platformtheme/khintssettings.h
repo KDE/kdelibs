@@ -26,7 +26,7 @@
 
 #include <qpa/qplatformtheme.h>
 
-#include <ksharedconfig.h>
+class KConfigGroup;
 
 class QPalette;
 class KHintsSettings : public QObject
