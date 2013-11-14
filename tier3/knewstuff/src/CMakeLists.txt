@@ -73,15 +73,15 @@ target_link_libraries(KNewStuff
   PUBLIC
     Qt5::Widgets
     ${LibAttica_LIBRARIES}     # For interacting with ocs providers, public for uploaddialog slots
-    KF5::XmlGui                     # For KActionCollection in knewstuffaction.h
+    KF5::XmlGui                # For KActionCollection in knewstuffaction.h
   PRIVATE
-    KF5::KIOCore                    # For network fetching operations
-    KF5::KIOWidgets                 # For KUrlRequester
+    KF5::KIOCore               # For network fetching operations
+    KF5::KIOWidgets            # For KUrlRequester
     KF5::KArchive              # For decompressing archives
     KF5::KI18n                 # For translations
-    KF5::ItemViews                  # For buttons on download dialog
+    KF5::ItemViews             # For buttons on download dialog
     KF5::KIconThemes           # For KIcon
-    KF5::KTextWidgets               # For KTextEdit in upload dialog
+    KF5::KTextWidgets          # For KTextEdit in upload dialog
 )
 
 generate_export_header(KNewStuff)
