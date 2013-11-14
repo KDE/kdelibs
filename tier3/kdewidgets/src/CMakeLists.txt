@@ -51,7 +51,7 @@ if(Qt5Designer_FOUND)
                                      BUILD_WITH_INSTALL_RPATH TRUE
                                      INSTALL_RPATH ${LIB_INSTALL_DIR}
                          )
-  endif(NOT WIN32)
+  endif()
 
   install(TARGETS kdewidgets  DESTINATION ${QT_PLUGIN_INSTALL_DIR}/designer )
 
@@ -82,13 +82,13 @@ if(Qt5Designer_FOUND)
                                      BUILD_WITH_INSTALL_RPATH TRUE
                                      INSTALL_RPATH ${LIB_INSTALL_DIR}
                          )
-  endif(NOT WIN32)
+  endif()
 
   install(TARGETS kdewebkitwidgets  DESTINATION ${QT_PLUGIN_INSTALL_DIR}/designer )
 
   endif() # webkit
 
-endif(Qt5Designer_FOUND)
+endif()
 
 ########### install files ###############
 

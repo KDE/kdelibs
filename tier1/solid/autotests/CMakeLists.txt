@@ -24,7 +24,7 @@ if(NOT WIN32 AND NOT APPLE)
    target_link_libraries(halbasictest Solid_static Qt5::DBus Qt5::Xml Qt5::Test)
 
    ecm_mark_as_test(halbasictest)
-endif(NOT WIN32 AND NOT APPLE)
+endif()
 
 ########### solidhwtest ###############
 

@@ -27,7 +27,7 @@ ecm_setup_version(5.0.0 VARIABLE_PREFIX KWALLET
 
 if (APPLE)
    find_package(Carbon REQUIRED)
-endif (APPLE)
+endif ()
 
 remove_definitions(-DQT_NO_CAST_TO_ASCII)
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)

@@ -2,13 +2,13 @@ if (WIN32)
   set(kdeinit_SRCS kinit_win.cpp ../klauncher_cmds.cpp )
   if(NOT WINCE)
     set(kdeinit_LIBS psapi)
-  else(NOT WINCE)
+  else()
     set(kdeinit_LIBS Toolhelp.lib)
-  endif(NOT WINCE)
-else (WIN32)
+  endif()
+else ()
   set(kdeinit_SRCS kinit.cpp proctitle.cpp ../klauncher_cmds.cpp )
   set(kdeinit_LIBS "")
-endif (WIN32)
+endif ()
 
 include_directories(${KInit_BINARY_DIR}) # for kinit_version.h
 
@@ -20,9 +20,9 @@ if (APPLE)
   set_target_properties(kdeinit5 PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.template)
   set_target_properties(kdeinit5 PROPERTIES MACOSX_BUNDLE_GUI_IDENTIFIER "org.kde.kdeinit5")
   set_target_properties(kdeinit5 PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "KDE Init")
-else (APPLE)
+else ()
   ecm_mark_nongui_executable(kdeinit5)
-endif (APPLE)
+endif ()
 
 target_link_libraries(kdeinit5 ${kdeinit_LIBS} ${KINIT_SOCKET_LIBRARY}
     Qt5::Gui #QFont::initialize
@@ -55,7 +55,7 @@ if (NOT WIN32)
 
   if (NOT X11_FOUND)
     target_compile_definitions(kdeinit5_wrapper -DNO_DISPLAY)
-  endif (NOT X11_FOUND)
+  endif ()
 
   install(TARGETS kdeinit5_wrapper ${INSTALL_TARGETS_DEFAULT_ARGS} )
 endif ()

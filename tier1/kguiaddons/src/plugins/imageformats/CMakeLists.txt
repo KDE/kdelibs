@@ -28,7 +28,7 @@ if(JASPER_FOUND)
     install(TARGETS kimg_jp2  DESTINATION ${QT_PLUGIN_INSTALL_DIR}/imageformats/ )
     install(FILES jp2.desktop DESTINATION  ${SERVICES_INSTALL_DIR}/qimageioplugins/ )
 
-endif(JASPER_FOUND)
+endif()
 
 ##################################
 
@@ -146,7 +146,7 @@ if(OPENEXR_FOUND)
     install(TARGETS kimg_exr  DESTINATION ${QT_PLUGIN_INSTALL_DIR}/imageformats/ )
     install(FILES exr.desktop DESTINATION  ${SERVICES_INSTALL_DIR}/qimageioplugins/ )
 
-endif(OPENEXR_FOUND)
+endif()
 
 ##################################
 

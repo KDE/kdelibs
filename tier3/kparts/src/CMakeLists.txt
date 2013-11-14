@@ -49,7 +49,7 @@ target_link_libraries(KParts PUBLIC  KF5::KIOWidgets #browserrun.h uses krun.h
 
 if(HAVE_NEPOMUK)
     target_link_libraries(KParts PRIVATE nepomuk nepomukutils)
-endif(HAVE_NEPOMUK)
+endif()
 
 set_target_properties(KParts PROPERTIES VERSION   ${KPARTS_VERSION_STRING}
                                         SOVERSION ${KPARTS_SOVERSION})

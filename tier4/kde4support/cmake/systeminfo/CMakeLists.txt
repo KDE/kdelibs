@@ -18,27 +18,27 @@ log("System version: ${CMAKE_SYSTEM_VERSION}")
 
 if(UNIX)
    log("This is some kind of UNIX environment")
-endif(UNIX)
+endif()
 
 if(WIN32)
    log("This is Windows")
-endif(WIN32)
+endif()
 
 if(APPLE)
    log("This is an Apple")
-endif(APPLE)
+endif()
 
 if(MINGW)
    log("This is MinGW")
-endif(MINGW)
+endif()
 
 if(CYGWIN)
    log("This is Cygwin")
-endif(CYGWIN)
+endif()
 
 if(BORLAND)
    log("This is for a Borland compiler")
-endif(BORLAND)
+endif()
 
 
 message(STATUS "-----------------------------------")

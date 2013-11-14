@@ -54,7 +54,7 @@ set_package_properties(PNG PROPERTIES DESCRIPTION "PNG image format support"
 
 if(NOT WIN32)
     find_package(Qt5 5.2.0 CONFIG REQUIRED X11Extras)
-endif(NOT WIN32)
+endif()
 
 
 remove_definitions(-DQT_NO_CAST_TO_ASCII)

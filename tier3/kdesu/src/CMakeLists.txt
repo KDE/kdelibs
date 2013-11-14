@@ -40,7 +40,7 @@ target_link_libraries(KDESu
 if(KDESU_USE_SUDO_DEFAULT)
    set_source_files_properties(su.cpp PROPERTIES 
                                COMPILE_FLAGS -DKDESU_USE_SUDO_DEFAULT)
-endif(KDESU_USE_SUDO_DEFAULT)
+endif()
 
 set_target_properties(KDESu PROPERTIES
   VERSION ${KDESU_VERSION_STRING}

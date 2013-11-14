@@ -1,11 +1,11 @@
 
 if(KDE_PLATFORM_FEATURE_BINARY_COMPATIBLE_FEATURE_REDUCTION)
     set(KPAC_NO_SOLID TRUE)
-endif(KDE_PLATFORM_FEATURE_BINARY_COMPATIBLE_FEATURE_REDUCTION)
+endif()
 
 if(NOT KPAC_NO_SOLID)
    set(KPAC_EXTRA_LIBS KF5::Solid)
-endif(NOT KPAC_NO_SOLID)
+endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${KDE4_ENABLE_EXCEPTIONS}")
 
@@ -38,7 +38,7 @@ if (Qt5Script_FOUND)
     # this needs -lresolv e.g on Slackware, but not on FreeBSD
     if (HAVE_RESOLV_LIBRARY)
       target_link_libraries(kded_proxyscout resolv)
-    endif (HAVE_RESOLV_LIBRARY)
+    endif ()
 
     install(TARGETS kded_proxyscout  DESTINATION ${PLUGIN_INSTALL_DIR} )
 endif()
@@ -51,11 +51,11 @@ ecm_mark_nongui_executable(kpac_dhcp_helper)
 if (HAVE_NSL_LIBRARY)
   # Assume Solaris
   target_link_libraries(kpac_dhcp_helper nsl)
-endif (HAVE_NSL_LIBRARY)
+endif ()
 
 if (HAVE_SOCKET_LIBRARY)
   target_link_libraries(kpac_dhcp_helper socket)
-endif (HAVE_SOCKET_LIBRARY)
+endif ()
 
 install(TARGETS kpac_dhcp_helper DESTINATION ${LIBEXEC_INSTALL_DIR} )
 

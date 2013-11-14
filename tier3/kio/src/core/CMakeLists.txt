@@ -15,7 +15,7 @@ set_package_properties(OpenSSL PROPERTIES DESCRIPTION "Support for secure networ
 if(OPENSSL_FOUND)
    set(KSSL_HAVE_SSL 1)
    include_directories(${OPENSSL_INCLUDE_DIR})
-endif(OPENSSL_FOUND)
+endif()
 
 set( KDELIBSUFF ${LIB_SUFFIX} )
 configure_file(kssl/ksslconfig.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/ksslconfig.h )
@@ -125,7 +125,7 @@ PRIVATE
 
 if(ACL_FOUND)
   target_link_libraries(KIOCore PRIVATE ${ACL_LIBS})
-endif(ACL_FOUND)
+endif()
 
 set_target_properties(KIOCore PROPERTIES VERSION ${KIO_VERSION_STRING}
                                        SOVERSION ${KIO_SOVERSION}

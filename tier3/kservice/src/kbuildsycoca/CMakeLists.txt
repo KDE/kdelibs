@@ -24,6 +24,6 @@ install(TARGETS kbuildsycoca5 ${INSTALL_TARGETS_DEFAULT_ARGS} )
 ########### install files ###############
 if (WIN32)
 install( FILES applications.menu  DESTINATION  ${SHARE_INSTALL_PREFIX}/xdg/menus )
-else (WIN32)
+else ()
 install( FILES applications.menu  DESTINATION  ${SYSCONF_INSTALL_DIR}/xdg/menus )
-endif (WIN32)
+endif ()

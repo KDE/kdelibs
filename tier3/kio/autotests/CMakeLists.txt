@@ -38,7 +38,7 @@ if(UNIX)
     klocalsockettest
     klocalsocketservertest
   )
-endif(UNIX)
+endif()
 
 macro(KIOWIDGETS_UNIT_TESTS)
   foreach(_testname ${ARGN})

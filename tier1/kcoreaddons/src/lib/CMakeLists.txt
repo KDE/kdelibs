@@ -18,12 +18,12 @@ if(NOT WIN32)
     set_source_files_properties(caching/kshareddatacache.cpp
         PROPERTIES COMPILE_FLAGS -fexceptions)
 
-else(NOT WIN32)
+else()
     set(kcoreaddons_OPTIONAL_SRCS
         caching/kshareddatacache_win.cpp
         io/kdirwatch_win.cpp
     )
-endif(NOT WIN32)
+endif()
 
 if (WIN32)
     set(kcoreaddons_OPTIONAL_SRCS
@@ -35,11 +35,11 @@ if (WIN32)
         LIST(APPEND kcoreaddons_OPTIONAL_SRCS
            util/kuser_win.cpp
         )
-    else(NOT WINCE)
+    else()
         LIST(APPEND kcoreaddons_OPTIONAL_SRCS
            util/kuser_wince.cpp
         )
-    endif(NOT WINCE)
+    endif()
 endif ()
 
 if (UNIX)
@@ -98,7 +98,7 @@ target_link_libraries(KCoreAddons
 )
 if(NOT WIN32)
     target_link_libraries(KCoreAddons PRIVATE pthread)
-else(NOT WIN32)
+else()
     target_link_libraries(KCoreAddons PRIVATE netapi32)
 endif()
 

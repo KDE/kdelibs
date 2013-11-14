@@ -31,7 +31,7 @@ if(NOT WIN32)
     find_package(X11)
     set_package_properties(X11 PROPERTIES TYPE OPTIONAL)
     set(HAVE_X11 ${X11_FOUND})
-endif(NOT WIN32)
+endif()
 
 if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
     find_package(ItemViews ${KF5_VERSION} REQUIRED)

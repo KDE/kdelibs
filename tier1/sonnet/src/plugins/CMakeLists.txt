@@ -46,5 +46,5 @@ set_package_properties(HUNSPELL PROPERTIES
 )
 if (HUNSPELL_FOUND)
    add_subdirectory( hunspell )
-endif (HUNSPELL_FOUND)
+endif ()
 

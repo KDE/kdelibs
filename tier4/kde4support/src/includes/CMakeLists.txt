@@ -50,7 +50,7 @@ install( FILES
   K3NamedCommand
   K3RFCDate
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE COMPONENT Devel)
-endif (QT_QT3SUPPORT_FOUND)
+endif ()
 
 install( FILES
   KACL
@@ -506,7 +506,7 @@ install( FILES
   KDiskFreeSpace
   KMimeTypeResolver
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE COMPONENT Devel)
-endif(NOT KDE_NO_DEPRECATED)
+endif()
 
 if (UNIX)
    if (QT_QT3SUPPORT_FOUND)
@@ -516,7 +516,7 @@ if (UNIX)
         K3ProcessController
         K3ShellProcess
       DESTINATION ${INCLUDE_INSTALL_DIR}/KDE COMPONENT Devel)
-   endif (QT_QT3SUPPORT_FOUND)
+   endif ()
 
    install( FILES
      KDEsuClient
@@ -528,7 +528,7 @@ if (UNIX)
      StubProcess
      SuProcess
    DESTINATION ${INCLUDE_INSTALL_DIR}/KDE COMPONENT Devel)
-endif (UNIX)
+endif ()
 
 install( FILES
   ConversionCheck/QVconvertible
@@ -718,7 +718,7 @@ if(NOT KDE_NO_DEPRECATED)
 install( FILES
   KIO/PasswordDialog
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KIO COMPONENT Devel)
-endif(NOT KDE_NO_DEPRECATED)
+endif()
 
 
 install( FILES
@@ -736,7 +736,7 @@ install( FILES
   KNS/Installation
   KNS/KTranslatable
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KNS COMPONENT Devel)
-endif(NOT KDE_NO_DEPRECATED)
+endif()
 
 install( FILES
   KNS3/DownloadDialog

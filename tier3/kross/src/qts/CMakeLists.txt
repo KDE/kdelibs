@@ -14,7 +14,7 @@ target_link_libraries(krossqtsplugin
 )
 if (NOT CYGWIN)
     set_target_properties(krossqtsplugin PROPERTIES VERSION ${KROSS_VERSION_STRING} SOVERSION ${KROSS_SOVERSION})
-endif (NOT CYGWIN)
+endif ()
 
 install(TARGETS krossqtsplugin DESTINATION ${QT_PLUGIN_INSTALL_DIR}/script)
 

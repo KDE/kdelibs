@@ -89,7 +89,7 @@ if(NOT KDE_NO_DEPRECATED)
   target_link_libraries(klibloadertestmodule KDE4Support KF5::KI18n Qt5::Test KF5::KService KF5::KCoreAddons)
 
   set_target_properties(klibloadertestmodule PROPERTIES SKIP_BUILD_RPATH FALSE BUILD_WITH_INSTALL_RPATH FALSE)
-endif(NOT KDE_NO_DEPRECATED)
+endif()
 
 ########### module for klibloadertest4 ###############
 

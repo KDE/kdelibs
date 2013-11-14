@@ -44,7 +44,7 @@ file(MAKE_DIRECTORY
 
 if(WIN32)
     add_definitions(-DYY_NO_UNISTD_H)
-endif(WIN32)
+endif()
 
 if(WIN32)
    set(solid_LIB_SRCS networking_win.cpp)
@@ -160,10 +160,10 @@ if(NOT APPLE)
   else ()
     if(NOT HUPNP_ENABLED)
         message(STATUS "To have UPnP support, explicitly enable HUPNP_ENABLED in the cmake cache")
-    endif(NOT HUPNP_ENABLED)
+    endif()
     set(HUPNP_FOUND false)
   endif ()
-endif(NOT APPLE)
+endif()
 
 if(NOT WIN32 AND NOT APPLE)
 #   message(STATUS "Building Solid KUPnP backend." )
@@ -211,7 +211,7 @@ if(NOT WIN32 AND NOT APPLE)
       set(UDEV_DETAILED_OUTPUT OFF CACHE BOOL "provide extended output regarding udev events")
       if(UDEV_DETAILED_OUTPUT)
          add_definitions(-DUDEV_DETAILED_OUTPUT)
-      endif(UDEV_DETAILED_OUTPUT)
+      endif()
 
       # check for media-player-info (runtime-only optional dependency)
       find_package(MediaPlayerInfo)
@@ -221,7 +221,7 @@ if(NOT WIN32 AND NOT APPLE)
          URL "http://www.freedesktop.org/wiki/Software/media-player-info"
          TYPE RUNTIME
       )
-   endif( UDEV_FOUND )
+   endif()
 
 
    message(STATUS "Building Solid HAL backend." )
@@ -280,7 +280,7 @@ if(NOT WIN32 AND NOT APPLE)
            backends/udisks2/udisksgenericinterface.cpp
            backends/udisks2/dbus/manager.cpp
            )
-       else ( WITH_SOLID_UDISKS2 )
+       else ()
            message(STATUS "Building Solid UDisks backend." )
            set(solid_LIB_SRCS ${solid_LIB_SRCS}
            backends/udisks/udisksmanager.cpp
@@ -294,8 +294,8 @@ if(NOT WIN32 AND NOT APPLE)
            backends/udisks/udisksstorageaccess.cpp
            backends/udisks/udisksgenericinterface.cpp
           )
-       endif ( WITH_SOLID_UDISKS2 )
-   endif (CMAKE_SYSTEM_NAME MATCHES Linux AND UDEV_FOUND)
+       endif ()
+   endif ()
 
    message(STATUS "Building Solid fstab backend." )
    set(solid_LIB_SRCS ${solid_LIB_SRCS}
@@ -307,7 +307,7 @@ if(NOT WIN32 AND NOT APPLE)
       backends/fstab/fstabwatcher.cpp
    )
 
-endif(NOT WIN32 AND NOT APPLE)
+endif()
 
 include(CheckIncludeFiles)
 include(CheckFunctionExists)
@@ -350,7 +350,7 @@ if(APPLE)
       backends/iokit/iokitserialinterface.cpp
       backends/iokit/iokitbattery.cpp
    )
-endif(APPLE)
+endif()
 
 if(WIN32)
 
@@ -361,11 +361,11 @@ if(WIN32)
        if(HAVE_WBEM AND WBEM_LIBRARIES)
           set(HAVE_WBEM True)
           message(STATUS "Found wbemuuid library: ${WBEM_LIBRARIES}")
-       else(HAVE_WBEM AND WBEM_LIBRARIES)
+       else()
           set(HAVE_WBEM False)
           set(WITH_SOLID_WMI False)
-      endif(HAVE_WBEM AND WBEM_LIBRARIES)
-   endif(WITH_SOLID_WMI)
+      endif()
+   endif()
    if(WITH_SOLID_WMI)
        add_definitions(-DWITH_SOLID_WMI)
        message(STATUS "-- Building Solid WMI backend." )
@@ -393,7 +393,7 @@ if(WIN32)
           backends/wmi/wmivideo.cpp
           backends/wmi/wmivolume.cpp
        )
-    else(WITH_SOLID_WMI)
+    else()
        message(STATUS "-- Building Solid Windows backend." )
        set(solid_LIB_SRCS ${solid_LIB_SRCS}
        backends/win/winblock.cpp
@@ -411,8 +411,8 @@ if(WIN32)
        backends/win/winbattery.cpp
        backends/win/winacadapter.cpp
        )
-    endif(WITH_SOLID_WMI)
-endif(WIN32)
+    endif()
+endif()
 
 set_source_files_properties( org.freedesktop.PowerManagement.xml
                              org.freedesktop.PowerManagement.Inhibit.xml

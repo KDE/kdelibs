@@ -9,9 +9,9 @@ configure_file(config-kioslave-file.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-k
 
 if(WIN32)
   set(kio_file_PART_SRCS file.cpp file_win.cpp )
-else(WIN32)
+else()
   set(kio_file_PART_SRCS file.cpp file_unix.cpp )
-endif(WIN32)
+endif()
 
 find_package(ACL)
 set(HAVE_LIBACL ${ACL_FOUND})
@@ -45,11 +45,11 @@ endif ()
 
 if (HAVE_VOLMGT AND CMAKE_SYSTEM_NAME MATCHES SunOS)
     target_link_libraries(kio_file -lvolmgt)
-endif (HAVE_VOLMGT AND CMAKE_SYSTEM_NAME MATCHES SunOS)
+endif ()
 
 if(ACL_FOUND)
    target_link_libraries(kio_file ${ACL_LIBS})
-endif(ACL_FOUND)
+endif()
 
 install(TARGETS kio_file  DESTINATION ${PLUGIN_INSTALL_DIR} )
 

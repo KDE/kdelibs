@@ -51,7 +51,7 @@ endif()
 
 if(X11_XTest_FOUND)
   target_link_libraries(KNotifications PRIVATE ${X11_XTest_LIB})
-endif(X11_XTest_FOUND)
+endif()
 
 if(HAVE_DBUSMENUQT)
   target_link_libraries(KNotifications PRIVATE ${DBusMenuQt5_LIBRARIES})

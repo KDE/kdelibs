@@ -29,9 +29,9 @@ set(HAVE_X11 ${X11_FOUND})
 # used by 4 executables in this module
 if(HAVE_SOCKET_LIBRARY)
   set(KINIT_SOCKET_LIBRARY socket)
-else(HAVE_SOCKET_LIBRARY)
+else()
   set(KINIT_SOCKET_LIBRARY)
-endif(HAVE_SOCKET_LIBRARY)
+endif()
 
 set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KInit")
 

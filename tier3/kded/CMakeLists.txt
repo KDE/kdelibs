@@ -24,7 +24,7 @@ ecm_setup_version(
 
 if(NOT WIN32)
     find_package(Qt5 5.2.0 CONFIG REQUIRED DBus)
-endif(NOT WIN32)
+endif()
 
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 

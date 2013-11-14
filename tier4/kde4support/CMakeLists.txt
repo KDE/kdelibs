@@ -15,7 +15,7 @@ find_package(Qt5 ${QT_REQUIRED_VERSION} CONFIG REQUIRED Network Widgets DBus Tes
 
 if(NOT WIN32)
     find_package(Qt5 ${QT_REQUIRED_VERSION} CONFIG REQUIRED X11Extras)
-endif(NOT WIN32)
+endif()
 
 find_package(Strigi 0.6.3 QUIET)
 set_package_properties(Strigi PROPERTIES DESCRIPTION "Desktop indexing and search support"
@@ -34,7 +34,7 @@ if(X11_FOUND)
 endif()
 if (APPLE)
    find_package(Carbon REQUIRED)
-endif (APPLE)
+endif ()
 
 include(FeatureSummary)
 include(ECMSetupVersion)

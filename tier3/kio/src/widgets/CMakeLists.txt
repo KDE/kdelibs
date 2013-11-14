@@ -106,7 +106,7 @@ target_link_libraries(KIOWidgets
 
 if(ACL_FOUND)
    target_link_libraries(KIOWidgets PRIVATE ${ACL_LIBS})
-endif(ACL_FOUND)
+endif()
 
 set_target_properties(KIOWidgets PROPERTIES VERSION ${KIO_VERSION_STRING}
                                           SOVERSION ${KIO_SOVERSION}

@@ -24,11 +24,11 @@ find_package(Qt5 ${REQUIRED_QT_VERSION} CONFIG REQUIRED Widgets)
 
 if(NOT WIN32)
     find_package(Qt5 ${REQUIRED_QT_VERSION} CONFIG REQUIRED X11Extras DBus)
-endif(NOT WIN32)
+endif()
 
 if (APPLE)
    find_package(Carbon REQUIRED)
-endif (APPLE)
+endif ()
 
 find_package(X11)
 find_package(XCB COMPONENTS XCB SYNC)
@@ -44,7 +44,7 @@ if(X11_FOUND)
 
     if(NOT X11_XSync_FOUND AND NOT X11_Xscreensaver_FOUND)
         message(FATAL_ERROR "\nNeither the XSync (libXext) nor XScreensaver (libXss) development package was found.\nPlease install one of them (XSync is recommended)\n")
-    endif(NOT X11_XSync_FOUND AND NOT X11_Xscreensaver_FOUND)
+    endif()
 
     set(HAVE_XSCREENSAVER ${X11_Xscreensaver_FOUND})
     set(HAVE_XTEST ${X11_XTest_FOUND})

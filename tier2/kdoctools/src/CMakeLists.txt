@@ -7,14 +7,14 @@ configure_file(${_custom_dtd_kdex}.cmake ${CMAKE_CURRENT_BINARY_DIR}/${_custom_d
 if(NOT WIN32)
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${_custom_dtd_kdex}
             DESTINATION ${DATA_INSTALL_DIR}/ksgmltools2/customization/dtd )
-else(NOT WIN32)
+else()
     install(CODE
         "FILE(RELATIVE_PATH DOCBOOKXML_CURRENTDTD_DIR \${CMAKE_INSTALL_PREFIX}/${DATA_INSTALL_DIR}/ksgmltools2/customization/dtd ${DOCBOOKXML_CURRENTDTD_DIR})
         CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/${_custom_dtd_kdex}.cmake ${CMAKE_CURRENT_BINARY_DIR}/${_custom_dtd_kdex}.install)"
     )
     get_filename_component(_custom_dtd_kdex_name ${_custom_dtd_kdex} NAME)
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${_custom_dtd_kdex}.install DESTINATION ${DATA_INSTALL_DIR}/ksgmltools2/customization/dtd RENAME ${_custom_dtd_kdex_name})
-endif(NOT WIN32)
+endif()
 
 # needed by KIO, need to export it
 add_library(XsltKde STATIC xslt.cpp xslt_kde.cpp)
@@ -70,12 +70,12 @@ foreach( _kdeincludexslt ${_kdeincludexslt_ALL} )
     if(NOT WIN32)
         install(FILES ${_kdeincludexslt_binarypath}
                 DESTINATION ${DATA_INSTALL_DIR}/ksgmltools2/customization )
-    else(NOT WIN32)
+    else()
         install(CODE
             "FILE(RELATIVE_PATH DOCBOOKXSL_DIR \${CMAKE_INSTALL_PREFIX}/${DATA_INSTALL_DIR}/ksgmltools2/customization ${DOCBOOKXSL_DIR})
             CONFIGURE_FILE( ${_kdeincludexslt} ${_kdeincludexslt_binarypath}.install )")
         install(FILES ${_kdeincludexslt_binarypath}.install DESTINATION ${DATA_INSTALL_DIR}/ksgmltools2/customization RENAME ${_kdeincludexslt_out})
-    endif(NOT WIN32)
+    endif()
 endforeach( _kdeincludexslt ${_kdeincludexslt_ALL} )
 
 

@@ -23,16 +23,16 @@ if(GSSAPI_FOUND)
     set(HAVE_LIBGSSAPI 1)
     if(GSSAPI_FLAVOR STREQUAL "MIT")
         set(GSSAPI_MIT 1)
-    else(GSSAPI_FLAVOR STREQUAL "MIT")
+    else()
         set(GSSAPI_MIT 0)
-    endif(GSSAPI_FLAVOR STREQUAL "MIT")
+    endif()
 
     include_directories( ${GSSAPI_INCS} )
 
-else(GSSAPI_FOUND)
+else()
     set(HAVE_LIBGSSAPI 0)
     set(GSSAPI_MIT 0)
-endif(GSSAPI_FOUND)
+endif()
 
 configure_file(config-gssapi.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-gssapi.h )
 
@@ -92,7 +92,7 @@ target_link_libraries(kio_http
 )
 if(GSSAPI_FOUND)
   target_link_libraries(kio_http ${GSSAPI_LIBS} )
-endif(GSSAPI_FOUND)
+endif()
 
 install(TARGETS  kio_http  DESTINATION ${PLUGIN_INSTALL_DIR} )
 

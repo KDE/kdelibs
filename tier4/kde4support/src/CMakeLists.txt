@@ -2,7 +2,7 @@ add_subdirectory(includes)
 
 if(NOT HAVE_NEPOMUK)
    set(KIO_NO_NEPOMUK TRUE)
-endif(NOT HAVE_NEPOMUK)
+endif()
 
 if(NOT Strigi_FOUND)
     set(KIO_NO_STRIGI TRUE)
@@ -10,13 +10,13 @@ else()
     include_directories(${STRIGI_INCLUDE_DIR} ${STRIGI_INCLUDE_DIRS} ${LIBSTREAMANALYZER_INCLUDE_DIRS})
     add_subdirectory( kio/dummyanalyzers )
     set(KIO_EXTRA_LIBS ${KIO_EXTRA_LIBS} ${STRIGI_STREAMANALYZER_LIBRARY} ${STRIGI_STREAMS_LIBRARY})
-endif(NOT Strigi_FOUND)
+endif()
 
 if(NOT KIO_NO_NEPOMUK)
     include_directories(
        ${SOPRANO_INCLUDE_DIR}
     )
-endif(NOT KIO_NO_NEPOMUK)
+endif()
 
 
 find_package(OpenSSL)
@@ -28,7 +28,7 @@ set_package_properties(OpenSSL PROPERTIES DESCRIPTION "Support for secure networ
 if(OPENSSL_FOUND)
    set(KSSL_HAVE_SSL 1)
    include_directories(${OPENSSL_INCLUDE_DIR})
-endif(OPENSSL_FOUND)
+endif()
 
 add_subdirectory( kioslave )
 add_subdirectory( kssl/kssl )
@@ -312,13 +312,13 @@ endif ()
 
 if(NOT KIO_NO_NEPOMUK)
   target_link_libraries(KDE4Support ${KDE4_NEPOMUK_LIBRARY} nepomukquery nepomukutils)
-endif(NOT KIO_NO_NEPOMUK)
+endif()
 
 if(NOT KIO_NO_NEPOMUK)
     add_executable(kfilemetadatareader kio/kfilemetadatareaderprocess.cpp)
     target_link_libraries(kfilemetadatareader ${KDE4_NEPOMUK_LIBRARY} nepomukutils KF5::KCoreAddons KF5::KI18n KDE4Support)
     install(TARGETS kfilemetadatareader ${INSTALL_TARGETS_DEFAULT_ARGS})
-endif(NOT KIO_NO_NEPOMUK)
+endif()
 
 set_target_properties(KDE4Support PROPERTIES VERSION ${KDE4SUPPORT_VERSION_STRING}
                                   SOVERSION ${KDE4SUPPORT_SOVERSION} )
@@ -332,14 +332,14 @@ if (WIN32)
     # CMAKE_CFG_INTDIR is the output subdirectory created e.g. by XCode and MSVC
     if (NOT WINCE)
         set(KDEWIDGETS_MAKEKDEWIDGETS_EXECUTABLE          ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/makekdewidgets )
-    else (NOT WINCE)
+    else ()
         set(KDEWIDGETS_MAKEKDEWIDGETS_EXECUTABLE          ${HOST_BINDIR}/${CMAKE_CFG_INTDIR}/makekdewidgets )
-    endif(NOT WINCE)
+    endif()
 
     set(KDEWIDGETS_MAKEKDEWIDGETS_EXECUTABLE          ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/makekdewidgets )
-else (WIN32)
+else ()
     set(KDEWIDGETS_MAKEKDEWIDGETS_EXECUTABLE          ${CMAKE_BINARY_DIR}/tier3/kdewidgets/src/makekdewidgets${CMAKE_EXECUTABLE_SUFFIX} )
-endif (WIN32)
+endif ()
 
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/kdedeprecated.cpp
   COMMAND "${KDEWIDGETS_MAKEKDEWIDGETS_EXECUTABLE}" -o ${CMAKE_CURRENT_BINARY_DIR}/kdedeprecated.cpp ${CMAKE_CURRENT_SOURCE_DIR}/kdedeprecated.widgets
@@ -372,7 +372,7 @@ if(NOT WIN32)
                                       BUILD_WITH_INSTALL_RPATH TRUE
                                       INSTALL_RPATH ${LIB_INSTALL_DIR}
                        )
-endif(NOT WIN32)
+endif()
 
 install(TARGETS kdedeprecated  DESTINATION ${QT_PLUGIN_INSTALL_DIR}/designer )
 
@@ -570,5 +570,5 @@ if (UNIX)
    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/make_fileshare_symlink.cmake "exec_program(${CMAKE_COMMAND} ARGS -E create_symlink fileshareset \"\$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/${LIBEXEC_INSTALL_DIR}/filesharelist\")\n")
    # and add it as post-install script to any of the installed targets, so it will be executed during "make install"
    set_target_properties(KDE4Support PROPERTIES POST_INSTALL_SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/make_fileshare_symlink.cmake)
-endif (UNIX)
+endif ()
 

@@ -44,7 +44,7 @@ if(NOT MSVC)
     #KJS KF5::KI18n
 
     ########### next target ###############
-endif(NOT MSVC)
+endif()
 
 #######################################
 
@@ -74,7 +74,7 @@ if(NOT MSVC)
     target_link_libraries(testkhtml_static KHtml XmlGui KTextWidgets KParts)
 
     ########### next target ###############
-endif(NOT MSVC)
+endif()
 
 # Note that testregression can't be compiled by default, it needs private Qt headers.
 # See also BUILDING-TESTREGRESSION
@@ -106,5 +106,5 @@ if (KHTML_BUILD_TESTREGRESSION)
     add_executable(testregressiongui ${testregressiongui_SRCS})
     ecm_mark_as_test(testregressiongui)
     target_link_libraries(testregressiongui KHtml)
-endif (KHTML_BUILD_TESTREGRESSION)
+endif ()
 

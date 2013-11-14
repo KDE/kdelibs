@@ -32,7 +32,7 @@ elseif (APPLE)
    set(kidletime_LIB_SRCS ${kidletime_LIB_SRCS} macpoller.cpp)
 elseif (WIN32)
    set(kidletime_LIB_SRCS ${kidletime_LIB_SRCS} windowspoller.cpp)
-endif (X11_FOUND)
+endif ()
 
 add_library(KIdleTime ${kidletime_LIB_SRCS})
 generate_export_header(KIdleTime)

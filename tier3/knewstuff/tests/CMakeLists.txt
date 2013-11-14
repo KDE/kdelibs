@@ -57,5 +57,5 @@ if(NOT KDE_NO_DEPRECATED)
 
 #target_link_libraries(kdxspreview knewstuff2)
 #install(FILES kdxspreviewrc DESTINATION ${CONFIG_INSTALL_DIR})
-endif(NOT KDE_NO_DEPRECATED)
+endif()
 

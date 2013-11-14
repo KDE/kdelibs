@@ -24,11 +24,11 @@ include(KDECMakeSettings)
 
 if(NOT WIN32)
     find_package(Qt5 ${REQUIRED_QT_VERSION} CONFIG REQUIRED X11Extras)
-endif(NOT WIN32)
+endif()
 
 if (APPLE)
    find_package(Carbon REQUIRED)
-endif (APPLE)
+endif ()
 
 find_package(X11)
 set(HAVE_X11 ${X11_FOUND})

@@ -55,10 +55,10 @@ add_subdirectory(ioslaves)
 
 if ( NOT WINCE )
     add_subdirectory(kssld)
-endif ( NOT WINCE )
+endif ()
 
 if(NOT WIN32)
   # arpa/nameser.h
   add_subdirectory(kpac)
-endif(NOT WIN32)
+endif()
 

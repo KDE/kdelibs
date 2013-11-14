@@ -28,7 +28,7 @@ ecm_add_test(httpauthenticationtest.cpp
 
 if(GSSAPI_FOUND)
   target_link_libraries(kioslave-httpauthenticationtest ${GSSAPI_LIBS})
-endif(GSSAPI_FOUND)
+endif()
 
 set(httpobjecttest_SRCS
    httpobjecttest.cpp
@@ -52,7 +52,7 @@ ecm_add_test(${httpobjecttest_SRCS}
    KF5::Solid)
 if(GSSAPI_FOUND)
   target_link_libraries(kioslave-httpobjecttest ${GSSAPI_LIBS})
-endif(GSSAPI_FOUND)
+endif()
 
 add_executable(httpfiltertest httpfiltertest.cpp ../httpfilter.cpp)
 target_link_libraries(httpfiltertest Qt5::Test KF5::KArchive ${ZLIB_LIBRARIES})

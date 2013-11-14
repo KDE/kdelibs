@@ -35,7 +35,7 @@ if(PCRE_FOUND AND NOT KJS_FORCE_DISABLE_PCRE)
       message(FATAL_ERROR "Your libPCRE is too old. KJS requires at least PCRE4.5")
    endif ()
 
-else (PCRE_FOUND  AND NOT  KJS_FORCE_DISABLE_PCRE)
+else ()
    # if we're here, either PCRE support is disabled, or it's not found...
    # it better be disabled.
    if (NOT KJS_FORCE_DISABLE_PCRE)
@@ -50,14 +50,14 @@ else (PCRE_FOUND  AND NOT  KJS_FORCE_DISABLE_PCRE)
    if (NOT HAVE_REGEX_H)
       message(FATAL_ERROR "Neither the PCRE regular expression library nor the POSIX regex.h header have been found. Consider installing PCRE.")
    endif ()
-endif(PCRE_FOUND  AND NOT  KJS_FORCE_DISABLE_PCRE)
+endif()
 
 # The crosscompiling parts are commented out on purpose. Alex
 # if (CMAKE_CROSSCOMPILING)
 #    set(IMPORT_ICEMAKER_EXECUTABLE "${KDE_HOST_TOOLS_PATH}/ImportIcemakerExecutable.cmake" CACHE FILEPATH "Point it to the export file of icemaker from a native build")
 #    include(${IMPORT_ICEMAKER_EXECUTABLE})
 #    set(ICEMAKER_EXECUTABLE icemaker)
-# else (CMAKE_CROSSCOMPILING)
+# else ()
 
    ########### icemaker, generates some tables for kjs/frostbyte ###############
    set(icemaker_SRCS
@@ -77,7 +77,7 @@ endif(PCRE_FOUND  AND NOT  KJS_FORCE_DISABLE_PCRE)
    set(ICEMAKER_EXECUTABLE icemaker)
 
 #    export(TARGETS icemaker FILE ${CMAKE_BINARY_DIR}/ImportIcemakerExecutable.cmake)
-# endif (CMAKE_CROSSCOMPILING)
+# endif ()
 
 # and the custom command
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/opcodes.h ${CMAKE_CURRENT_BINARY_DIR}/opcodes.cpp

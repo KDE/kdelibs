@@ -14,7 +14,7 @@ if( Qt5UiTools_FOUND )
        KF5::KI18n
     )
     install(TARGETS KrossModuleForms DESTINATION ${PLUGIN_INSTALL_DIR})
-endif( Qt5UiTools_FOUND )
+endif()
 
 ############################################
 # the kdetranslation module

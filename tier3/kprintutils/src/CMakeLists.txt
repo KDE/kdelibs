@@ -11,7 +11,7 @@ set(kprintutils_LIB_SRCS
   ${kprintutils_LIB_SRCS}
   kdeprintdialog.cpp
 )
-endif(NOT WINCE)
+endif()
 
 if (X11_FOUND)
 set(kprintutils_LIB_SRCS
@@ -24,7 +24,7 @@ set(kprintutils_UI
   ${kprintutils_UI}
   kcupsoptionspageswidget.ui
 )
-endif (X11_FOUND)
+endif ()
 
 qt5_wrap_ui(kprintutils_LIB_SRCS ${kprintutils_UI})
 
