@@ -518,7 +518,8 @@ QStringList KIconTheme::list()
             if ((*it2 == ".") || (*it2 == "..") || (*it2).startsWith(QLatin1String("default.")) ) {
                 continue;
             }
-            if (!QFile::exists(it + *it2 + "/index.desktop") && !QFile::exists(it + *it2 + "/index.theme")) {
+            if (!QFile::exists(it + QLatin1String('/') + *it2 + QLatin1String("/index.desktop")) &&
+                               !QFile::exists(it + QLatin1String('/') + *it2 + QLatin1String("/index.theme"))) {
                 continue;
             }
             KIconTheme oink(*it2);
