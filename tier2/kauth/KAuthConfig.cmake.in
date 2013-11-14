@@ -4,7 +4,4 @@ find_dependency(KCoreAddons "@KF5_VERSION@")
 
 include("${CMAKE_CURRENT_LIST_DIR}/KAuthTargets.cmake")
 
-
-get_target_property(KAuth_POLICY_GEN_EXECUTABLE  KF5::kauth_compiler  LOCATION)
-
 include("${CMAKE_CURRENT_LIST_DIR}/KAuthMacros.cmake")

@@ -37,6 +37,7 @@ set_target_properties(KAuth PROPERTIES VERSION   ${KAUTH_VERSION_STRING}
 if (NOT "${KDE4_AUTH_BACKEND_NAME}" STREQUAL "FAKE")
     # KAUTH_POLICY_GEN_SRCS has been generated from ConfigureChecks.cmake
     add_executable(kauth-policy-gen ${KAUTH_POLICY_GEN_SRCS})
+    add_executable(KF5::kauth-policy-gen ALIAS kauth-policy-gen)
 
     # KAUTH_POLICY_GEN_LIBRARIES has been generated from ConfigureChecks.cmake
     target_link_libraries( kauth-policy-gen PRIVATE ${KAUTH_POLICY_GEN_LIBRARIES} )
