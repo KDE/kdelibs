@@ -25,7 +25,7 @@
 
 #include <QWidget>
 
-#include "knewstuff3_export.h"
+#include "knewstuff_export.h"
 #include "entry.h"
 
 namespace KNS3
@@ -68,7 +68,7 @@ class DownloadWidgetPrivate;
  *
  * @since 4.5
  */
-class KNEWSTUFF3_EXPORT DownloadWidget :public QWidget
+class KNEWSTUFF_EXPORT DownloadWidget :public QWidget
 {
     Q_OBJECT
 

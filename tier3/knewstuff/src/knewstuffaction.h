@@ -18,7 +18,7 @@
 #ifndef KNEWSTUFF3ACTION_H
 #define KNEWSTUFF3ACTION_H
 
-#include "knewstuff3_export.h"
+#include "knewstuff_export.h"
 #include <QtCore/QString>
 
 class QObject;
@@ -41,7 +41,7 @@ namespace KNS3
  * @param name The name by which the action will be retrieved again from the collection.
  * @since 4.4
  */
-KNEWSTUFF3_EXPORT QAction *standardAction(const QString &what,
+KNEWSTUFF_EXPORT QAction *standardAction(const QString &what,
         const QObject *receiver,
         const char *slot,
         KActionCollection *parent,
@@ -61,7 +61,7 @@ KNEWSTUFF3_EXPORT QAction *standardAction(const QString &what,
  * @param name The name by which the action will be retrieved again from the collection.
  * @since 4.5
  */
-KNEWSTUFF3_EXPORT QAction *standardActionUpload(const QString &what,
+KNEWSTUFF_EXPORT QAction *standardActionUpload(const QString &what,
         const QObject *receiver,
         const char *slot,
         KActionCollection *parent,

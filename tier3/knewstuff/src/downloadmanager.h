@@ -18,7 +18,7 @@
 #ifndef KNEWSTUFF3_UI_DownloadManager_H
 #define KNEWSTUFF3_UI_DownloadManager_H
 
-#include "knewstuff3_export.h"
+#include "knewstuff_export.h"
 #include "entry.h"
 
 namespace KNS3
@@ -31,7 +31,7 @@ namespace KNS3
  * already installed items without showing the dialog.
  * @since 4.5
  */
-class KNEWSTUFF3_EXPORT DownloadManager :public QObject
+class KNEWSTUFF_EXPORT DownloadManager :public QObject
 {
     Q_OBJECT
 

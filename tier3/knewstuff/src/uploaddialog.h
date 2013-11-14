@@ -24,7 +24,7 @@
 #include <QDialog>
 #include <QtCore/QUrl>
 
-#include "knewstuff3_export.h"
+#include "knewstuff_export.h"
 
 namespace Attica {
     class BaseJob;
@@ -45,7 +45,7 @@ namespace KNS3
  *
  * @since 4.4
  */
-class KNEWSTUFF3_EXPORT UploadDialog : public QDialog
+class KNEWSTUFF_EXPORT UploadDialog : public QDialog
 {
     Q_OBJECT
 public:

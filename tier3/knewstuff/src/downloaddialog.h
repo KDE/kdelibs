@@ -25,7 +25,7 @@
 
 #include <QDialog>
 
-#include "knewstuff3_export.h"
+#include "knewstuff_export.h"
 #include "entry.h"
 
 namespace KNS3
@@ -68,7 +68,7 @@ class DownloadDialogPrivate;
  *
  * @since 4.4
  */
-class KNEWSTUFF3_EXPORT DownloadDialog : public QDialog
+class KNEWSTUFF_EXPORT DownloadDialog : public QDialog
 {
     Q_OBJECT
 

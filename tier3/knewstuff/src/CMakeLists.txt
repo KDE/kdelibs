@@ -1,6 +1,6 @@
-project(knewstuff3)
+project(KNewStuff)
 
-set(_INCDIR ${CMAKE_CURRENT_BINARY_DIR}/include/knewstuff3)
+set(_INCDIR ${CMAKE_CURRENT_BINARY_DIR}/include/KNewStuff)
 file(MAKE_DIRECTORY ${_INCDIR})
 
 file(GLOB _KNEWSTUFF3HEADERS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.h)
@@ -13,8 +13,8 @@ foreach(_KNEWSTUFF3HEADER ${_KNEWSTUFF3HEADERS})
         endif()
     endif()
 endforeach()
-if (NOT EXISTS ${_INCDIR}/knewstuff3_export.h)
-    file(WRITE ${_INCDIR}/knewstuff3_export.h "#include \"${CMAKE_CURRENT_BINARY_DIR}/knewstuff3_export.h\"\n")
+if (NOT EXISTS ${_INCDIR}/knewstuff_export.h)
+    file(WRITE ${_INCDIR}/knewstuff_export.h "#include \"${CMAKE_CURRENT_BINARY_DIR}/knewstuff_export.h\"\n")
 endif()
 
 add_definitions(-DKDE_DEFAULT_DEBUG_AREA=550)
@@ -22,14 +22,14 @@ remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
 find_package(LibAttica 1.0.0 NO_MODULE)
 set_package_properties(LibAttica PROPERTIES DESCRIPTION "A Qt library that implements the Open Collaboration Services API"
-                       PURPOSE "Support for Get Hot New Stuff in knewstuff3"
+                       PURPOSE "Support for Get Hot New Stuff in KNewStuff"
                        URL "https://projects.kde.org/attica"
                        TYPE REQUIRED
                       )
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/include)
 
-set(knewstuff3_SRCS
+set(KNewStuff_SRCS
     downloaddialog.cpp
     downloadwidget.cpp
     downloadmanager.cpp
@@ -60,15 +60,16 @@ set(knewstuff3_SRCS
     uploaddialog.cpp
 )
 
-qt5_wrap_ui(knewstuff3_SRCS
+qt5_wrap_ui(KNewStuff_SRCS
     downloadwidget.ui
     uploaddialog.ui
 )
 
-add_library(knewstuff3 ${knewstuff3_SRCS} )
+add_library(KNewStuff ${KNewStuff_SRCS} )
+add_library(KF5::KNewStuff ALIAS KNewStuff)
 
-target_include_directories(knewstuff3 PUBLIC "$<BUILD_INTERFACE:${KNewStuff_BINARY_DIR}>")
-target_link_libraries(knewstuff3
+target_include_directories(KNewStuff PUBLIC "$<BUILD_INTERFACE:${KNewStuff_BINARY_DIR}>")
+target_link_libraries(KNewStuff
   PUBLIC
     Qt5::Widgets
     ${LibAttica_LIBRARIES}     # For interacting with ocs providers, public for uploaddialog slots
@@ -83,14 +84,14 @@ target_link_libraries(knewstuff3
     KF5::KTextWidgets               # For KTextEdit in upload dialog
 )
 
-generate_export_header(knewstuff3)
+generate_export_header(KNewStuff)
 
-set_target_properties(knewstuff3 PROPERTIES
+set_target_properties(KNewStuff PROPERTIES
    VERSION ${KNEWSTUFF_VERSION_STRING}
    SOVERSION ${KNEWSTUFF_SOVERSION}
 )
 
-install(TARGETS knewstuff3 EXPORT KNewStuffTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KNewStuff EXPORT KNewStuffTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
   downloaddialog.h
@@ -98,7 +99,7 @@ install(FILES
   downloadmanager.h
   uploaddialog.h
   entry.h
-  ${CMAKE_CURRENT_BINARY_DIR}/knewstuff3_export.h
+  ${CMAKE_CURRENT_BINARY_DIR}/knewstuff_export.h
   knewstuffaction.h
   knewstuffbutton.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/knewstuff3 COMPONENT Devel
