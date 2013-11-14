@@ -27,6 +27,8 @@
 #include <QStringList>
 #include <QDebug>
 
+#include <cstdio>
+
 using namespace std;
 
 QList<Action> parse(QSettings &ini);
@@ -46,6 +48,20 @@ int main(int argc, char **argv)
     if (ini.status()) {
         qCritical("Error loading file: %s", argv[1]);
         return 1;
+    }
+
+    if (argc == 3) {
+        // Support an optional 2nd argument pointing to the output file
+        //
+        // This is safer to use in build systems than
+        // "kauth-policy-gen foo.actions > foo.policy" because when using a
+        // redirection "foo.policy" is created even if kauth-policy-gen fails.
+        // This means the first call to make fails, but a second call succeeds
+        // because an empty "foo.policy" exists.
+        if (!freopen(argv[2], "w", stdout)) {
+            qCritical("Failed to open %s for writing: %s", argv[2], strerror(errno));
+            return 1;
+        }
     }
 
     output(parse(ini), parseDomain(ini));
