@@ -36,9 +36,8 @@ class KFileAudioPreview : public KPreviewWidgetBase
     Q_OBJECT
 
 public:
-    //TODO: make explicit in KDE5
-    KFileAudioPreview(QWidget *parent = 0,  //krazy:exclude=explicit until KDE5
-                      const QVariantList &args = QVariantList());
+    explicit KFileAudioPreview(QWidget *parent = 0,
+                               const QVariantList &args = QVariantList());
     ~KFileAudioPreview();
 
 public Q_SLOTS:

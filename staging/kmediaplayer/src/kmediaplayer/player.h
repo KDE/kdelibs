@@ -58,7 +58,7 @@ public:
     /** This constructor is what to use when no GUI is required, as in the
      * case of a KMediaPlayer/Engine.
      */
-    Player(QObject *parent);
+    explicit Player(QObject *parent);
 
     /** This constructor is what to use when a GUI is required, as in the
      * case of a KMediaPlayer/Player.

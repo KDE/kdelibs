@@ -37,7 +37,7 @@ class KMEDIAPLAYER_EXPORT View : public QWidget
 
 public:
     /** Your typical QWidget constructor. */
-    View(QWidget *parent);
+    explicit View(QWidget *parent);
     virtual ~View();
 
     /** The Possible buttons that can appear in the UI. */

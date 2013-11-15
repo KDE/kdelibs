@@ -66,7 +66,7 @@ public:
     /**
      * Constructs a media control widget with a \p parent.
      */
-    MediaControls(QWidget *parent = 0);
+    explicit MediaControls(QWidget *parent = 0);
     ~MediaControls();
 
     bool isSeekSliderVisible() const;
