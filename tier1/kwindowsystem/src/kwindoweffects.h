@@ -47,6 +47,13 @@ namespace KWindowEffects
         BottomEdge,
         LeftEdge
     };
+
+    enum BlurBehindEffect {
+        NormalBlur = 0,
+        DarkBlur,
+        LightBlur
+    };
+
     /**
      * @return if an atom property is available
      *
@@ -133,7 +140,7 @@ namespace KWindowEffects
      * @param enable Enable the effect if @a true, disable it if @false
      * @param region The region within the window where the background will be blurred
      */
-    KWINDOWSYSTEM_EXPORT void enableBlurBehind(WId window, bool enable = true, const QRegion &region = QRegion());
+    KWINDOWSYSTEM_EXPORT void enableBlurBehind(WId window, bool enable = true, const QRegion &region = QRegion(), BlurBehindEffect blurBehindEffect = NormalBlur);
 
     /**
      * Instructs the window manager to handle the given window as dashboard window as

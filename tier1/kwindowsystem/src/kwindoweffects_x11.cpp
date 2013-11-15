@@ -265,7 +265,7 @@ void highlightWindows(WId controller, const QList<WId> &ids)
                         32, data.size(), data.constData());
 }
 
-void enableBlurBehind(WId window, bool enable, const QRegion &region)
+void enableBlurBehind(WId window, bool enable, const QRegion &region, BlurBehindEffect blurBehindEffect)
 {
     xcb_connection_t *c = QX11Info::connection();
     const QByteArray effectName = QByteArrayLiteral("_KDE_NET_WM_BLUR_BEHIND_REGION");
@@ -281,6 +281,8 @@ void enableBlurBehind(WId window, bool enable, const QRegion &region)
         Q_FOREACH (const QRect &r, rects) {
             data << r.x() << r.y() << r.width() << r.height();
         }
+
+        data << blurBehindEffect;
 
         xcb_change_property(c, XCB_PROP_MODE_REPLACE, window, atom->atom, XCB_ATOM_CARDINAL,
                             32, data.size(), data.constData());

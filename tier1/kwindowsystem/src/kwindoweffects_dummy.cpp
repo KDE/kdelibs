@@ -75,11 +75,12 @@ void highlightWindows(WId controller, const QList<WId> &ids)
     Q_UNUSED(ids)
 }
 
-void enableBlurBehind(WId window, bool enable, const QRegion &region)
+void enableBlurBehind(WId window, bool enable, const QRegion &region, BlurBehindEffect blurBehindEffect)
 {
     Q_UNUSED(window)
     Q_UNUSED(enable)
     Q_UNUSED(region)
+    Q_UNUSED(blurBehindEffect)
 }
 
 void markAsDashboard(WId window)
