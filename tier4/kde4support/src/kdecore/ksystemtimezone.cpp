@@ -191,8 +191,8 @@ KSystemTimeZones::KSystemTimeZones()
 {
     QDBusConnection dbus = QDBusConnection::sessionBus();
     const QString dbusIface = QString::fromLatin1(KTIMEZONED_DBUS_IFACE);
-    dbus.connect(QString(), QString(), dbusIface, QLatin1String("configChanged"), this, SLOT(configChanged()));
-    dbus.connect(QString(), QString(), dbusIface, QLatin1String("zonetabChanged"), this, SLOT(zonetabChanged(QString)));
+    dbus.connect(QString(), QString(), dbusIface, QLatin1String("timeZoneChanged"), this, SLOT(configChanged()));
+    dbus.connect(QString(), QString(), dbusIface, QLatin1String("timeZoneDatabaseUpdated"), this, SLOT(zonetabChanged(QString)));
     // No need to connect to definitionChanged() - see comments in zoneDefinitionChanged()
     //dbus.connect(QString(), QString(), dbusIface, QLatin1String("definitionChanged"), this, SLOT(zoneDefinitionChanged(QString)));
 }
