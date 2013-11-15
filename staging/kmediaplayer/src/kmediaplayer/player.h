@@ -46,108 +46,107 @@ namespace KMediaPlayer
  */
 class KMEDIAPLAYER_EXPORT Player : public KParts::ReadOnlyPart
 {
-Q_OBJECT
-Q_PROPERTY(bool hasLength READ hasLength)
-Q_PROPERTY(qlonglong length READ length)
-Q_PROPERTY(bool looping READ isLooping WRITE setLooping)
-Q_PROPERTY(qlonglong position READ position)
-Q_PROPERTY(bool seekable READ isSeekable)
-Q_PROPERTY(int state READ state WRITE setState)
+    Q_OBJECT
+    Q_PROPERTY(bool hasLength READ hasLength)
+    Q_PROPERTY(qlonglong length READ length)
+    Q_PROPERTY(bool looping READ isLooping WRITE setLooping)
+    Q_PROPERTY(qlonglong position READ position)
+    Q_PROPERTY(bool seekable READ isSeekable)
+    Q_PROPERTY(int state READ state WRITE setState)
 
 public:
-	/** This constructor is what to use when no GUI is required, as in the
-	 * case of a KMediaPlayer/Engine.
-	 */
-	Player(QObject *parent);
+    /** This constructor is what to use when no GUI is required, as in the
+     * case of a KMediaPlayer/Engine.
+     */
+    Player(QObject *parent);
 
-	/** This constructor is what to use when a GUI is required, as in the
-	 * case of a KMediaPlayer/Player.
-	 */
-	Player(QWidget *parentWidget, const char *widgetName, QObject *parent );
+    /** This constructor is what to use when a GUI is required, as in the
+     * case of a KMediaPlayer/Player.
+     */
+    Player(QWidget *parentWidget, const char *widgetName, QObject *parent);
 
-	virtual ~Player(void);
+    virtual ~Player();
 
-	/** A convenience function returning a pointer to the View for this
-	 * Player, or 0 if this Player has no GUI.
-	 */
-	virtual View *view(void) = 0;
+    /** A convenience function returning a pointer to the View for this
+     * Player, or 0 if this Player has no GUI.
+     */
+    virtual View *view() = 0;
 
 public Q_SLOTS:
-	/** Pause playback of the media track.*/
-	virtual void pause(void) = 0;
+    /** Pause playback of the media track.*/
+    virtual void pause() = 0;
 
-	/** Begin playing the media track.*/
-	virtual void play(void) = 0;
+    /** Begin playing the media track.*/
+    virtual void play() = 0;
 
-	/** Stop playback of the media track and return to the beginning.*/
-	virtual void stop(void) = 0;
+    /** Stop playback of the media track and return to the beginning.*/
+    virtual void stop() = 0;
 
-	/** Move the current playback position to the specified time in
-	 * milliseconds, if the track is seekable.  Some streams may not be
-	 * seeked.
-	 */
-	virtual void seek(qlonglong msec) = 0;
+    /** Move the current playback position to the specified time in
+     * milliseconds, if the track is seekable.  Some streams may not be
+     * seeked.
+     */
+    virtual void seek(qlonglong msec) = 0;
 public:
-	/** Returns whether the current track honors seek requests.*/
-	virtual bool isSeekable(void) const = 0;
+    /** Returns whether the current track honors seek requests.*/
+    virtual bool isSeekable() const = 0;
 
-	/** Returns the current playback position in the track.*/
-	virtual qlonglong position(void) const = 0;
+    /** Returns the current playback position in the track.*/
+    virtual qlonglong position() const = 0;
 
-	/** Returns whether the current track has a length.  Some streams are
-	 * endless, and do not have one. */
-	virtual bool hasLength(void) const = 0;
+    /** Returns whether the current track has a length.  Some streams are
+     * endless, and do not have one. */
+    virtual bool hasLength() const = 0;
 
-	/** Returns the length of the current track.*/
-	virtual qlonglong length(void) const = 0;
+    /** Returns the length of the current track.*/
+    virtual qlonglong length() const = 0;
 
 public Q_SLOTS:
-	/** Set whether the Player should continue playing at the beginning of
-	 * the track when the end of the track is reached.
-	 */
-	void setLooping(bool);
+    /** Set whether the Player should continue playing at the beginning of
+     * the track when the end of the track is reached.
+     */
+    void setLooping(bool on);
 public:
-	/** Return the current looping state. */
-	bool isLooping(void) const;
+    /** Return the current looping state. */
+    bool isLooping() const;
 Q_SIGNALS:
-	/** Emitted when the looping state is changed. */
-	void loopingChanged(bool);
+    /** Emitted when the looping state is changed. */
+    void loopingChanged(bool isLooping);
 
 public:
-	/** The possible states of the Player */
-	enum State
-	{
-		/** No track is loaded. */
-		Empty,
-		/** Not playing. */
-		Stop,
-		/** Playing is temporarily suspended. */
-		Pause,
-		/** The media is currently being output. */
-		Play
-	};
-	/** Return the current state of the player. */
-	int state(void) const;
+    /** The possible states of the Player */
+    enum State {
+        /** No track is loaded. */
+        Empty,
+        /** Not playing. */
+        Stop,
+        /** Playing is temporarily suspended. */
+        Pause,
+        /** The media is currently being output. */
+        Play
+    };
+    /** Return the current state of the player. */
+    int state() const;
 Q_SIGNALS:
-	/** Emitted when the state changes. */
-	void stateChanged(int);
+    /** Emitted when the state changes. */
+    void stateChanged(int newState);
 
 protected Q_SLOTS:
-	/** Implementers use this to control what users see as the current
-	 * state.*/
-	void setState(int);
+    /** Implementers use this to control what users see as the current
+     * state.*/
+    void setState(int state);
 
 protected:
-	/* Enable the stateChanged(QString&, ...) method that was hidden by
-	   the stateChanged(int) signal */
-	using KXMLGUIClient::stateChanged;
+    /* Enable the stateChanged(QString&, ...) method that was hidden by
+       the stateChanged(int) signal */
+    using KXMLGUIClient::stateChanged;
 
 private:
-	bool currentLooping;
-	State currentState;
+    bool currentLooping;
+    State currentState;
 
-	struct Data;
-	Data *d;
+    struct Data;
+    Data *d;
 };
 
 }

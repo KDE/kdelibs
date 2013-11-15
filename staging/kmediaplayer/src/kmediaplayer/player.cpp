@@ -25,52 +25,50 @@
 #include "kmediaplayeradaptor_p.h"
 
 KMediaPlayer::Player::Player(QWidget *, const char *, QObject *parent)
-	: KParts::ReadOnlyPart(parent)
-	, currentLooping(false)
-	, currentState(Empty)
-	, d(0)
+    : KParts::ReadOnlyPart(parent)
+    , currentLooping(false)
+    , currentState(Empty)
+    , d(0)
 {
-	(void)new KMediaPlayerAdaptor(this);
+    (void)new KMediaPlayerAdaptor(this);
 }
 
-KMediaPlayer::Player::Player(QObject *parent )
-	: KParts::ReadOnlyPart(parent)
-	, currentLooping(false)
-	, currentState(Empty)
-	, d(0)
+KMediaPlayer::Player::Player(QObject *parent)
+    : KParts::ReadOnlyPart(parent)
+    , currentLooping(false)
+    , currentState(Empty)
+    , d(0)
 {
-	(void)new KMediaPlayerAdaptor(this);
+    (void)new KMediaPlayerAdaptor(this);
 }
 
-KMediaPlayer::Player::~Player(void)
+KMediaPlayer::Player::~Player()
 {
 }
 
 void KMediaPlayer::Player::setLooping(bool b)
 {
-	if(b != currentLooping)
-	{
-		currentLooping = b;
-		emit loopingChanged(b);
-	}
+    if (b != currentLooping) {
+        currentLooping = b;
+        emit loopingChanged(b);
+    }
 }
 
-bool KMediaPlayer::Player::isLooping(void) const
+bool KMediaPlayer::Player::isLooping() const
 {
-	return currentLooping;
+    return currentLooping;
 }
 
 void KMediaPlayer::Player::setState(int s)
 {
-	if(s != currentState)
-	{
-		currentState = (State)s;
-		emit stateChanged(s);
-	}
+    if (s != currentState) {
+        currentState = (State)s;
+        emit stateChanged(s);
+    }
 }
 
-int KMediaPlayer::Player::state(void) const
+int KMediaPlayer::Player::state() const
 {
-	return (int)currentState;
+    return (int)currentState;
 }
 

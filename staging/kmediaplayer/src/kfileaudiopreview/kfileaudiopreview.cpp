@@ -39,7 +39,7 @@
 #include "mediacontrols.h"
 #include <kconfiggroup.h>
 
-K_PLUGIN_FACTORY( KFileAudioPreviewFactory, registerPlugin<KFileAudioPreview>(); )
+K_PLUGIN_FACTORY(KFileAudioPreviewFactory, registerPlugin<KFileAudioPreview>();)
 
 
 ///////////////////////////////////////////////////////////////////
@@ -51,10 +51,9 @@ class KFileAudioPreview::Private
 {
 public:
     Private()
-        : player( 0 )
-        , audioOutput( 0 )
-        , videoWidget( 0 )
-    {
+        : player(0)
+        , audioOutput(0)
+        , videoWidget(0) {
     }
 
     MediaObject* player;
@@ -64,25 +63,25 @@ public:
 };
 
 
-KFileAudioPreview::KFileAudioPreview( QWidget *parent, const QVariantList & )
-    : KPreviewWidgetBase( parent )
-    , d( new Private )
+KFileAudioPreview::KFileAudioPreview(QWidget *parent, const QVariantList &)
+    : KPreviewWidgetBase(parent)
+    , d(new Private)
 {
     setSupportedMimeTypes(BackendCapabilities::availableMimeTypes());
 
     d->audioOutput = new AudioOutput(Phonon::NoCategory, this);
 
-    d->videoWidget = new VideoWidget( this );
+    d->videoWidget = new VideoWidget(this);
     d->videoWidget->hide();
 
-    d->controls = new MediaControls( this );
-    d->controls->setEnabled( false );
-    d->controls->setAudioOutput( d->audioOutput );
+    d->controls = new MediaControls(this);
+    d->controls->setEnabled(false);
+    d->controls->setAudioOutput(d->audioOutput);
 
-    m_autoPlay = new QCheckBox( i18n("Play &automatically"), this );
-    KConfigGroup config( KSharedConfig::openConfig(), ConfigGroup );
-    m_autoPlay->setChecked( config.readEntry( "Autoplay sounds", true ) );
-    connect( m_autoPlay, SIGNAL(toggled(bool)), SLOT(toggleAuto(bool)) );
+    m_autoPlay = new QCheckBox(i18n("Play &automatically"), this);
+    KConfigGroup config(KSharedConfig::openConfig(), ConfigGroup);
+    m_autoPlay->setChecked(config.readEntry("Autoplay sounds", true));
+    connect(m_autoPlay, SIGNAL(toggled(bool)), SLOT(toggleAuto(bool)));
 
     QVBoxLayout* layout = new QVBoxLayout(this);
     layout->setMargin(0);
@@ -94,53 +93,52 @@ KFileAudioPreview::KFileAudioPreview( QWidget *parent, const QVariantList & )
 
 KFileAudioPreview::~KFileAudioPreview()
 {
-    KConfigGroup config( KSharedConfig::openConfig(), ConfigGroup );
-    config.writeEntry( "Autoplay sounds", m_autoPlay->isChecked() );
+    KConfigGroup config(KSharedConfig::openConfig(), ConfigGroup);
+    config.writeEntry("Autoplay sounds", m_autoPlay->isChecked());
 
     delete d;
 }
 
-void KFileAudioPreview::stateChanged( Phonon::State newstate, Phonon::State oldstate )
+void KFileAudioPreview::stateChanged(Phonon::State newstate, Phonon::State oldstate)
 {
-    if( oldstate == Phonon::LoadingState && newstate != Phonon::ErrorState )
-        d->controls->setEnabled( true );
+    if (oldstate == Phonon::LoadingState && newstate != Phonon::ErrorState)
+        d->controls->setEnabled(true);
 }
 
-void KFileAudioPreview::showPreview( const QUrl &url )
+void KFileAudioPreview::showPreview(const QUrl &url)
 {
     d->controls->setEnabled(false);
     if (!d->player) {
         d->player = new MediaObject(this);
         Phonon::createPath(d->player, d->videoWidget);
         Phonon::createPath(d->player, d->audioOutput);
-        connect(d->player, SIGNAL(stateChanged(Phonon::State,Phonon::State)),
-                SLOT(stateChanged(Phonon::State,Phonon::State)));
+        connect(d->player, SIGNAL(stateChanged(Phonon::State, Phonon::State)),
+                SLOT(stateChanged(Phonon::State, Phonon::State)));
         d->videoWidget->setVisible(d->player->hasVideo());
         connect(d->player, SIGNAL(hasVideoChanged(bool)), d->videoWidget, SLOT(setVisible(bool)));
         d->controls->setMediaObject(d->player);
     }
     d->player->setCurrentSource(url);
 
-    if( m_autoPlay->isChecked() )
+    if (m_autoPlay->isChecked())
         d->player->play();
 }
 
 void KFileAudioPreview::clearPreview()
 {
-    if( d->player )
-    {
+    if (d->player) {
         delete d->player;
         d->player = 0;
-        d->controls->setEnabled( false );
+        d->controls->setEnabled(false);
     }
 }
 
-void KFileAudioPreview::toggleAuto( bool on )
+void KFileAudioPreview::toggleAuto(bool on)
 {
-    if( !d->player )
+    if (!d->player)
         return;
 
-    if( on && d->controls->isEnabled() )
+    if (on && d->controls->isEnabled())
         d->player->play();
     else
         d->player->stop();

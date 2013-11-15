@@ -62,38 +62,38 @@ class MediaControls : public QWidget
      */
     Q_PROPERTY(bool volumeControlVisible READ isVolumeControlVisible WRITE setVolumeControlVisible)
 
-    public:
-        /**
-         * Constructs a media control widget with a \p parent.
-         */
-        MediaControls(QWidget *parent = 0);
-        ~MediaControls();
+public:
+    /**
+     * Constructs a media control widget with a \p parent.
+     */
+    MediaControls(QWidget *parent = 0);
+    ~MediaControls();
 
-        bool isSeekSliderVisible() const;
-        bool isVolumeControlVisible() const;
+    bool isSeekSliderVisible() const;
+    bool isVolumeControlVisible() const;
 
-    public Q_SLOTS:
-        void setSeekSliderVisible(bool);
-        void setVolumeControlVisible(bool);
+public Q_SLOTS:
+    void setSeekSliderVisible(bool isVisible);
+    void setVolumeControlVisible(bool isVisible);
 
-        /**
-         * Sets the media object to be controlled by this widget.
-         */
-        void setMediaObject(MediaObject *);
+    /**
+     * Sets the media object to be controlled by this widget.
+     */
+    void setMediaObject(MediaObject *mediaObject);
 
-        /**
-         * Sets the audio output object to be controlled by this widget.
-         */
-        void setAudioOutput(AudioOutput *audioOutput);
+    /**
+     * Sets the audio output object to be controlled by this widget.
+     */
+    void setAudioOutput(AudioOutput *audioOutput);
 
-    protected:
-        void resizeEvent(QResizeEvent*);
+protected:
+    void resizeEvent(QResizeEvent *event);
 
-    private:
-        Q_PRIVATE_SLOT(d_func(), void _k_stateChanged(Phonon::State, Phonon::State))
-        Q_PRIVATE_SLOT(d_func(), void _k_mediaDestroyed())
+private:
+    Q_PRIVATE_SLOT(d_func(), void _k_stateChanged(Phonon::State, Phonon::State))
+    Q_PRIVATE_SLOT(d_func(), void _k_mediaDestroyed())
 
-        MediaControlsPrivate *const d_ptr;
+    MediaControlsPrivate *const d_ptr;
 };
 
 } // namespace Phonon

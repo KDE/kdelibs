@@ -37,8 +37,8 @@ class KFileAudioPreview : public KPreviewWidgetBase
 
 public:
     //TODO: make explicit in KDE5
-    KFileAudioPreview( QWidget *parent = 0, //krazy:exclude=explicit until KDE5
-                       const QVariantList &args = QVariantList() );
+    KFileAudioPreview(QWidget *parent = 0,  //krazy:exclude=explicit until KDE5
+                      const QVariantList &args = QVariantList());
     ~KFileAudioPreview();
 
 public Q_SLOTS:
@@ -46,8 +46,8 @@ public Q_SLOTS:
     virtual void clearPreview();
 
 private Q_SLOTS:
-    void toggleAuto( bool );
-    void stateChanged( Phonon::State, Phonon::State );
+    void toggleAuto(bool on);
+    void stateChanged(Phonon::State newState, Phonon::State oldState);
 
 private:
     QCheckBox *m_autoPlay;

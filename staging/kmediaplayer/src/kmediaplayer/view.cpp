@@ -23,66 +23,64 @@
 
 #include "view.h"
 
-struct KMediaPlayer::View::Data
-{
-	Data() : videoWidget(0L) {}
+struct KMediaPlayer::View::Data {
+    Data() : videoWidget(0L) {}
 
-	QWidget *videoWidget;
+    QWidget *videoWidget;
 };
 
 KMediaPlayer::View::View(QWidget *parent)
-	: QWidget(parent)
-	, currentButtons((int)All)
-	, d(new Data())
+    : QWidget(parent)
+    , currentButtons((int)All)
+    , d(new Data())
 {
 }
 
-KMediaPlayer::View::~View(void)
+KMediaPlayer::View::~View()
 {
-	delete d;
+    delete d;
 }
 
-int KMediaPlayer::View::buttons(void)
+int KMediaPlayer::View::buttons()
 {
-	return currentButtons;
+    return currentButtons;
 }
 
 void KMediaPlayer::View::setButtons(int buttons)
 {
-	if(buttons != currentButtons)
-	{
-		currentButtons = buttons;
-		emit buttonsChanged(buttons);
-	}
+    if (buttons != currentButtons) {
+        currentButtons = buttons;
+        emit buttonsChanged(buttons);
+    }
 }
 
 bool KMediaPlayer::View::button(int b)
 {
-	return currentButtons & b;
+    return currentButtons & b;
 }
 
 void KMediaPlayer::View::showButton(int b)
 {
-	setButtons(currentButtons | b);
+    setButtons(currentButtons | b);
 }
 
 void KMediaPlayer::View::hideButton(int b)
 {
-	setButtons(currentButtons & ~b);
+    setButtons(currentButtons & ~b);
 }
 
 void KMediaPlayer::View::toggleButton(int b)
 {
-	setButtons(currentButtons ^ b);
+    setButtons(currentButtons ^ b);
 }
 
 void KMediaPlayer::View::setVideoWidget(QWidget *videoWidget)
 {
-	d->videoWidget = videoWidget;
+    d->videoWidget = videoWidget;
 }
 
 QWidget* KMediaPlayer::View::videoWidget()
 {
-	return d->videoWidget;
+    return d->videoWidget;
 }
 

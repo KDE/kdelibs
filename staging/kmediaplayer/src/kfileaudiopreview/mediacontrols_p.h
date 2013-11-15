@@ -34,55 +34,54 @@ namespace Phonon
 class MediaControlsPrivate
 {
     Q_DECLARE_PUBLIC(MediaControls)
-    protected:
-        MediaControlsPrivate(MediaControls *parent)
-            : q_ptr(parent),
-            layout(parent),
-            playButton(parent),
-            pauseButton(parent),
-            seekSlider(parent),
-            volumeSlider(parent),
-            media(0)
-        {
-            int size = parent->style()->pixelMetric(QStyle::PM_ToolBarIconSize);
-            QSize iconSize(size, size);
-            playButton.setIconSize(iconSize);
-            playButton.setIcon(QIcon::fromTheme(QStringLiteral("media-playback-start")));
-            playButton.setToolTip(i18n("start playback"));
-            playButton.setAutoRaise(true);
+protected:
+    MediaControlsPrivate(MediaControls *parent)
+        : q_ptr(parent),
+          layout(parent),
+          playButton(parent),
+          pauseButton(parent),
+          seekSlider(parent),
+          volumeSlider(parent),
+          media(0) {
+        int size = parent->style()->pixelMetric(QStyle::PM_ToolBarIconSize);
+        QSize iconSize(size, size);
+        playButton.setIconSize(iconSize);
+        playButton.setIcon(QIcon::fromTheme(QStringLiteral("media-playback-start")));
+        playButton.setToolTip(i18n("start playback"));
+        playButton.setAutoRaise(true);
 
-            pauseButton.setIconSize(iconSize);
-            pauseButton.setIcon(QIcon::fromTheme(QStringLiteral("media-playback-pause")));
-            pauseButton.setToolTip(i18n("pause playback"));
-            pauseButton.hide();
-            pauseButton.setAutoRaise(true);
+        pauseButton.setIconSize(iconSize);
+        pauseButton.setIcon(QIcon::fromTheme(QStringLiteral("media-playback-pause")));
+        pauseButton.setToolTip(i18n("pause playback"));
+        pauseButton.hide();
+        pauseButton.setAutoRaise(true);
 
-            seekSlider.setIconVisible(false);
+        seekSlider.setIconVisible(false);
 
-            volumeSlider.setOrientation(Qt::Horizontal);
-            volumeSlider.setMaximumWidth(80);
-            volumeSlider.hide();
+        volumeSlider.setOrientation(Qt::Horizontal);
+        volumeSlider.setMaximumWidth(80);
+        volumeSlider.hide();
 
-            layout.setMargin(0);
-            layout.setSpacing(0);
-            layout.addWidget(&playButton);
-            layout.addWidget(&pauseButton);
-            layout.addWidget(&seekSlider, 1);
-            layout.addWidget(&volumeSlider);
-        }
+        layout.setMargin(0);
+        layout.setSpacing(0);
+        layout.addWidget(&playButton);
+        layout.addWidget(&pauseButton);
+        layout.addWidget(&seekSlider, 1);
+        layout.addWidget(&volumeSlider);
+    }
 
-        MediaControls *q_ptr;
-        QHBoxLayout layout;
-        QToolButton playButton;
-        QToolButton pauseButton;
-        SeekSlider seekSlider;
-        VolumeSlider volumeSlider;
-        MediaObject *media;
+    MediaControls *q_ptr;
+    QHBoxLayout layout;
+    QToolButton playButton;
+    QToolButton pauseButton;
+    SeekSlider seekSlider;
+    VolumeSlider volumeSlider;
+    MediaObject *media;
 
-    private:
-        void _k_stateChanged(Phonon::State, Phonon::State);
-        void _k_mediaDestroyed();
-        void updateVolumeSliderVisibility();
+private:
+    void _k_stateChanged(Phonon::State, Phonon::State);
+    void _k_mediaDestroyed();
+    void updateVolumeSliderVisibility();
 };
 } // namespace Phonon
 

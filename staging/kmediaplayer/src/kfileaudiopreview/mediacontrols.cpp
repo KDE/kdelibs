@@ -32,7 +32,7 @@ namespace Phonon
 
 MediaControls::MediaControls(QWidget *parent)
     : QWidget(parent),
-    d_ptr(new MediaControlsPrivate(this))
+      d_ptr(new MediaControlsPrivate(this))
 {
     setMaximumHeight(32);
 }
@@ -59,16 +59,16 @@ void MediaControls::setMediaObject(MediaObject *media)
     Q_D(MediaControls);
     if (d->media) {
         disconnect(d->media, SIGNAL(destroyed()), this, SLOT(_k_mediaDestroyed()));
-        disconnect(d->media, SIGNAL(stateChanged(Phonon::State,Phonon::State)), this,
-                SLOT(_k_stateChanged(Phonon::State,Phonon::State)));
+        disconnect(d->media, SIGNAL(stateChanged(Phonon::State, Phonon::State)), this,
+                   SLOT(_k_stateChanged(Phonon::State, Phonon::State)));
         disconnect(&d->playButton, SIGNAL(clicked()), d->media, SLOT(play()));
         disconnect(&d->pauseButton, SIGNAL(clicked()), d->media, SLOT(pause()));
     }
     d->media = media;
     if (media) {
         connect(media, SIGNAL(destroyed()), SLOT(_k_mediaDestroyed()));
-        connect(media, SIGNAL(stateChanged(Phonon::State,Phonon::State)),
-                SLOT(_k_stateChanged(Phonon::State,Phonon::State)));
+        connect(media, SIGNAL(stateChanged(Phonon::State, Phonon::State)),
+                SLOT(_k_stateChanged(Phonon::State, Phonon::State)));
         connect(&d->playButton, SIGNAL(clicked()), media, SLOT(play()));
         connect(&d->pauseButton, SIGNAL(clicked()), media, SLOT(pause()));
     }
@@ -111,8 +111,7 @@ void MediaControlsPrivate::updateVolumeSliderVisibility()
 
 void MediaControlsPrivate::_k_stateChanged(State newstate, State)
 {
-    switch(newstate)
-    {
+    switch (newstate) {
     case Phonon::LoadingState:
     case Phonon::PausedState:
     case Phonon::StoppedState:

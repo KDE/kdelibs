@@ -21,7 +21,7 @@
  */
 
 KMediaPlayerAdaptor::KMediaPlayerAdaptor(QObject *parent)
-   : QDBusAbstractAdaptor(parent)
+    : QDBusAbstractAdaptor(parent)
 {
     // constructor
     setAutoRelaySignals(true);
