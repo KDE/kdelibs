@@ -26,7 +26,7 @@
 #include <defaults-kfile.h> // for ConfigGroup
 
 #include <kconfig.h>
-#define TRANSLATION_DOMAIN "kfileaudiopreview4"
+#define TRANSLATION_DOMAIN "kfileaudiopreview5"
 #include <klocalizedstring.h>
 #include <kpluginfactory.h>
 #include <kpluginloader.h>
