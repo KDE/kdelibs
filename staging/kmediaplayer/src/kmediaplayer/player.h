@@ -142,11 +142,8 @@ protected:
     using KXMLGUIClient::stateChanged;
 
 private:
-    bool currentLooping;
-    State currentState;
-
-    struct Data;
-    Data *d;
+    class Private;
+    Private *d;
 };
 
 }

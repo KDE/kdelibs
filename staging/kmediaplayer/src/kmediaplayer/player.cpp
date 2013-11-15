@@ -24,51 +24,60 @@
 #include "player.h"
 #include "kmediaplayeradaptor_p.h"
 
+class KMediaPlayer::Player::Private
+{
+public:
+    Private()
+        : currentLooping(false)
+        , currentState(Empty)
+    {}
+
+    bool currentLooping;
+    State currentState;
+};
+
 KMediaPlayer::Player::Player(QWidget *, const char *, QObject *parent)
     : KParts::ReadOnlyPart(parent)
-    , currentLooping(false)
-    , currentState(Empty)
-    , d(0)
+    , d(new Private())
 {
     (void)new KMediaPlayerAdaptor(this);
 }
 
 KMediaPlayer::Player::Player(QObject *parent)
     : KParts::ReadOnlyPart(parent)
-    , currentLooping(false)
-    , currentState(Empty)
-    , d(0)
+    , d(new Private())
 {
     (void)new KMediaPlayerAdaptor(this);
 }
 
 KMediaPlayer::Player::~Player()
 {
+    delete d;
 }
 
 void KMediaPlayer::Player::setLooping(bool b)
 {
-    if (b != currentLooping) {
-        currentLooping = b;
+    if (b != d->currentLooping) {
+        d->currentLooping = b;
         emit loopingChanged(b);
     }
 }
 
 bool KMediaPlayer::Player::isLooping() const
 {
-    return currentLooping;
+    return d->currentLooping;
 }
 
 void KMediaPlayer::Player::setState(int s)
 {
-    if (s != currentState) {
-        currentState = (State)s;
+    if (s != d->currentState) {
+        d->currentState = (State)s;
         emit stateChanged(s);
     }
 }
 
 int KMediaPlayer::Player::state() const
 {
-    return (int)currentState;
+    return (int)d->currentState;
 }
 

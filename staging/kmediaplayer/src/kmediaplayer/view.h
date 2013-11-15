@@ -86,10 +86,8 @@ protected:
     void setVideoWidget(QWidget *videoWidget);
 
 private:
-    int currentButtons;
-
-    struct Data;
-    Data *d;
+    class Private;
+    Private *d;
 };
 
 }
