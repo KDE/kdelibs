@@ -197,7 +197,7 @@ public:
   void useFreq(Entry* e, int newFreq);
   void addEntry(KDirWatch* instance,const QString& _path, Entry* sub_entry,
         bool isDir, KDirWatch::WatchModes watchModes = KDirWatch::WatchDirOnly);
-  void removeEntry(KDirWatch*,const QString&, Entry* sub_entry);
+  bool removeEntry(KDirWatch*,const QString&, Entry* sub_entry);
   void removeEntry(KDirWatch*,Entry* e, Entry* sub_entry);
   bool stopEntryScan(KDirWatch*, Entry*);
   bool restartEntryScan(KDirWatch*, Entry*, bool );
