@@ -44,6 +44,7 @@ set(cmakeFiles
                FindGettext.cmake
                FindGphoto2.cmake
                FindIOKit.cmake
+               KDE4Macros.cmake
                FindKDE4Workspace.cmake
                FindKDevPlatform.cmake
                FindKdcraw.cmake
