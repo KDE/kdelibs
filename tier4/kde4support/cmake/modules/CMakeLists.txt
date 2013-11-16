@@ -1,6 +1,6 @@
 ## install the cmake files
 
-set(module_install_dir ${DATA_INSTALL_DIR}/cmake/modules )
+set(module_install_dir ${CMAKECONFIG_INSTALL_DIR})
 
 # This variable doesn't actually do anything, but it's probably a good idea
 # to have it around, so there is a place where the modules which are not installed
