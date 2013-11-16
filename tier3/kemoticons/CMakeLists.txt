@@ -49,6 +49,8 @@ add_subdirectory(tests)
 # create a Config.cmake and a ConfigVersion.cmake file and install them
 set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KEmoticons")
 
+install(EXPORT KEmoticonsTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KEmoticonsTargets.cmake NAMESPACE KF5:: )
+
 configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/KEmoticonsConfig.cmake.in"
                               "${CMAKE_CURRENT_BINARY_DIR}/KEmoticonsConfig.cmake"
                               INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
