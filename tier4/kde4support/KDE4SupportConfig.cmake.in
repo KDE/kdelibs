@@ -64,6 +64,7 @@ set(KDE4_KDECORE_LIBS
   KF5::KIconThemes
   KF5::KIOWidgets
   KF5::ItemViews
+  KF5::KEmoticons
 )
 set(KDE4_KDEUI_LIBS  ${KDE4_KDECORE_LIBS})
 set(KDE4_KIO_LIBS ${KDE4_KDECORE_LIBS})
