@@ -488,8 +488,10 @@ DOMString ElementImpl::tagName() const
 {
     DOMString tn = LocalName::fromId(id()).toString();
 
-    if ( m_htmlCompat )
-        tn = tn.upper();
+    // Firefox/rekonq(webkit)/opera always return lowercase tagNames
+    // independent from the htmlMode, we should do the same.
+//     if ( m_htmlCompat )
+//         tn = tn.upper();
 
     DOMString prefix = m_prefix.toString();
     if (!prefix.isEmpty())
