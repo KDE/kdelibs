@@ -35,11 +35,14 @@ remove_definitions(
 # This is not intended to be a list of what frameworks each of the kde libraries
 # was broken into. KDE4_KDECORE_LIBS contains more than what used to be in
 # the kdecore library. That is a feature. These things should be big ugly warts
-# in any project using them. The KDE4Support module is not for long term use.
+# in any project using them. The KDE4Support module is not for long term use and
+# it is not for 'making code build with both Qt/KDE 4 and Qt/KF 5' for medium or
+# long term. In trivial cases, no use of KDE4Support will be pushed to the repo
+# of the code being ported.
 #
 # The use-sequence is this:
 # 1. When starting to port something to KF5, find and use KDE4Support.
-# 2. Port the C++ code.
+# 2. Port the C++ code to Qt5/KF5.
 # 3. Port the buildsystem away from KDE4Support.
 # 4. Remove the find_package for KDE4Support.
 
