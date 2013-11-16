@@ -488,10 +488,8 @@ DOMString ElementImpl::tagName() const
 {
     DOMString tn = LocalName::fromId(id()).toString();
 
-    // Firefox/rekonq(webkit)/opera always return lowercase tagNames
-    // independent from the htmlMode, we should do the same.
-//     if ( m_htmlCompat )
-//         tn = tn.upper();
+    if ( m_htmlCompat )
+        tn = tn.upper();
 
     DOMString prefix = m_prefix.toString();
     if (!prefix.isEmpty())
@@ -1237,7 +1235,7 @@ void ElementImpl::removedFromDocument()
 
 DOMString ElementImpl::openTagStartToString(bool expandurls) const
 {
-    DOMString result = DOMString("<") + tagName();
+    DOMString result = DOMString("<") + nonCaseFoldedTagName();
 
     NamedAttrMapImpl *attrMap = attributes(true);
 
@@ -1303,7 +1301,7 @@ DOMString ElementImpl::selectionToString(NodeImpl *selectionStart, NodeImpl *sel
 	}
 
 	result += "</";
-	result += tagName();
+	result += nonCaseFoldedTagName();
 	result += ">";
     } else {
 	result += " />";
@@ -1325,7 +1323,7 @@ DOMString ElementImpl::toString() const
 	}
 
 	result += "</";
-	result += tagName().string();
+	result += nonCaseFoldedTagName().string();
 	result += ">";
     } else if (result.length() == 1) {
 	// ensure we do not get results like < /> can happen when serialize document
