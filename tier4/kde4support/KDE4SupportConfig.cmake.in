@@ -13,5 +13,59 @@ find_dependency(KWindowSystem "@KF5_VERSION@")
 
 find_dependency(Qt5DBus @QT_REQUIRED_VERSION@)
 find_dependency(Qt5Xml @QT_REQUIRED_VERSION@)
+find_dependency(Qt5PrintSupport @QT_REQUIRED_VERSION@)
 
 include("${CMAKE_CURRENT_LIST_DIR}/KDE4SupportTargets.cmake")
+
+include("${CMAKE_CURRENT_LIST_DIR}/ECMQt4To5Porting.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/KDE4Macros.cmake")
+
+include("${CMAKE_CURRENT_LIST_DIR}/MacroAppendIf.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/MacroEnsureOutOfSourceBuild.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/MacroBoolTo01.cmake")
+
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}")
+
+remove_definitions(
+  -DQT_NO_SIGNALS_SLOTS_KEYWORDS
+  -DQT_NO_CAST_FROM_ASCII
+  -DQT_NO_CAST_TO_ASCII
+)
+
+# This is not intended to be a list of what frameworks each of the kde libraries
+# was broken into. KDE4_KDECORE_LIBS contains more than what used to be in
+# the kdecore library. That is a feature. These things should be big ugly warts
+# in any project using them. The KDE4Support module is not for long term use.
+#
+# The use-sequence is this:
+# 1. When starting to port something to KF5, find and use KDE4Support.
+# 2. Port the C++ code.
+# 3. Port the buildsystem away from KDE4Support.
+# 4. Remove the find_package for KDE4Support.
+
+set(KDE4_KDECORE_LIBS
+  KF5::KDE4Support
+  Qt5::Network
+  Qt5::DBus
+  Qt5::Xml
+  KF5::KIOCore
+  KF5::KI18n
+  KF5::KCoreAddons
+  KF5::KCodecs
+  KF5::KConfigCore
+  KF5::KWidgetsAddons
+  KF5::ItemModels
+  KF5::KConfigWidgets
+  KF5::KCompletion
+  KF5::XmlGui
+  KF5::KIconThemes
+  KF5::KIOWidgets
+  KF5::ItemViews
+)
+set(KDE4_KDEUI_LIBS  ${KDE4_KDECORE_LIBS})
+set(KDE4_KIO_LIBS ${KDE4_KDECORE_LIBS})
+set(KDE4_KPARTS_LIBS ${KDE4_KPARTS_LIBS})
+set(KDE4_KUTILS_LIBS ${KDE4_KUTILS_LIBS})
+set(KDE4_KFILE_LIBS ${KDE4_KFILE_LIBS})
+set(KDE4_KHTML_LIBS ${KDE4_KHTML_LIBS})
+set(KDE4_KDE4SUPPORT_LIBS  ${KDE4_KDECORE_LIBS})
