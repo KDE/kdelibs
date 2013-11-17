@@ -2,6 +2,8 @@ remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
 include(ECMMarkAsTest)
 
+find_package(Qt5Test 5.2.0 REQUIRED NO_MODULE)
+
 macro(KCODECS_EXECUTABLE_TESTS)
     foreach(_testname ${ARGN})
         add_executable(${_testname} ${_testname}.cpp)
