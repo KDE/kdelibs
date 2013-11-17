@@ -47,11 +47,15 @@ class KMimeTypePrivate;
  * @see KServiceType
  * @deprecated use QMimeType
  */
-class KDE4SUPPORT_DEPRECATED_EXPORT KMimeType : public QSharedData
+class KDE4SUPPORT_DEPRECATED_EXPORT_NOISE KMimeType : public QSharedData
 {
     Q_DECLARE_PRIVATE( KMimeType )
 public:
-    typedef QExplicitlySharedDataPointer<KMimeType> Ptr;
+    struct Ptr : QExplicitlySharedDataPointer<KMimeType>
+    {
+      Ptr(KMimeType *ptr = 0) : QExplicitlySharedDataPointer<KMimeType>(ptr) {}
+      bool isNull() const { return *this; }
+    };
     typedef QList<Ptr> List;
 
     /**
