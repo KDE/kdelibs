@@ -220,19 +220,7 @@ namespace KIO
             /// @since 4.4
             UDS_DISPLAY_TYPE = 24 | UDS_STRING,
 
-            /// The URI of the corresponding Nepomuk resource.
-            /// KIO slaves can use this optional entry to provide
-            /// client applications with a Nepomuk resource to be used
-            /// for annotations like tags or ratings. A typical example
-            /// is to provide the URI of the Nepomuk resource corresponding
-            /// to a file in a search result
-            /// Client applications should only provide annotations for
-            /// entries that provide this URI
-            ///
-            /// URIs need to be encoded using QUrl::toString()
-            ///
-            /// @since 4.4
-            UDS_NEPOMUK_URI = 25 | UDS_STRING,
+            /// 25 was used by the now removed UDS_NEPOMUK_URI
 
             /// A comma-separated list of supplementary icon overlays
             /// which will be added to the list of overlays created
@@ -241,12 +229,7 @@ namespace KIO
             /// @since 4.5
             UDS_ICON_OVERLAY_NAMES = 26 | UDS_STRING,
 
-            /// A serialized Nepomuk::Query::Query which lists the contents of
-            /// the folder this UDSEntry describes. This can be used to enable
-            /// faceted browsing via any local KIO slave.
-            ///
-            /// @since 4.6
-            UDS_NEPOMUK_QUERY = 27 | UDS_STRING,
+            /// 27 was used by the now removed UDS_NEPOMUK_QUERY
 
             /// A comment which will be displayed as is to the user. The string
             /// value may contain plain text or Qt-style rich-text extensions.

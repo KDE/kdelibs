@@ -291,16 +291,6 @@ public:
     QUrl targetUrl() const;
 
     /**
-     * Returns the resource URI to be used for Nepomuk annotations. In case
-     * the slave does not specify UDS_NEPOMUK_URI an invalid url is
-     * returned.
-     * For local files this is the same as url().
-     * @return The Nepomuk resource URI.
-     * @since 4.4
-     */
-    QUrl nepomukUri() const;
-
-    /**
      * Returns the local path if isLocalFile() == true or the KIO item has
      * a UDS_LOCAL_PATH atom.
      * @return the item local path, or QString() if not known

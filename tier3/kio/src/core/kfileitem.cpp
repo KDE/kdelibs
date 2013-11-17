@@ -1430,21 +1430,6 @@ QUrl KFileItem::targetUrl() const
         return url();
 }
 
-QUrl KFileItem::nepomukUri() const
-{
-    if (!d)
-        return QUrl();
-
-    const QString nepomukUriStr = d->m_entry.stringValue( KIO::UDSEntry::UDS_NEPOMUK_URI );
-    if (!nepomukUriStr.isEmpty()) {
-        return QUrl(nepomukUriStr);
-    } else if (targetUrl().isLocalFile()) {
-        return targetUrl();
-    } else {
-        return QUrl();
-    }
-}
-
 /*
  * Mimetype handling.
  *
