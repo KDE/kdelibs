@@ -141,7 +141,7 @@ public:
    * @see KUrl
    * @see QList
    */
-  class KDE4SUPPORT_DEPRECATED_EXPORT List : public QList<KUrl> //krazy:exclude=dpointer (just some convenience methods)
+  class KDE4SUPPORT_DEPRECATED_EXPORT_NOISE List : public QList<KUrl> //krazy:exclude=dpointer (just some convenience methods)
   {
   public:
     /**
