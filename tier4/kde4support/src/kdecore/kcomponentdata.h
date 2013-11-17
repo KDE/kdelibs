@@ -20,6 +20,11 @@
 #define KCOMPONENTDATA_H
 
 #include <kde4support_export.h>
+
+#ifdef KDE4SUPPORT_NO_DEPRECATED_NOISE
+#warning "This file is deprecated."
+#endif
+
 #include <ksharedconfig.h>
 #include <kaboutdata.h>
 
@@ -43,7 +48,7 @@ class KComponentDataPrivate;
  * @author Torben Weis
  * @author Matthias Kretz <kretz@kde.org>
  */
-class KDE4SUPPORT_DEPRECATED_EXPORT KComponentData // krazy:exclude=dpointer (implicitly shared)
+class KDE4SUPPORT_DEPRECATED_EXPORT_NOISE KComponentData // krazy:exclude=dpointer (implicitly shared)
 {
 public:
     /**
@@ -79,7 +84,7 @@ public:
     /**
      * Returns whether two KComponentData objects do not reference the same data.
      */
-    bool operator!=(const KComponentData &rhs) const { return !operator==(rhs); }
+    bool operator!=(const KComponentData &rhs) const;
 
     enum MainComponentRegistration {
         RegisterAsMainComponent,
@@ -148,14 +153,14 @@ public:
      *         constructor but a component name was set, a default constructed
      *         K4AboutData object is returned.
      */
-    const K4AboutData *aboutData() const;
+    KDE4SUPPORT_DEPRECATED const K4AboutData *aboutData() const;
 
     /**
      * Sets the about data of this component.
      *
      * @since 4.5
      */
-    void setAboutData(const K4AboutData &aboutData);
+    KDE4SUPPORT_DEPRECATED void setAboutData(const K4AboutData &aboutData);
 
     /**
      * Returns the name of the component.

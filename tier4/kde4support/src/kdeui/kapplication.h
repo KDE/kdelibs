@@ -24,6 +24,10 @@
 // Version macros. Never put this further down.
 #include <kde4support_export.h>
 
+#ifdef KDE4SUPPORT_NO_DEPRECATED_NOISE
+#warning "This file is deprecated."
+#endif
+
 class KConfig;
 
 #ifdef KDE3_SUPPORT
@@ -69,7 +73,7 @@ class KApplicationPrivate;
 * @short Controls and provides information to all KDE applications.
 * @author Matthias Kalle Dalheimer <kalle@kde.org>
 */
-class KDE4SUPPORT_DEPRECATED_EXPORT KApplication : public QApplication
+class KDE4SUPPORT_DEPRECATED_EXPORT_NOISE KApplication : public QApplication
 {
   Q_OBJECT
   Q_CLASSINFO("D-Bus Interface", "org.kde.KApplication")

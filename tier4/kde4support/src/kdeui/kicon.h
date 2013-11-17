@@ -21,6 +21,10 @@
 
 #include <kde4support_export.h>
 
+#ifdef KDE4SUPPORT_NO_DEPRECATED_NOISE
+#warning "This file is deprecated."
+#endif
+
 #include <QIcon>
 
 class KIconLoader;
@@ -83,8 +87,6 @@ public:
      * Destroys the icon.
      */
     ~KIcon();
-
-    KIcon& operator=( const QIcon &other );
 
 private:
     class Private;

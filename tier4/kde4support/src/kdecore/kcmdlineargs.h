@@ -20,6 +20,11 @@
 #define KCMDLINEARGS_H
 
 #include <kde4support_export.h>
+
+#ifdef KDE4SUPPORT_NO_DEPRECATED_NOISE
+#warning "This file is deprecated."
+#endif
+
 #include <klocalizedstring.h>
 
 template <class T> class QList;
@@ -43,7 +48,7 @@ class KCmdLineOptionsPrivate;
  *
  * @see KCmdLineArgs for additional usage information
  */
-class KDE4SUPPORT_DEPRECATED_EXPORT KCmdLineOptions
+class KDE4SUPPORT_DEPRECATED_EXPORT_NOISE KCmdLineOptions
 {
     friend class KCmdLineArgs;
     friend class KCmdLineArgsStatic;

@@ -24,6 +24,10 @@
 
 #include <kde4support_export.h>
 
+#ifdef KDE4SUPPORT_NO_DEPRECATED_NOISE
+#warning "This file is deprecated."
+#endif
+
 #include <QtCore/QVariant>
 #include <QtCore/QUrl>
 #include <QtCore/QMap>
@@ -102,7 +106,7 @@ class KUrlPrivate;
  * context.
  *
  */
-class KDE4SUPPORT_DEPRECATED_EXPORT KUrl : public QUrl // krazy:exclude=dpointer,qclasses (krazy can't deal with embedded classes)
+class KDE4SUPPORT_DEPRECATED_EXPORT_NOISE KUrl : public QUrl // krazy:exclude=dpointer,qclasses (krazy can't deal with embedded classes)
 {
 public:
   typedef QMap<QString, QString> MetaDataMap;

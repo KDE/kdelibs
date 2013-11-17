@@ -25,6 +25,11 @@
 #define K4ABOUTDATA_H
 
 #include <kde4support_export.h>
+
+#ifdef KDE4SUPPORT_NO_DEPRECATED_NOISE
+#warning "This file is deprecated."
+#endif
+
 #include <klocalizedstring.h>
 // Qt
 #include <QtCore/QString>
@@ -66,7 +71,7 @@ class K4AboutData;
  *
  * @bc KDE4
  */
-class KDE4SUPPORT_DEPRECATED_EXPORT K4AboutPerson
+class KDE4SUPPORT_DEPRECATED_EXPORT_NOISE K4AboutPerson
 {
     friend class K4AboutData;
 public:
@@ -190,7 +195,7 @@ class K4AboutLicense;
  * classes.
  * @author Espen Sand (espen@kde.org), David Faure (faure@kde.org)
  */
-class KDE4SUPPORT_DEPRECATED_EXPORT K4AboutData
+class KDE4SUPPORT_DEPRECATED_EXPORT_NOISE K4AboutData
 {
   public:
   /**
@@ -894,7 +899,7 @@ class KDE4SUPPORT_DEPRECATED_EXPORT K4AboutData
  * lookup. This is necessary because the translation catalogs are usually not
  * yet initialized at the point where K4AboutData is constructed.
  */
-class KDE4SUPPORT_DEPRECATED_EXPORT K4AboutLicense
+class KDE4SUPPORT_DEPRECATED_EXPORT_NOISE K4AboutLicense
 {
     friend class K4AboutData;
 public:

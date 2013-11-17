@@ -24,6 +24,11 @@
 #define KSTANDARDDIRS_H
 
 #include <kde4support_export.h>
+
+#ifdef KDE4SUPPORT_NO_DEPRECATED_NOISE
+#warning "This file is deprecated."
+#endif
+
 #include <QtCore/QStringList>
 #include <QtCore/QMap>
 
@@ -169,7 +174,7 @@ class KConfig;
  *
  * @deprecated since 5.0, use QStandardPaths, see KDE5PORTING.html for details
  **/
-class KDE4SUPPORT_DEPRECATED_EXPORT KStandardDirs
+class KDE4SUPPORT_DEPRECATED_EXPORT_NOISE KStandardDirs
 {
 public:
     /**

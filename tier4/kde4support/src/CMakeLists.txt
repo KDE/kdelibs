@@ -245,7 +245,7 @@ configure_file(config-kstandarddirs.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-k
 configure_file(kdemacros.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h )
 
 add_library(KDE4Support ${libkde4support_SRCS})
-generate_export_header(KDE4Support)
+generate_export_header(KDE4Support EXPORT_FILE_NAME kde4support_export_internal.h)
 add_library(KF5::KDE4Support ALIAS KDE4Support)
 
 target_include_directories(KDE4Support PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/../../..")
@@ -501,7 +501,8 @@ install(FILES
     kdeui/kdatetimewidget.h
     kdeui/kdatewidget.h
     kdeui/k4timezonewidget.h
-    ${CMAKE_CURRENT_BINARY_DIR}/kde4support_export.h
+    kdecore/kde4support_export.h
+    ${CMAKE_CURRENT_BINARY_DIR}/kde4support_export_internal.h
     ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h
     kdecore/kdeversion.h
     DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel

@@ -70,6 +70,11 @@ bool KComponentData::operator==(const KComponentData &rhs) const
     return d == rhs.d;
 }
 
+bool KComponentData::operator!=(const KComponentData &rhs) const
+{
+  return !operator==(rhs);
+}
+
 enum KdeLibraryPathsAdded {
     NeedLazyInit,
     LazyInitDone,
