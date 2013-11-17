@@ -20,11 +20,17 @@
 #define _KGLOBAL_H
 
 #include <kde4support_export.h>
+
+#ifdef KDE4SUPPORT_NO_DEPRECATED_NOISE
+#warning "This file is deprecated."
+#endif
+
 #include <QtCore/QAtomicPointer>
 #include <sys/types.h>
-#include <QtCore/QObject>
+#include <QtCore/QDebug>
 // To simplify Qt5 porting in KDE code not yet ported to frameworks.
 #include <QMimeData>
+#include <klocale.h>
 
 // TODO: Re-add for source compat: #include <kdemacros.h>
 
@@ -38,7 +44,6 @@
 class KComponentData;
 class KCharsets;
 class KConfig;
-class KLocale;
 class KStandardDirs;
 class KSharedConfig;
 template <typename T>
@@ -322,6 +327,30 @@ static struct K_GLOBAL_STATIC_STRUCT_NAME(NAME)                                \
 namespace KGlobal
 {
 
+  struct KDE4SUPPORT_DEPRECATED_EXPORT_NOISE LocaleWrapper : public KLocale
+  {
+    explicit LocaleWrapper(KLocale *locale)
+      : KLocale(*locale)
+    {
+
+    }
+
+    KDE4SUPPORT_DEPRECATED static void insertCatalog(const QString &)
+    {
+      qWarning() << "Your code needs to be ported in KF5.  See the Ki18n programmers guide.";
+    }
+
+    LocaleWrapper* operator->()
+    {
+      return this;
+    }
+
+    operator KLocale*()
+    {
+      return this;
+    }
+  };
+
     /**
      * Returns the global component data.  There is always at least
      * one instance of a component in one application (in most
@@ -363,7 +392,7 @@ namespace KGlobal
      *
      * @deprecated since 5.0, use KLocale::global()
      */
-    KDE4SUPPORT_DEPRECATED_EXPORT KLocale *locale();
+    KDE4SUPPORT_DEPRECATED_EXPORT LocaleWrapper locale();
     /**
      * @internal
      * Returns whether KGlobal has a valid KLocale object

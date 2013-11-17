@@ -116,9 +116,9 @@ bool KGlobal::hasMainComponent()
     return KComponentData::hasMainComponent();
 }
 
-KLocale *KGlobal::locale()
+KGlobal::LocaleWrapper KGlobal::locale()
 {
-    return KLocale::global();
+    return KGlobal::LocaleWrapper(KLocale::global());
 }
 
 bool KGlobal::hasLocale()
