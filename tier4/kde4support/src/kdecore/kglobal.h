@@ -544,5 +544,13 @@ namespace KGlobal
     }
 }
 
+struct KCatalogLoader
+{
+  KDE4SUPPORT_DEPRECATED KCatalogLoader(const QString &)
+  {
+    qWarning() << "Your code needs to be ported in KF5.  See the Ki18n programmers guide.";
+  }
+};
+
 #endif // _KGLOBAL_H
 
