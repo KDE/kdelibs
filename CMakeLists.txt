@@ -32,11 +32,11 @@ if(MSVC)
   return()
 endif()
 
-add_subdirectory( tier2 )
-add_subdirectory( tier3 )
-add_subdirectory( tier4 )
+# add_subdirectory( tier2 )
+# add_subdirectory( tier3 )
+# add_subdirectory( tier4 )
 
-add_subdirectory( staging )
+# add_subdirectory( staging )
 
 feature_summary(WHAT ALL
                 INCLUDE_QUIET_PACKAGES
