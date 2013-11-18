@@ -34,6 +34,7 @@ KIO_UNIT_TESTS(
   dataprotocoltest
   clipboardupdatertest
   globaltest
+  udsentrytest
 )
 
 KIO_EXECUTABLE_TESTS(

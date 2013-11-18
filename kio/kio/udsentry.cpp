@@ -169,13 +169,32 @@ void UDSEntryPrivate::load(QDataStream &s, UDSEntry &a)
     e.clear();
     quint32 size;
     s >> size;
+
+    // We cache the loaded strings. Some of them, like, e.g., the user,
+    // will often be the same for many entries in a row. Caching them
+    // permits to use implicit sharing to save memory.
+    static QVector<QString> cachedStrings;
+    if (cachedStrings.size() < size) {
+        cachedStrings.resize(size);
+    }
+
     for(quint32 i = 0; i < size; ++i)
     {
         quint32 uds;
         s >> uds;
         if (uds & KIO::UDSEntry::UDS_STRING) {
+            // If the QString is the same like the one we read for the
+            // previous UDSEntry at the i-th position, use an implicitly
+            // shared copy of the same QString to save memory.
+            QString buffer;
+            s >> buffer;
+
+            if (buffer != cachedStrings.at(i)) {
+                 cachedStrings[i] = buffer;
+            }
+
             Field f;
-            s >> f.m_str;
+            f.m_str = cachedStrings.at(i);
             e.insert(uds, f);
         } else if (uds & KIO::UDSEntry::UDS_NUMBER) {
             Field f;
