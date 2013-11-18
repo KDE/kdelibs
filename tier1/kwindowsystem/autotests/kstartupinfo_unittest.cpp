@@ -22,6 +22,12 @@
 #include <kstartupinfo.h>
 #include <QSignalSpy>
 #include <qtest_widgets.h>
+#include <QX11Info>
+
+#include <xcb/xcb.h>
+
+Q_DECLARE_METATYPE(KStartupInfoId)
+Q_DECLARE_METATYPE(KStartupInfoData)
 
 class KStartupInfo_UnitTest : public QObject
 {
@@ -30,6 +36,8 @@ public:
     KStartupInfo_UnitTest()
         : m_listener(true, this),
         m_receivedCount(0) {
+        qRegisterMetaType<KStartupInfoId>();
+        qRegisterMetaType<KStartupInfoData>();
         connect(&m_listener, SIGNAL(gotNewStartup(KStartupInfoId,KStartupInfoData)),
                 this, SLOT(slotNewStartup(KStartupInfoId,KStartupInfoData)));
     }
@@ -47,6 +55,8 @@ Q_SIGNALS:
 
 private Q_SLOTS:
     void testStart();
+    void dontCrashCleanup_data();
+    void dontCrashCleanup();
 
 private:
     KStartupInfo m_listener;
@@ -89,6 +99,66 @@ void KStartupInfo_UnitTest::testStart()
     QCOMPARE(m_receivedData.icon(), iconPath);
     QCOMPARE(m_receivedData.bin(), bin);
     //qDebug() << m_receivedData.bin() << m_receivedData.name() << m_receivedData.description() << m_receivedData.icon() << m_receivedData.pids() << m_receivedData.hostname() << m_receivedData.applicationId();
+}
+
+static void sync()
+{
+    auto *c = QX11Info::connection();
+    const auto cookie = xcb_get_input_focus(c);
+    xcb_generic_error_t *error = Q_NULLPTR;
+    QScopedPointer<xcb_get_input_focus_reply_t, QScopedPointerPodDeleter> sync(xcb_get_input_focus_reply(c, cookie, &error));
+    if (error) {
+        free(error);
+    }
+}
+
+void KStartupInfo_UnitTest::dontCrashCleanup_data()
+{
+    QTest::addColumn<bool>("silent");
+    QTest::addColumn<bool>("change");
+    QTest::addColumn<int>("countRemoveStartup");
+
+    QTest::newRow("normal")   << false << false << 2;
+    QTest::newRow("silent")   << true  << false << 0;
+    QTest::newRow("uninited") << false << true  << 0;
+}
+
+void KStartupInfo_UnitTest::dontCrashCleanup()
+{
+    qputenv("KSTARTUPINFO_TIMEOUT", QByteArrayLiteral("1"));
+
+    KStartupInfoId id;
+    KStartupInfoId id2;
+    id.initId(QByteArrayLiteral("somefancyidwhichisrandom_kstartupinfo_unittest_0"));
+    id2.initId(QByteArrayLiteral("somefancyidwhichisrandom_kstartupinfo_unittest_1"));
+
+    KStartupInfoData data;
+    data.setApplicationId(QStringLiteral("/dir with space/kstartupinfo_unittest.desktop"));
+    data.setIcon(QStringLiteral("/dir with space/kstartupinfo_unittest.png"));
+    data.setDescription(QStringLiteral("A description"));
+    data.setName(QStringLiteral("A name"));
+    data.addPid(12345);
+    data.setBin(QStringLiteral("dir with space/kstartupinfo_unittest"));
+    QFETCH(bool, silent);
+    if (silent) {
+        data.setSilent(KStartupInfoData::Yes);
+    }
+
+    QSignalSpy spy(&m_listener, SIGNAL(gotRemoveStartup(KStartupInfoId, KStartupInfoData)));
+    QFETCH(bool, change);
+    if (change) {
+        KStartupInfo::sendChange(id, data);
+        KStartupInfo::sendChange(id2, data);
+    } else {
+        KStartupInfo::sendStartup(id, data);
+        KStartupInfo::sendStartup(id2, data);
+    }
+
+    // let's do a roundtrip to the X server
+    sync();
+
+    QTest::qWait(2100);
+    QTEST(spy.count(), "countRemoveStartup");
 }
 
 QTEST_MAIN(KStartupInfo_UnitTest)

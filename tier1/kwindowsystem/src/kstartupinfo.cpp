@@ -975,63 +975,33 @@ void KStartupInfo::Private::startups_cleanup()
 
 void KStartupInfo::Private::startups_cleanup_internal( bool age_P )
     {
-    for( QMap< KStartupInfoId, KStartupInfo::Data >::Iterator it = startups.begin();
-         it != startups.end();
-         )
-        {
-        if( age_P )
-            ( *it ).age++;
-	unsigned int tout = timeout;
-	if( ( *it ).silent() == Data::Yes ) // TODO
-	    tout *= 20;
-        if( ( *it ).age >= tout )
-            {
-            const KStartupInfoId& key = it.key();
-            ++it;
-            //qDebug() << "entry timeout:" << key.id();
-            remove_startup_info_internal( key );
+    auto checkCleanup = [this, age_P](QMap<KStartupInfoId, KStartupInfo::Data> &s, bool doEmit) {
+        auto it = s.begin();
+        while (it != s.end()) {
+            if (age_P)
+                (*it).age++;
+            unsigned int tout = timeout;
+            if ((*it).silent() == Data::Yes) {
+                // give kdesu time to get a password
+                tout *= 20;
             }
-        else
-            ++it;
-        }
-    for( QMap< KStartupInfoId, KStartupInfo::Data >::Iterator it = silent_startups.begin();
-         it != silent_startups.end();
-         )
-        {
-        if( age_P )
-            ( *it ).age++;
-	unsigned int tout = timeout;
-	if( ( *it ).silent() == Data::Yes ) // TODO
-	    tout *= 20;
-        if( ( *it ).age >= tout )
-            {
-            const KStartupInfoId& key = it.key();
-            ++it;
-            //qDebug() << "entry timeout:" << key.id();
-            remove_startup_info_internal( key );
+            const QByteArray timeoutEnvVariable = qgetenv("KSTARTUPINFO_TIMEOUT");
+            if (!timeoutEnvVariable.isNull()) {
+                tout = timeoutEnvVariable.toUInt();
             }
-        else
-            ++it;
-        }
-    for( QMap< KStartupInfoId, KStartupInfo::Data >::Iterator it = uninited_startups.begin();
-         it != uninited_startups.end();
-         )
-        {
-        if( age_P )
-            ( *it ).age++;
-	unsigned int tout = timeout;
-	if( ( *it ).silent() == Data::Yes ) // TODO
-	    tout *= 20;
-        if( ( *it ).age >= tout )
-            {
-            const KStartupInfoId& key = it.key();
-            ++it;
-            //qDebug() << "entry timeout:" << key.id();
-            remove_startup_info_internal( key );
+            if ((*it).age >= tout) {
+                if (doEmit) {
+                    emit q->gotRemoveStartup(it.key(), it.value());
+                }
+                it = s.erase(it);
+            } else {
+                ++it;
             }
-        else
-            ++it;
         }
+    };
+    checkCleanup(startups, true);
+    checkCleanup(silent_startups, false);
+    checkCleanup(uninited_startups, false);
     }
 
 void KStartupInfo::Private::clean_all_noncompliant()
