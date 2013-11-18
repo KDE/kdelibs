@@ -12,6 +12,7 @@ add_test(ThreadWeaverJobTests ThreadWeaverJobTests)
 ecm_mark_as_test(ThreadWeaverJobTests)
 
 target_link_libraries(ThreadWeaverJobTests Qt5::Test ThreadWeaver)
+set_target_properties(ThreadWeaverJobTests PROPERTIES MACOSX_BUNDLE FALSE)
 
 ########### next target ###############
 
@@ -22,6 +23,7 @@ add_test(ThreadWeaverQueueTests ThreadWeaverQueueTests)
 ecm_mark_as_test(ThreadWeaverQueueTests)
 
 target_link_libraries(ThreadWeaverQueueTests Qt5::Test ThreadWeaver)
+set_target_properties(ThreadWeaverQueueTests PROPERTIES MACOSX_BUNDLE FALSE)
 
 ########### next target ###############
 
@@ -32,6 +34,7 @@ add_test(ThreadWeaverDeleteTest ThreadWeaverDeleteTest)
 ecm_mark_as_test(ThreadWeaverDeleteTest)
 
 target_link_libraries(ThreadWeaverDeleteTest Qt5::Test ThreadWeaver)
+set_target_properties(ThreadWeaverDeleteTest PROPERTIES MACOSX_BUNDLE FALSE)
 
 ########### next target ###############
 
@@ -42,6 +45,7 @@ add_test(ThreadWeaverLifecycleTest ThreadWeaverLifecycleTest)
 ecm_mark_as_test(ThreadWeaverLifecycleTest)
 
 target_link_libraries(ThreadWeaverLifecycleTest Qt5::Test ThreadWeaver)
+set_target_properties(ThreadWeaverLifecycleTest PROPERTIES MACOSX_BUNDLE FALSE)
 
 ########### next target ###############
 
@@ -52,3 +56,4 @@ add_test(ThreadWeaverShutdownOnQApplicationQuitTest ThreadWeaverShutdownOnQAppli
 ecm_mark_as_test(ThreadWeaverShutdownOnQApplicationQuitTest)
 
 target_link_libraries(ThreadWeaverShutdownOnQApplicationQuitTest Qt5::Test ThreadWeaver)
+set_target_properties(ThreadWeaverShutdownOnQApplicationQuitTest PROPERTIES MACOSX_BUNDLE FALSE)
