@@ -123,8 +123,12 @@ namespace KWindowEffects
     /**
      * Instructs the window manager to blur the background
      * in the specified region behind the given window.
+     * The given region will overwrite any previous blur-behind region.
      * Passing a null region will enable the blur effect for the whole window.
      * The region is relative to the top-left corner of the client area.
+     *
+     * If @a enable is @c false, blur will be disabled for the whole window
+     * (@a region is ignored).
      *
      * Note that you will usually want to set the region to the shape of the window,
      * excluding any shadow or halo.
