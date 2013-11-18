@@ -52,10 +52,7 @@ endif()
 
 add_subdirectory(kntlm)
 add_subdirectory(ioslaves)
-
-if ( NOT WINCE )
-    add_subdirectory(kssld)
-endif ()
+add_subdirectory(kssld)
 
 if(NOT WIN32)
   # arpa/nameser.h

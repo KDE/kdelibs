@@ -6,12 +6,10 @@ set(kprintutils_LIB_SRCS
     kprintpreview.cpp
 )
 
-if(NOT WINCE)
 set(kprintutils_LIB_SRCS
   ${kprintutils_LIB_SRCS}
   kdeprintdialog.cpp
 )
-endif()
 
 if (X11_FOUND)
 set(kprintutils_LIB_SRCS

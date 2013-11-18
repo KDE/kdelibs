@@ -30,16 +30,8 @@ if (WIN32)
         ${kcoreaddons_OPTIONAL_SRCS}
         text/kmacroexpander_win.cpp
         util/kshell_win.cpp
+        util/kuser_win.cpp
     )
-    if(NOT WINCE)
-        LIST(APPEND kcoreaddons_OPTIONAL_SRCS
-           util/kuser_win.cpp
-        )
-    else()
-        LIST(APPEND kcoreaddons_OPTIONAL_SRCS
-           util/kuser_wince.cpp
-        )
-    endif()
 endif ()
 
 if (UNIX)
