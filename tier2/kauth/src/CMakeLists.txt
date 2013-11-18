@@ -34,7 +34,7 @@ set_target_properties(KAuth PROPERTIES VERSION   ${KAUTH_VERSION_STRING}
 
 # Compile only if fake backend has not been selected
 
-if (NOT "${KDE4_AUTH_BACKEND_NAME}" STREQUAL "FAKE")
+if (NOT "${KAUTH_BACKEND_NAME}" STREQUAL "FAKE")
     # KAUTH_POLICY_GEN_SRCS has been generated from ConfigureChecks.cmake
     add_executable(kauth-policy-gen ${KAUTH_POLICY_GEN_SRCS})
     add_executable(KF5::kauth-policy-gen ALIAS kauth-policy-gen)
@@ -47,7 +47,7 @@ endif ()
 
 # KAuth backend plugin
 
-if (NOT "${KDE4_AUTH_BACKEND_NAME}" STREQUAL "FAKE")
+if (NOT "${KAUTH_BACKEND_NAME}" STREQUAL "FAKE")
     set(KAUTH_BACKEND_SRCS ${KAUTH_BACKEND_SRCS})
     # KAuth::AuthBackend is not exported
     add_library(kauth_backend_plugin MODULE ${KAUTH_BACKEND_SRCS} AuthBackend.cpp)
@@ -62,7 +62,7 @@ endif ()
 
 # KAuth helper plugin
 
-if (NOT "${KDE4_AUTH_HELPER_BACKEND_NAME}" STREQUAL "FAKE")
+if (NOT "${KAUTH_HELPER_BACKEND_NAME}" STREQUAL "FAKE")
     # KAuth::HelperProxy is not exported
     add_library(kauth_helper_plugin MODULE ${KAUTH_HELPER_BACKEND_SRCS} HelperProxy.cpp)
     target_link_libraries(kauth_helper_plugin PRIVATE ${KAUTH_HELPER_BACKEND_LIBS})

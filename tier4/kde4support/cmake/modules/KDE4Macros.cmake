@@ -486,3 +486,14 @@ else()
   include("${CMAKE_CURRENT_LIST_DIR}/../KDocTools/KDocToolsMacros.cmake")
   include("${CMAKE_CURRENT_LIST_DIR}/../KDEWidgets/KDEWidgetsMacros.cmake")
 endif()
+
+# functions deprecated, they still should work
+macro (KDE4_AUTH_INSTALL_ACTIONS)
+    message(WARNING "KDE4_AUTH_INSTALL_ACTIONS is deprecated, use KAUTH_INSTALL_ACTIONS instead")
+    KAUTH_INSTALL_ACTIONS(${ARGN})
+endmacro()
+
+macro (KDE4_INSTALL_AUTH_HELPER_FILES)
+    message(WARNING "KDE4_INSTALL_AUTH_HELPER_FILES is deprecated, use KAUTH_INSTALL_HELPER_FILES instead")
+    KAUTH_INSTALL_HELPER_FILES(${ARGN})
+endmacro()

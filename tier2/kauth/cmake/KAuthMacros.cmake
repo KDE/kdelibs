@@ -11,25 +11,19 @@
 # to a DBus policy to let the helper register on the system bus, and a service file for letting the helper
 # being automatically activated by the system bus.
 # *WARNING* You have to install the helper in ${LIBEXEC_INSTALL_DIR} to make sure everything will work.
-function(KDE4_INSTALL_AUTH_HELPER_FILES HELPER_TARGET HELPER_ID HELPER_USER)
-    if(KDE4_AUTH_HELPER_BACKEND_NAME STREQUAL "DBUS")
-        if (_kdeBootStrapping)
-            set(_stubFilesDir  ${CMAKE_SOURCE_DIR}/kdecore/auth/backends/dbus/ )
-        else (_kdeBootStrapping)
-            set(_stubFilesDir  ${KDE4_DATA_INSTALL_DIR}/kauth/ )
-        endif (_kdeBootStrapping)
-
-        configure_file(${_stubFilesDir}/dbus_policy.stub
+function(KAUTH_INSTALL_HELPER_FILES HELPER_TARGET HELPER_ID HELPER_USER)
+    if(KAUTH_HELPER_BACKEND_NAME STREQUAL "DBUS")
+        configure_file(${KAUTH_STUB_FILES_DIR}/dbus_policy.stub
                         ${CMAKE_CURRENT_BINARY_DIR}/${HELPER_ID}.conf)
         install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${HELPER_ID}.conf
                 DESTINATION ${SYSCONF_INSTALL_DIR}/dbus-1/system.d/)
 
-        configure_file(${_stubFilesDir}/dbus_service.stub
+        configure_file(${KAUTH_STUB_FILES_DIR}/dbus_service.stub
                         ${CMAKE_CURRENT_BINARY_DIR}/${HELPER_ID}.service)
         install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${HELPER_ID}.service
                 DESTINATION ${DBUS_SYSTEM_SERVICES_INSTALL_DIR})
-    endif(KDE4_AUTH_HELPER_BACKEND_NAME STREQUAL "DBUS")
-endfunction(KDE4_INSTALL_AUTH_HELPER_FILES)
+    endif()
+endfunction()
 
 # This macro generates an action file, depending on the backend used, for applications using KAuth.
 # It accepts the helper id (the DBUS name) and a file containing the actions (check kdelibs/kdecore/auth/example
@@ -38,12 +32,12 @@ endfunction(KDE4_INSTALL_AUTH_HELPER_FILES)
 # file will be generated and installed into the policykit action directory (usually /usr/share/PolicyKit/policy/),
 # and on Mac (Authorization Services) will be added to the system action registry using the native MacOS API during
 # the install phase
-function(KDE4_INSTALL_AUTH_ACTIONS HELPER_ID ACTIONS_FILE)
+function(KAUTH_INSTALL_ACTIONS HELPER_ID ACTIONS_FILE)
 
-  if(KDE4_AUTH_BACKEND_NAME STREQUAL "APPLE")
+  if(KAUTH_BACKEND_NAME STREQUAL "APPLE")
     get_target_property(kauth_policy_gen KF5::kauth-policy-gen LOCATION)
     install(CODE "execute_process(COMMAND ${kauth_policy_gen} ${ACTIONS_FILE} WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})")
-  elseif(KDE4_AUTH_BACKEND_NAME STREQUAL "POLKITQT" OR KDE4_AUTH_BACKEND_NAME STREQUAL "POLKITQT-1")
+  elseif(KAUTH_BACKEND_NAME STREQUAL "POLKITQT" OR KAUTH_BACKEND_NAME STREQUAL "POLKITQT-1")
     set(_output ${CMAKE_CURRENT_BINARY_DIR}/${HELPER_ID}.policy)
     get_filename_component(_input ${ACTIONS_FILE} ABSOLUTE)
 
@@ -55,7 +49,7 @@ function(KDE4_INSTALL_AUTH_ACTIONS HELPER_ID ACTIONS_FILE)
                        DEPENDS KF5::kauth-policy-gen)
     add_custom_target("actions for ${HELPER_ID}" ALL DEPENDS ${_output})
 
-    install(FILES ${_output} DESTINATION ${KDE4_AUTH_POLICY_FILES_INSTALL_DIR})
+    install(FILES ${_output} DESTINATION ${KAUTH_POLICY_FILES_INSTALL_DIR})
   endif()
 
-endfunction(KDE4_INSTALL_AUTH_ACTIONS)
+endfunction()

@@ -142,28 +142,28 @@
  with the reply.
 
  Because this class will be compiled into a standalone executable, we need a main() function and some code to initialize everything: you don't have to write it. Instead, you use the
- KDE4_AUTH_HELPER_MAIN() macro that will take care of everything. It's used like this:
+ KAUTH_HELPER_MAIN() macro that will take care of everything. It's used like this:
 
  @code
- KDE4_AUTH_HELPER_MAIN("org.kde.auth.example", MyHelper)
+ KAUTH_HELPER_MAIN("org.kde.auth.example", MyHelper)
  @endcode
 
  The first parameter is the string containing the helper identifier. Please note that you need to use this same string in the application's code to tell the library which helper to call, so please
  stay away from typos, because we don't have any way to detect them. The second parameter is the name of the helper's class.
  Your helper, if complex, can be composed of a lot of source files, but the important thing is to include this macro in one at least one of them.
 
- To build the helper, KDE macros provide a function named kde4_install_auth_helper_files(). Use it in your cmake file like this:
+ To build the helper, KDE macros provide a function named kauth_install_helper_files(). Use it in your cmake file like this:
 
  @code
  kde4_add_executable(<helper_target> your sources...)
  target_link_libraries(<helper_target> your libraries...)
  install(TARGETS <helper_target> DESTINATION ${LIBEXEC_INSTALL_DIR})
 
- kde4_install_auth_helper_files(<helper_target> <helper_id> <user>)
+ kauth_install_helper_files(<helper_target> <helper_id> <user>)
  @endcode
 
  The first argument is the cmake target name for the helper executable, which you have to build and install separately. Make sure to INSTALL THE HELPER IN ${LIBEXEC_INSTALL_DIR},
- otherwise kde4_install_auth_helper_files will not work. The second argument is the
+ otherwise kauth_install_helper_files will not work. The second argument is the
  helper id. Please be sure to don't misspell it, and to not quote it. The user parameter is the user that the helper has to be run as. It usually is root, but some actions could require less strict
  permissions, so you should use the right user where possible (for example the user apache if you have to mess with apache settings). Note that the target created by this macro already links to
  libkauth and QtCore
@@ -399,7 +399,7 @@ public:
      */
     enum Error {
         NoError = 0, ///< No error.
-        NoResponderError, ///< The helper responder object hasn't been set. This shouldn't happen if you use the KDE4_AUTH_HELPER macro in the helper source
+        NoResponderError, ///< The helper responder object hasn't been set. This shouldn't happen if you use the KAUTH_HELPER macro in the helper source
         NoSuchActionError, ///< The action you tried to execute doesn't exist.
         InvalidActionError, ///< You tried to execute an invalid action object
         AuthorizationDeniedError, ///< You don't have the authorization to execute the action

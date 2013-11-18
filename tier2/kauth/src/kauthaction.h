@@ -211,7 +211,7 @@ public:
      * @brief Gets the default helper ID used for actions execution
      *
      * The helper ID is the string that uniquely identifies the helper in
-     * the system. It is the string passed to the KDE4_AUTH_HELPER() macro
+     * the system. It is the string passed to the KAUTH_HELPER() macro
      * in the helper source. Because one could have different helpers,
      * you need to specify an helper ID for each execution, or set a default
      * ID by calling setHelperID(). This method returns the current default
