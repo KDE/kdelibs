@@ -22,17 +22,20 @@ include(KDECMakeSettings)
 set(REQUIRED_QT_VERSION 5.2.0)
 find_package(Qt5 ${REQUIRED_QT_VERSION} CONFIG REQUIRED Widgets)
 
-if(NOT WIN32)
-    find_package(Qt5 ${REQUIRED_QT_VERSION} CONFIG REQUIRED X11Extras DBus)
-endif()
-
 if (APPLE)
-   find_package(Carbon REQUIRED)
+    find_package(Carbon REQUIRED) 
 endif ()
 
+if (UNIX)
+    find_package(Qt5 ${REQUIRED_QT_VERSION} CONFIG REQUIRED DBus)
+endif (APPLE)
+
 find_package(X11)
-find_package(XCB COMPONENTS XCB SYNC)
-find_package(X11_XCB)
+if (X11)
+    find_package(Qt5 ${REQUIRED_QT_VERSION} CONFIG REQUIRED X11Extras)
+    find_package(XCB COMPONENTS XCB SYNC)
+    find_package(X11_XCB)
+endif ()
 
 set(HAVE_X11 ${X11_FOUND})
 if(X11_FOUND)
