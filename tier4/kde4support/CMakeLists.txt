@@ -115,8 +115,6 @@ set(KDE4_TARGET_PREFIX KDE4__)
 install( FILES ${CMAKE_CURRENT_SOURCE_DIR}/KDELibs4Config.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/KDEPlatformProfile.cmake
-               ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/KDE4Macros.cmake
-               ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/kde4_exec_via_sh.cmake
                ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/kde4_cmake_uninstall.cmake.in
                ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/Win32.Manifest.in
          DESTINATION ${CMAKECONFIG_INSTALL_DIR} COMPONENT Devel)

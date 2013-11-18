@@ -104,6 +104,7 @@ set(cmakeFiles
                FindLibPython.py
                FindSIP.py
                PythonCompile.py
+               kde4_exec_via_sh.cmake
                )
 
 install(FILES ${cmakeFiles}

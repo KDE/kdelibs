@@ -678,7 +678,7 @@ endif (Q_WS_X11)
 
 
 # KDE4Macros.cmake contains all the KDE specific macros
-include(${CMAKE_CURRENT_LIST_DIR}/KDE4Macros.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/../KDE4Support/KDE4Macros.cmake)
 
 
 # decide whether KDE4 has been found
