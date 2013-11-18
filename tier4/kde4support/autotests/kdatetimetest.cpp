@@ -1372,7 +1372,7 @@ void KDateTimeTest::toZone()
     KConfigGroup group(&config, "TimeZones");
     group.writeEntry("LocalZone", QString::fromLatin1("Europe/London"));
     config.sync();
-    QDBusMessage message = QDBusMessage::createSignal("/Daemon", "org.kde.KTimeZoned", "configChanged");
+    QDBusMessage message = QDBusMessage::createSignal("/Daemon", "org.kde.KTimeZoned", "timeZoneChanged");
     QDBusConnection::sessionBus().send(message);
     timer.start(1000);
     loop.exec();

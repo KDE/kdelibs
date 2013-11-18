@@ -244,7 +244,7 @@ void KTimeZonesTest::zonetabChange()
     // Check that 'london' is automatically updated with the new zone.tab
     // contents, and that the new zones are added to KSystemTimeZones.
     s_testData.writeZoneTab(true);
-    QDBusMessage message = QDBusMessage::createSignal("/Daemon", "org.kde.KTimeZoned", "zonetabChanged");
+    QDBusMessage message = QDBusMessage::createSignal("/Daemon", "org.kde.KTimeZoned", "timeZoneDatabaseUpdated");
     QList<QVariant> args;
     args += QString(mDataDir + QLatin1String("/zone.tab"));
     message.setArguments(args);
