@@ -121,16 +121,16 @@ namespace KWindowEffects
     KWINDOWSYSTEM_EXPORT void highlightWindows(WId controller, const QList<WId> &ids);
 
     /**
-     * Instructs the window manager to blur the background in the specified region
-     * behind the given window. Passing a null region will enable the blur effect
-     * for the whole window. The region is relative to the top-left corner of the
-     * client area.
+     * Instructs the window manager to blur the background
+     * in the specified region behind the given window.
+     * Passing a null region will enable the blur effect for the whole window.
+     * The region is relative to the top-left corner of the client area.
      *
      * Note that you will usually want to set the region to the shape of the window,
      * excluding any shadow or halo.
      *
      * @param window The window for which to enable the blur effect
-     * @param enable Enable the effect if @a true, disable it if @false
+     * @param enable Enable the effect if @c true, disable it if @c false
      * @param region The region within the window where the background will be blurred
      */
     KWINDOWSYSTEM_EXPORT void enableBlurBehind(WId window, bool enable = true, const QRegion &region = QRegion());
