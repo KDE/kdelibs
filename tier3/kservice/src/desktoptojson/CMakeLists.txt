@@ -4,6 +4,7 @@ add_executable(desktoptojson
     main.cpp
     kconfigtojson.cpp
 )
+add_executable(KF5::desktoptojson ALIAS desktoptojson)
 
 target_link_libraries(desktoptojson
     Qt5::Core

@@ -1,0 +1,4 @@
+This test program checks the kservice_desktop_to_json() CMake macro works
+correctly. It is implemented as a standalone CMake project because the
+`desktoptojson` binary must already be installed at *configure* time (having it
+available at build time is not enough)

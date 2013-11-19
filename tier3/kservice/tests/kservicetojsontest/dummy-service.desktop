@@ -1,0 +1,10 @@
+[Desktop entry]
+Type=Service
+Icon=
+Name=Dummy
+ServiceTypes=Dummy
+X-KDE-Library=kservicetojsontest
+X-KDE-PluginInfo-Author=Aurélien Gâteau
+X-KDE-PluginInfo-Email=agateau@kde.org
+X-KDE-PluginInfo-Name=kservicetojsontest
+X-KDE-PluginInfo-Version=0.1

@@ -16,33 +16,26 @@
 #
 #  kservice_desktop_to_json(plasma-dataengine-time.desktop my_output_file.json)
 #
+# WARNING: This macro runs desktoptojson at *build* time. This was
+# necessary because the .json file file must be generated before moc
+# is run, and there is currently no way to define a target as a
+# dependency of the automoc target.
 
 macro(kservice_desktop_to_json desktop)
-
     # replace file extension if second argument is empty
     set(json ${ARGV1})
     if(NOT json)
-        set(json)
         string(REPLACE ".desktop" ".json" json ${desktop})
     endif()
 
-    # full paths to files
-    set(_in ${CMAKE_CURRENT_SOURCE_DIR}/${desktop})
-    set(_out ${CMAKE_CURRENT_BINARY_DIR}/${json})
-
-    # add our json file as new target
-    set(target)
-    string(REPLACE ".desktop" "_json" target ${desktop})
-    string(REPLACE "." "_" target ${target})
-    add_custom_target(${target} ALL DEPENDS ${_in})
-
-    # ... and define it
-    add_custom_command(
-        TARGET ${target} PRE_BUILD
-        COMMAND KF5::desktoptojson -i ${_in} -o ${_out}
+    # find and run desktoptojson
+    get_target_property(desktoptojson KF5::desktoptojson LOCATION)
+    execute_process(
+        COMMAND ${desktoptojson} -i ${desktop} -o ${CMAKE_CURRENT_BINARY_DIR}/${json}
+        RESULT_VARIABLE result
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        DEPENDS ${_in}
-        #COMMENT "Generating ${json}"
         )
-
+    if (NOT result EQUAL 0)
+        message(FATAL_ERROR "Generating ${json} failed")
+    endif()
 endmacro(kservice_desktop_to_json)
