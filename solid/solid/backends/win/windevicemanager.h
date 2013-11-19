@@ -22,7 +22,6 @@
 #define WINDEVICEMANAGER_H
 
 #include <solid/ifaces/devicemanager.h>
-#define HEAVE_DRIVER_KIT
 
 #include <QSet>
 #include <QDebug>
