@@ -40,6 +40,7 @@ class KCategorizedView;
 class ITEMVIEWS_EXPORT KCategoryDrawer
     : public QObject
 {
+    Q_OBJECT
     friend class KCategorizedView;
 
 public:
