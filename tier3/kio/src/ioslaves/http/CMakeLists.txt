@@ -46,24 +46,20 @@ add_subdirectory( tests )
 
 ########### next target ###############
 
-set(kio_http_cache_cleaner_KDEINIT_SRCS
+set(kio_http_cache_cleaner_SRCS
    http_cache_cleaner.cpp
    )
 
 
-kf5_add_kdeinit_executable( kio_http_cache_cleaner NOGUI ${kio_http_cache_cleaner_KDEINIT_SRCS})
+add_executable(kio_http_cache_cleaner ${kio_http_cache_cleaner_SRCS})
 
-target_link_libraries(kdeinit_kio_http_cache_cleaner
+target_link_libraries(kio_http_cache_cleaner
    Qt5::DBus
    Qt5::Network # QLocalSocket
    ${ZLIB_LIBRARY}
    KF5::KIOCore # KProtocolManager
    KF5::KI18n)
 
-install(TARGETS kdeinit_kio_http_cache_cleaner ${INSTALL_TARGETS_DEFAULT_ARGS})
-
-target_link_libraries( kio_http_cache_cleaner kdeinit_kio_http_cache_cleaner )
-#target_include_directories(kio_http_cache_cleaner PUBLIC $<TARGET_PROPERTY:kio,INTERFACE_INCLUDE_DIRECTORIES>)
 install(TARGETS kio_http_cache_cleaner DESTINATION ${LIBEXEC_INSTALL_DIR} )
 
 ########### next target ###############

@@ -711,7 +711,7 @@ private:
 };
 
 
-extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
+int main(int argc, char **argv)
 {
     QCoreApplication app(argc, argv);
     app.setApplicationVersion("5.0");
