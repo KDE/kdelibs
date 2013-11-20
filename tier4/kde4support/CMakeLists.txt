@@ -17,6 +17,14 @@ if(NOT WIN32)
     find_package(Qt5 ${QT_REQUIRED_VERSION} CONFIG REQUIRED X11Extras)
 endif()
 
+if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
+    # add dependencies
+else()
+    set(_kdeBootStrapping TRUE)
+    include(${CMAKE_SOURCE_DIR}/tier2/kdoctools/KDocToolsMacros.cmake)
+    set(KDOCTOOLS_CUSTOMIZATION_DIR "${KDocTools_BINARY_DIR}/src/customization/")
+endif()
+
 find_package(Strigi 0.6.3 QUIET)
 set_package_properties(Strigi PROPERTIES DESCRIPTION "Desktop indexing and search support"
                        URL "http://strigi.sourceforge.net"
@@ -86,9 +94,8 @@ install(EXPORT KDE4SupportTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/kde4support_version.h
         DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
 
-add_subdirectory( cmake )
-# Enable when kdoctools will be usable from the outside (macros are broken ATM)
-#add_subdirectory(docs)
+add_subdirectory(cmake)
+add_subdirectory(docs)
 add_subdirectory(src)
 add_subdirectory(autotests)
 add_subdirectory(tests)

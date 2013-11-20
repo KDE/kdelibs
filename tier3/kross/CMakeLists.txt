@@ -43,12 +43,15 @@ if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
 #     find_package(KIconThemes ${KF5_VERSION} REQUIRED)
     find_package(KIO ${KF5_VERSION} REQUIRED)
     find_package(KParts ${KF5_VERSION} REQUIRED)
+else()
+    set(_kdeBootStrapping TRUE)
+    include(${CMAKE_SOURCE_DIR}/tier2/kdoctools/KDocToolsMacros.cmake)
+    set(KDOCTOOLS_CUSTOMIZATION_DIR "${KDocTools_BINARY_DIR}/src/customization/")
 endif()
 
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
-# Enable when kdoctools will be usable from the outside (macros are broken ATM)
-#add_subdirectory(docs)
+add_subdirectory(docs)
 add_subdirectory(src)
 #add_subdirectory(autotests)
 

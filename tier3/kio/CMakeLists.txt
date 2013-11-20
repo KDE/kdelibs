@@ -43,6 +43,10 @@ if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
   find_package(XmlGui ${KF5_VERSION} REQUIRED)
   find_package(KBookmarks ${KF5_VERSION} REQUIRED)
   find_package(KNotifications ${KF5_VERSION} REQUIRED) #needed for kpac
+else()
+    set(_kdeBootStrapping TRUE)
+    include(${CMAKE_SOURCE_DIR}/tier2/kdoctools/KDocToolsMacros.cmake)
+    set(KDOCTOOLS_CUSTOMIZATION_DIR "${KDocTools_BINARY_DIR}/src/customization/")
 endif()
 
 # TODO: Remove these
@@ -58,8 +62,7 @@ find_package(Qt5 ${QT_REQUIRED_VERSION} CONFIG REQUIRED Widgets DBus Network Con
 find_package(X11)
 set(HAVE_X11 ${X11_FOUND})
 
-# Enable when kdoctools will be usable from the outside (macros are broken ATM)
-#add_subdirectory(docs)
+add_subdirectory(docs)
 add_subdirectory(src)
 add_subdirectory(autotests)
 add_subdirectory(tests)

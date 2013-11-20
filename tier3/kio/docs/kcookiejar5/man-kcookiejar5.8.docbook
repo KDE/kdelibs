@@ -167,7 +167,7 @@ Reloads the configuration file.
 
 <refsect1>
 <title>Usage</title>
-<para><command>kcookiejar5</command> is a command line tool to access the kded module which manages cookies in <command>Konqueror</command> and other KDE applications.
+<para><command>kcookiejar5</command> is a command line tool to access the kded module which manages cookies in <command>Konqueror</command> and other KDE applications.</para>
 <para>
 When started without parameters it loads the kded module to provide the dbus interface to store cookies.
 </para>

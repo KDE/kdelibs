@@ -29,12 +29,17 @@ set(REQUIRED_QT_VERSION "5.2.0")
 find_package(Qt5 ${REQUIRED_QT_VERSION} CONFIG REQUIRED DBus Test Xml)
 
 if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
+  find_package(KWindowSystem ${KF5_VERSION} REQUIRED)
   find_package(KConfig ${KF5_VERSION} REQUIRED)
   find_package(KCoreAddons ${KF5_VERSION} REQUIRED)
   find_package(KCrash ${KF5_VERSION} REQUIRED)
   find_package(KDBusAddons ${KF5_VERSION} REQUIRED)
   find_package(KI18n ${KF5_VERSION} REQUIRED)
   find_package(KDocTools REQUIRED)
+else()
+    set(_kdeBootStrapping TRUE)
+    include(${CMAKE_SOURCE_DIR}/tier2/kdoctools/KDocToolsMacros.cmake)
+    set(KDOCTOOLS_CUSTOMIZATION_DIR "${KDocTools_BINARY_DIR}/src/customization/")
 endif()
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
@@ -59,8 +64,7 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/KServiceConfig.cmake"
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/kservice_version.h
         DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
 
-# Enable when kdoctools will be usable from the outside (macros are broken ATM)
-#add_subdirectory(docs)
+add_subdirectory(docs)
 add_subdirectory(src)
 add_subdirectory(autotests)
 add_subdirectory(tests)

@@ -29,6 +29,7 @@ ecm_setup_version(5.0.0 VARIABLE_PREFIX SONNET
 
 
 # Enable when kdoctools will be usable from the outside (macros are broken ATM)
+# apol: they are working now, but KDocTools is in a higher tier, I'm unsure if we should enable it back
 #add_subdirectory(docs)
 add_subdirectory(src)
 add_subdirectory(autotests)
