@@ -55,6 +55,7 @@ sb_add_project(tier3/knotifyconfig DEPENDS kio ki18n knotifications)
 sb_add_project(tier3/knewstuff DEPENDS ki18n itemviews karchive kiconthemes ktextwidgets xmlgui solid kbookmarks kio)
 sb_add_project(tier3/kprintutils DEPENDS kcoreaddons ki18n kparts)
 sb_add_project(tier3/kdeclarative DEPENDS kconfig ki18n kiconthemes kio)
+sb_add_project(tier3/kdewidgets DEPENDS kio kdoctools kwidgetsaddons ki18n kiconthemes ktextwidgets itemviews)
 
 sb_add_project(tier4/kcmutils DEPENDS itemviews kconfigwidgets kcoreaddons ki18n kiconthemes kservice xmlgui)
 
