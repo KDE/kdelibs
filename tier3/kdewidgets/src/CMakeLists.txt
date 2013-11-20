@@ -58,7 +58,7 @@ if(Qt5Designer_FOUND)
   if(Qt5WebKitWidgets_FOUND)
 
   add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/kdewebkitwidgets.cpp
-    COMMAND "${MAKEKDEWIDGETS_EXECUTABLE}" -o ${CMAKE_CURRENT_BINARY_DIR}/kdewebkitwidgets.cpp ${CMAKE_CURRENT_SOURCE_DIR}/kdewebkit.widgets
+    COMMAND makekdewidgets -o ${CMAKE_CURRENT_BINARY_DIR}/kdewebkitwidgets.cpp ${CMAKE_CURRENT_SOURCE_DIR}/kdewebkit.widgets
     MAIN_DEPENDENCY kdewebkit.widgets DEPENDS makekdewidgets)
 
   set(kdewebkitwidgets_PART_SRCS

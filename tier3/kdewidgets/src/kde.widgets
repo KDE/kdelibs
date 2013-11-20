@@ -249,7 +249,7 @@ WhatsThis=A widget holding a lineedit and a pushbutton. A "file open" dialog ope
 Group=Input (KDE)
 
 [Sonnet::DictionaryComboBox]
-IncludeFile=dictionarycombobox.h
+IncludeFile=sonnet/dictionarycombobox.h
 ToolTip=Dictionary Combobox
 WhatsThis=A combobox to select a dictionary for spellchecking
 Group=Sonnet (KDE)
