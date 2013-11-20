@@ -150,6 +150,7 @@ install(FILES
   kpixmapsequence.h
   kpixmapsequenceoverlaypainter.h
   kpixmapsequencewidget.h
+  kpixmapregionselectorwidget.h
   kmimetypechooser.h
   ${CMAKE_CURRENT_BINARY_DIR}/kwidgetsaddons_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
