@@ -71,13 +71,15 @@ public:
     manager = new KConfigDialogManager(q, config);
     setupManagerConnections(manager);
 
-    buttonBox->button(QDialogButtonBox::Apply)->setEnabled(false);
+    setApplyButtonEnabled(false);
   }
 
   KPageWidgetItem* addPageInternal(QWidget *page, const QString &itemName,
                            const QString &pixmapName, const QString &header);
 
   void setupManagerConnections(KConfigDialogManager *manager);
+  void setApplyButtonEnabled(bool enabled);
+  void setRestoreDefaultsButtonEnabled(bool enabled);
 
   void _k_updateButtons();
   void _k_settingsChangedSlot();
@@ -127,8 +129,10 @@ KPageWidgetItem* KConfigDialog::addPage(QWidget *page,
   if (d->shown && manage) {
     // update the default button if the dialog is shown
     QPushButton *defaultButton = buttonBox()->button(QDialogButtonBox::RestoreDefaults);
-    bool is_default = defaultButton->isEnabled() && d->manager->isDefault();
-    defaultButton->setEnabled(!is_default);
+    if (defaultButton) {
+        bool is_default = defaultButton->isEnabled() && d->manager->isDefault();
+        defaultButton->setEnabled(!is_default);
+    }
   }
   return item;
 }
@@ -152,8 +156,10 @@ KPageWidgetItem* KConfigDialog::addPage(QWidget *page,
   {
     // update the default button if the dialog is shown
     QPushButton *defaultButton = buttonBox()->button(QDialogButtonBox::RestoreDefaults);
-    bool is_default = defaultButton->isEnabled() && d->managerForPage[page]->isDefault();
-    defaultButton->setEnabled(!is_default);
+    if (defaultButton) {
+        bool is_default = defaultButton->isEnabled() && d->managerForPage[page]->isDefault();
+        defaultButton->setEnabled(!is_default);
+    }
   }
   return item;
 }
@@ -187,6 +193,22 @@ void KConfigDialog::KConfigDialogPrivate::setupManagerConnections(KConfigDialogM
     q->connect(buttonBox->button(QDialogButtonBox::Apply), SIGNAL(clicked()), manager, SLOT(updateSettings()));
     q->connect(buttonBox->button(QDialogButtonBox::Cancel), SIGNAL(clicked()), manager, SLOT(updateWidgets()));
     q->connect(buttonBox->button(QDialogButtonBox::RestoreDefaults), SIGNAL(clicked()), manager, SLOT(updateWidgetsDefault()));
+}
+
+void KConfigDialog::KConfigDialogPrivate::setApplyButtonEnabled(bool enabled)
+{
+    QPushButton *applyButton = q->buttonBox()->button(QDialogButtonBox::Apply);
+    if (applyButton) {
+        applyButton->setEnabled(enabled);
+    }
+}
+
+void KConfigDialog::KConfigDialogPrivate::setRestoreDefaultsButtonEnabled(bool enabled)
+{
+    QPushButton *restoreDefaultsButton = q->buttonBox()->button(QDialogButtonBox::RestoreDefaults);
+    if (restoreDefaultsButton) {
+      restoreDefaultsButton->setEnabled(enabled);
+    }
 }
 
 void KConfigDialog::onPageRemoved( KPageWidgetItem *item )
@@ -239,7 +261,7 @@ void KConfigDialog::KConfigDialogPrivate::_k_updateButtons()
     has_changed |= (*it)->hasChanged();
   }
 
-  q->buttonBox()->button(QDialogButtonBox::Apply)->setEnabled(has_changed);
+  setApplyButtonEnabled(has_changed);
 
   bool is_default = manager->isDefault() && q->isDefault();
   for (it = managerForPage.begin();
@@ -249,7 +271,7 @@ void KConfigDialog::KConfigDialogPrivate::_k_updateButtons()
     is_default &= (*it)->isDefault();
   }
 
-  q->buttonBox()->button(QDialogButtonBox::RestoreDefaults)->setEnabled(!is_default);
+  setRestoreDefaultsButtonEnabled(!is_default);
 
   emit q->widgetModified();
   only_once = false;
@@ -281,7 +303,7 @@ void KConfigDialog::showEvent(QShowEvent *e)
       has_changed |= (*it)->hasChanged();
     }
 
-    buttonBox()->button(QDialogButtonBox::Apply)->setEnabled(has_changed);
+    d->setApplyButtonEnabled(has_changed);
 
     bool is_default = d->manager->isDefault() && isDefault();
     for (it = d->managerForPage.begin();
@@ -291,7 +313,8 @@ void KConfigDialog::showEvent(QShowEvent *e)
       is_default &= (*it)->isDefault();
     }
 
-    buttonBox()->button(QDialogButtonBox::RestoreDefaults)->setEnabled(!is_default);
+    d->setRestoreDefaultsButtonEnabled(!is_default);
+
     d->shown = true;
   }
   KPageDialog::showEvent(e);
