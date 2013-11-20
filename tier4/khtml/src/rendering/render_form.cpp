@@ -38,7 +38,6 @@
 #include <kreplace.h>
 #include <kreplacedialog.h>
 #include <dialog.h>
-#include <backgroundchecker.h>
 #include <kurlcompletion.h>
 #include <kwindowsystem.h>
 #include <kstandardaction.h>
@@ -48,6 +47,8 @@
 #include <kbuildsycocaprogressdialog.h>
 #include <kservicetypetrader.h>
 #include <kservice.h>
+#include <sonnet/backgroundchecker.h>
+#include <sonnet/dialog.h>
 
 #include <QAbstractItemView>
 #include <QAbstractTextDocumentLayout>

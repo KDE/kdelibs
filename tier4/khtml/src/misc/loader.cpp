@@ -68,9 +68,9 @@
 #include <kio/job.h>
 #include <kio/jobuidelegate.h>
 #include <kio/jobclasses.h>
+#include <kio/scheduler.h>
 #include <kcharsets.h>
 #include <kiconloader.h>
-#include <scheduler.h>
 #include <QDebug>
 #include <kjobwidgets.h>
 

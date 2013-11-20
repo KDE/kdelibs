@@ -40,7 +40,7 @@ if(NOT MSVC)
     qt5_add_resources( khtmltest_SRCS testkhtml.qrc )
     add_executable(khtmltest ${khtmltest_SRCS} )
     ecm_mark_as_test(khtmltest)
-    target_link_libraries( khtmltest KHtml XmlGui KTextWidgets KParts )
+    target_link_libraries( khtmltest KHtml KF5::XmlGui KF5::KTextWidgets KF5::KParts )
     #KJS KF5::KI18n
 
     ########### next target ###############
@@ -60,7 +60,7 @@ if(NOT MSVC)
 
     add_executable(testkhtml ${testkhtml_SRCS})
     ecm_mark_as_test(testkhtml)
-    target_link_libraries(testkhtml KHtml XmlGui KTextWidgets KParts)
+    target_link_libraries(testkhtml KHtml KF5::XmlGui KF5::KTextWidgets KF5::KParts)
 
     ########### next target ###############
 
@@ -71,7 +71,7 @@ if(NOT MSVC)
 
     add_executable(testkhtml_static ${testkhtml_static_SRCS} )
     ecm_mark_as_test(testkhtml_static)
-    target_link_libraries(testkhtml_static KHtml XmlGui KTextWidgets KParts)
+    target_link_libraries(testkhtml_static KHtml KF5::XmlGui KF5::KTextWidgets KF5::KParts)
 
     ########### next target ###############
 endif()

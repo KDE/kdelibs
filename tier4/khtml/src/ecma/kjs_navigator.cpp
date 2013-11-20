@@ -31,7 +31,7 @@
 #include <kconfiggroup.h>
 #include <QDebug>
 
-#include <kio/kprotocolmanager.h>
+#include <kprotocolmanager.h>
 #include <kservice.h>
 #include <kservicetypetrader.h>
 #include <kjs/lookup.h>

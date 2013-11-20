@@ -23,7 +23,7 @@
 
 #include <QDebug>
 #include <kshell.h>
-#include <kio/kprotocolmanager.h>
+#include <kprotocolmanager.h>
 
 #include <QtCore/QTextStream>
 #include <QtCore/QMap>

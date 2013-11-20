@@ -8,18 +8,39 @@ include(FeatureSummary)
 include(CMakePackageConfigHelpers)
 include(ECMSetupVersion)
 
-
 set(REQUIRED_QT_VERSION "5.2")
 find_package(Qt5 "${REQUIRED_QT_VERSION}" CONFIG REQUIRED Widgets Network DBus PrintSupport Xml Test)
 include(KDEInstallDirs)
 include(KDECompilerSettings)
 include(KDECMakeSettings)
 
-find_package(Phonon4Qt5 4.6.60 NO_MODULE)
-if (NOT Phonon4Qt5_FOUND)
-  return()
+set(KF5_VERSION "5.0.0")
+if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
+    find_package(KArchive ${KF5_VERSION} REQUIRED)
+    find_package(KI18n ${KF5_VERSION} REQUIRED) #
+    find_package(KCoreAddons ${KF5_VERSION} REQUIRED)
+    find_package(KGuiAddons ${KF5_VERSION} REQUIRED)
+    find_package(KDBusAddons ${KF5_VERSION} REQUIRED)
+    find_package(KService ${KF5_VERSION} REQUIRED)
+    find_package(KWindowSystem ${KF5_VERSION} REQUIRED) #
+    find_package(KCrash ${KF5_VERSION} REQUIRED)
+    find_package(KInit ${KF5_VERSION} REQUIRED)
+    find_package(KJS ${KF5_VERSION} REQUIRED)
+    find_package(KConfigWidgets ${KF5_VERSION} REQUIRED)
+    find_package(ItemViews ${KF5_VERSION} REQUIRED)
+    find_package(KIconThemes ${KF5_VERSION} REQUIRED)
+    find_package(KNotifications ${KF5_VERSION} REQUIRED)
+    find_package(KCompletion ${KF5_VERSION} REQUIRED)
+    find_package(KTextWidgets ${KF5_VERSION} REQUIRED)
+    find_package(XmlGui ${KF5_VERSION} REQUIRED)
+    find_package(KParts ${KF5_VERSION} REQUIRED)
+    find_package(KIO ${KF5_VERSION} REQUIRED)
+    find_package(KWallet ${KF5_VERSION} REQUIRED)
+else()
+  set(KJS_CREATE_HASH_TABLE "${CMAKE_SOURCE_DIR}/tier1/kjs/src/kjs/create_hash_table")
 endif()
-ecm_setup_version(5.0.0 VARIABLE_PREFIX KHTML
+
+ecm_setup_version(${KF5_VERSION} VARIABLE_PREFIX KHTML
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/khtml_version.h"
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KHtmlConfigVersion.cmake")
 

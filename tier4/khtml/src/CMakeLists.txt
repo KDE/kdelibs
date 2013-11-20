@@ -517,13 +517,11 @@ set(khtml_LIB_SRCS
 qt5_generate_dbus_interface(khtml_iface.h org.kde.KHtmlPart.xml)
 
 if(kdelibs_SOURCE_DIR)
-    set(kcookiejar_XML ${CMAKE_CURRENT_BINARY_DIR}/org.kde.KCookieServer.xml)
     qt5_generate_dbus_interface(${CMAKE_SOURCE_DIR}/tier3/kio/src/ioslaves/http/kcookiejar/kcookieserver.h org.kde.KCookieServer.xml)
-else ()
-    set(kcookiejar_XML ${DBUS_INTERFACES_INSTALL_DIR}/org.kde.KCookieServer.xml)
+    set(KCookieServer_DBUS_INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/org.kde.KCookieServer.xml)
 endif()
 
-qt5_add_dbus_interface(khtml_LIB_SRCS ${kcookiejar_XML} kcookiejar_interface)
+qt5_add_dbus_interface(khtml_LIB_SRCS ${KCookieServer_DBUS_INTERFACE} kcookiejar_interface)
 
 
 qt5_wrap_ui(khtml_LIB_SRCS
@@ -537,6 +535,7 @@ add_library(KHtml ${khtml_LIB_SRCS})
 
 target_link_libraries(KHtml
   PUBLIC
+    Qt5::Gui
     KF5::KIOCore
     KF5::KJS
     KF5::KI18n
@@ -560,7 +559,7 @@ target_link_libraries(KHtml
     KF5::KIOWidgets # KUrlRequester
 )
 if (KJS_DEBUGGER)
-  target_link_libraries(KHtml PRIVATE ktexteditor)
+  target_link_libraries(KHtml PRIVATE KF5::KTextEditor)
 endif()
 
 set_target_properties(KHtml PROPERTIES VERSION ${KHTML_VERSION_STRING}
@@ -685,7 +684,7 @@ set(khtmlpart_PART_SRCS khtml_factory.cpp )
 add_library(khtmlpart MODULE ${khtmlpart_PART_SRCS})
 set_target_properties(khtmlpart PROPERTIES PREFIX "${CMAKE_SHARED_LIBRARY_PREFIX}")
 
-target_link_libraries(khtmlpart KHtml XmlGui KTextWidgets KParts KF5::KI18n)
+target_link_libraries(khtmlpart KHtml KF5::XmlGui KF5::KTextWidgets KF5::KParts KF5::KI18n)
 
 install(TARGETS khtmlpart  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
@@ -697,7 +696,7 @@ install(TARGETS khtmlpart  DESTINATION ${PLUGIN_INSTALL_DIR} )
 add_library(khtmlimagepart MODULE khtmlimage_init.cpp)
 
 
-target_link_libraries(khtmlimagepart KHtml KF5::KWidgetsAddons XmlGui KTextWidgets KParts KF5::KI18n)
+target_link_libraries(khtmlimagepart KHtml KF5::KWidgetsAddons KF5::XmlGui KF5::KTextWidgets KF5::KParts KF5::KI18n)
 
 install(TARGETS khtmlimagepart  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
@@ -705,7 +704,7 @@ install(TARGETS khtmlimagepart  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 add_library(khtmladaptorpart MODULE khtmladaptorpart.cpp)
 
-target_link_libraries(khtmladaptorpart KParts KF5::KJS KF5::KI18n XmlGui)
+target_link_libraries(khtmladaptorpart KF5::KParts KF5::KJS KF5::KI18n KF5::XmlGui)
 
 install(TARGETS khtmladaptorpart DESTINATION ${PLUGIN_INSTALL_DIR} )
 

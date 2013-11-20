@@ -33,12 +33,12 @@
 #include <rendering/render_object.h>
 #include <rendering/render_canvas.h>
 #include <khtml_part.h>
-#include <kjs/scriptfunction.h> // private API
-#include <kjs/function_object.h> // even more private API. or not. I dunno.
 #ifdef KJS_DEBUGGER
 #include "debugger/debugwindow.h"
 #endif
 #include <QDebug>
+#include <kjs/scriptfunction.h>
+#include <kjs/function_object.h>
 
 using namespace KJS;
 using namespace KJSDebugger;

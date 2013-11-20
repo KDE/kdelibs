@@ -31,9 +31,8 @@
 #include <klocalizedstring.h>
 #include <kparts/browserextension.h>
 
-
 #include <kio/job.h>
-#include <kio/kprotocolmanager.h>
+#include <kprotocolmanager.h>
 #include <qsslcertificate.h>
 
 #include <QtCore/QTimer>

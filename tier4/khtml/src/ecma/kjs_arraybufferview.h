@@ -23,8 +23,8 @@
 #include "ecma/kjs_arraybuffer.h"
 
 #include <kjs/object.h>
-#include <operations.h>
-#include <array_instance.h>
+#include <kjs/operations.h>
+#include <kjs/array_instance.h>
 #include <dom/dom_exception.h>
 
 namespace KJS {

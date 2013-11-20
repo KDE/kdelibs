@@ -19,7 +19,7 @@
 
 #include "ecma/kjs_arraybuffer.h"
 
-#include <operations.h>
+#include <kjs/operations.h>
 
 #include "kjs_arraybuffer.lut.h"
 

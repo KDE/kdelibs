@@ -20,11 +20,7 @@ target_link_libraries(kmultipart
                         KF5::KTextWidgets)
 
 install(TARGETS kmultipart  DESTINATION ${PLUGIN_INSTALL_DIR} )
-
-
-########### install files ###############
-
-install( FILES kmultipart.desktop  DESTINATION  ${SERVICES_INSTALL_DIR} )
+install(FILES kmultipart.desktop  DESTINATION  ${SERVICES_INSTALL_DIR} )
 
 
 

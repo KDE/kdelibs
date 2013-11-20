@@ -17,10 +17,9 @@ add_executable(testserver ${testserver_SRCS})
 ecm_mark_as_test(testserver)
 
 target_link_libraries(testserver
-    KParts
-    KDE4Support
+    KF5::KParts
     KF5::KI18n
-    XmlGui
+    KF5::XmlGui
     KF5::KIconThemes
     KF5::KWindowSystem
     Qt5::Network
