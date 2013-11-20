@@ -25,7 +25,6 @@
 #define KJS_SCRIPTFUNCTION_H
 
 #include "function.h"
-#include "nodes.h"
 
 namespace KJS {
 

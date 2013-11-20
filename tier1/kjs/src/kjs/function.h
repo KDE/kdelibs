@@ -25,10 +25,8 @@
 #ifndef KJS_FUNCTION_H
 #define KJS_FUNCTION_H
 
-#include "SymbolTable.h"
-#include "LocalStorage.h"
-#include "JSVariableObject.h"
 #include "object.h"
+#include "JSVariableObject.h"
 #include <wtf/OwnPtr.h>
 
 namespace KJS {
