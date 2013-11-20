@@ -716,7 +716,7 @@ install(TARGETS khtmladaptorpart DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 install(TARGETS KHtml EXPORT KHtmlTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
-install( FILES ${CMAKE_CURRENT_BINARY_DIR}/khtml_export.h khtmlview.h khtml_part.h khtml_events.h khtml_settings.h khtmldefaults.h
+install( FILES ${CMAKE_CURRENT_BINARY_DIR}/khtml_export.h khtmlview.h khtml_part.h khtml_events.h khtml_settings.h khtmldefaults.h misc/kencodingdetector.h
          DESTINATION  ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
 install( FILES dom/dom_exception.h dom/html_base.h dom/html_inline.h dom/css_rule.h dom/dom_html.h
                dom/html_block.h dom/html_list.h dom/css_stylesheet.h dom/dom_misc.h dom/html_document.h
