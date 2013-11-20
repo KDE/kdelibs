@@ -1,19 +1,36 @@
-project(kded)
+cmake_minimum_required(VERSION 2.8.12)
+
+project(KDED)
 
 find_package(ECM 0.0.9 REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR})
 
 set(REQUIRED_QT_VERSION "5.2")
 find_package(Qt5 "${REQUIRED_QT_VERSION}" CONFIG REQUIRED Xml Widgets DBus Network Test)
+
 include(KDEInstallDirs)
 include(KDECompilerSettings)
 include(KDECMakeSettings)
 
+set(KF5_VERSION "5.0.0")
+if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
+    find_package(KI18n ${KF5_VERSION} REQUIRED) #
+    find_package(KCoreAddons ${KF5_VERSION} REQUIRED)
+    find_package(KDBusAddons ${KF5_VERSION} REQUIRED)
+    find_package(KService ${KF5_VERSION} REQUIRED)
+    find_package(KWindowSystem ${KF5_VERSION} REQUIRED) #
+    find_package(KCrash ${KF5_VERSION} REQUIRED)
+    find_package(KInit ${KF5_VERSION} REQUIRED)
+    find_package(KDocTools ${KF5_VERSION} REQUIRED)
+else()
+    set(_kdeBootStrapping TRUE)
+    include(${CMAKE_SOURCE_DIR}/tier2/kdoctools/KDocToolsMacros.cmake)
+    set(KDOCTOOLS_CUSTOMIZATION_DIR "${KDocTools_BINARY_DIR}/src/customization/")
+endif()
+
 include(FeatureSummary)
 include(CMakePackageConfigHelpers)
 include(ECMSetupVersion)
-
-set(KF5_VERSION "5.0.0")
 
 ecm_setup_version(
   ${KF5_VERSION}
@@ -22,16 +39,10 @@ ecm_setup_version(
   PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KDEDConfigVersion.cmake"
 )
 
-if(NOT WIN32)
-    find_package(Qt5 5.2.0 CONFIG REQUIRED DBus)
-endif()
 
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
-########### next target ###############
-
-# Enable when kdoctools will be usable from the outside (macros are broken ATM)
-#add_subdirectory(docs)
+add_subdirectory(docs)
 add_subdirectory(src)
 
 # Create a Config.cmake and a ConfigVersion.cmake file and install them

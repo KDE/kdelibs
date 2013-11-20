@@ -18,7 +18,6 @@ ecm_setup_version(5.0.0 VARIABLE_PREFIX KINIT
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kinit_version.h"
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KInitConfigVersion.cmake")
 
-
 ########### Configuring (mainly for proctitle) ###########
 include(ConfigureChecks.cmake)
 
@@ -38,7 +37,7 @@ set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KInit")
 add_subdirectory(src)
 
 install( FILES
-    KInitMacros.cmake KInitConfig.cmake
+    KInitMacros.cmake KInitConfig.cmake ${CMAKE_CURRENT_BINARY_DIR}/KInitConfigVersion.cmake
     DESTINATION ${CMAKECONFIG_INSTALL_DIR} COMPONENT Devel )
 
 install(FILES
