@@ -111,13 +111,14 @@ public:
     int xfixesEventBase;
     bool mapViewport();
 
-    void addClient(Window);
-    void removeClient(Window);
-
     virtual bool nativeEventFilter(const QByteArray& eventType, void* message, long int* result) Q_DECL_OVERRIDE;
 
     void updateStackingOrder();
     bool removeStrutWindow( WId );
+
+protected:
+    virtual void addClient(xcb_window_t) Q_DECL_OVERRIDE;
+    virtual void removeClient(xcb_window_t) Q_DECL_OVERRIDE;
 
 private:
     bool nativeEventFilter(xcb_generic_event_t *event);
@@ -306,7 +307,7 @@ void KWindowSystemPrivate::updateStackingOrder()
 	stackingOrder.append( clientListStacking()[i] );
 }
 
-void KWindowSystemPrivate::addClient(Window w)
+void KWindowSystemPrivate::addClient(xcb_window_t w)
 {
     KWindowSystem* s_q = KWindowSystem::self();
 
@@ -331,7 +332,7 @@ void KWindowSystemPrivate::addClient(Window w)
         emit s_q->strutChanged();
 }
 
-void KWindowSystemPrivate::removeClient(Window w)
+void KWindowSystemPrivate::removeClient(xcb_window_t w)
 {
     KWindowSystem* s_q = KWindowSystem::self();
 
