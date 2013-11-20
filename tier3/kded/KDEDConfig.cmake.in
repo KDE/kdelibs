@@ -4,8 +4,4 @@ find_package(Qt5 "@REQUIRED_QT_VERSION@" CONFIG REQUIRED Xml Widgets DBus Networ
 
 include("${CMAKE_CURRENT_LIST_DIR}/KDEDTargets.cmake")
 
-get_filename_component(_IMPORT_PREFIX "${CMAKE_CURRENT_LIST_FILE}" PATH)
-get_filename_component(_IMPORT_PREFIX "${_IMPORT_PREFIX}" PATH)
-get_filename_component(_IMPORT_PREFIX "${_IMPORT_PREFIX}" PATH)
-get_filename_component(_IMPORT_PREFIX "${_IMPORT_PREFIX}" PATH)
-set(KDED_DBUS_INTERFACE "${_IMPORT_PREFIX}/@DBUS_INTERFACES_INSTALL_DIR@/org.kde.kded5.xml")
+set(KDED_DBUS_INTERFACE "${PACKAGE_PREFIX_DIR}/@DBUS_INTERFACES_INSTALL_DIR@/org.kde.kded5.xml")
