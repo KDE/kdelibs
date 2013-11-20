@@ -23,8 +23,6 @@
 #include <QLayout>
 #include <QGroupBox>
 
-#include <defaults-kfile.h> // for ConfigGroup
-
 #include <kconfig.h>
 #define TRANSLATION_DOMAIN "kfileaudiopreview5"
 #include <klocalizedstring.h>
@@ -41,6 +39,7 @@
 
 K_PLUGIN_FACTORY(KFileAudioPreviewFactory, registerPlugin<KFileAudioPreview>();)
 
+#define ConfigGroup "Audio Preview Settings"
 
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
@@ -80,7 +79,7 @@ KFileAudioPreview::KFileAudioPreview(QWidget *parent, const QVariantList &)
 
     m_autoPlay = new QCheckBox(i18n("Play &automatically"), this);
     KConfigGroup config(KSharedConfig::openConfig(), ConfigGroup);
-    m_autoPlay->setChecked(config.readEntry("Autoplay sounds", true));
+    m_autoPlay->setChecked(config.readEntry("Autoplay", true));
     connect(m_autoPlay, SIGNAL(toggled(bool)), SLOT(toggleAuto(bool)));
 
     QVBoxLayout* layout = new QVBoxLayout(this);
@@ -94,7 +93,7 @@ KFileAudioPreview::KFileAudioPreview(QWidget *parent, const QVariantList &)
 KFileAudioPreview::~KFileAudioPreview()
 {
     KConfigGroup config(KSharedConfig::openConfig(), ConfigGroup);
-    config.writeEntry("Autoplay sounds", m_autoPlay->isChecked());
+    config.writeEntry("Autoplay", m_autoPlay->isChecked());
 
     delete d;
 }
