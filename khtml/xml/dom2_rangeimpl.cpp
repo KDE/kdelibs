@@ -1019,7 +1019,7 @@ DOMString RangeImpl::toHTML( int &exceptioncode )
             n = n->parentNode();
   	    if(n->nodeType() == DOM::Node::ELEMENT_NODE) {
   		text += "</";
-	        text += static_cast<ElementImpl *>(n)->tagName();
+	        text += static_cast<ElementImpl *>(n)->nonCaseFoldedTagName();
 	        int elementId = static_cast<ElementImpl *>(n)->id();
                 if(elementId == ID_TABLE) num_tables--;
 	        depth_difference--;
@@ -1087,7 +1087,7 @@ DOMString RangeImpl::toHTML( int &exceptioncode )
 		break;
 	  }
 	  text += "</";
-	  text += static_cast<ElementImpl *>(n)->tagName();
+	  text += static_cast<ElementImpl *>(n)->nonCaseFoldedTagName();
  	  text += ">";
       }
       depth_difference--;
@@ -1121,7 +1121,7 @@ DOMString RangeImpl::toHTML( int &exceptioncode )
 		        if(elementId == ID_TABLE) num_tables--;
 			text = static_cast<ElementImpl *>(n)->openTagStartToString(true /*expand img urls*/)+DOMString(">") +text;
 			text += "</";
-			text += static_cast<ElementImpl *>(n)->tagName();
+			text += static_cast<ElementImpl *>(n)->nonCaseFoldedTagName();
 			text += ">";
 
 		    }
@@ -1131,7 +1131,7 @@ DOMString RangeImpl::toHTML( int &exceptioncode )
 		    if(!in_li) break;
                     text = static_cast<ElementImpl *>(n)->openTagStartToString(true /*expand img urls*/)+DOMString(">") +text;
 		    text += "</";
-		    text += static_cast<ElementImpl *>(n)->tagName();
+		    text += static_cast<ElementImpl *>(n)->nonCaseFoldedTagName();
 		    text += ">";
                     break;
 
@@ -1157,7 +1157,7 @@ DOMString RangeImpl::toHTML( int &exceptioncode )
 		    //There's probably tons of others you'd want here.
                     text = static_cast<ElementImpl *>(n)->openTagStartToString(true /*expand img urls*/)+DOMString(">") +text;
 		    text += "</";
-		    text += static_cast<ElementImpl *>(n)->tagName();
+		    text += static_cast<ElementImpl *>(n)->nonCaseFoldedTagName();
 		    text += ">";
                     break;
 	      }
