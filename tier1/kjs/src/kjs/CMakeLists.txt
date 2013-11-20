@@ -310,7 +310,10 @@ install(FILES
   types.h
   ustring.h
   value.h
+  operations.h
   ${CMAKE_CURRENT_BINARY_DIR}/global.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/kjs
   COMPONENT Devel
 )
+
+install(FILES create_hash_table DESTINATION ${DATA_INSTALL_DIR}/kjs/ )

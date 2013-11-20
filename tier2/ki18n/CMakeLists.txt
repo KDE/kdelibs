@@ -33,6 +33,8 @@ set_package_properties(Perl PROPERTIES URL "http://www.perl.org" TYPE REQUIRED P
 
 if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
   find_package(KJS ${KF5_VERSION} REQUIRED)
+else()
+  set(KJS_CREATE_HASH_TABLE "${CMAKE_SOURCE_DIR}/tier1/kjs/src/kjs/create_hash_table")
 endif()
 
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)

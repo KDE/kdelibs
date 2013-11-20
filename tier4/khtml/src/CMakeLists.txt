@@ -570,12 +570,10 @@ set_target_properties(KHtml PROPERTIES VERSION ${KHTML_VERSION_STRING}
 generate_export_header(KHtml)
 
 
-# TODO install this script from the kjs framework [with a better name], so other frameworks can use it
-set(CREATE_HASH_TABLE ${CMAKE_SOURCE_DIR}/tier1/kjs/src/kjs/create_hash_table)
 macro(CREATE_LUT _in_FILE _out_FILE)
 
    add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${_out_FILE}
-      COMMAND ${PERL_EXECUTABLE} ${CREATE_HASH_TABLE} ${CMAKE_CURRENT_SOURCE_DIR}/${_in_FILE} > ${CMAKE_CURRENT_BINARY_DIR}/${_out_FILE}
+      COMMAND ${PERL_EXECUTABLE} ${KJS_CREATE_HASH_TABLE} ${CMAKE_CURRENT_SOURCE_DIR}/${_in_FILE} > ${CMAKE_CURRENT_BINARY_DIR}/${_out_FILE}
       DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_in_FILE}
    )
    macro_add_file_dependencies(${CMAKE_CURRENT_SOURCE_DIR}/${_in_FILE} ${CMAKE_CURRENT_BINARY_DIR}/${_out_FILE} )
