@@ -138,9 +138,9 @@ void KStandarddirsTest::testFindResource()
     QVERIFY( bin.endsWith( KIOSLAVE ) );
     QVERIFY( !QDir::isRelativePath(bin) );
 
-    const QString data = KGlobal::dirs()->findResource( "data", "cmake/modules/FindKF5Transitional.cmake" );
+    const QString data = KGlobal::dirs()->findResource( "data", "dbus-1/interfaces/org.kde.JobView.xml" );
     QVERIFY( !data.isEmpty() );
-    QVERIFY( data.endsWith( QLatin1String("share/cmake/modules/FindKF5Transitional.cmake") ) );
+    QVERIFY( data.endsWith( QLatin1String("dbus-1/interfaces/org.kde.JobView.xml") ) );
     QVERIFY( !QDir::isRelativePath(data) );
 }
 
@@ -158,9 +158,9 @@ void KStandarddirsTest::testFindAllResources()
     if ( !isKdelibsInstalled() )
         QSKIP( "kdelibs not installed" );
 
-    const QStringList cmakeModulesFiles = KGlobal::dirs()->findAllResources( "data", "cmake/modules/" );
-    QVERIFY( !cmakeModulesFiles.isEmpty() );
-    QVERIFY( cmakeModulesFiles.count() > 80 ); // I have 150 here, installed by kdelibs.
+    const QStringList dbusInterfaceFiles = KGlobal::dirs()->findAllResources( "data", "dbus-1/interfaces/" );
+    QVERIFY( !dbusInterfaceFiles.isEmpty() );
+    QVERIFY( dbusInterfaceFiles.count() > 20 ); // I have 21 here, installed by kdelibs.
 
     // Create a local config file, the file will be used as expected result
     const QString localConfigFile = m_configHome + "/foorc";
