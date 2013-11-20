@@ -34,6 +34,7 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/kmediaplayer_version.h
 #
 set(QT_REQUIRED_VERSION 5.2.0)
 find_package(Qt5Widgets ${QT_REQUIRED_VERSION} REQUIRED NO_MODULE)
+find_package(Qt5Test ${QT_REQUIRED_VERSION} REQUIRED NO_MODULE)
 
 find_package(Qt5DBus ${QT_REQUIRED_VERSION} NO_MODULE)
 set_package_properties(Qt5DBus PROPERTIES
@@ -80,6 +81,7 @@ include_directories (
    ${CMAKE_CURRENT_BINARY_DIR}/src)
 
 add_subdirectory(src)
+add_subdirectory(autotests)
 
 
 #
