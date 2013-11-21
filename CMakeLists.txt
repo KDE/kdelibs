@@ -15,7 +15,7 @@ cmake_minimum_required(VERSION ${reqd_cmake})
 
 project(kdelibs)
 
-option(SUPERBUILD "Enable superbuild targets." ON)
+option(SUPERBUILD "Enable superbuild targets." OFF)
 if (SUPERBUILD)
   add_subdirectory(superbuild)
 endif()
