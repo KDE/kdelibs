@@ -37,7 +37,6 @@
 
 #include <kimageio.h>
 #include <klocalizedstring.h>
-#include <defaults-kfile.h>
 #include <krecentdocument.h>
 #include <QDebug>
 #include <kwindowsystem.h>
@@ -46,6 +45,9 @@
 #include "kservice.h"
 #include <ksharedconfig.h>
 #include <kwindowconfig.h>
+
+//From defaults-kfile.h in KIOFileWidgets
+#define ConfigGroup QLatin1String("KFileDialog Settings")
 
 /** File dialogs are native by default on Windows. */
 #if defined(Q_OS_WIN)

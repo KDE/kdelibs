@@ -19,7 +19,6 @@
 
 #include "kmimetype.h"
 #include "kmimetype_p.h"
-#include "kmimetypefactory.h"
 #include "kmimetyperepository_p.h"
 #include "qmimedatabase.h"
 

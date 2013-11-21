@@ -32,8 +32,7 @@
 #include <QStringList>
 #include <QUrl>
 
-#include <defaults-kfile.h>
-#include <jobuidelegate.h>
+#include <kio/jobuidelegate.h>
 #include <kactioncollection.h>
 #include <kauthorized.h>
 #include <kconfig.h>

@@ -40,11 +40,11 @@
 #include <klocalizedstring.h>
 #include <kjobwidgets.h>
 
-#include "job.h"
-#include "mkdirjob.h"
-#include "copyjob.h"
-#include "deletejob.h"
-#include "scheduler.h"
+#include "kio/job.h"
+#include "kio/mkdirjob.h"
+#include "kio/copyjob.h"
+#include "kio/deletejob.h"
+#include "kio/scheduler.h"
 
 namespace KIO
 {

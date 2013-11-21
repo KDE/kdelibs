@@ -24,9 +24,9 @@ macro(KDE4SUPPORT_UNIT_TESTS)
        Qt5::Concurrent
        KF5::KCoreAddons
        KF5::KI18n
-       KCrash
-       KIOCore
-       KIOWidgets
+       KF5::KCrash
+       KF5::KIOCore
+       KF5::KIOWidgets
     )
     ecm_mark_as_test(${_testname})
   endforeach(_testname)
@@ -110,7 +110,7 @@ set(klocaletest_SRCS klocaletest.cpp ../src/kdecore/kdayperiod.cpp)
 add_executable(klocaletest ${klocaletest_SRCS})
 add_test(kde4support-klocaletest klocaletest)
 ecm_mark_as_test(klocaletest)
-target_link_libraries(klocaletest Qt5::Test Qt5::DBus KF5::KI18n KDE4Support KConfigCore)
+target_link_libraries(klocaletest Qt5::Test Qt5::DBus KF5::KI18n KDE4Support KF5::KConfigCore)
 
 ########### kdatetimeformattertest ###############
 
@@ -119,6 +119,6 @@ set(kdatetimeformattertest_SRCS kdatetimeformattertest.cpp ../src/kdecore/kdatet
 add_executable(kdatetimeformattertest ${kdatetimeformattertest_SRCS})
 add_test(kde4support-kdatetimeformattertest kdatetimeformattertest)
 ecm_mark_as_test(kdatetimeformattertest)
-target_link_libraries(kdatetimeformattertest Qt5::Test KF5::KI18n KDE4Support KConfigCore)
+target_link_libraries(kdatetimeformattertest Qt5::Test KF5::KI18n KDE4Support KF5::KConfigCore)
 
 

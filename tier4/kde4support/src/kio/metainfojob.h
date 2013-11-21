@@ -108,6 +108,7 @@ namespace KIO {
 
     private:
         Q_DECLARE_PRIVATE(MetaInfoJob)
+        MetaInfoJobPrivate *d;
     };
 
     /**

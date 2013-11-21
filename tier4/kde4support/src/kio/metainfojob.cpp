@@ -25,24 +25,25 @@
 
 #include <QtCore/QTimer>
 
-#include "jobuidelegate.h"
-#include "job_p.h"
+#include "kio/jobuidelegate.h"
 
 using namespace KIO;
 
-class KIO::MetaInfoJobPrivate: public KIO::JobPrivate
+class KIO::MetaInfoJobPrivate
 {
 public:
     KFileItemList          items;       // all the items we got
     int                    currentItem;
     bool                   succeeded;   // if the current item is ok
 
+    MetaInfoJob *q_ptr;
     Q_DECLARE_PUBLIC(MetaInfoJob)
 };
 
 MetaInfoJob::MetaInfoJob(const KFileItemList& items, KFileMetaInfo::WhatFlags,
      int, int, const QStringList&, const QStringList&)
-    : KIO::Job(*new MetaInfoJobPrivate)
+    : KIO::Job()
+    , d(new MetaInfoJobPrivate)
 {
     Q_D(MetaInfoJob);
     d->succeeded    = false;
@@ -61,6 +62,7 @@ MetaInfoJob::MetaInfoJob(const KFileItemList& items, KFileMetaInfo::WhatFlags,
     // Return to event loop first, determineNextFile() might delete this;
     // (no idea what that means, it comes from previewjob)
     QTimer::singleShot(0, this, SLOT(start()));
+    d->q_ptr = this;
 }
 
 MetaInfoJob::~MetaInfoJob()

@@ -12,3 +12,6 @@
 
 #cmakedefine01 KIO_NO_NEPOMUK
 #cmakedefine01 KIO_NO_STRIGI
+
+#cmakedefine01 HAVE_MADVISE
+#cmakedefine01 HAVE_MMAP

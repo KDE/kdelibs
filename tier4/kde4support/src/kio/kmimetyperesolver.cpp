@@ -19,7 +19,7 @@
 */
 
 #include "kmimetyperesolver.h"
-#include "defaultviewadapter_p.h"
+#include "kio/defaultviewadapter_p.h"
 #include <kdirmodel.h>
 #include <kfileitem.h>
 #include <QAbstractItemView>

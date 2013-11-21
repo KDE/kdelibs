@@ -235,6 +235,9 @@ configure_file(kdecore/config-localization.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/c
 # Configure checks for network/ but also for netsupp.*
 include(ConfigureChecks.cmake)
 configure_file(config-network.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-network.h )
+
+check_function_exists(mmap HAVE_MMAP)
+check_symbol_exists(posix_madvise "sys/mman.h" HAVE_MADVISE)
 configure_file(config-kde4support.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kde4support.h )
 check_include_files(sys/stat.h HAVE_SYS_STAT_H)
 check_include_files(sys/time.h HAVE_SYS_TIME_H)
@@ -268,22 +271,23 @@ PUBLIC
    Qt5::DBus
    Qt5::PrintSupport
    KF5::KCoreAddons
-   KCrash
+   KF5::KCrash
    KF5::KWidgetsAddons
-   KConfigCore # KSharedConfig in kcomponentdata.h
-   KConfigWidgets
-   KIOCore
-   KIOFileWidgets
+   KF5::KConfigCore # KSharedConfig in kcomponentdata.h
+   KF5::KConfigWidgets
+   KF5::KIOCore
+   KF5::KIOFileWidgets
    KF5::KI18n
-   KCompletion
-   KNotifications
+   KF5::KCompletion
+   KF5::KNotifications
    KF5::KIconThemes
    KF5::KWindowSystem
-   KGuiAddons
-   KUnitConversion
-   KTextWidgets
-   KParts
+   KF5::KGuiAddons
+   KF5::KUnitConversion
+   KF5::KTextWidgets
+   KF5::KParts
 PRIVATE
+   KF5::KUnitConversion
    Qt5::Svg
    Qt5::Test # for qtest_kde.cpp
    ${KIO_EXTRA_LIBS}
@@ -328,16 +332,9 @@ set_target_properties(KDE4Support PROPERTIES VERSION ${KDE4SUPPORT_VERSION_STRIN
 
 include_directories(${Qt5Designer_INCLUDE_DIRS})
 
-if (WIN32)
-    # CMAKE_CFG_INTDIR is the output subdirectory created e.g. by XCode and MSVC
-    set(KDEWIDGETS_MAKEKDEWIDGETS_EXECUTABLE          ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/makekdewidgets )
-else ()
-    set(KDEWIDGETS_MAKEKDEWIDGETS_EXECUTABLE          ${CMAKE_BINARY_DIR}/tier3/kdewidgets/src/makekdewidgets${CMAKE_EXECUTABLE_SUFFIX} )
-endif ()
-
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/kdedeprecated.cpp
   COMMAND "${KDEWIDGETS_MAKEKDEWIDGETS_EXECUTABLE}" -o ${CMAKE_CURRENT_BINARY_DIR}/kdedeprecated.cpp ${CMAKE_CURRENT_SOURCE_DIR}/kdedeprecated.widgets
-  MAIN_DEPENDENCY kdedeprecated.widgets DEPENDS makekdewidgets)
+  MAIN_DEPENDENCY kdedeprecated.widgets DEPENDS "${KDEWIDGETS_MAKEKDEWIDGETS_EXECUTABLE}")
 
 qt5_generate_moc(${CMAKE_CURRENT_BINARY_DIR}/kdedeprecated.cpp ${CMAKE_CURRENT_BINARY_DIR}/kdedeprecated.moc)
 

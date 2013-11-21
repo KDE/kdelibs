@@ -9,6 +9,7 @@ set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR} ${CMAKE_CURRENT_S
 include(KDEInstallDirs)
 include(KDECompilerSettings)
 include(KDECMakeSettings)
+include(FeatureSummary)
 
 set(KF5_VERSION "5.0.0")
 set(QT_REQUIRED_VERSION 5.2.0)
@@ -20,14 +21,36 @@ endif()
 
 if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
     # add dependencies
-  find_package(KDocTools ${KF5_VERSION} REQUIRED)
+    find_package(KI18n ${KF5_VERSION} REQUIRED)
+    find_package(KGuiAddons ${KF5_VERSION} REQUIRED)
+    find_package(KWidgetsAddons ${KF5_VERSION} REQUIRED)
+    find_package(KDBusAddons ${KF5_VERSION} REQUIRED)
+    find_package(KConfig ${KF5_VERSION} REQUIRED)
+    find_package(KConfigWidgets ${KF5_VERSION} REQUIRED)
+    find_package(ItemViews ${KF5_VERSION} REQUIRED)
+    find_package(KIconThemes ${KF5_VERSION} REQUIRED)
+    find_package(KUnitConversion ${KF5_VERSION} REQUIRED)
+    find_package(KWindowSystem ${KF5_VERSION} REQUIRED)
+    find_package(KService ${KF5_VERSION} REQUIRED)
+    find_package(KCompletion ${KF5_VERSION} REQUIRED)
+    find_package(KTextWidgets ${KF5_VERSION} REQUIRED)
+    find_package(XmlGui ${KF5_VERSION} REQUIRED)
+    find_package(KBookmarks ${KF5_VERSION} REQUIRED)
+    find_package(KIO ${KF5_VERSION} REQUIRED)
+    find_package(KDocTools ${KF5_VERSION} REQUIRED)
+    find_package(KCrash ${KF5_VERSION} REQUIRED)
+    find_package(KNotifications ${KF5_VERSION} REQUIRED)
+    find_package(KParts ${KF5_VERSION} REQUIRED)
+    find_package(KDEWidgets ${KF5_VERSION} REQUIRED)
 else()
     set(_kdeBootStrapping TRUE)
     include(${CMAKE_SOURCE_DIR}/tier2/kdoctools/KDocToolsMacros.cmake)
     set(KDOCTOOLS_CUSTOMIZATION_DIR "${KDocTools_BINARY_DIR}/src/customization/")
+    set(KDEWIDGETS_MAKEKDEWIDGETS_EXECUTABLE ${CMAKE_BINARY_DIR}/tier3/kdewidgets/src/makekdewidgets${CMAKE_EXECUTABLE_SUFFIX} )
+    include(${CMAKE_SOURCE_DIR}/tier3/kdewidgets/KDEWidgetsMacros.cmake)
 endif()
 
-find_package(Strigi 0.6.3 QUIET)
+# find_package(Strigi 0.6.3 QUIET)
 set_package_properties(Strigi PROPERTIES DESCRIPTION "Desktop indexing and search support"
                        URL "http://strigi.sourceforge.net"
                        TYPE OPTIONAL
@@ -46,7 +69,6 @@ if (APPLE)
    find_package(Carbon REQUIRED)
 endif ()
 
-include(FeatureSummary)
 include(ECMSetupVersion)
 include(ECMMarkNonGuiExecutable)
 
@@ -137,7 +159,7 @@ install( FILES ${CMAKE_CURRENT_SOURCE_DIR}/KDELibs4Config.cmake
 install(CODE "set(EXPORT_FILES KDELibs4LibraryTargets.cmake)"
         CODE "set(EXPORT_INSTALL_DIR \"${CMAKECONFIG_INSTALL_DIR}\")"
         SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/check_installed_exports_file.cmake" )
-install( EXPORT kdelibsLibraryTargets DESTINATION ${CMAKECONFIG_INSTALL_DIR} NAMESPACE ${KDE4_TARGET_PREFIX} FILE KDELibs4LibraryTargets.cmake  COMPONENT Devel)
+install( EXPORT KDE4SupportTargets DESTINATION ${CMAKECONFIG_INSTALL_DIR} NAMESPACE ${KDE4_TARGET_PREFIX} FILE KDELibs4LibraryTargets.cmake  COMPONENT Devel)
 
 if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
   feature_summary(WHAT ALL   FATAL_ON_MISSING_REQUIRED_PACKAGES)
