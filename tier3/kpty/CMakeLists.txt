@@ -10,7 +10,7 @@ set(KF5_VERSION "5.0.0")
 include(KDEInstallDirs)
 include(KDECompilerSettings)
 include(KDECMakeSettings)
-find_package(Qt5 "${REQUIRED_QT_VERSION}" CONFIG REQUIRED Test)
+find_package(Qt5 "${REQUIRED_QT_VERSION}" CONFIG REQUIRED Core)
 
 if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
   find_package(KCoreAddons ${KF5_VERSION} REQUIRED)
