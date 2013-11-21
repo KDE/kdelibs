@@ -1,8 +1,5 @@
 
-set(plugin_SRCS frameworkintegrationplugin.cpp)
-
-add_library(FrameworkIntegrationPlugin MODULE ${plugin_SRCS})
-set_target_properties(FrameworkIntegrationPlugin PROPERTIES PREFIX "") # remove lib prefix
+add_library(FrameworkIntegrationPlugin MODULE frameworkintegrationplugin.cpp)
 
 target_link_libraries(FrameworkIntegrationPlugin PRIVATE KF5::KWidgetsAddons KF5::KConfigCore KF5::KNotifications)
 

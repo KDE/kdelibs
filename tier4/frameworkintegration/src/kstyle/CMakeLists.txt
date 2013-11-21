@@ -30,11 +30,7 @@ configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/KStyleConfig.cmake.in
 
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
-set(kstyle_SRCS
-    kstyle.cpp
-)
-
-add_library(KStyle ${kstyle_SRCS})
+add_library(KStyle kstyle.cpp)
 generate_export_header(KStyle)
 add_library(KF5::KStyle ALIAS KStyle)
 
@@ -42,7 +38,7 @@ target_link_libraries(KStyle
   PUBLIC
     Qt5::Widgets
   PRIVATE
-    KConfigWidgets
+    KF5::KConfigWidgets
     KF5::KIconThemes
 )
 
