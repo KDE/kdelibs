@@ -46,7 +46,7 @@ endif()
 add_library(KUnitConversion ${kunitconversion_LIB_SRCS})
 generate_export_header(KUnitConversion)
 add_library(KF5::KUnitConversion ALIAS KUnitConversion)
-target_include_directories(KUnitConversion PUBLIC "$<BUILD_INTERFACE:${KUnitConversion_BINARY_DIR}>")
+target_include_directories(KUnitConversion PUBLIC "$<BUILD_INTERFACE:${KUnitConversion_BINARY_DIR}>" "$<INSTALL_INTERFACE:${INCLUDE_INSTALL_DIR}/kunitconversion>")
 target_link_libraries(KUnitConversion PUBLIC  Qt5::Core
                                       PRIVATE Qt5::Xml Qt5::Network
                                                    KF5::KI18n #i18n(), ...
