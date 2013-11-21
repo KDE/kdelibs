@@ -21,7 +21,6 @@
 #define KCMULTIDIALOG_P_H
 
 #include "kcmultidialog.h"
-#include <kpagedialog_p.h>
 #include <QtCore/QList>
 #include <QtCore/QStringList>
 
