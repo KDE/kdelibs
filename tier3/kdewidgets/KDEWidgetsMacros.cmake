@@ -16,19 +16,6 @@
 #    for Qt Designer plugins.
 #
 
-if (WIN32)
-    # CMAKE_CFG_INTDIR is the output subdirectory created e.g. by XCode and MSVC
-    if (NOT WINCE)
-        set(KDEWIDGETS_MAKEKDEWIDGETS_EXECUTABLE          ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/makekdewidgets )
-    else (NOT WINCE)
-        set(KDEWIDGETS_MAKEKDEWIDGETS_EXECUTABLE          ${HOST_BINDIR}/${CMAKE_CFG_INTDIR}/makekdewidgets )
-    endif(NOT WINCE)
-
-    set(KDEWIDGETS_MAKEKDEWIDGETS_EXECUTABLE          ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/makekdewidgets )
-else (WIN32)
-    set(KDEWIDGETS_MAKEKDEWIDGETS_EXECUTABLE          ${CMAKE_BINARY_DIR}/tier3/kdewidgets/src/makekdewidgets${CMAKE_EXECUTABLE_SUFFIX} )
-endif (WIN32)
-
 set( _KDEWIDGETS_MAKEKDEWIDGETS_EXECUTABLE_DEP makekdewidgets)
 
 macro (KDEWIDGETS_ADD_WIDGET_FILES _sources)
