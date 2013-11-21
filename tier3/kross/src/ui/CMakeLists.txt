@@ -23,7 +23,7 @@ target_include_directories(KrossUi PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_BIN
 generate_export_header(KrossUi)
 add_library(KF5::KrossUi ALIAS KrossUi)
 
-install(TARGETS KrossUi EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KrossUi EXPORT KrossTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 ########### install files ###############
 
