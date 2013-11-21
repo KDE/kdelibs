@@ -38,6 +38,7 @@ if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
     find_package(KTextWidgets ${KF5_VERSION} REQUIRED)
     find_package(XmlGui ${KF5_VERSION} REQUIRED)
     find_package(KBookmarks ${KF5_VERSION} REQUIRED)
+    find_package(KDocTools ${KF5_VERSION} REQUIRED)
 
 #     find_package(KI18n ${KF5_VERSION} REQUIRED)
 #     find_package(KIconThemes ${KF5_VERSION} REQUIRED)

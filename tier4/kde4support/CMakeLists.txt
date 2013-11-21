@@ -10,6 +10,7 @@ include(KDEInstallDirs)
 include(KDECompilerSettings)
 include(KDECMakeSettings)
 
+set(KF5_VERSION "5.0.0")
 set(QT_REQUIRED_VERSION 5.2.0)
 find_package(Qt5 ${QT_REQUIRED_VERSION} CONFIG REQUIRED Network Widgets DBus Test Svg Concurrent PrintSupport Designer)
 
@@ -19,6 +20,7 @@ endif()
 
 if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
     # add dependencies
+  find_package(KDocTools ${KF5_VERSION} REQUIRED)
 else()
     set(_kdeBootStrapping TRUE)
     include(${CMAKE_SOURCE_DIR}/tier2/kdoctools/KDocToolsMacros.cmake)
@@ -48,9 +50,9 @@ include(FeatureSummary)
 include(ECMSetupVersion)
 include(ECMMarkNonGuiExecutable)
 
-ecm_setup_version(5.0.0 VARIABLE_PREFIX KDE4SUPPORT
-                        VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kde4support_version.h"
-                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KDE4SupportConfigVersion.cmake")
+ecm_setup_version(${KF5_VERSION} VARIABLE_PREFIX KDE4SUPPORT
+                                 VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kde4support_version.h"
+                                 PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KDE4SupportConfigVersion.cmake")
 
 # QUrl
 add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0)

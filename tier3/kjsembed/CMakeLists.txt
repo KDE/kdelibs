@@ -24,6 +24,7 @@ ecm_setup_version(${KF5_VERSION} VARIABLE_PREFIX KJSEMBED
 if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
   find_package(KJS ${KF5_VERSION} REQUIRED)
   find_package(KI18n ${KF5_VERSION} REQUIRED)
+  find_package(KDocTools ${KF5_VERSION} REQUIRED)
 else()
     set(_kdeBootStrapping TRUE)
     include(${CMAKE_SOURCE_DIR}/tier2/kdoctools/KDocToolsMacros.cmake)
