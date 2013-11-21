@@ -40,6 +40,10 @@ if (WIN32)
                                                 kwindoweffects_dummy.cpp
                                                 kwindowsystem_win.cpp
                                                 kwindowinfo_win.cpp)
+   set(platformLinkLibraries
+      Qt5::WinExtras # QtWin::fromHICON(), QtWin::toHICON()
+      Ws2_32 # gethostname()
+   )
 endif ()
 
 add_library(KWindowSystem ${kwindowsystem_SRCS})

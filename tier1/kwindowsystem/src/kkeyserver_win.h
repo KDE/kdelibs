@@ -21,6 +21,7 @@
 #define _KKEYSERVER_WIN_H
 
 #include <kwindowsystem_export.h>
+#include <QtGlobal>
 
 namespace KKeyServer
 {

@@ -37,6 +37,7 @@ DEALINGS IN THE SOFTWARE.
 #include "kstartupinfo.h"
 
 #include <QWidget>
+#include <QDateTime>
 
 
 #include <config-kwindowsystem.h> // HAVE_X11
@@ -46,8 +47,13 @@ DEALINGS IN THE SOFTWARE.
 #define QT_CLEAN_NAMESPACE
 #endif
 
+#ifndef Q_OS_WIN
 #include <unistd.h>
 #include <sys/time.h>
+#else
+#include <winsock2.h>
+#include <process.h>
+#endif
 #include <stdlib.h>
 #include <QtCore/QTimer>
 #include <QActionEvent>
@@ -1051,7 +1057,15 @@ QByteArray KStartupInfo::createNewStartupId()
     // Assign a unique id, use hostname+time+pid, that should be 200% unique.
     // Also append the user timestamp (for focus stealing prevention).
     struct timeval tm;
-    gettimeofday( &tm, NULL );
+#ifdef Q_OS_WIN
+	//on windows only msecs accuracy instead of usecs like with gettimeofday
+	//XXX: use Win API to get better accuracy
+	qint64 msecsSinceEpoch = QDateTime::currentMSecsSinceEpoch();
+	tm.tv_sec = msecsSinceEpoch / 1000;
+	tm.tv_usec = (msecsSinceEpoch % 1000) * 1000;
+#else
+    gettimeofday(&tm, NULL);
+#endif
     char hostname[ 256 ];
     hostname[ 0 ] = '\0';
     if (!gethostname( hostname, 255 ))
@@ -1118,7 +1132,7 @@ bool KStartupInfoId::setupStartupEnv() const
     {
     if( none())
         {
-        unsetenv( NET_STARTUP_ENV );
+        qunsetenv( NET_STARTUP_ENV );
         return false;
         }
     return ! qputenv( NET_STARTUP_ENV, id()) == 0;
@@ -1137,7 +1151,7 @@ KStartupInfoId KStartupInfo::currentStartupIdEnv()
 
 void KStartupInfo::resetStartupEnv()
     {
-    unsetenv( NET_STARTUP_ENV );
+    qunsetenv( NET_STARTUP_ENV );
     }
 
 KStartupInfoId::KStartupInfoId() : d(new Private)

@@ -25,15 +25,17 @@
 #include <QIcon>
 #include <QBitmap>
 #include <QPixmap>
-#include <QtCore/QLibrary>
-
-#include "QDebug"
+#include <QLibrary>
+#include <QDebug>
+#include <QApplication>
+#include <QtWin>
+#include <QMetaMethod>
 
 #include <windows.h>
 #include <windowsx.h>
 
 
-#ifdef __WIN64
+#ifdef _WIN64
 #define GCL_HICON GCLP_HICON
 #define GCL_HICONSM GCLP_HICONSM
 #endif
@@ -71,8 +73,8 @@ class KWindowSystemPrivate : public QWidget
         KWindowSystemPrivate ( int what );
         ~KWindowSystemPrivate();
 
-        static bool CALLBACK EnumWindProc (WId hwnd, LPARAM lparam);
-        static void readWindowInfo  (WId wid  , InternalWindowInfo *winfo);
+        static bool CALLBACK EnumWindProc (HWND hwnd, LPARAM lparam);
+        static void readWindowInfo  (HWND hwnd  , InternalWindowInfo *winfo);
 
         void windowAdded        (WId wid);
         void windowRemoved      (WId wid);
@@ -85,10 +87,10 @@ class KWindowSystemPrivate : public QWidget
 
 
     protected:
-        bool winEvent ( MSG * message, long * result );
+        bool nativeEvent(const QByteArray & eventType, void *message, long *result) Q_DECL_OVERRIDE;
 
     private:
-	    bool activated;
+        bool activated;
         int what;
         WId fakeHwnd;
         QList<WId> stackingOrder;
@@ -110,7 +112,7 @@ static HBITMAP QPixmapMask2HBitmap(const QPixmap &pix)
     QByteArray bits( bpl * h, '\0' );
     for (int y=0; y < h; y++)
         memcpy( bits.data() + y * bpl, im.scanLine( y ), bpl );
-    return CreateBitmap( w, h, 1, 1, bits );
+    return CreateBitmap( w, h, 1, 1, bits.constData() );
 }
 
 KWindowSystemPrivate::KWindowSystemPrivate(int what) : QWidget(0),activated(false)
@@ -153,14 +155,20 @@ void KWindowSystemPrivate::activate ( )
 KWindowSystemPrivate::~KWindowSystemPrivate()
 {
     if(pRegisterShellHook)
-        pRegisterShellHook(winId(),RSH_UNREGISTER);
+        pRegisterShellHook(reinterpret_cast<HWND>(winId()), RSH_UNREGISTER);
 }
 
 /**
  *the callback procedure for the invisible ShellHook window
  */
-bool KWindowSystemPrivate::winEvent ( MSG * message, long * result )
+bool KWindowSystemPrivate::nativeEvent(const QByteArray & eventType, void *message_, long *result)
 {
+    if (eventType != QByteArrayLiteral("windows_generic_MSG")) {
+        return QWidget::nativeEvent(eventType, message_ ,result);
+    }
+
+    MSG *message = static_cast<MSG*>(message_);
+
     /*
         check winuser.h for the following codes
         HSHELL_WINDOWCREATED        1
@@ -185,56 +193,57 @@ bool KWindowSystemPrivate::winEvent ( MSG * message, long * result )
 
         switch(message->wParam) {
           case HSHELL_WINDOWCREATED:
-            KWindowSystem::s_d_func()->windowAdded(reinterpret_cast<WId>(message->lParam));
+            KWindowSystem::s_d_func()->windowAdded(static_cast<WId>(message->lParam));
             break;
           case HSHELL_WINDOWDESTROYED:
-            KWindowSystem::s_d_func()->windowRemoved(reinterpret_cast<WId>(message->lParam));
+            KWindowSystem::s_d_func()->windowRemoved(static_cast<WId>(message->lParam));
             break;
           case HSHELL_WINDOWACTIVATED:
 #ifndef _WIN32_WCE
           case HSHELL_RUDEAPPACTIVATED:
 #endif
-            KWindowSystem::s_d_func()->windowActivated(reinterpret_cast<WId>(message->lParam));
+            KWindowSystem::s_d_func()->windowActivated(static_cast<WId>(message->lParam));
             break;
 #ifndef _WIN32_WCE
           case HSHELL_GETMINRECT:
-            KWindowSystem::s_d_func()->windowStateChanged(reinterpret_cast<WId>(message->lParam));
+            KWindowSystem::s_d_func()->windowStateChanged(static_cast<WId>(message->lParam));
             break;
           case HSHELL_REDRAW: //the caption has changed
-            KWindowSystem::s_d_func()->windowRedraw(reinterpret_cast<WId>(message->lParam));
+            KWindowSystem::s_d_func()->windowRedraw(static_cast<WId>(message->lParam));
             break;
           case HSHELL_FLASH:
-            KWindowSystem::s_d_func()->windowFlash(reinterpret_cast<WId>(message->lParam));
+            KWindowSystem::s_d_func()->windowFlash(static_cast<WId>(message->lParam));
             break;
 #endif
         }
     }
-    return QWidget::winEvent(message,result);
+    return QWidget::nativeEvent(eventType, message_ ,result);
 }
 
-bool CALLBACK KWindowSystemPrivate::EnumWindProc(WId hWnd, LPARAM lparam)
+bool CALLBACK KWindowSystemPrivate::EnumWindProc(HWND hWnd, LPARAM lparam)
 {
+    WId win = reinterpret_cast<WId>(hWnd);
     QByteArray windowText = QByteArray ( (GetWindowTextLength(hWnd)+1) * sizeof(wchar_t), 0 ) ;
     GetWindowTextW(hWnd, (LPWSTR)windowText.data(), windowText.size());
-	DWORD ex_style = GetWindowExStyle(hWnd);
+    DWORD ex_style = GetWindowExStyle(hWnd);
     KWindowSystemPrivate *p = KWindowSystem::s_d_func();
 
     QString add;
     if( !QString::fromWCharArray((wchar_t*)windowText.data()).trimmed().isEmpty() && IsWindowVisible( hWnd ) && !(ex_style&WS_EX_TOOLWINDOW)
-       && !GetParent(hWnd) && !GetWindow(hWnd,GW_OWNER) && !p->winInfos.contains(hWnd) ) {
+       && !GetParent(hWnd) && !GetWindow(hWnd,GW_OWNER) && !p->winInfos.contains(win) ) {
 
 //        qDebug()<<"Adding window to windowList " << add + QString(windowText).trimmed();
 
         InternalWindowInfo winfo;
         KWindowSystemPrivate::readWindowInfo(hWnd,&winfo);
 
-        p->stackingOrder.append(hWnd);
-        p->winInfos.insert(hWnd,winfo);
+        p->stackingOrder.append(win);
+        p->winInfos.insert(win,winfo);
     }
     return true;
 }
 
-void KWindowSystemPrivate::readWindowInfo ( WId hWnd , InternalWindowInfo *winfo)
+void KWindowSystemPrivate::readWindowInfo ( HWND hWnd , InternalWindowInfo *winfo)
 {
     QByteArray windowText = QByteArray ( (GetWindowTextLength(hWnd)+1) * sizeof(wchar_t), 0 ) ;
     GetWindowTextW(hWnd, (LPWSTR)windowText.data(), windowText.size());
@@ -248,7 +257,7 @@ void KWindowSystemPrivate::readWindowInfo ( WId hWnd , InternalWindowInfo *winfo
     if(!hSmallIcon) hSmallIcon = (HICON)GetClassLong(hWnd, GCL_HICON);
 #endif
     if(!hSmallIcon) hSmallIcon = (HICON)SendMessage(hWnd, WM_QUERYDRAGICON, 0, 0);
-    if(hSmallIcon)  smallIcon  = QPixmap::fromWinHICON(hSmallIcon);
+    if(hSmallIcon)  smallIcon  = QtWin::fromHICON(hSmallIcon);
 
     QPixmap bigIcon;
     HICON hBigIcon = (HICON)SendMessage(hWnd, WM_GETICON, ICON_BIG, 0);
@@ -259,7 +268,7 @@ void KWindowSystemPrivate::readWindowInfo ( WId hWnd , InternalWindowInfo *winfo
     if(!hBigIcon) hBigIcon = (HICON)GetClassLong(hWnd, GCL_HICONSM);
 #endif
     if(!hBigIcon) hBigIcon = (HICON)SendMessage(hWnd, WM_QUERYDRAGICON, 0, 0);
-    if(hBigIcon)  bigIcon  = QPixmap::fromWinHICON(hBigIcon);
+    if(hBigIcon)  bigIcon  = QtWin::fromHICON(hBigIcon);
 
     winfo->bigIcon    = bigIcon;
     winfo->smallIcon  = smallIcon;
@@ -370,7 +379,7 @@ int KWindowSystem::numberOfDesktops()
 
 void KWindowSystem::setMainWindow( QWidget* subwindow, WId mainwindow )
 {
-    SetForegroundWindow(subwindow->winId());
+    SetForegroundWindow(reinterpret_cast<HWND>(subwindow->winId()));
 }
 
 void KWindowSystem::setCurrentDesktop( int desktop )
@@ -393,25 +402,26 @@ void KWindowSystem::setOnDesktop( WId win, int desktop )
 
 WId KWindowSystem::activeWindow()
 {
-    return GetActiveWindow();
+    return reinterpret_cast<WId>(GetActiveWindow());
 }
 
 void KWindowSystem::activateWindow( WId win, long )
 {
-    SetActiveWindow( win );
+    SetActiveWindow(reinterpret_cast<HWND>(win));
 }
 
 void KWindowSystem::forceActiveWindow( WId win, long time )
 {
+    HWND hwnd = reinterpret_cast<HWND>(win);
     // FIXME restoring a hidden window doesn't work: the window contents just appear white.
     // But the mouse cursor still acts as if the widgets were there (e.g. button clicking works),
     // which indicates the issue is at the window/backingstore level.
     // This is probably a side effect of bypassing Qt's internal window state handling.
 #ifndef _WIN32_WCE
-    if ( IsIconic( win ) /*|| !IsWindowVisible( win ) */) {
+    if ( IsIconic(hwnd) /*|| !IsWindowVisible( win ) */) {
         // Do not activate the window as we restore it,
         // otherwise the window appears see-through (contents not updated).
-        ShowWindow( win, SW_SHOWNOACTIVATE );
+        ShowWindow(hwnd, SW_SHOWNOACTIVATE);
     }
 #endif
     // Puts the window in front and activates it.
@@ -421,8 +431,8 @@ void KWindowSystem::forceActiveWindow( WId win, long time )
     int  idActive      = GetWindowThreadProcessId(hwndActiveWin, NULL);
     if ( AttachThreadInput(GetCurrentThreadId(), idActive, TRUE) )
     {
-        SetForegroundWindow( win );
-        SetFocus( win );
+        SetForegroundWindow(hwnd);
+        SetFocus(hwnd);
         AttachThreadInput(GetCurrentThreadId(), idActive, FALSE);
     }
 
@@ -434,7 +444,7 @@ void KWindowSystem::demandAttention( WId win, bool set )
 #ifndef _WIN32_WCE
     FLASHWINFO fi;
     fi.cbSize = sizeof( FLASHWINFO );
-    fi.hwnd = win;
+    fi.hwnd = reinterpret_cast<HWND>(win);
     fi.dwFlags = set ? FLASHW_ALL : FLASHW_STOP;
     fi.uCount = 5;
     fi.dwTimeout = 0;
@@ -460,9 +470,9 @@ QPixmap KWindowSystem::icon( WId win, int width, int height, bool scale )
         UINT size = ICON_BIG;
         if( width < 24 || height < 24 )
             size = ICON_SMALL;
-        HICON hIcon = (HICON)SendMessage( win, WM_GETICON, size, 0);
+        HICON hIcon = (HICON)SendMessage( reinterpret_cast<HWND>(win), WM_GETICON, size, 0);
         if(hIcon != NULL)
-            pm = QPixmap::fromWinHICON( hIcon );
+            pm = QtWin::fromHICON( hIcon );
     }
     if( scale )
         pm = pm.scaled( width, height );
@@ -485,35 +495,37 @@ void KWindowSystem::setIcons( WId win, const QPixmap& icon, const QPixmap& miniI
         s_d->winInfos[win].bigIcon   = icon;
     }
 
-    HICON hIconBig = icon.toWinHICON();
-    HICON hIconSmall = miniIcon.toWinHICON();
+    HICON hIconBig =  QtWin::toHICON(icon);
+    HICON hIconSmall = QtWin::toHICON(miniIcon);
 
-    hIconBig = (HICON)SendMessage( win, WM_SETICON, ICON_BIG,   (LPARAM)hIconBig );
-    hIconSmall = (HICON)SendMessage( win, WM_SETICON, ICON_SMALL, (LPARAM)hIconSmall );
+    HWND hwnd = reinterpret_cast<HWND>(win);
+    hIconBig = (HICON)SendMessage( hwnd, WM_SETICON, ICON_BIG,   (LPARAM)hIconBig );
+    hIconSmall = (HICON)SendMessage( hwnd, WM_SETICON, ICON_SMALL, (LPARAM)hIconSmall );
 
 }
 
 void KWindowSystem::setState( WId win, unsigned long state )
 {
+    HWND hwnd = reinterpret_cast<HWND>(win);
     bool got = false;
 #ifndef _WIN32_WCE
     if (state & NET::SkipTaskbar) {
         got = true;
-        LONG_PTR lp = GetWindowLongPtr(win, GWL_EXSTYLE);
-        SetWindowLongPtr(win, GWL_EXSTYLE, lp | WS_EX_TOOLWINDOW);
+        LONG_PTR lp = GetWindowLongPtr(hwnd, GWL_EXSTYLE);
+        SetWindowLongPtr(hwnd, GWL_EXSTYLE, lp | WS_EX_TOOLWINDOW);
     }
 #endif
     if (state & NET::KeepAbove) {
         got = true;
-        SetWindowPos(win, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+        SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
     }
     if(state & NET::KeepBelow){
         got = true;
-        SetWindowPos(win, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+        SetWindowPos(hwnd, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
     }
     if(state & NET::Max){
         got = true;
-        ShowWindow( win, SW_MAXIMIZE );
+        ShowWindow(hwnd, SW_MAXIMIZE);
     }
     if (!got)
         qDebug() << "KWindowSystem::setState( WId win, unsigned long state ) isn't yet implemented for the state you requested!";
@@ -522,22 +534,24 @@ void KWindowSystem::setState( WId win, unsigned long state )
 void KWindowSystem::clearState( WId win, unsigned long state )
 {
     bool got = false;
+    HWND hwnd = reinterpret_cast<HWND>(win);
+
 
 #ifndef _WIN32_WCE
     if (state & NET::SkipTaskbar) {
         got = true;
-        LONG_PTR lp = GetWindowLongPtr(win, GWL_EXSTYLE);
-        SetWindowLongPtr(win, GWL_EXSTYLE, lp & ~WS_EX_TOOLWINDOW);
+        LONG_PTR lp = GetWindowLongPtr(hwnd, GWL_EXSTYLE);
+        SetWindowLongPtr(hwnd, GWL_EXSTYLE, lp & ~WS_EX_TOOLWINDOW);
     }
 #endif
     if (state & NET::KeepAbove) {
         got = true;
         //lets hope this remove the topmost
-        SetWindowPos(win, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+        SetWindowPos(hwnd, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
     }
     if(state & NET::Max){
         got = true;
-        ShowWindow( win, SW_RESTORE );
+        ShowWindow(hwnd, SW_RESTORE);
     }
     if (!got)
         qDebug() << "KWindowSystem::clearState( WId win, unsigned long state ) isn't yet implemented!";
@@ -546,13 +560,13 @@ void KWindowSystem::clearState( WId win, unsigned long state )
 void KWindowSystem::minimizeWindow( WId win, bool animation)
 {
     Q_UNUSED( animation );
-    ShowWindow( win, SW_MINIMIZE );
+    ShowWindow(reinterpret_cast<HWND>(win), SW_MINIMIZE );
 }
 
 void KWindowSystem::unminimizeWindow( WId win, bool animation )
 {
     Q_UNUSED( animation );
-    ShowWindow( win, SW_RESTORE );
+    ShowWindow(reinterpret_cast<HWND>(win), SW_RESTORE);
 }
 
 void KWindowSystem::raiseWindow( WId win )
@@ -564,14 +578,14 @@ void KWindowSystem::raiseWindow( WId win )
     int  idActive      = GetWindowThreadProcessId(hwndActiveWin, NULL);
     if ( AttachThreadInput(GetCurrentThreadId(), idActive, TRUE) )
     {
-        SetForegroundWindow( win );
+        SetForegroundWindow(reinterpret_cast<HWND>(win));
         AttachThreadInput(GetCurrentThreadId(), idActive, FALSE);
     }
 }
 
 void KWindowSystem::lowerWindow( WId win )
 {
-    SetWindowPos( win, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE ); // mhhh?
+    SetWindowPos( reinterpret_cast<HWND>(win), HWND_BOTTOM, 0, 0, 0, 0, SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE ); // mhhh?
 }
 
 bool KWindowSystem::compositingActive()
@@ -619,22 +633,22 @@ bool KWindowSystem::icccmCompliantMappingState()
 }
 
 // optimalization - create KWindowSystemPrivate only when needed and only for what is needed
-void KWindowSystem::connectNotify( const char* signal )
+void KWindowSystem::connectNotify( const QMetaMethod& method )
 {
     int what = INFO_BASIC;
-    if( QLatin1String( signal ) == SIGNAL(workAreaChanged()))
+    if( method == QMetaMethod::fromSignal(&KWindowSystem::workAreaChanged))
         what = INFO_WINDOWS;
-    else if( QLatin1String( signal ) == SIGNAL(strutChanged()))
+    else if( method == QMetaMethod::fromSignal(&KWindowSystem::strutChanged))
         what = INFO_WINDOWS;
-    else if( QLatin1String( signal ) == QMetaObject::normalizedSignature(SIGNAL(windowChanged(WId,const ulong*))).constData())
+    else if( method == QMetaMethod::fromSignal(static_cast<void(KWindowSystem::*)(WId, const ulong*)>(&KWindowSystem::windowChanged)) )
         what = INFO_WINDOWS;
-    else if( QLatin1String( signal ) ==  QMetaObject::normalizedSignature(SIGNAL(windowChanged(WId,uint))).constData())
+    else if( method == QMetaMethod::fromSignal(static_cast<void(KWindowSystem::*)(WId, uint)>(&KWindowSystem::windowChanged)))
         what = INFO_WINDOWS;
-    else if( QLatin1String( signal ) ==  QMetaObject::normalizedSignature(SIGNAL(windowChanged(WId))).constData())
+    else if( method == QMetaMethod::fromSignal(static_cast<void(KWindowSystem::*)(WId)>(&KWindowSystem::windowChanged)))
         what = INFO_WINDOWS;
 
     init( what );
-    QObject::connectNotify( signal );
+    QObject::connectNotify(method);
 }
 
 void KWindowSystem::setExtendedStrut( WId win, int left_width, int left_start, int left_end,

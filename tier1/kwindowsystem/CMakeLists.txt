@@ -30,6 +30,10 @@ if (APPLE)
    find_package(Carbon REQUIRED)
 endif ()
 
+if(WIN32)
+   find_package(Qt5WinExtras REQUIRED)
+endif()
+
 find_package(X11)
 set(HAVE_X11 ${X11_FOUND})
 find_package(XCB COMPONENTS XCB KEYSYMS)

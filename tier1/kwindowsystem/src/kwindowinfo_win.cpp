@@ -34,7 +34,7 @@ class KWindowInfo::Private
     
     ~Private() { }
    
-    WId win_;
+    HWND win_;
     int ref;
     unsigned long properties;
     unsigned long properties2;
@@ -48,7 +48,7 @@ class KWindowInfo::Private
 KWindowInfo::KWindowInfo( WId win, unsigned long properties, unsigned long properties2) : d ( new Private ) 
 {
     d->ref = 1;
-    d->win_ = win;
+    d->win_ = reinterpret_cast<HWND>(win);
     d->properties  = properties;
     d->properties2 = properties2;
 }
@@ -96,7 +96,7 @@ bool KWindowInfo::valid( bool withdrawn_is_valid ) const
 
 WId KWindowInfo::win() const
 {
-    return d->win_;
+    return reinterpret_cast<WId>(d->win_);
 }
 
 unsigned long KWindowInfo::state() const

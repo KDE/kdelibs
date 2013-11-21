@@ -36,6 +36,11 @@ DEALINGS IN THE SOFTWARE.
 
 typedef struct _XDisplay Display;
 
+#ifdef Q_OS_WIN
+//GetProcessId returns a DWORD
+typedef unsigned int pid_t;
+#endif
+
 class KStartupInfoId;
 class KStartupInfoData;
 
