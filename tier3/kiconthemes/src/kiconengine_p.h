@@ -59,20 +59,20 @@ class KICONTHEMES_EXPORT KIconEngine : public QIconEngine // only exported for k
     virtual ~KIconEngine();
 
     /// Reimplementation
-    virtual QSize actualSize ( const QSize & size, QIcon::Mode mode, QIcon::State state );
+    QSize actualSize ( const QSize & size, QIcon::Mode mode, QIcon::State state ) Q_DECL_OVERRIDE;
     /// Reimplementation
-    virtual void paint ( QPainter * painter, const QRect & rect, QIcon::Mode mode, QIcon::State state );
+    void paint ( QPainter * painter, const QRect & rect, QIcon::Mode mode, QIcon::State state ) Q_DECL_OVERRIDE;
     /// Reimplementation
-    virtual QPixmap pixmap ( const QSize & size, QIcon::Mode mode, QIcon::State state );
+    QPixmap pixmap ( const QSize & size, QIcon::Mode mode, QIcon::State state ) Q_DECL_OVERRIDE;
     /// Reimplementation
-    virtual QString iconName() const;
+    QString iconName() const Q_DECL_OVERRIDE;
     /// Reimplementation
-    QList<QSize> availableSizes(QIcon::Mode mode, QIcon::State state) const;
+    QList<QSize> availableSizes(QIcon::Mode mode, QIcon::State state) const Q_DECL_OVERRIDE;
 
-    virtual QString key() const;
-    virtual QIconEngine *clone() const;
-    virtual bool read(QDataStream &in);
-    virtual bool write(QDataStream &out) const;
+    QString key() const Q_DECL_OVERRIDE;
+    QIconEngine *clone() const Q_DECL_OVERRIDE;
+    bool read(QDataStream &in) Q_DECL_OVERRIDE;
+    bool write(QDataStream &out) const Q_DECL_OVERRIDE;
 
   private:
     QString mIconName;
