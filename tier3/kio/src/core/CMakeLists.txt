@@ -25,6 +25,7 @@ set(kiocore_SRCS
   klocalsocket.cpp
   socketconnectionbackend.cpp
   connection.cpp
+  connectionserver.cpp
   krecentdocument.cpp
   kfileitemlistproperties.cpp
   tcpslavebase.cpp
@@ -136,6 +137,7 @@ install(TARGETS KIOCore EXPORT KIOTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install( FILES
   idleslave.h # installed for klauncher
+  connectionserver.h # installed for klauncher
   tcpslavebase.h
   directorysizejob.h
   forwardingslavebase.h

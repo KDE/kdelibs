@@ -30,35 +30,6 @@
 
 using namespace KIO;
 
-class KIO::ConnectionPrivate
-{
-public:
-    inline ConnectionPrivate()
-        : backend(0), suspended(false)
-    { }
-
-    void dequeue();
-    void commandReceived(const Task &task);
-    void disconnected();
-    void setBackend(AbstractConnectionBackend *b);
-
-    QQueue<Task> outgoingTasks;
-    QQueue<Task> incomingTasks;
-    AbstractConnectionBackend *backend;
-    Connection *q;
-    bool suspended;
-};
-
-class KIO::ConnectionServerPrivate
-{
-public:
-    inline ConnectionServerPrivate()
-        : backend(0)
-    { }
-
-    ConnectionServer *q;
-    AbstractConnectionBackend *backend;
-};
 
 void ConnectionPrivate::dequeue()
 {
@@ -249,80 +220,6 @@ int Connection::read( int* _cmd, QByteArray &data )
         QMetaObject::invokeMethod(this, "dequeue", Qt::QueuedConnection);
 
     return data.size();
-}
-
-ConnectionServer::ConnectionServer(QObject *parent)
-    : QObject(parent), d(new ConnectionServerPrivate)
-{
-    d->q = this;
-}
-
-ConnectionServer::~ConnectionServer()
-{
-    delete d;
-}
-
-void ConnectionServer::listenForRemote()
-{
-#ifdef Q_OS_WIN
-    d->backend = new SocketConnectionBackend(SocketConnectionBackend::TcpSocketMode, this);
-#else
-    d->backend = new SocketConnectionBackend(SocketConnectionBackend::LocalSocketMode, this);
-#endif
-    if (!d->backend->listenForRemote()) {
-        delete d->backend;
-        d->backend = 0;
-        return;
-    }
-
-    connect(d->backend, SIGNAL(newConnection()), SIGNAL(newConnection()));
-    //qDebug() << "Listening on" << d->backend->address;
-}
-
-QUrl ConnectionServer::address() const
-{
-    if (d->backend)
-        return d->backend->address;
-    return QUrl();
-}
-
-bool ConnectionServer::isListening() const
-{
-    return d->backend && d->backend->state == AbstractConnectionBackend::Listening;
-}
-
-void ConnectionServer::close()
-{
-    delete d->backend;
-    d->backend = 0;
-}
-
-Connection *ConnectionServer::nextPendingConnection()
-{
-    if (!isListening())
-        return 0;
-
-    AbstractConnectionBackend *newBackend = d->backend->nextPendingConnection();
-    if (!newBackend)
-        return 0;               // no new backend...
-
-    Connection *result = new Connection;
-    result->d->setBackend(newBackend);
-    newBackend->setParent(result);
-
-    return result;
-}
-
-void ConnectionServer::setNextPendingConnection(Connection *conn)
-{
-    AbstractConnectionBackend *newBackend = d->backend->nextPendingConnection();
-    Q_ASSERT(newBackend);
-
-    conn->d->backend = newBackend;
-    conn->d->setBackend(newBackend);
-    newBackend->setParent(conn);
-
-    conn->d->dequeue();
 }
 
 #include "moc_connection_p.cpp"

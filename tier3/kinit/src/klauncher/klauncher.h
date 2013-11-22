@@ -49,7 +49,7 @@
 
 #include <kservice.h>
 #include <kio/idleslave.h>
-#include <connection_p.h> // TODO: remove (ConnectionServer into own header)
+#include <kio/connectionserver.h>
 
 using KIO::IdleSlave;
 

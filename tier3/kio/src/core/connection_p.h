@@ -1,4 +1,3 @@
-// -*- c++ -*-
 /* This file is part of the KDE libraries
     Copyright (C) 2000 Stephan Kulow <coolo@kde.org>
                        David Faure <faure@kde.org>
@@ -22,16 +21,38 @@
 #ifndef KIO_CONNECTION_H
 #define KIO_CONNECTION_H
 
-#include <kio/kiocore_export.h>
-
 #include <QUrl>
-#include <QtCore/QObject>
-#include <QtCore/QString>
+#include <QObject>
+#include <QString>
+#include <QQueue>
+#include "socketconnectionbackend_p.h"
 
 namespace KIO {
 
-    class ConnectionPrivate;
-    class ConnectionServer;
+class Connection;
+
+// Separated from Connection only for historical reasons - they are both private now
+class ConnectionPrivate
+{
+public:
+    inline ConnectionPrivate()
+        : backend(0), suspended(false)
+    { }
+
+    void dequeue();
+    void commandReceived(const Task &task);
+    void disconnected();
+    void setBackend(AbstractConnectionBackend *b);
+
+    QQueue<Task> outgoingTasks;
+    QQueue<Task> incomingTasks;
+    AbstractConnectionBackend *backend;
+    Connection *q;
+    bool suspended;
+};
+
+class ConnectionServer;
+
     /**
      * @private
      *
@@ -40,7 +61,7 @@ namespace KIO {
      * It handles a queue of commands to be sent which makes it possible to
      * queue data before an actual connection has been established.
      */
-    class KIOCORE_EXPORT Connection : public QObject
+    class Connection : public QObject
     {
 	Q_OBJECT
     public:
@@ -142,43 +163,6 @@ namespace KIO {
     };
 
     class ConnectionServerPrivate;
-    /**
-     * @private
-     *
-     * This class provides a way to obtaining KIO::Connection connections.
-     */
-    class KIOCORE_EXPORT ConnectionServer : public QObject
-    {
-        Q_OBJECT
-    public:
-        ConnectionServer(QObject *parent = 0);
-        ~ConnectionServer();
-
-        /**
-         * Sets this connection to listen mode. Use address() to obtain the
-         * address this is listening on.
-         */
-        void listenForRemote();
-        bool isListening() const;
-        /// Closes the connection.
-	void close();
-
-        /**
-         * Returns the address for this connection if it is listening, an empty
-         * address if not.
-         */
-        QUrl address() const;
-
-        Connection *nextPendingConnection();
-        void setNextPendingConnection(Connection *conn);
-    Q_SIGNALS:
-        void newConnection();
-
-    private:
-        friend class ConnectionServerPrivate;
-        ConnectionServerPrivate * const d;
-    };
-
 }
 
 #endif
