@@ -473,6 +473,9 @@ include_directories(
 
 include_directories(${JPEG_INCLUDE_DIR} ${GIF_INCLUDE_DIR} ${PNG_INCLUDE_DIR} )
 
+set( KDELIBSUFF ${LIB_SUFFIX} )
+configure_file(html/ksslconfig.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/ksslconfig.h )
+
 add_subdirectory( kmultipart )
 add_subdirectory( java )
 

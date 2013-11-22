@@ -20,8 +20,6 @@
 
 #include "ksslsettings.h"
 
-#include <ksslconfig.h>
-
 #include <QtCore/QFile>
 
 #include <kconfiggroup.h>

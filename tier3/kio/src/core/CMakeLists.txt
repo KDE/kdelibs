@@ -17,9 +17,6 @@ if(OPENSSL_FOUND)
    include_directories(${OPENSSL_INCLUDE_DIR})
 endif()
 
-set( KDELIBSUFF ${LIB_SUFFIX} )
-configure_file(kssl/ksslconfig.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/ksslconfig.h )
-
 set(kiocore_SRCS
   idleslave.cpp
   klocalsocket.cpp
