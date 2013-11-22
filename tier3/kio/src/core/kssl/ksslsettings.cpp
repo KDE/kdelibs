@@ -26,26 +26,7 @@
 
 #include <kconfiggroup.h>
 
-// this hack provided by Malte Starostik to avoid glibc/openssl bug
-// on some systems
-#if KSSL_HAVE_SSL
-#define crypt _openssl_crypt
-#include <openssl/ssl.h>
-#undef crypt
-#endif
-
-#include <kopenssl.h>
 #include <qstandardpaths.h>
-
-#if KSSL_HAVE_SSL
-#define sk_new d->kossl->sk_new
-#define sk_push d->kossl->sk_push
-#define sk_free d->kossl->sk_free
-#define sk_value d->kossl->sk_value
-#define sk_num d->kossl->sk_num
-#define sk_dup d->kossl->sk_dup
-#define sk_pop d->kossl->sk_pop
-#endif
 
 class CipherNode {
 	public:
@@ -65,13 +46,11 @@ class CipherNode {
 class KSSLSettingsPrivate {
 	public:
 		KSSLSettingsPrivate() {
-			kossl = 0L;   // try to delay this as long as possible
 		}
 		~KSSLSettingsPrivate() {
 
 		}
 
-		KOSSL *kossl;
 		bool m_bUseEGD;
 		bool m_bUseEFile;
 		QString m_EGDPath;
@@ -138,12 +117,6 @@ void KSSLSettings::load() {
 	cfg = KConfigGroup(d->m_cfg, "Auth");
 	d->m_bSendX509 = ("send" == cfg.readEntry("AuthMethod", ""));
 	d->m_bPromptX509 = ("prompt" == cfg.readEntry("AuthMethod", ""));
-
-#if KSSL_HAVE_SSL
-
-
-
-#endif
 }
 
 
@@ -213,13 +186,3 @@ bool KSSLSettings::useEFile() const          { return d->m_bUseEFile;    }
 bool KSSLSettings::autoSendX509() const      { return d->m_bSendX509; }
 bool KSSLSettings::promptSendX509() const    { return d->m_bPromptX509; }
 QString& KSSLSettings::getEGDPath()       { return d->m_EGDPath; }
-
-#if KSSL_HAVE_SSL
-#undef sk_new
-#undef sk_push
-#undef sk_free
-#undef sk_value
-#undef sk_num
-#undef sk_pop
-#undef sk_dup
-#endif
