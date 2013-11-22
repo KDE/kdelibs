@@ -1,6 +1,7 @@
 project(tier3)
 
 add_subdirectory(kbookmarks)
+add_subdirectory(kcmutils)
 add_subdirectory(kconfigwidgets)
 add_subdirectory(kdewidgets)
 add_subdirectory(kemoticons)
