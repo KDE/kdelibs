@@ -37,7 +37,6 @@ endif()
 configure_file(config-gssapi.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-gssapi.h )
 
 include_directories(${ZLIB_INCLUDE_DIR})
-include_directories(${CMAKE_SOURCE_DIR}/interfaces)
 
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 

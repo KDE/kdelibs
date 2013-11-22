@@ -76,8 +76,6 @@ kde4support_executable_tests(
   kglobalsettingsclient      # Helper for kglobalsettingstest
 )
 
-target_include_directories(ktimezonestest PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/../src/kdecore")
-
 ########### module for klibloadertest ###############
 
 if(NOT KDE_NO_DEPRECATED)
