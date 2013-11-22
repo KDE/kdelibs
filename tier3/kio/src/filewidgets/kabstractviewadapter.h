@@ -35,7 +35,6 @@ class QSize;
  */
 class KAbstractViewAdapter : public QObject
 {
-
 public:
     enum Signal { ScrollBarValueChanged };
 

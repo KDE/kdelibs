@@ -70,6 +70,7 @@ install( FILES
   krecentdirs.h
   kstatusbarofflineindicator.h
 
+  kabstractviewadapter.h
   kdiroperator.h
   kdirsortfilterproxymodel.h
   kencodingfiledialog.h
