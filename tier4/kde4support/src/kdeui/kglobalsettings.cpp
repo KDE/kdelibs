@@ -78,7 +78,7 @@ class KGlobalSettings::Private
 {
     public:
         Private(KGlobalSettings *q)
-            : q(q), activated(false), paletteCreated(false), mLargeFont(0)
+            : q(q), activated(false), paletteCreated(false), mLargeFont(0), mMouseSettings(0)
         {
             kdeFullSession = !qgetenv("KDE_FULL_SESSION").isEmpty();
         }
