@@ -25,8 +25,6 @@
 #define KOSSL KOpenSSLProxy
 class KOpenSSLProxyPrivate;
 
-#include <kio/kiocore_export.h>
-
 #include <ksslconfig.h>
 
 #if KSSL_HAVE_SSL
@@ -62,7 +60,7 @@ class KOpenSSLProxyPrivate;
  * @short KDE OpenSSL Wrapper
  * @internal
  */
-class KIOCORE_EXPORT KOpenSSLProxy {
+class KOpenSSLProxy {
 public:
 
    /**

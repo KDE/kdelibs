@@ -243,6 +243,7 @@ set(khtmlhtml_STAT_SRCS
   html/HTMLSourceElement.cpp
   html/TimeRanges.cpp
   html/ksslkeygen.cpp
+  html/kopenssl.cpp
 )
 
 # khtml/ecma/Makefile.am: kjs_html

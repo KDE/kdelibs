@@ -160,6 +160,7 @@ set(libkde4support_SRCS
     kssl/ksslutils.cpp
     kssl/ksslcertchain.cpp
     kssl/ksslcertificate.cpp
+    kssl/kopenssl.cpp
     kio/kfileshare.cpp
     kio/kfileitemactionplugin.cpp
     kio/passworddialog.cpp
