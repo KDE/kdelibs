@@ -356,7 +356,7 @@ have to find an alternative</li>
 <li>KMessageBoxMessageHandler moved to kde4support</li>
 <li>KNotification: setComponentData(KComponentData) is now setComponentName(QString), only the component name was used.</li>
 <li>KActionCollection and KXMLGUIClient: replace setComponentData with setComponentName and setComponentDisplayName</li>
-<li>KAction changes
+<li>KAction is deprecated now, use QAction or QWidgetAction.
     <ul>
         <li>Shape and rocker gestures are now handled by KGestureMap. The existing KAction methods related to gesture handling delegate to KGestureMap.</li>
     </ul>
@@ -450,7 +450,7 @@ toolbar->setProperty("otherToolbar", true);</pre>
   <li>The deprecated KIO::Job::showErrorDialog() has been removed, use KJobWidgets::setWindow(job, parent) and job-&gt;ui()-&gt;showErrorMessage()
   <li>The KFileItem API has been ported to QMimeType. As a consequence, mimeTypePtr() is now currentMimeType().</li>
   <li>KFileItem::run(QWidget*) has disappeared, due to core/gui separation. Use new KRun(item.targetUrl(), widget) instead.</li>
-  <li>KFileItem::pixmap(size, state=0) has disappeared, due to core/gui separation. If you can, use KIcon(item.iconName(), 0, item.overlays()) instead.
+  <li>KFileItem::pixmap(size, state=0) has disappeared, due to core/gui separation. If you can, use KDE::icon(item.iconName(), item.overlays(), 0) instead.
    If you really need a QPixmap, e.g. for showing in a QLabel, use this instead:
   <pre>
     KIconLoader::global()-&gt;loadMimeTypeIcon(item.iconName(), KIconLoader::Desktop, size, state);
