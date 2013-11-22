@@ -45,41 +45,13 @@
 #include <QtCore/QDateTime>
 #include <QUrl>
 #include <QDBusConnection>
-
-#include <kservice.h>
-#include <connection_p.h> // from KIO
 #include <QDBusMessage>
 
-class IdleSlave : public QObject
-{
-   Q_OBJECT
-public:
-   explicit IdleSlave(QObject *parent);
-   bool match( const QString &protocol, const QString &host, bool connected) const;
-   void connect( const QString &app_socket);
-   pid_t pid() const { return mPid;}
-   int age(const QDateTime &now) const;
-   void reparseConfiguration();
-   bool onHold(const QUrl &url) const;
-   QString protocol() const   {return mProtocol;}
+#include <kservice.h>
+#include <kio/idleslave.h>
+#include <connection_p.h> // TODO: remove (ConnectionServer into own header)
 
-Q_SIGNALS:
-   void statusUpdate(IdleSlave *);
-
-protected Q_SLOTS:
-   void gotInput();
-
-public:
-   KIO::Connection mConn;
-protected:
-   QString mProtocol;
-   QString mHost;
-   bool mConnected;
-   pid_t mPid;
-   QDateTime mBirthDate;
-   bool mOnHold;
-   QUrl mUrl;
-};
+using KIO::IdleSlave;
 
 class SlaveWaitRequest
 {

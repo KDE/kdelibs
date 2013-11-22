@@ -66,107 +66,6 @@ static const char* const s_DBusStartupTypeToString[] =
 
 using namespace KIO;
 
-IdleSlave::IdleSlave(QObject *parent)
-    : QObject(parent)
-{
-   QObject::connect(&mConn, SIGNAL(readyRead()), this, SLOT(gotInput()));
-   // Send it a SLAVE_STATUS command.
-   mConn.send( CMD_SLAVE_STATUS );
-   mPid = 0;
-   mBirthDate = QDateTime::currentDateTime();
-   mOnHold = false;
-}
-
-template<int T> struct PIDType { typedef pid_t PID_t; } ;
-template<> struct PIDType<2> { typedef qint16 PID_t; } ;
-template<> struct PIDType<4> { typedef qint32 PID_t; } ;
-
-void
-IdleSlave::gotInput()
-{
-   int cmd;
-   QByteArray data;
-   if (mConn.read( &cmd, data) == -1)
-   {
-      // Communication problem with slave.
-      //qCritical() << "SlavePool: No communication with slave." << endl;
-      deleteLater();
-   }
-   else if (cmd == MSG_SLAVE_ACK)
-   {
-      deleteLater();
-   }
-   else if (cmd != MSG_SLAVE_STATUS)
-   {
-      qCritical() << "SlavePool: Unexpected data from slave." << endl;
-      deleteLater();
-   }
-   else
-   {
-      QDataStream stream( data );
-      PIDType<sizeof(pid_t)>::PID_t stream_pid;
-      pid_t pid;
-      QByteArray protocol;
-      QString host;
-      qint8 b;
-      stream >> stream_pid >> protocol >> host >> b;
-      pid = stream_pid;
-// Overload with (bool) onHold, (QUrl) url.
-      if (!stream.atEnd())
-      {
-         QUrl url;
-         stream >> url;
-         mOnHold = true;
-         mUrl = url;
-      }
-
-      mPid = pid;
-      mConnected = (b != 0);
-      mProtocol = QString::fromLatin1(protocol);
-      mHost = host;
-      emit statusUpdate(this);
-   }
-}
-
-void
-IdleSlave::connect(const QString &app_socket)
-{
-   QByteArray data;
-   QDataStream stream( &data, QIODevice::WriteOnly);
-   stream << app_socket;
-   mConn.send( CMD_SLAVE_CONNECT, data );
-   // Timeout!
-}
-
-void
-IdleSlave::reparseConfiguration()
-{
-   mConn.send( CMD_REPARSECONFIGURATION );
-}
-
-bool
-IdleSlave::match(const QString &protocol, const QString &host, bool needConnected) const
-{
-   if (mOnHold || protocol != mProtocol) {
-      return false;
-   }
-   if (host.isEmpty()) {
-      return true;
-   }
-   return (host == mHost) && (!needConnected || mConnected);
-}
-
-bool
-IdleSlave::onHold(const QUrl &url) const
-{
-   if (!mOnHold) return false;
-   return (url == mUrl);
-}
-
-int IdleSlave::age(const QDateTime &now) const
-{
-    return mBirthDate.secsTo(now);
-}
 
 static KLauncher* g_klauncher_self;
 
@@ -609,7 +508,7 @@ KLauncher::requestDone(KLaunchRequest *request)
       if ( requestResult.dbusName.isNull() ) // null strings can't be sent
           requestResult.dbusName.clear();
       Q_ASSERT( !requestResult.error.isNull() );
-      PIDType<sizeof(pid_t)>::PID_t stream_pid = requestResult.pid;
+      Q_PID stream_pid = requestResult.pid;
       QDBusConnection::sessionBus().send(request->transaction.createReply(QVariantList() << requestResult.result
                                      << requestResult.dbusName
                                      << requestResult.error
@@ -1247,7 +1146,7 @@ void
 KLauncher::acceptSlave()
 {
     IdleSlave *slave = new IdleSlave(this);
-    mConnectionServer.setNextPendingConnection(&slave->mConn);
+    mConnectionServer.setNextPendingConnection(slave->connection());
     mSlaveList.append(slave);
     connect(slave, SIGNAL(destroyed()), this, SLOT(slotSlaveGone()));
     connect(slave, SIGNAL(statusUpdate(IdleSlave*)),

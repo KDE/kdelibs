@@ -21,6 +21,7 @@ set( KDELIBSUFF ${LIB_SUFFIX} )
 configure_file(kssl/ksslconfig.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/ksslconfig.h )
 
 set(kiocore_SRCS
+  idleslave.cpp
   klocalsocket.cpp
   socketconnectionbackend.cpp
   connection.cpp
@@ -134,6 +135,7 @@ set_target_properties(KIOCore PROPERTIES VERSION ${KIO_VERSION_STRING}
 install(TARGETS KIOCore EXPORT KIOTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install( FILES
+  idleslave.h # installed for klauncher
   tcpslavebase.h
   directorysizejob.h
   forwardingslavebase.h
