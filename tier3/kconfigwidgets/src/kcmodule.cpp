@@ -224,8 +224,10 @@ const KAboutData *KCModule::aboutData() const
 
 void KCModule::setAboutData(const KAboutData *about)
 {
-    delete d->_about;
-    d->_about = about;
+    if (about != d->_about) {
+        delete d->_about;
+        d->_about = about;
+    }
 }
 
 void KCModule::setRootOnlyMessage(const QString& message)
