@@ -48,7 +48,7 @@ private slots:
     void powerChanged();
 
 private:
-    int m_pluggedIn;
+    bool m_pluggedIn;
 
 };
 
