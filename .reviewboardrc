@@ -1,2 +1,4 @@
 REVIEWBOARD_URL = "https://git.reviewboard.kde.org"
 REPOSITORY = 'git://anongit.kde.org/kdelibs'
+BRANCH = 'frameworks'
+TARGET_GROUPS = 'kdeframeworks'
