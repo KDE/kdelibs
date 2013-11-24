@@ -161,11 +161,27 @@ class KCOREADDONS_EXPORT KAboutData
 {
 public:
 
-    // TODO DOCUMENT
+    /**
+     * Returns the KAboutData for the application.
+     * This contains information such as authors, license, etc.
+     * provided that the main() called setApplicationData.
+     */
     static KAboutData applicationData();
+    /**
+     * Sets the application data for this application.
+     */
     static void setApplicationData(const KAboutData &aboutData);
 
+    /**
+     * Register the KAboutData information for a plugin.
+     * Call this from the constructor of the plugin.
+     * This will register the plugin's @p aboutData under the component name
+     * that was set in @p aboutData.
+     */
     static void registerPluginData(const KAboutData &aboutData);
+    /**
+     * Return the KAboutData for the given plugin identified by @p componentName.
+     */
     static KAboutData *pluginData(const QString &componentName);
 
   /**
