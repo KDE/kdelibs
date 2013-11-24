@@ -159,7 +159,7 @@ RenderObject* RenderContainer::removeChildNode(RenderObject* oldChild)
         if (oldChild->height() && oldChild->width())
             oldChild->repaint();
     }
-    
+
     // detach the place holder box
     if (oldChild->isBox()) {
         RenderBox* rb = static_cast<RenderBox*>(oldChild);
@@ -175,12 +175,16 @@ RenderObject* RenderContainer::removeChildNode(RenderObject* oldChild)
         RenderLayer* layer = 0;
         if (m_style->visibility() != VISIBLE && oldChild->style()->visibility() == VISIBLE && !oldChild->layer()) {
             layer = enclosingLayer();
-            layer->dirtyVisibleContentStatus();
+            if (layer) {
+                layer->dirtyVisibleContentStatus();
+            }
         }
 
          // Keep our layer hierarchy updated.
         if (oldChild->firstChild() || oldChild->layer()) {
-            if (!layer) layer = enclosingLayer();            
+            if (!layer) {
+                layer = enclosingLayer();
+            }
             oldChild->removeLayers(layer);
         }
         // remove the child from any special layout lists
@@ -193,7 +197,7 @@ RenderObject* RenderContainer::removeChildNode(RenderObject* oldChild)
             if (oldChild->style()->position() == PFIXED)
                 canvas()->removeStaticObject( oldChild, true );
         }
-        
+
         if (oldChild->isPosWithStaticDim() && childrenInline())
             dirtyLinesFromChangedChild(oldChild);
 
@@ -547,8 +551,12 @@ void RenderContainer::appendChildNode(RenderObject* newChild)
     // if the new child is visible but this object was not, tell the layer it has some visible content
     // that needs to be drawn and layer visibility optimization can't be used
     if (style()->visibility() != VISIBLE && newChild->style()->visibility() == VISIBLE && !newChild->layer()) {
-        if (!layer) layer = enclosingLayer();
-        layer->setHasVisibleContent(true);
+        if (!layer) {
+            layer = enclosingLayer();
+        }
+        if (layer) {
+            layer->setHasVisibleContent(true);
+        }
     }
 
     if (!newChild->isFloatingOrPositioned() && childrenInline())
@@ -608,8 +616,12 @@ void RenderContainer::insertChildNode(RenderObject* child, RenderObject* beforeC
     // if the new child is visible but this object was not, tell the layer it has some visible content
     // that needs to be drawn and layer visibility optimization can't be used
     if (style()->visibility() != VISIBLE && child->style()->visibility() == VISIBLE && !child->layer()) {
-        if (!layer) layer = enclosingLayer();
-        layer->setHasVisibleContent(true);
+        if (!layer) {
+            layer = enclosingLayer();
+        }
+        if (layer) {
+            layer->setHasVisibleContent(true);
+        }
     }
 
     if (!child->isFloating() && childrenInline())

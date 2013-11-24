@@ -3836,10 +3836,10 @@ void KHTMLPart::slotViewPageInfo()
   ui.setupUi(dlg);
 
   KGuiItem::assign(ui._close, KStandardGuiItem::close());
-
   connect(ui._close, SIGNAL(clicked()), dlg, SLOT(accept()));
+
   if (d->m_doc)
-     ui._title->setText(d->m_doc->title().string());
+     ui._title->setText(d->m_doc->title().string().trimmed());
 
   // If it's a frame, set the caption to "Frame Information"
   if ( parentPart() && d->m_doc && d->m_doc->isHTMLDocument() ) {

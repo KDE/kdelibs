@@ -49,13 +49,12 @@ public:
     virtual QString udiPrefix() const;
 
 private Q_SLOTS:
-    void slotDeviceAdded(const QString &opath);
-    void slotDeviceRemoved(const QString &opath);
+    void onDeviceAdded(const QDBusObjectPath & path);
+    void onDeviceRemoved(const QDBusObjectPath & path);
 
 private:
     QSet<Solid::DeviceInterface::Type> m_supportedInterfaces;
     QDBusInterface m_manager;
-
 };
 
 }

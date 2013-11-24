@@ -537,15 +537,20 @@ void MouseEventImpl::computeLayerPos()
         doc->renderer()->layer()->nodeAtPoint(renderInfo, m_pageX, m_pageY);
 
         NodeImpl *node = renderInfo.innerNonSharedNode();
-        while (node && !node->renderer())
+        while (node && !node->renderer()) {
             node = node->parent();
+        }
 
         if (node) {
-            node->renderer()->enclosingLayer()->updateLayerPosition();
-            for (RenderLayer* layer = node->renderer()->enclosingLayer(); layer;
-                 layer = layer->parent()) {
+            RenderLayer* layer = node->renderer()->enclosingLayer();
+            if (layer) {
+                layer->updateLayerPosition();
+            }
+
+            while (layer) {
                 m_layerX -= layer->xPos();
                 m_layerY -= layer->yPos();
+                layer = layer->parent();
             }
         }
     }

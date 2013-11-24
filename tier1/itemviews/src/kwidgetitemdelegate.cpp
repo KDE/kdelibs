@@ -63,6 +63,7 @@ KWidgetItemDelegatePrivate::KWidgetItemDelegatePrivate(KWidgetItemDelegate *q, Q
     , q(q)
 {
     initializeTimer->setInterval(50);
+    initializeTimer->setSingleShot(true);
     connect(initializeTimer, SIGNAL(timeout()), this, SLOT(initializeModel()));
 }
 

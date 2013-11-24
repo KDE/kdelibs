@@ -21,6 +21,7 @@
 #include <klocalizedstring.h>
 #include <QUrl>
 #include <QDateTime>
+#include <sys/stat.h> // S_IRUSR etc
 
 QString KIO::Job::errorString() const
 {
@@ -1016,5 +1017,44 @@ KIOCORE_EXPORT QByteArray KIO::rawErrorDetail(int errorCode, const QString &erro
   QDataStream stream(&ret, QIODevice::WriteOnly);
   stream << errorName << techName << description << causes << solutions;
   return ret;
+}
+
+QFile::Permissions KIO::convertPermissions(int permissions)
+{
+  QFile::Permissions qPermissions(0);
+
+  if (permissions > 0) {
+    if (permissions & S_IRUSR) {
+      qPermissions |= QFile::ReadOwner;
+    }
+    if (permissions & S_IWUSR) {
+      qPermissions |= QFile::WriteOwner;
+    }
+    if (permissions & S_IXUSR) {
+      qPermissions |= QFile::ExeOwner;
+    }
+
+    if (permissions & S_IRGRP) {
+      qPermissions |= QFile::ReadGroup;
+    }
+    if (permissions & S_IWGRP) {
+      qPermissions |= QFile::WriteGroup;
+    }
+    if (permissions & S_IXGRP) {
+      qPermissions |= QFile::ExeGroup;
+    }
+
+    if (permissions & S_IROTH) {
+      qPermissions |= QFile::ReadOther;
+    }
+    if (permissions & S_IWOTH) {
+      qPermissions |= QFile::WriteOther;
+    }
+    if (permissions & S_IXOTH) {
+      qPermissions |= QFile::ExeOther;
+    }
+  }
+
+  return qPermissions;
 }
 

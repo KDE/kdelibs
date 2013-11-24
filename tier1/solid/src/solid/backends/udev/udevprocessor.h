@@ -54,6 +54,7 @@ private:
     };
     mutable CanChangeFrequencyEnum m_canChangeFrequency;
     mutable int m_maxSpeed;
+    QString prefix() const;
 };
 }
 }

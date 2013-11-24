@@ -1235,7 +1235,7 @@ void ElementImpl::removedFromDocument()
 
 DOMString ElementImpl::openTagStartToString(bool expandurls) const
 {
-    DOMString result = DOMString("<") + tagName();
+    DOMString result = DOMString("<") + nonCaseFoldedTagName();
 
     NamedAttrMapImpl *attrMap = attributes(true);
 
@@ -1301,7 +1301,7 @@ DOMString ElementImpl::selectionToString(NodeImpl *selectionStart, NodeImpl *sel
 	}
 
 	result += "</";
-	result += tagName();
+	result += nonCaseFoldedTagName();
 	result += ">";
     } else {
 	result += " />";
@@ -1323,7 +1323,7 @@ DOMString ElementImpl::toString() const
 	}
 
 	result += "</";
-	result += tagName().string();
+	result += nonCaseFoldedTagName().string();
 	result += ">";
     } else if (result.length() == 1) {
 	// ensure we do not get results like < /> can happen when serialize document

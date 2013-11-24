@@ -22,6 +22,7 @@
 #include <kio/kiocore_export.h>
 
 #include <QtCore/QString>
+#include <QFile>  // for QFile::Permissions
 
 #include <kjob.h>
 
@@ -266,6 +267,19 @@ namespace KIO
    * @since 5.0
    */
   KIOCORE_EXPORT QString favIconForUrl(const QUrl& url);
+
+  /**
+   * Converts KIO file permissions from mode_t to QFile::Permissions format.
+   *
+   * This is a convenience function for converting KIO permissions parameter from
+   * mode_t to QFile::Permissions.
+   *
+   * @param permissions KIO file permissions.
+   *
+   * @return -1 if @p permissions is -1, otherwise its OR'ed QFile::Permission equivalent.
+   * @since 4.12
+   */
+  KIOCORE_EXPORT QFile::Permissions convertPermissions(int permissions);
 
   /**
    * Return the icon name for a URL.

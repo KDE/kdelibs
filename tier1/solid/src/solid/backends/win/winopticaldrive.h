@@ -61,7 +61,6 @@ private:
 
 };
 
-#ifdef HEAVE_DRIVER_KIT
 class MediaProfiles//TODO: cleanup
 {
 public:
@@ -81,8 +80,7 @@ private:
     bool isNull();
 
     static const MediaProfiles getProfile(ulong id);
-} ;
-#endif
+};
 }
 }
 }

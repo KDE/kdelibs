@@ -53,7 +53,7 @@ int Processor::number() const
 int Processor::maxSpeed() const
 {
     if (m_maxSpeed == -1) {
-        QFile cpuMaxFreqFile(m_device->deviceName() + "/sysdev/cpufreq/cpuinfo_max_freq");
+        QFile cpuMaxFreqFile(m_device->deviceName() + prefix() + "/cpufreq/cpuinfo_max_freq");
         if (cpuMaxFreqFile.open(QIODevice::ReadOnly)) {
             QString value = cpuMaxFreqFile.readAll().trimmed();
             // cpuinfo_max_freq is in kHz
@@ -75,8 +75,8 @@ bool Processor::canChangeFrequency() const
 
         m_canChangeFrequency = CannotChangeFreq;
 
-        QFile cpuMinFreqFile(m_device->deviceName() + "/sysdev/cpufreq/cpuinfo_min_freq");
-        QFile cpuMaxFreqFile(m_device->deviceName() + "/sysdev/cpufreq/cpuinfo_max_freq");
+        QFile cpuMinFreqFile(m_device->deviceName() + prefix() + "/cpufreq/cpuinfo_min_freq");
+        QFile cpuMaxFreqFile(m_device->deviceName() + prefix() + "/cpufreq/cpuinfo_max_freq");
         if (cpuMinFreqFile.open(QIODevice::ReadOnly) && cpuMaxFreqFile.open(QIODevice::ReadOnly)) {
             qlonglong minFreq = cpuMinFreqFile.readAll().trimmed().toLongLong();
             qlonglong maxFreq = cpuMaxFreqFile.readAll().trimmed().toLongLong();
@@ -94,5 +94,15 @@ Solid::Processor::InstructionSets Processor::instructionSets() const
     static Solid::Processor::InstructionSets cpuextensions = Solid::Backends::Shared::cpuFeatures();
 
     return cpuextensions;
+}
+
+QString Processor::prefix() const
+{
+    QLatin1String sysPrefix("/sysdev");
+    if (QFile::exists(m_device->deviceName() + sysPrefix)) {
+        return sysPrefix;
+    }
+
+    return QString();
 }
 

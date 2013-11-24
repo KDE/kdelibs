@@ -31,6 +31,8 @@ kiocore_unit_tests(
  kfileitemtest
  kprotocolinfotest
  ktcpsockettest
+ globaltest
+ udsentrytest
 )
 
 if(UNIX)

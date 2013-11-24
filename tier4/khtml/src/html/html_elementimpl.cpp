@@ -642,7 +642,7 @@ DOMString HTMLElementImpl::toString() const
 
 	if (endTagRequirement(id()) == REQUIRED) {
 	    result += "</";
-	    result += tagName();
+	    result += nonCaseFoldedTagName();
 	    result += ">";
 	}
 

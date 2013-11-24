@@ -65,9 +65,15 @@ UPowerManager::UPowerManager(QObject *parent)
 
     if (serviceFound) {
         connect(&m_manager, SIGNAL(DeviceAdded(QString)),
-                this, SLOT(slotDeviceAdded(QString)));
+                this, SIGNAL(deviceAdded(QString)));
         connect(&m_manager, SIGNAL(DeviceRemoved(QString)),
-                this, SLOT(slotDeviceRemoved(QString)));
+                this, SIGNAL(deviceRemoved(QString)));
+
+        // for UPower >= 0.99.0, changed signature :o/
+        connect(&m_manager, SIGNAL(DeviceAdded(QDBusObjectPath)),
+                this, SLOT(onDeviceAdded(QDBusObjectPath)));
+        connect(&m_manager, SIGNAL(DeviceRemoved(QDBusObjectPath)),
+                this, SLOT(onDeviceRemoved(QDBusObjectPath)));
     }
 }
 
@@ -160,13 +166,13 @@ QString UPowerManager::udiPrefix() const
     return UP_UDI_PREFIX;
 }
 
-void UPowerManager::slotDeviceAdded(const QString &opath)
+void UPowerManager::onDeviceAdded(const QDBusObjectPath &path)
 {
-    emit deviceAdded(opath);
+    emit deviceAdded(path.path());
 }
 
-void UPowerManager::slotDeviceRemoved(const QString &opath)
+void UPowerManager::onDeviceRemoved(const QDBusObjectPath &path)
 {
-    emit deviceRemoved(opath);
+    emit deviceRemoved(path.path());
 }
 

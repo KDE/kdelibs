@@ -281,6 +281,7 @@ void KXmlGuiWindow::createGUI( const QString &xmlfile )
     setXMLGUIBuildDocument( QDomDocument() );
 
     // do the actual GUI building
+    guiFactory()->reset();
     guiFactory()->addClient( this );
 
     //  setUpdatesEnabled( true );

@@ -28,7 +28,7 @@
 #include <QWidget>
 
 /**
- * @deprecated Use Nepomuk2::FileMetaDataWidget
+ * @deprecated since 4.12 use Nepomuk2::FileMetaDataWidget
  *
  * @brief Shows the meta data of one or more file items.
  *

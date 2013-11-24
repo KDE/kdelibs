@@ -141,7 +141,7 @@ PassRefPtr<UString::Rep> Identifier::add(const UChar *s, int length)
          return &UString::Rep::empty;
     }
 
-    UCharBuffer buf = {s, length};
+    UCharBuffer buf = {s, static_cast<unsigned int>(length)};
     return *identifierTable().add<UCharBuffer, UCharBufferTranslator>(buf).first;
 }
 

@@ -88,6 +88,7 @@ private Q_SLOTS: // test methods
     void testMoveTo();
     void nestedEventLoop();
     void testHardlinkChange();
+    void stopAndRestart();
 
 protected Q_SLOTS: // internal slots
     void nestedEventLoopSlot();
@@ -643,6 +644,30 @@ void KDirWatch_UnitTest::testHardlinkChange()
 #else
     QSKIP("Unix-specific");
 #endif
+}
+
+void KDirWatch_UnitTest::stopAndRestart()
+{
+    KDirWatch watch;
+    watch.addDir(m_path);
+    watch.startScan();
+
+    waitUntilMTimeChange(m_path);
+
+    watch.stopDirScan(m_path);
+
+    const QString file0 = createFile(0);
+    QSignalSpy spyDirty(&watch, SIGNAL(dirty(QString)));
+    QTest::qWait(200);
+    QCOMPARE(spyDirty.count(), 0);// suspended -> no signal
+
+    watch.restartDirScan(m_path);
+
+    const QString file1 = createFile(1);
+    QVERIFY(waitForOneSignal(watch, SIGNAL(dirty(QString)), m_path));
+
+    removeFile(0);
+    removeFile(1);
 }
 
 #include "kdirwatch_unittest.moc"

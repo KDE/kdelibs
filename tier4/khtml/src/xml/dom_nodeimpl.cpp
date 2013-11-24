@@ -423,7 +423,7 @@ void NodeImpl::dispatchGenericEvent( EventImpl *evt, int &/*exceptioncode */)
         // so we patch that up now (since we want it as Window before we got here
         if (evt->id() == EventImpl::LOAD_EVENT && evt->target()->eventTargetType() == WINDOW)
             evt->setTarget(document());
-    } if (inDocument()) {
+    } else if (inDocument()) {
         for (n = this; n; n = n->parentNode()) {
             n->ref();
             nodeChain.prepend(n);

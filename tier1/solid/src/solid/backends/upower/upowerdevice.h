@@ -62,6 +62,7 @@ Q_SIGNALS:
     void changed();
 
 private Q_SLOTS:
+    void onPropertiesChanged(const QString &ifaceName, const QVariantMap &changedProps, const QStringList &invalidatedProps);
     void slotChanged();
 
 private:

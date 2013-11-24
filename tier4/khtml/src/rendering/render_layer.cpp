@@ -426,7 +426,7 @@ void RenderLayer::updateWidgetMasks(RenderLayer* rootLayer)
             zx = sc->zIndex();
         }
         if (!needUpdate) {
-            needUpdate = needUpdate || !m_region.isEmpty();
+            needUpdate = !m_region.isEmpty();
             m_region = QRegion();
         }
         if (needUpdate)

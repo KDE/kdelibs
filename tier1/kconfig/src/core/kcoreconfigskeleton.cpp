@@ -1081,13 +1081,12 @@ bool KCoreConfigSkeleton::writeConfig()
   if (!usrWriteConfig())
     return false;
 
-  if (!d->mConfig->sync())
-    return false;
-
-  readConfig();
-
-  emit configChanged();
-
+  if (d->mConfig->isDirty()) {
+    if (!d->mConfig->sync())
+      return false;
+    readConfig();
+    emit configChanged();
+  }
   return true;
 }
 
