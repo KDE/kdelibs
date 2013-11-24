@@ -20,6 +20,7 @@
 
 #include "idleslave.h"
 #include "connection_p.h"
+#include "commands_p.h" // CMD_*
 #include "slaveinterface.h" // MSG_*
 
 using namespace KIO;

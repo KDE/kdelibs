@@ -20,6 +20,7 @@
 
 #include "dataslave_p.h"
 #include "dataprotocol_p.h"
+#include "commands_p.h"
 #include "slavebase.h"
 
 #include <klocalizedstring.h>

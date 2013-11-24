@@ -22,6 +22,7 @@
 
 #include "slavebase.h"
 #include "connection_p.h"
+#include "commands_p.h"
 #include "hostinfo.h"
 #include <errno.h>
 #include <stdlib.h>

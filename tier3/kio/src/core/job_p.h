@@ -25,6 +25,7 @@
 #define KIO_JOB_P_H
 
 #include "job.h"
+#include "commands_p.h"
 #include "kjobtrackerinterface.h"
 #include <kio/jobuidelegateextension.h>
 #include <kio/jobuidelegatefactory.h>

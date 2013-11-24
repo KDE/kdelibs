@@ -40,8 +40,8 @@
 
 #include "dataprotocol_p.h"
 #include "kservice.h"
-#include <kio/global.h>
 #include "connection_p.h"
+#include "commands_p.h"
 #include "connectionserver.h"
 #include <kprotocolinfo.h>
 #include <config-kiocore.h> // CMAKE_INSTALL_PREFIX
