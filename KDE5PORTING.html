@@ -258,6 +258,7 @@ is no longer available. To simply make the code build, for the sake of porting o
 </li>
 <li>KCmdLineArgs uses K4AboutData rather than KAboutData: K4AboutData keeps the old mechanism for delayed translations
  (I18N_NOOP), while KAboutData is the one used by plugins, which can use immediate translation (i18n).
+<li>Make sure to call KAboutData::setApplicationData() from the main() of the application.</li>
 </li>
 <li>KEncodingDetector is removed, port to KEncodingProber. Porting guide:
 <pre>
