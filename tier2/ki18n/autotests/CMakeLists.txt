@@ -2,6 +2,8 @@ remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
 include(ECMMarkAsTest)
 
+find_package(Qt5 ${REQUIRED_QT_VERSION} CONFIG REQUIRED Test Concurrent)
+
 macro(KI18N_UNIT_TESTS)
     foreach(_testname ${ARGN})
         add_executable(${_testname} ${_testname}.cpp)
