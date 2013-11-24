@@ -33,6 +33,7 @@
 #include <kxmlguifactory.h>
 #include <QtCore/QTimer>
 #include <QVBoxLayout>
+#include <kaboutdata.h>
 
 static KAboutData kmultipartAboutData()
 {

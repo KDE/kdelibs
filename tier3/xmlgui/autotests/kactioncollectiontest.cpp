@@ -7,9 +7,6 @@
 #include <ksharedconfig.h>
 #include <kstandardaction.h>
 
-#include <assert.h>
-#include <kaboutdata.h>
-
 void tst_KActionCollection::init()
 {
     collection = new KActionCollection(static_cast<QObject *>(0));

@@ -24,7 +24,6 @@
 
 #include <kparts/part.h>
 #include <kparts/browserextension.h>
-#include <kaboutdata.h>
 #include <QtCore/QDate>
 
 class HTTPFilterGZip;
