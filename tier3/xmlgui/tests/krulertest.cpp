@@ -55,9 +55,11 @@ MouseWidget::resizeEvent( QResizeEvent *r )
 
 
 KRulerTest::KRulerTest()
-  : KMainWindow(0)
+  : QWidget(0)
 {
+  QVBoxLayout *topLayout = new QVBoxLayout(this);
   mainframe = new QFrame(this);
+  topLayout->addWidget(mainframe);
 
   layout = new QGridLayout(mainframe);
 
@@ -230,8 +232,6 @@ KRulerTest::KRulerTest()
   metricstyleButtons->addButton(mmetric, (int)KRuler::Metres);
   connect ( metricstyleButtons, SIGNAL(buttonClicked(int)), SLOT(slotSetMStyle(int)) );
 
-  setCentralWidget(mainframe);
-
   slotUpdateShowMarks();
 }
 
@@ -386,7 +386,8 @@ int main(int argc, char **argv)
   testapp->setFont(QFont(QStringLiteral("Helvetica"),12));
 
   window = new KRulerTest();
-  window->setCaption(QStringLiteral("KRulerTest"));
+  window->setWindowTitle(QStringLiteral("KRulerTest"));
+  window->resize(800, 600);
   window->show();
   return testapp->exec();
 }

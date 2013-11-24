@@ -7,8 +7,6 @@
 #include <QRadioButton>
 #include <QFrame>
 
-#include <kmainwindow.h>
-
 class KRuler;
 class QWidget;
 class QGridLayout;
@@ -41,7 +39,7 @@ private:
 };
 
 
-class KRulerTest : public KMainWindow
+class KRulerTest : public QWidget
 {
 Q_OBJECT
 public:
