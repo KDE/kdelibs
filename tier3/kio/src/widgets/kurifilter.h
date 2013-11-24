@@ -723,16 +723,6 @@ protected:
                             const QString& term, const QChar& separator) const;
 
     /**
-     * Sets the name of the preferred search providers in @p data.
-     *
-     * @since 4.5
-     * @deprecated Use @ref setSearchProviders instead.
-     */
-#ifndef KDE_NO_DEPRECATED
-    KIOWIDGETS_DEPRECATED void setPreferredSearchProviders(KUriFilterData& data, const ProviderInfoList& providers) const;
-#endif
-
-    /**
      * Sets the information about the search @p providers in @p data.
      *
      * @since 4.6
