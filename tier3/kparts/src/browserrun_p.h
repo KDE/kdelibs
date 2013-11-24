@@ -53,6 +53,7 @@ public:
 private Q_SLOTS:
     void slotDownloadFinished(KJob* job)
     {
+#ifdef HAVE_NEPOMUK
         KIO::FileCopyJob* fileCopyJob = static_cast<KIO::FileCopyJob *>(job);
         if (job->error()) {
             // qDebug() << "error during download: srcUrl=" << fileCopyJob->srcUrl()
@@ -63,13 +64,14 @@ private Q_SLOTS:
             // qDebug() << "download finished: srcUrl=" << fileCopyJob->srcUrl()
             //         << "destUrl=" << fileCopyJob->destUrl()
             //         << "referrer=" << m_metaData.value("referrer");
-#ifdef HAVE_NEPOMUK
             Nepomuk::Utils::createCopyEvent( fileCopyJob->srcUrl(),
                                              fileCopyJob->destUrl(),
                                              m_downloadJobStartTime,
                                              QUrl(m_metaData.value("referrer")) );
-#endif
         }
+#else
+        Q_UNUSED(job);
+#endif
     }
 
 private:
