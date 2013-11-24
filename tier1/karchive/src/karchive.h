@@ -551,8 +551,9 @@ public:
     /**
      * Extracts the file to the directory @p dest
      * @param dest the directory to extract to
+     * @return true on success, false if the file (dest + '/' + name()) couldn't be created
      */
-    void copyTo(const QString& dest) const;
+    bool copyTo(const QString& dest) const;
 
 protected:
     virtual void virtual_hook( int id, void* data );
@@ -619,8 +620,9 @@ public:
      * @p dest.
      * @param dest the directory to extract to
      * @param recursive if set to true, subdirectories are extracted as well
+     * @return true on success, false if the directory (dest + '/' + name()) couldn't be created
      */
-     void copyTo(const QString& dest, bool recursive = true) const;
+     bool copyTo(const QString& dest, bool recursive = true) const;
 
 protected:
     virtual void virtual_hook( int id, void* data );

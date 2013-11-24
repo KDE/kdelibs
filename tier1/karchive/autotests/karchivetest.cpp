@@ -243,7 +243,7 @@ static void testCopyTo( KArchive* archive )
     QTemporaryDir tmpDir;
     const QString dirName = tmpDir.path() + '/';
 
-    dir->copyTo( dirName );
+    QVERIFY(dir->copyTo(dirName));
 
     QVERIFY(QFile::exists(dirName+"dir"));
     QVERIFY(QFileInfo(dirName+"dir").isDir());

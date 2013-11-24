@@ -684,7 +684,7 @@ bool KArchiveFile::isFile() const
     return true;
 }
 
-void KArchiveFile::copyTo(const QString& dest) const
+bool KArchiveFile::copyTo(const QString& dest) const
 {
   QFile f( dest + QLatin1Char('/')  + name() );
   if ( f.open( QIODevice::ReadWrite | QIODevice::Truncate ) )
@@ -708,7 +708,9 @@ void KArchiveFile::copyTo(const QString& dest) const
       f.close();
 
       delete inputDev;
+      return true;
   }
+  return false;
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -802,7 +804,7 @@ static bool sortByPosition( const KArchiveFile* file1, const KArchiveFile* file2
     return file1->position() < file2->position();
 }
 
-void KArchiveDirectory::copyTo(const QString& dest, bool recursiveCopy ) const
+bool KArchiveDirectory::copyTo(const QString& dest, bool recursiveCopy) const
 {
   QDir root;
 
@@ -818,7 +820,8 @@ void KArchiveDirectory::copyTo(const QString& dest, bool recursiveCopy ) const
   do {
     const KArchiveDirectory* curDir = dirStack.pop();
     const QString curDirName = dirNameStack.pop();
-    root.mkdir(curDirName);
+    if (!root.mkpath(curDirName))
+        return false;
 
     const QStringList dirEntries = curDir->entries();
     for ( QStringList::const_iterator it = dirEntries.begin(); it != dirEntries.end(); ++it ) {
@@ -861,8 +864,10 @@ void KArchiveDirectory::copyTo(const QString& dest, bool recursiveCopy ) const
         it != end ; ++it ) {
       const KArchiveFile* f = *it;
       qint64 pos = f->position();
-      f->copyTo( fileToDir[pos] );
+      if (!f->copyTo(fileToDir[pos]))
+          return false;
   }
+  return true;
 }
 
 void KArchive::virtual_hook( int, void* )
