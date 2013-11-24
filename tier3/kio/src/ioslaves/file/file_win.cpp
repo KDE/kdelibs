@@ -213,11 +213,9 @@ void FileProtocol::listDir( const QUrl& url )
         it.next();
         UDSEntry entry = createUDSEntryWin( it.fileInfo() );
 
-        listEntry( entry, false );
+        listEntry(entry);
         entry.clear();
     }
-
-    listEntry( entry, true ); // ready
 
     // qDebug() << "============= COMPLETED LIST ============";
 

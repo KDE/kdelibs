@@ -1573,7 +1573,7 @@ void Ftp::listDir( const QUrl &url )
       //if ( !ftpEnt.link.isEmpty() )
       //   qDebug() << "is a link to " << ftpEnt.link;
       ftpCreateUDSEntry( ftpEnt.name, ftpEnt, entry, false );
-      listEntry( entry, false );
+      listEntry(entry);
       entry.clear();
     }
   }
@@ -1582,11 +1582,10 @@ void Ftp::listDir( const QUrl &url )
     FtpEntry& ftpEnt = ftpValidateEntList[i];
     fixupEntryName(&ftpEnt);
     ftpCreateUDSEntry( ftpEnt.name, ftpEnt, entry, false );
-    listEntry( entry, false );
+    listEntry(entry);
     entry.clear();
   }
 
-  listEntry( entry, true ); // ready
   ftpCloseCommand();        // closes the data connection only
   finished();
 }

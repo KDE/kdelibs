@@ -850,7 +850,7 @@ void HTTPProtocol::davStatList( const QUrl& url, bool stat )
         return;
       }
 
-      listEntry( entry, false );
+      listEntry(entry);
     } else   {
       // qDebug() << "Error: no URL contained in response to PROPFIND on" << url;
     }
@@ -861,7 +861,6 @@ void HTTPProtocol::davStatList( const QUrl& url, bool stat )
     return;
   }
 
-  listEntry( entry, true );
   davFinished();
 }
 
