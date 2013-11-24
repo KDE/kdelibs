@@ -746,7 +746,7 @@ static KUrl::List resolveURLs(const KUrl::List& _urls, const KService& _service)
             const KUrl url = *it;
             bool supported = isProtocolInSupportedList(url, appSupportedProtocols);
             kDebug(7010) << "Looking at url=" << url << " supported=" << supported;
-            if (!supported && KProtocolInfo::protocolClass(url.protocol()) == ":local") {
+            if (!supported && KProtocolInfo::protocolClass(url.protocol()).compare(QLatin1String(":local"), Qt::CaseInsensitive) == 0) {
                 // Maybe we can resolve to a local URL?
                 KUrl localURL = KIO::NetAccess::mostLocalUrl(url, 0);
                 if (localURL != url) {
@@ -1157,7 +1157,7 @@ void KRun::init()
         d->m_bIsLocalFile = true;
     }
 
-    if (!d->m_externalBrowser.isEmpty() && d->m_strURL.protocol().startsWith(QLatin1String("http"))) {
+    if (!d->m_externalBrowser.isEmpty() && d->m_strURL.protocol().startsWith(QLatin1String("http"), Qt::CaseInsensitive)) {
         if (d->runExecutable(d->m_externalBrowser)) {
             return;
         }
