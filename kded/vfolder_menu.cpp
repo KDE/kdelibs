@@ -95,7 +95,11 @@ QStringList VFolderMenu::allDirectories()
    QString previous = *it++;
    for(;it != m_allDirectories.end();)
    {
+#ifndef Q_OS_WIN
      if ((*it).startsWith(previous))
+#else
+     if ((*it).startsWith(previous, Qt::CaseInsensitive))
+#endif
      {
         it = m_allDirectories.erase(it);
      }
@@ -1268,7 +1272,11 @@ kDebug(7021) << "Processing KDE Legacy dirs for <KDE>";
 
             QString prefix = e.attributes().namedItem("prefix").toAttr().value();
 
+#ifndef Q_OS_WIN
             if (m_defaultLegacyDirs.contains(dir))
+#else
+            if (m_defaultLegacyDirs.contains(dir, Qt::CaseInsensitive))
+#endif
             {
                if (!kdeLegacyDirsDone)
                {
