@@ -1460,11 +1460,11 @@ void KHTMLView::mouseMoveEvent( QMouseEvent * _mouse )
     if (!setCursor && style && style->cursor() != CURSOR_AUTO)
         setCursor = true;
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     QWidget* vp = viewport();
     for (KHTMLPart* p = m_part; p; p = p->parentPart())
         if (!p->parentPart())
             vp = p->view()->viewport();
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     if ( setCursor && vp->cursor().handle() != c.handle() ) {
         if( c.shape() == Qt::ArrowCursor) {
             for (KHTMLPart* p = m_part; p; p = p->parentPart())
@@ -2063,7 +2063,9 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 	KHTMLWidget* k = dynamic_cast<KHTMLWidget*>(c);
 	if (v && k && k->m_kwp->isRedirected()) {
 	    bool block = false;
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 	    bool isUpdate = false;
+#endif
 	    QWidget *w = static_cast<QWidget *>(o);
 	    switch(e->type()) {
 	    case QEvent::UpdateRequest: {
@@ -2073,7 +2075,9 @@ bool KHTMLView::eventFilter(QObject *o, QEvent *e)
                 break;
             }
             case QEvent::UpdateLater:
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
                 isUpdate = true;
+#endif
                 // no break;
 	    case QEvent::Paint:
 		if (!allowWidgetPaintEvents) {

@@ -2079,6 +2079,7 @@ void HTMLTokenizer::enlargeRawContentBuffer(int len)
 
 void HTMLTokenizer::notifyFinished(CachedObject* finishedObj)
 {
+    Q_UNUSED(finishedObj);
     assert(!cachedScript.isEmpty());
     // Make external scripts wait for external stylesheets.
     // FIXME: This needs to be done for inline scripts too.
