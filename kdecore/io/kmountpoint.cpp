@@ -33,6 +33,12 @@
 #include <QDir>
 #endif
 
+#ifdef Q_OS_WIN
+static Qt::CaseSensitivity cs = Qt::CaseInsensitive;
+#else
+static Qt::CaseSensitivity cs = Qt::CaseSensitive;
+#endif
+
 #ifdef HAVE_VOLMGT
 #include <volmgt.h>
 #endif
@@ -478,8 +484,7 @@ KMountPoint::List::List()
 static bool pathsAreParentAndChildOrEqual(const QString& parent, const QString& child)
 {
     const QLatin1Char slash('/');
-
-    if (child.startsWith(parent)) {
+    if (child.startsWith(parent, cs)) {
         // Check if either
         // (a) both paths are equal, or
         // (b) parent ends with '/', or
@@ -487,10 +492,10 @@ static bool pathsAreParentAndChildOrEqual(const QString& parent, const QString& 
         //     Note that child is guaranteed to be longer than parent if (a) is false.
         //
         // This prevents that we incorrectly consider "/books" a child of "/book".
-        return parent == child || parent.endsWith(slash) || child.at(parent.length()) == slash;
+        return parent.compare(child, cs) == 0 || parent.endsWith(slash) || child.at(parent.length()) == slash;
     } else {
         // Note that "/books" is a child of "/books/".
-        return parent.endsWith(slash) && (parent.length() == child.length() + 1) && parent.startsWith(child);
+        return parent.endsWith(slash) && (parent.length() == child.length() + 1) && parent.startsWith(child, cs);
     }
 }
 
@@ -523,8 +528,8 @@ KMountPoint::Ptr KMountPoint::List::findByDevice(const QString& device) const
     if (realDevice.isEmpty()) // d->device can be empty in the loop below, don't match empty with it
         return Ptr();
     for (const_iterator it = begin(); it != end(); ++it) {
-        if ((*it)->d->device == realDevice ||
-            (*it)->d->mountedFrom == realDevice)
+        if (realDevice.compare((*it)->d->device, cs) == 0 ||
+            realDevice.compare((*it)->d->mountedFrom, cs) == 0)
             return *it;
     }
     return Ptr();
