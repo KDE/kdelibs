@@ -1,3 +1,5 @@
+cmake_minimum_required(VERSION 2.8.12)
+
 project(KInit)
 
 find_package(ECM 0.0.9 REQUIRED NO_MODULE)
@@ -30,6 +32,17 @@ if(HAVE_SOCKET_LIBRARY)
   set(KINIT_SOCKET_LIBRARY socket)
 else()
   set(KINIT_SOCKET_LIBRARY)
+endif()
+
+if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
+  find_package(KService ${KF5_VERSION} REQUIRED)
+  find_package(KIO ${KF5_VERSION} REQUIRED)
+  find_package(KI18n ${KF5_VERSION} REQUIRED)
+  find_package(KWindowSystem ${KF5_VERSION} REQUIRED)
+  find_package(KCrash ${KF5_VERSION} REQUIRED)
+
+  # Due to a CMake bug, we need to explicitly find private dependencies of our dependencies
+  # Remove when we depend on CMake 3.0.0
 endif()
 
 set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KInit")

@@ -45,7 +45,7 @@ sb_add_project(tier3/xmlgui DEPENDS kconfig kconfigwidgets kwidgetsaddons itemvi
 sb_add_project(tier3/kjsembed DEPENDS kdoctools kjs ki18n)
 sb_add_project(tier3/kbookmarks DEPENDS kconfigwidgets kcoreaddons kiconthemes kwidgetsaddons xmlgui)
 sb_add_project(tier3/kemoticons DEPENDS karchive kservice)
-sb_add_project(tier3/kio DEPENDS kcoreaddons kdoctools kwidgetsaddons ki18n kservice karchive kservice solid kjobwidgets kiconthemes kwindowsystem kcompletion kdoctools ktextwidgets xmlgui kbookmarks)
+sb_add_project(tier3/kio DEPENDS kcoreaddons kdoctools kwidgetsaddons ki18n kservice karchive solid kjobwidgets kiconthemes kwindowsystem kcompletion kdoctools ktextwidgets xmlgui kbookmarks)
 sb_add_project(tier3/kpty DEPENDS kcoreaddons ki18n)
 sb_add_project(tier3/kdesu DEPENDS kcoreaddons kservice kpty)
 sb_add_project(tier3/kparts DEPENDS kio xmlgui ktextwidgets ki18n knotifications kiconthemes)
@@ -58,7 +58,8 @@ sb_add_project(tier3/kprintutils DEPENDS kcoreaddons ki18n kparts)
 # exporting their dependency list
 #sb_add_project(tier3/kdeclarative DEPENDS kconfig ki18n kiconthemes kio)
 sb_add_project(tier3/kdewidgets DEPENDS kio kdoctools kwidgetsaddons ki18n kiconthemes ktextwidgets itemviews)
-sb_add_project(tier3/kded DEPENDS kcoreaddons kdoctools kdbusaddons kservice kcrash)
+sb_add_project(tier3/kinit DEPENDS kio kcrash kwindowsystem ki18n kservice kdbusaddons)
+sb_add_project(tier3/kded DEPENDS kcoreaddons kdoctools kdbusaddons kservice kcrash kinit)
 
 # Disable kcmutils for now, some frameworks it depends on have problem exporting
 # their dependency list

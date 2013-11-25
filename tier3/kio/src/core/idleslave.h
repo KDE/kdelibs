@@ -21,7 +21,7 @@
 #ifndef IDLESLAVE_H
 #define IDLESLAVE_H
 
-#include <kiocore_export.h>
+#include <kio/kiocore_export.h>
 #include <QObject>
 #include <QProcess> // Q_PID
 #include <QDateTime>
