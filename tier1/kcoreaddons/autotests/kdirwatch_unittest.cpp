@@ -353,8 +353,8 @@ void KDirWatch_UnitTest::removeAndReAdd()
     KDirWatch watch;
     watch.addDir(m_path);
     watch.startScan();
-    if (m_slow)
-        waitUntilNewSecond(); // necessary for FAM
+    if (watch.internalMethod() != KDirWatch::INotify)
+        waitUntilNewSecond(); // necessary for mtime checks in scanEntry
     const QString file0 = createFile(0);
     QVERIFY(waitForOneSignal(watch, SIGNAL(dirty(QString)), m_path));
 
@@ -656,20 +656,32 @@ void KDirWatch_UnitTest::stopAndRestart()
 
     watch.stopDirScan(m_path);
 
-    const QString file0 = createFile(0);
+    //qDebug() << "create file 2 at" << QDateTime::currentDateTime().toTime_t();
+    const QString file2 = createFile(2);
     QSignalSpy spyDirty(&watch, SIGNAL(dirty(QString)));
     QTest::qWait(200);
     QCOMPARE(spyDirty.count(), 0);// suspended -> no signal
 
     watch.restartDirScan(m_path);
 
-    if (watch.internalMethod() != KDirWatch::INotify)
-        waitUntilMTimeChange(m_path); // necessary for FAM and QFSWatcher
-    const QString file1 = createFile(1);
+    QTest::qWait(200);
+
+#ifndef Q_OS_WIN
+    QCOMPARE(spyDirty.count(), 0); // as documented by restartDirScan: no signal
+    // On Windows, however, signals will get emitted, due to the ifdef Q_OS_WIN in the timestamp
+    // comparison ("trust QFSW since the mtime of dirs isn't modified")
+#endif
+
+    KDirWatch::statistics();
+
+    waitUntilMTimeChange(m_path); // necessary for the mtime comparison in scanEntry
+
+    //qDebug() << "create file 3 at" << QDateTime::currentDateTime().toTime_t();
+    const QString file3 = createFile(3);
     QVERIFY(waitForOneSignal(watch, SIGNAL(dirty(QString)), m_path));
 
-    removeFile(0);
-    removeFile(1);
+    QFile::remove(file2);
+    QFile::remove(file3);
 }
 
 #include "kdirwatch_unittest.moc"

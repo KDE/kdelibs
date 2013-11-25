@@ -1126,12 +1126,13 @@ bool KDirWatchPrivate::stopEntryScan(KDirWatch *instance, Entry *e)
            << stillWatching << "watchers)";
 
   if (stillWatching == 0) {
-    // if nobody is interested, we don't watch
-    if (e->m_mode != INotifyMode) {
-      e->m_ctime = invalid_ctime; // invalid
-      e->m_status = NonExistent;
-    }
-    //    e->m_status = Normal;
+    // if nobody is interested, we don't watch, and we don't report
+    // changes that happened while not watching
+    e->m_ctime = invalid_ctime; // invalid
+
+    // Changing m_status like this would create wrong "created" events in stat mode.
+    // To really "stop watching" we would need to determine 'stillWatching==0' in scanEntry...
+    //e->m_status = NonExistent;
   }
   return true;
 }
@@ -1164,12 +1165,9 @@ bool KDirWatchPrivate::restartEntryScan(KDirWatch *instance, Entry *e,
       QT_STATBUF stat_buf;
       bool exists = (QT_STAT(QFile::encodeName(e->path).constData(), &stat_buf) == 0);
       if (exists) {
-#ifdef Q_OS_WIN
-        // ctime is the 'creation time' on windows - use mtime instead
-        e->m_ctime = stat_buf.st_mtime;
-#else
-        e->m_ctime = stat_buf.st_ctime;
-#endif
+        // ctime is the 'creation time' on windows, but with qMax
+        // we get the latest change of any kind, on any platform.
+        e->m_ctime = qMax(stat_buf.st_ctime, stat_buf.st_mtime);
         e->m_status = Normal;
         if (s_verboseDebug) {
           qDebug() << "Setting status to Normal for" << e << e->path;
@@ -1281,8 +1279,9 @@ int KDirWatchPrivate::scanEntry(Entry *e)
       struct tm *tmp = localtime(&e->m_ctime);
       char outstr[200];
       strftime(outstr, sizeof(outstr), "%H:%M:%S", tmp);
-      qDebug() << "e->m_ctime=" << e->m_ctime << outstr
+      qDebug() << e->path << "e->m_ctime=" << e->m_ctime << outstr
                    << "stat_buf.st_ctime=" << stat_buf.st_ctime
+                   << "stat_buf.st_mtime=" << stat_buf.st_mtime
                    << "e->m_nlink=" << e->m_nlink
                    << "stat_buf.st_nlink=" << stat_buf.st_nlink
                    << "e->m_ino=" << e->m_ino
@@ -1290,15 +1289,17 @@ int KDirWatchPrivate::scanEntry(Entry *e)
     }
 #endif
 
-    if ( ((e->m_ctime != invalid_ctime) &&
+    if ( (e->m_ctime != invalid_ctime) &&
           (qMax(stat_buf.st_ctime, stat_buf.st_mtime) != e->m_ctime ||
            stat_buf.st_ino != e->m_ino ||
-           int(stat_buf.st_nlink) != int(e->m_nlink)))
-          // we trust QFSW to get it right, the ctime comparisons above
+           int(stat_buf.st_nlink) != int(e->m_nlink)
+#ifdef Q_OS_WIN
+          // on Windows, we trust QFSW to get it right, the ctime comparisons above
           // fail for example when adding files to directories on Windows
           // which doesn't change the mtime of the directory
         || e->m_mode == QFSWatchMode
-    ) {
+#endif
+        ) ) {
       e->m_ctime = qMax(stat_buf.st_ctime, stat_buf.st_mtime);
       e->m_nlink = stat_buf.st_nlink;
       if (e->m_ino != stat_buf.st_ino) {
@@ -1356,11 +1357,13 @@ void KDirWatchPrivate::emitEvent(const Entry *e, int event, const QString &fileN
     if (c->instance == 0 || c->count == 0) continue;
 
     if (c->watchingStopped) {
-      // add event to pending...
+      // Do not add event to a list of pending events, the docs say restartDirScan won't emit!
+#if 0
       if (event == Changed)
         c->pending |= event;
       else if (event == Created || event == Deleted)
         c->pending = event;
+#endif
       continue;
     }
     // not stopped
