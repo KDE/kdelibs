@@ -112,6 +112,8 @@ void RenderSVGText::layout()
 
 InlineBox* RenderSVGText::createInlineBox(bool makePlaceHolderBox, bool isRootLineBox/*, bool isOnlyRun*/)
 {
+    Q_UNUSED(makePlaceHolderBox);
+    Q_UNUSED(isRootLineBox);
     // qDebug() << "createInlineBox" << makePlaceHolderBox << isRootLineBox << endl;
     ASSERT(!isInlineFlow());
     InlineFlowBox* flowBox = new (renderArena()) SVGRootInlineBox(this);

@@ -321,11 +321,12 @@ FloatPoint topLeftPositionOfCharacterRange(Vector<SVGChar>::iterator it, Vector<
     return FloatPoint(lowX, lowY);
 }
 
+/* FIXME
 // Helper function
 static float calculateKerning(RenderObject* item)
 {
     Q_UNUSED(item);
-    /*FIXME const Font& font = item->style()->font();
+    const Font& font = item->style()->font();
     const SVGRenderStyle* svgStyle = item->style()->svgStyle();
 
     float kerning = 0.0f;
@@ -336,9 +337,9 @@ static float calculateKerning(RenderObject* item)
             kerning = kerning / 100.0f * font.pixelSize();
     }
 
-    return kerning;*/
-    return 0;
+    return kerning;
 }
+*/
 
 // Helper class for paint()
 struct SVGRootInlineBoxPaintWalker {
@@ -502,7 +503,7 @@ struct SVGRootInlineBoxPaintWalker {
 
         int textDecorations = styleToUse->textDecorationsInEffect();
 
-        int textWidth = 0;
+        // khtml int textWidth = 0;
         IntPoint decorationOrigin;
         SVGTextDecorationInfo info;
 
@@ -528,7 +529,7 @@ struct SVGRootInlineBoxPaintWalker {
             // Paint decorations, that have to be drawn before the text gets drawn
             if (textDecorations != TDNONE /*FIXME khtml && m_paintInfo.phase != PaintPhaseSelection*/) {
                 //khtml textWidth = styleToUse->font().width(svgTextRunForInlineTextBox(stringStart, stringLength, styleToUse, textBox, (*it).x));
-                textWidth = styleToUse->htmlFont().width(stringStart, stringLength, 0, stringLength, false /*fast algo*/);
+                //FIXME khtml textWidth = styleToUse->htmlFont().width(stringStart, stringLength, 0, stringLength, false /*fast algo*/);
                 decorationOrigin = IntPoint((int) (*it).x, (int) (*it).y - styleToUse->htmlFont().ascent());
                 info = m_rootBox->retrievePaintServersForTextDecoration(text);
             }
@@ -1219,6 +1220,7 @@ void SVGRootInlineBox::buildLayoutInformationForTextBox(SVGCharacterLayoutInfo& 
         float spacing = 0;//FIXME font.letterSpacing() + calculateKerning(textBox->object()->element()->renderer());
 
         const UChar* currentCharacter = text->text()/*->characters()*/ + (textBox->m_reversed ? textBox->end() - i : textBox->start() + i);
+#if 0 // FIXME (see below)
         const UChar* lastCharacter = 0;
 
         if (textBox->m_reversed) {
@@ -1228,6 +1230,7 @@ void SVGRootInlineBox::buildLayoutInformationForTextBox(SVGCharacterLayoutInfo& 
             if (i > 0)
                 lastCharacter = text->text()/*characters()*/ + textBox->start() + i - 1;
         }
+#endif
 
         if (info.nextDrawnSeperated || spacing != 0.0f) {
             info.nextDrawnSeperated = false;

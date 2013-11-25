@@ -1255,7 +1255,7 @@ void RenderLineEdit::updateFromElement()
     }
     widget()->setReadOnly(element()->readOnly());
 
-    widget()->setClickMessage(element()->placeholder().string().remove(QLatin1Char('\n')).remove(QLatin1Char('\r')));
+    widget()->setPlaceholderText(element()->placeholder().string().remove(QLatin1Char('\n')).remove(QLatin1Char('\r')));
 
     RenderFormElement::updateFromElement();
 }
