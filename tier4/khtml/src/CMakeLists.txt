@@ -1,5 +1,17 @@
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  ${KDE4_ENABLE_EXCEPTIONS}")
 
+
+find_package(OpenSSL)
+set_package_properties(OpenSSL PROPERTIES DESCRIPTION "Support for secure network communications (SSL and TLS)"
+                       URL "http://openssl.org"
+                       TYPE RECOMMENDED
+                       PURPOSE "KDE uses OpenSSL for the bulk of secure communications, including secure web browsing via HTTPS"
+                      )
+if(OPENSSL_FOUND)
+   set(KSSL_HAVE_SSL 1)
+   include_directories(${OPENSSL_INCLUDE_DIR})
+endif()
+
 configure_file(config-khtml.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-khtml.h )
 
 set(khtmlgraphics_STAT_SRCS
