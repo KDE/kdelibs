@@ -54,13 +54,9 @@ sb_add_project(tier3/kdewebkit DEPENDS kcoreaddons kwallet kio kparts)
 sb_add_project(tier3/knotifyconfig DEPENDS kio ki18n knotifications)
 sb_add_project(tier3/knewstuff DEPENDS ki18n itemviews karchive kiconthemes ktextwidgets xmlgui solid kbookmarks kio)
 sb_add_project(tier3/kprintutils DEPENDS kcoreaddons ki18n kparts)
-# Disable kdeclarative for now, some frameworks it depends on have problem
-# exporting their dependency list
-#sb_add_project(tier3/kdeclarative DEPENDS kconfig ki18n kiconthemes kio)
+sb_add_project(tier3/kdeclarative DEPENDS kconfig ki18n kiconthemes kio)
 sb_add_project(tier3/kdewidgets DEPENDS kio kdoctools kwidgetsaddons ki18n kiconthemes ktextwidgets itemviews)
 sb_add_project(tier3/kinit DEPENDS kio kcrash kwindowsystem ki18n kservice kdbusaddons)
 sb_add_project(tier3/kded DEPENDS kcoreaddons kdoctools kdbusaddons kservice kcrash kinit)
+sb_add_project(tier3/kcmutils DEPENDS itemviews kconfigwidgets kcoreaddons ki18n kiconthemes kservice xmlgui)
 
-# Disable kcmutils for now, some frameworks it depends on have problem exporting
-# their dependency list
-#sb_add_project(tier4/kcmutils DEPENDS itemviews kconfigwidgets kcoreaddons ki18n kiconthemes kservice xmlgui)
