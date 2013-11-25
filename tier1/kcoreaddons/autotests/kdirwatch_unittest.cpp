@@ -663,6 +663,8 @@ void KDirWatch_UnitTest::stopAndRestart()
 
     watch.restartDirScan(m_path);
 
+    if (watch.internalMethod() != KDirWatch::INotify)
+        waitUntilMTimeChange(m_path); // necessary for FAM and QFSWatcher
     const QString file1 = createFile(1);
     QVERIFY(waitForOneSignal(watch, SIGNAL(dirty(QString)), m_path));
 
