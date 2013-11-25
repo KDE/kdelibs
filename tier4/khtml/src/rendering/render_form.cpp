@@ -37,7 +37,7 @@
 #include <kmessagebox.h>
 #include <kreplace.h>
 #include <kreplacedialog.h>
-#include <dialog.h>
+#include <sonnet/dialog.h>
 #include <kurlcompletion.h>
 #include <kwindowsystem.h>
 #include <kstandardaction.h>
