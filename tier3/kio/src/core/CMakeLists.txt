@@ -106,7 +106,6 @@ target_include_directories(KIOCore PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/..>" # kio_version.h
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kssl>"
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/../include>" # kio/global.h
-  "$<INSTALL_INTERFACE:${INCLUDE_INSTALL_DIR}/KDE>" # KIO/Job
 )
 
 target_link_libraries(KIOCore
