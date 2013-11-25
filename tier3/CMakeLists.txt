@@ -20,6 +20,7 @@ add_subdirectory(knotifyconfig)
 add_subdirectory(kded)
 add_subdirectory(kross)
 add_subdirectory(kio)
+add_subdirectory(kmediaplayer)
 
 find_package(Qt5WebKitWidgets NO_MODULE)
 if(Qt5WebKitWidgets_FOUND)

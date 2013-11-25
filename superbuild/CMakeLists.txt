@@ -59,6 +59,7 @@ sb_add_project(tier3/kdewidgets DEPENDS kio kdoctools kwidgetsaddons ki18n kicon
 sb_add_project(tier3/kinit DEPENDS kio kcrash kwindowsystem ki18n kservice kdbusaddons)
 sb_add_project(tier3/kded DEPENDS kcoreaddons kdoctools kdbusaddons kservice kcrash kinit)
 sb_add_project(tier3/kcmutils DEPENDS itemviews kconfigwidgets kcoreaddons ki18n kiconthemes kservice xmlgui)
+sb_add_project(tier3/kmediaplayer DEPENDS ki18n kparts xmlgui)
 
 sb_add_project(tier4/frameworkintegration DEPENDS ki18n kconfig kconfigwidgets kiconthemes knotifications)
 sb_add_project(tier4/kde4support
