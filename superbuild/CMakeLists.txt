@@ -45,7 +45,7 @@ sb_add_project(tier3/xmlgui DEPENDS kconfig kconfigwidgets kwidgetsaddons itemvi
 sb_add_project(tier3/kjsembed DEPENDS kdoctools kjs ki18n)
 sb_add_project(tier3/kbookmarks DEPENDS kconfigwidgets kcoreaddons kiconthemes kwidgetsaddons xmlgui)
 sb_add_project(tier3/kemoticons DEPENDS karchive kservice)
-sb_add_project(tier3/kio DEPENDS kcoreaddons kdoctools kwidgetsaddons ki18n kservice karchive solid kjobwidgets kiconthemes kwindowsystem kcompletion kdoctools ktextwidgets xmlgui kbookmarks)
+sb_add_project(tier3/kio DEPENDS kcoreaddons kdoctools kwidgetsaddons ki18n kservice karchive solid kjobwidgets kiconthemes kwindowsystem kcompletion kdoctools ktextwidgets xmlgui kbookmarks knotifications)
 sb_add_project(tier3/kpty DEPENDS kcoreaddons ki18n)
 sb_add_project(tier3/kdesu DEPENDS kcoreaddons kservice kpty)
 sb_add_project(tier3/kparts DEPENDS kio xmlgui ktextwidgets ki18n knotifications kiconthemes)
