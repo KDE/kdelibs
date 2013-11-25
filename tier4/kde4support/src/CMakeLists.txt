@@ -289,6 +289,7 @@ PUBLIC
    KF5::KParts
 PRIVATE
    KF5::KUnitConversion
+   KF5::ItemViews
    Qt5::Svg
    Qt5::Test # for qtest_kde.cpp
    ${KIO_EXTRA_LIBS}
