@@ -1652,7 +1652,7 @@ void KIconLoader::emitChange(KIconLoader::Group g)
     s_globalData->emitChange(g);
 }
 
-#include <kiconengine_p.h>
+#include <kiconengine.h>
 QIcon KDE::icon(const QString& iconName, KIconLoader* iconLoader)
 {
     return QIcon(new KIconEngine(iconName, iconLoader ? iconLoader : KIconLoader::global()));

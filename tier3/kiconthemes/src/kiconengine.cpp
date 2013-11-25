@@ -16,7 +16,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "kiconengine_p.h"
+#include "kiconengine.h"
 
 #include <kiconloader.h>
 

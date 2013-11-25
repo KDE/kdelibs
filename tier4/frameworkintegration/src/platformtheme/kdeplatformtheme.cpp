@@ -30,7 +30,7 @@
 #include <QStringList>
 #include <QVariant>
 
-#include <kiconengine_p.h>
+#include <kiconengine.h>
 #include <kiconloader.h>
 #include <kstandardshortcut.h>
 
