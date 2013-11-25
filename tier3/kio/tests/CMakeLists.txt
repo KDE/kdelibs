@@ -17,7 +17,6 @@ KIOWIDGETS_EXECUTABLE_TESTS(
   kdirlistertest_gui
   previewtest
   kurlrequestertest_gui
-  kfiletreeviewtest
   kpropertiesdialogtest
   kmountpoint_debug
   listrecursivetest

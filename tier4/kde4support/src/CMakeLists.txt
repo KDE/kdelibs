@@ -164,7 +164,6 @@ set(libkde4support_SRCS
     kio/kfileshare.cpp
     kio/kfileitemactionplugin.cpp
     kio/passworddialog.cpp
-    kio/kmimetyperesolver.cpp
     kio/kdatatool.cpp
     kio/kfilemetadataconfigurationwidget.cpp
     kio/kfilemetadatawidget.cpp
@@ -181,6 +180,7 @@ set(libkde4support_SRCS
     kio/netaccess.cpp
     kio/kdirselectdialog.cpp
     kio/kimageio.cpp
+    kio/kfiletreeview.cpp
 
     kparts/factory.cpp
 )
@@ -422,7 +422,6 @@ install(FILES
 
     kio/kdiskfreespace.h
     kio/kdatatool.h
-    kio/kmimetyperesolver.h
     kio/kfilemetadataconfigurationwidget.h
     kio/kfilemetadatawidget.h
     kio/kfilemetainfoitem.h

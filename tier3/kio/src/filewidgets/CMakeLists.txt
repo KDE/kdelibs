@@ -16,7 +16,6 @@ set(kiofilewidgets_SRCS
   kencodingfiledialog.cpp
   kfilebookmarkhandler.cpp
   kfilefiltercombo.cpp
-  kfiletreeview.cpp
   kfilewidget.cpp
   kfileplacesitem.cpp
   kfileplacesmodel.cpp
