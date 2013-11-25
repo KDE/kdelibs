@@ -47,6 +47,7 @@ add_subdirectory(docs)
 add_subdirectory(src)
 add_subdirectory(tests)
 
+include(ECMSetupVersion)
 ecm_setup_version(${KF5_VERSION} VARIABLE_PREFIX kdewidgets
                                  VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kdewidgets_version.h"
                                  PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KDEWidgetsConfigVersion.cmake")
