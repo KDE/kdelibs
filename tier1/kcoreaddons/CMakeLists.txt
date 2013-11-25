@@ -15,7 +15,7 @@ include(KDECompilerSettings)
 include(KDECMakeSettings)
 
 set(REQUIRED_QT_VERSION 5.2.0)
-find_package(Qt5 ${REQUIRED_QT_VERSION} CONFIG REQUIRED Test Concurrent)
+find_package(Qt5 ${REQUIRED_QT_VERSION} CONFIG REQUIRED Core)
 
 # Configure checks for kdirwatch
 find_package(FAM)

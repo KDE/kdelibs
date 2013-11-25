@@ -5,7 +5,7 @@ find_package(Qt5Widgets 5.2.0 REQUIRED NO_MODULE)
 macro(KCOREADDONS_EXAMPLES)
     foreach(_testname ${ARGN})
         add_executable(${_testname} ${_testname}.cpp) # TODO NOGUI
-        target_link_libraries(${_testname} Qt5::Test Qt5::Network KCoreAddons)
+        target_link_libraries(${_testname} Qt5::Test KCoreAddons)
     endforeach()
 endmacro()
 
