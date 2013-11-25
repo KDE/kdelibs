@@ -160,7 +160,6 @@ install( FILES
   jobclasses.h
   authinfo.h
   davjob.h
-  kssl/ksslsettings.h
   ${CMAKE_CURRENT_BINARY_DIR}/kiocore_export.h
 
    DESTINATION ${INCLUDE_INSTALL_DIR}/kio COMPONENT Devel)
@@ -184,6 +183,7 @@ install(FILES
   ksslcertificatemanager.h
   ksslcertificatemanager_p.h
   ktcpsocket.h
+  kssl/ksslsettings.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
 
 install(FILES accept-languages.codes DESTINATION ${CONFIG_INSTALL_DIR})
