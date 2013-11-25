@@ -34,7 +34,6 @@
 
 #if HAVE_X11
 #include <kstartupinfo.h>
-#include <X11/Xlib.h>
 #endif
 
 #include <QDBusConnectionInterface>
