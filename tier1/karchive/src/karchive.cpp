@@ -192,12 +192,12 @@ bool KArchive::addLocalFile( const QString& fileName, const QString& destName )
     }
 
 #if defined(Q_OS_UNIX)
-    QT_STATBUF fi;
-    if (QT_LSTAT(QFile::encodeName(fileName).constData(), &fi) == -1) {
-#elif defined(Q_OS_WIN)
-    struct stat fi;
-    if (::stat(QFile::encodeName(fileName).constData(), &fi) == -1) {
+#define STAT_METHOD QT_LSTAT
+#else
+#define STAT_METHOD QT_STAT
 #endif
+    QT_STATBUF fi;
+    if (STAT_METHOD(QFile::encodeName(fileName).constData(), &fi) == -1) {
         /*qWarning() << "stat'ing" << fileName
             << "failed:" << strerror(errno);*/
         return false;
