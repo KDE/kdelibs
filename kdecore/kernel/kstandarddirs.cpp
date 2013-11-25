@@ -1149,7 +1149,7 @@ QStringList KStandardDirs::KStandardDirsPrivate::resourceDirs(const char* type, 
                  pit != prefixList->end();
                  ++pit)
             {
-            if((*pit).compare(installprefix, cs)!=0||installdir.isEmpty())
+            if((*pit).compare(installprefix, cs) != 0 || installdir.isEmpty())
             {
                     for (QStringList::ConstIterator it = dirs.constBegin();
                          it != dirs.constEnd(); ++it)

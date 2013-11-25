@@ -492,7 +492,7 @@ static bool pathsAreParentAndChildOrEqual(const QString& parent, const QString& 
         //     Note that child is guaranteed to be longer than parent if (a) is false.
         //
         // This prevents that we incorrectly consider "/books" a child of "/book".
-        return parent.compare(child, cs) || parent.endsWith(slash) || child.at(parent.length()) == slash;
+        return parent.compare(child, cs) == 0 || parent.endsWith(slash) || child.at(parent.length()) == slash;
     } else {
         // Note that "/books" is a child of "/books/".
         return parent.endsWith(slash) && (parent.length() == child.length() + 1) && parent.startsWith(child, cs);
