@@ -36,6 +36,7 @@ install(FILES
   kiconeffect.h
   kiconloader.h
   kicontheme.h
+  kiconengine.h
   ${CMAKE_CURRENT_BINARY_DIR}/kiconthemes_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )

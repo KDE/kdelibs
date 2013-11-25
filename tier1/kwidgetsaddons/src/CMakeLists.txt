@@ -152,6 +152,7 @@ install(FILES
   kpixmapsequencewidget.h
   kpixmapregionselectorwidget.h
   kmimetypechooser.h
+  kmessageboxnotifyinterface.h
   ${CMAKE_CURRENT_BINARY_DIR}/kwidgetsaddons_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
