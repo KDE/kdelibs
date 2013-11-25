@@ -26,10 +26,9 @@ remove_definitions(-DQT_NO_CAST_FROM_BYTEARRAY)
 
 # Dependencies
 set(REQUIRED_QT_VERSION "5.2.0")
-find_package(Qt5 ${REQUIRED_QT_VERSION} CONFIG REQUIRED DBus Test Xml)
+find_package(Qt5 ${REQUIRED_QT_VERSION} CONFIG REQUIRED DBus Xml)
 
 if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
-  find_package(KWindowSystem ${KF5_VERSION} REQUIRED)
   find_package(KConfig ${KF5_VERSION} REQUIRED)
   find_package(KCoreAddons ${KF5_VERSION} REQUIRED)
   find_package(KCrash ${KF5_VERSION} REQUIRED)

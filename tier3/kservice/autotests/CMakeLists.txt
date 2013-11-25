@@ -4,7 +4,7 @@ include(ECMMarkAsTest)
 
 ########### unittests ###############
 
-find_package(Qt5Concurrent 5.2.0 REQUIRED NO_MODULE)
+find_package(Qt5 ${REQUIRED_QT_VERSION} CONFIG REQUIRED Concurrent Test)
 
 macro(KSERVICE_UNIT_TESTS)
   foreach(_testname ${ARGN})
