@@ -43,6 +43,7 @@ if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
   find_package(KCoreAddons ${KF5_VERSION} REQUIRED)
   find_package(KWallet ${KF5_VERSION} REQUIRED)
   find_package(KIO ${KF5_VERSION} REQUIRED)
+  find_package(KNotifications ${KF5_VERSION} REQUIRED)
   find_package(KParts ${KF5_VERSION} REQUIRED)
 endif()
 
