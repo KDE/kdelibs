@@ -59,7 +59,12 @@ public:
      * Use:
      * KFilterDev dev(fileName)
      * instead of:
-     * QIODevice * dev = KFilterDev::deviceForFile( fileName );
+     * QIODevice * dev = KFilterDev::deviceForFile(fileName);
+     *
+     * If the mimetype was specified explicitely, use:
+     * KCompressionDevice dev(fileName, KCompressionDevice::GZip);
+     * instead of:
+     * QIODevice * dev = KFilterDev::deviceForFile(fileName, "application/gzip");
      *
      * Creates an i/o device that is able to read from @p fileName,
      * whether it's compressed or not. Available compression filters

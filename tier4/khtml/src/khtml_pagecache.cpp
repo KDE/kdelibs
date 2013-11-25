@@ -21,7 +21,7 @@
 
 #include "khtml_pagecache.h"
 
-#include <kfilterdev.h>
+#include <kcompressiondevice.h>
 #include <QTemporaryFile>
 
 #include <QQueue>
@@ -82,7 +82,7 @@ KHTMLPageCacheEntry::KHTMLPageCacheEntry(long id)
     m_fileName = f.fileName();
     f.setAutoRemove(false);
 
-    m_file = KFilterDev::deviceForFile(m_fileName, "application/x-gzip"/*,false*/);
+    m_file = new KCompressionDevice(m_fileName, KCompressionDevice::GZip);
     m_file->open(QIODevice::WriteOnly);
 }
 
@@ -113,10 +113,9 @@ KHTMLPageCacheDelivery *
 KHTMLPageCacheEntry::fetchData(QObject *recvObj, const char *recvSlot)
 {
   // Duplicate fd so that entry can be safely deleted while delivering the data.
-  KHTMLPageCacheDelivery *delivery=new KHTMLPageCacheDelivery(
-                                                              KFilterDev::deviceForFile (m_fileName, "application/x-gzip")
-                                                             );
-  delivery->file->open(QIODevice::ReadOnly);
+  KCompressionDevice* dev = new KCompressionDevice(m_fileName, KCompressionDevice::GZip);
+  dev->open(QIODevice::ReadOnly);
+  KHTMLPageCacheDelivery *delivery = new KHTMLPageCacheDelivery(dev); // takes ownership of dev
 
   recvObj->connect(delivery, SIGNAL(emitData(QByteArray)), recvSlot);
   delivery->recvObj = recvObj;
@@ -279,12 +278,12 @@ KHTMLPageCache::saveData(long id, QDataStream *str)
       return;
   }
 
-  QIODevice* file = KFilterDev::deviceForFile (entry->fileName(), "application/x-gzip");
-  if (!file->open(QIODevice::ReadOnly))
+  KCompressionDevice file(entry->fileName(), KCompressionDevice::GZip);
+  if (!file.open(QIODevice::ReadOnly))
     return;
 
-  QByteArray byteArray(file->readAll());
-  file->close();
+  const QByteArray byteArray(file.readAll());
+  file.close();
 
   str->writeRawData(byteArray.constData(), byteArray.length());
 
