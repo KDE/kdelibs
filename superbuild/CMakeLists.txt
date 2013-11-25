@@ -60,11 +60,11 @@ sb_add_project(tier3/kinit DEPENDS kio kcrash kwindowsystem ki18n kservice kdbus
 sb_add_project(tier3/kded DEPENDS kcoreaddons kdoctools kdbusaddons kservice kcrash kinit)
 sb_add_project(tier3/kcmutils DEPENDS itemviews kconfigwidgets kcoreaddons ki18n kiconthemes kservice xmlgui)
 
-sb_add_project(tier3/frameworksintegration DEPENDS ki18n kconfig kconfigwidgets kiconthemes knotifications)
-sb_add_project(tier3/kde4support
+sb_add_project(tier4/frameworksintegration DEPENDS ki18n kconfig kconfigwidgets kiconthemes knotifications)
+sb_add_project(tier4/kde4support
     DEPENDS ki18n kguiaddons kwidgetsaddons kdbusaddons kconfig kconfigwidgets itemviews kiconthemes kunitconversion
             kwindowsystem kservice kcompletion ktextwidgets xmlgui kbookmarks kio kdoctools kcrash
 )
-sb_add_project(tier3/khtml
-    DEPENDS karchive ki18n kcoreaddons kguiaddons kdbusaddons kservice kcrash kinit kjs kconfigwidgets itemvies kiconthemes
+sb_add_project(tier4/khtml
+    DEPENDS karchive ki18n kcoreaddons kguiaddons kdbusaddons kservice kcrash kinit kjs kconfigwidgets itemviews kiconthemes
             knotifications kcompletion ktextwidgets xmlgui kparts kio kwallet)
