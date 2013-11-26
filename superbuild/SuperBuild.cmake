@@ -1,23 +1,3 @@
-# This part is for checking at buildtime whether DESTDIR still is the same.
-# It is executed by cmake in script mode via the AlwaysCheckDESTDIR custom target.
-if(_SB_CHECK_DESTDIR)
-  set(_tmpDest "$ENV{DESTDIR}")
-  if(NOT "${SB_INITIAL_DESTDIR}" STREQUAL "${_tmpDest}")
-    message(FATAL_ERROR "DESTDIR changed. This is not supported in Superbuilds, DESTDIR must always be the same at CMake and build time. (now: \"${_tmpDest}\", at CMake time: \"${SB_INITIAL_DESTDIR}\")")
-  else()
-    message("DESTDIR Ok. (now: \"${_tmpDest}\", at CMake time: \"${SB_INITIAL_DESTDIR}\")")
-  endif()
-  return()
-endif()
-
-# This custom target is used to check at buildtime whether DESTDIR is still the same as at CMake time.
-add_custom_target(AlwaysCheckDESTDIR COMMAND ${CMAKE_COMMAND} -DSB_INITIAL_DESTDIR="${SB_INITIAL_DESTDIR}" -D_SB_CHECK_DESTDIR=TRUE -P ${CMAKE_CURRENT_LIST_FILE} )
-
-
-#####################################################################################
-
-# Now the actual CMakeLists.txt starts.
-
 include(ExternalProject)
 include(CMakeParseArguments)
 
@@ -37,35 +17,6 @@ include(../GlobalSuperBuildOptions.cmake OPTIONAL)
 
 # this file is included from the project directory and allow for local definitions
 include(SuperBuildOptions.cmake OPTIONAL)
-
-# Try to handle DESTDIR.
-# We install during the build, and if DESTDIR is set, the install will go there.
-# Installed libs have to be found in DESTDIR, so prepend it to CMAKE_PREFIX_PATH.
-# If RPATH is used, this messes everything up, since the using binary will have the RPATH set to
-# the library inside DESTDIR, which is wrong.
-# So, only allow DESTDIR if RPATH is completely disabled using CMAKE_SKIP_RPATH.
-set(_tmpDest "$ENV{DESTDIR}")
-
-if(NOT DEFINED SB_INITIAL_DESTDIR)
-  # initial cmake run, check DESTDIR
-  set(SB_INITIAL_DESTDIR ${_tmpDest} CACHE STRING "The DESTDIR environment variable during the initial cmake run" FORCE)
-  mark_as_advanced(SB_INITIAL_DESTDIR)
-else()
-  if(NOT "${SB_INITIAL_DESTDIR}" STREQUAL "${_tmpDest}")
-    message(FATAL_ERROR "Your DESTDIR environment variable changed. In a Superbuild, DESTDIR must always stay the same as it was during the initial cmake run. Initially it was \"${SB_INITIAL_DESTDIR}\", now it is \"${_tmpDest}\" .")
-  endif()
-endif()
-
-if(SB_INITIAL_DESTDIR)
-  if( NOT CMAKE_SKIP_RPATH)
-    message(FATAL_ERROR "The DESTDIR environment variable is set to \"${SB_INITIAL_DESTDIR}\", but CMAKE_SKIP_RPATH is not set to TRUE. This would produce binaries with bad RPATHs. ")
-  endif()
-
-  if(NOT IS_ABSOLUTE "${SB_INITIAL_DESTDIR}")
-    message(FATAL_ERROR "The DESTDIR environment variable is set to \"${SB_INITIAL_DESTDIR}\", but relative DESTDIR is not support in a Superbuild. Set it to an absolute path")
-  endif()
-endif()
-
 
 # set up directory structure to use for the ExternalProjects
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
@@ -128,7 +79,6 @@ macro(sb_add_project _subdir )
                       )
   set_target_properties(sb_${name} PROPERTIES EXCLUDE_FROM_ALL TRUE)
 
-  add_dependencies(sb_${name} AlwaysCheckDESTDIR)
   add_dependencies(sb_all sb_${name})
 endmacro(sb_add_project)
 
