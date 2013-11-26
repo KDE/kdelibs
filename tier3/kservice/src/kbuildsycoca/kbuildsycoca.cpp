@@ -47,6 +47,8 @@
 
 #include <kcrash.h>
 #include <kmemfile_p.h>
+#include <klocalizedstring.h>
+#include <kaboutdata.h>
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -620,16 +622,17 @@ static const char appVersion[] = "5.0";
 
 int main(int argc, char **argv)
 {
-   //K4AboutData d(KBUILDSYCOCA_EXENAME, "kdelibs4", ki18n("KBuildSycoca"), appVersion,
-                //ki18n("Rebuilds the system configuration cache."),
-                //K4AboutData::License_GPL, ki18n("(c) 1999-2002 KDE Developers"));
-   //d.addAuthor(ki18n("David Faure"), ki18n("Author"), "faure@kde.org");
-   //d.addAuthor(ki18n("Waldo Bastian"), ki18n("Author"), "bastian@kde.org");
-
    QCoreApplication app(argc, argv);
    app.setApplicationVersion(appVersion);
+   KAboutData about(KBUILDSYCOCA_EXENAME, "kdelibs4", QCoreApplication::translate("main", "KBuildSycoca"), appVersion,
+                QCoreApplication::translate("main", "Rebuilds the system configuration cache."),
+                KAboutData::License_GPL, QCoreApplication::translate("main", "(c) 1999-2002 KDE Developers"));
+   about.addAuthor(QCoreApplication::translate("main", "David Faure"), QCoreApplication::translate("main", "Author"), "faure@kde.org");
+   about.addAuthor(QCoreApplication::translate("main", "Waldo Bastian"), QCoreApplication::translate("main", "Author"), "bastian@kde.org");
+
 
    QCommandLineParser parser;
+   about.setupCommandLine(&parser);
    parser.addVersionOption();
    parser.setApplicationDescription(QCoreApplication::translate("main", "Rebuilds the system configuration cache."));
    parser.addHelpOption();
@@ -642,6 +645,7 @@ int main(int argc, char **argv)
    parser.addOption(QCommandLineOption(QStringList() << "track", QCoreApplication::translate("main", "Track menu id for debug purposes"), "menu-id"));
    parser.addOption(QCommandLineOption(QStringList() << "testmode", QCoreApplication::translate("main", "Switch QStandardPaths to test mode, for unit tests only")));
    parser.process(app);
+   about.processCommandLine(&parser);
 
    bGlobalDatabase = parser.isSet("global");
    bMenuTest = parser.isSet("menutest");

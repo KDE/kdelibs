@@ -32,6 +32,8 @@
 #include <QtCore/QVariant>
 #include <QtCore/QList>
 #include <QHash>
+#include <QCommandLineParser>
+#include <QCommandLineOption>
 
 static QString tr(const char *message, const char *disambiguation = 0, int n = -1)
 {
@@ -938,4 +940,41 @@ const KAboutData* KAboutData::applicationDataPointer()
     if (s_registry.exists())
         return s_registry->m_appData;
     return 0;
+}
+
+bool KAboutData::setupCommandLine(QCommandLineParser *parser)
+{
+    if(!d->_shortDescription.isEmpty())
+        parser->setApplicationDescription(d->_shortDescription);
+
+    return parser->addOption(QCommandLineOption(QStringLiteral("author"), QCoreApplication::translate("KAboutData CLI", "Show author information")))
+        && parser->addOption(QCommandLineOption(QStringLiteral("license"), QCoreApplication::translate("KAboutData CLI", "Show license information")));
+}
+
+void KAboutData::processCommandLine(QCommandLineParser *parser)
+{
+    bool foundArgument = false;
+    if (parser->isSet(QStringLiteral("author"))) {
+        foundArgument = true;
+        if (d->_authorList.isEmpty()) {
+            printf("%s\n", qPrintable(QCoreApplication::translate("KAboutData CLI", "This application was written by somebody who wants to remain anonymous.")));
+        } else {
+            printf(qPrintable(QCoreApplication::translate("KAboutData CLI", "%s was written by:\n")), qPrintable(qAppName()));
+            Q_FOREACH (const KAboutPerson& person, d->_authorList) {
+                printf("   %s", qPrintable(person.name()));
+                if (!person.emailAddress().isEmpty())
+                    printf("%s", qPrintable(person.emailAddress()));
+                printf("\n");
+            }
+        }
+    } else if (parser->isSet(QStringLiteral("license"))) {
+        foundArgument = true;
+        Q_FOREACH (const KAboutLicense& license, d->_licenseList) {
+            printf("%s", qPrintable(license.text()));
+        }
+    }
+
+    if (foundArgument) {
+        ::exit(EXIT_SUCCESS);
+    }
 }

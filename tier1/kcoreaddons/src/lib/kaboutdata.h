@@ -30,6 +30,7 @@
 #include <QtCore/QSharedDataPointer>
 
 template <class T> class QList;
+class QCommandLineParser;
 class QVariant;
 class KAboutData;
 namespace KCrash { void defaultCrashHandler(int sig); }
@@ -151,11 +152,12 @@ class KAboutLicense;
  *
  * Currently, the values set here are shown by the "About" box
  * (see KAboutDialog), used by the bug report dialog (see KBugReport),
- * and by the help shown on command line (see KCmdLineArgs).
+ * and by the help shown on command line (see KAboutData::setupCommandLine()).
  *
  * @short Holds information needed by the "About" box and other
  * classes.
  * @author Espen Sand (espen@kde.org), David Faure (faure@kde.org)
+ *
  */
 class KCOREADDONS_EXPORT KAboutData
 {
@@ -799,6 +801,26 @@ public:
      * bugAddress().
      */
     KAboutData &unsetCustomAuthorText();
+
+    /**
+     * Configures the @p parser command line parser to provide an authors entry with
+     * information about the developers of the application and an entry specifying the license.
+     *
+     * Additionally, it will set the description to the command line parser.
+     *
+     * @returns true if adding the options was successful; otherwise returns false.
+     *
+     * @sa processCommandLine()
+     */
+    bool setupCommandLine(QCommandLineParser *parser);
+
+    /**
+     * Reads the processed @p parser and sees if any of the arguments are the ones set
+     * up from setupCommandLine().
+     *
+     * @sa setupCommandLine()
+     */
+    void processCommandLine(QCommandLineParser *parser);
 
   private:
 
