@@ -47,7 +47,6 @@
 
 #include <kcrash.h>
 #include <kmemfile_p.h>
-#include <klocalizedstring.h>
 #include <kaboutdata.h>
 
 #include <stdlib.h>
