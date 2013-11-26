@@ -4,7 +4,6 @@
 #include <kmacroexpander.h>
 #include <kconfiggroup.h>
 #include <kaboutdata.h>
-#include <klocalizedstring.h>
 #include <qcommandlineparser.h>
 #include <qcommandlineoption.h>
 #include <QtCore/QCoreApplication>
