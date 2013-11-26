@@ -266,6 +266,8 @@ set(kde4support_INCLUDES
 )
 target_include_directories(KDE4Support PUBLIC "$<BUILD_INTERFACE:${kde4support_INCLUDES}>")
 
+target_include_directories(KDE4Support INTERFACE "$<INSTALL_INTERFACE:${INCLUDE_INSTALL_DIR}/KDE>")
+
 target_link_libraries(KDE4Support
 PUBLIC
    Qt5::Widgets
