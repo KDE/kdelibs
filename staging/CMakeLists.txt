@@ -1,3 +1,2 @@
 add_subdirectory(kspeech)
 add_subdirectory(kmediaplayer)
-add_subdirectory(kfileaudiopreview)
