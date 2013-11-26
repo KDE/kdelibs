@@ -3,6 +3,8 @@
 #include <kconfig.h>
 #include <kmacroexpander.h>
 #include <kconfiggroup.h>
+#include <kaboutdata.h>
+#include <klocalizedstring.h>
 #include <qcommandlineparser.h>
 #include <qcommandlineoption.h>
 #include <QtCore/QCoreApplication>
@@ -86,18 +88,19 @@ int main( int argc, char **argv ) {
 
     QCommandLineParser parser;
     parser.addVersionOption();
-    parser.setApplicationDescription(description);
     parser.addHelpOption();
-    //options.add("+file", ki18n( "Input file" ) );
+    //options.add("+file", QCoreApplication::translate("makekdewidgets about data",  "Input file" ) );
     parser.addOption(QCommandLineOption(QStringList() << "o", QCoreApplication::translate("main", "Output file"), "file"));
     parser.addOption(QCommandLineOption(QStringList() << "n", QCoreApplication::translate("main", "Name of the plugin class to generate"), "plugin name", "WidgetsPlugin"));
     parser.addOption(QCommandLineOption(QStringList() << "g", QCoreApplication::translate("main", "Default widget group name to display in designer"), "group", "Custom"));
+
+    KAboutData about( "makekdewidgets", 0, QCoreApplication::translate("makekdewidgets about data",  "makekdewidgets" ), version, description, KAboutData::License_GPL, QCoreApplication::translate("makekdewidgets about data", "(C) 2004-2005 Ian Reinhart Geiser"), QString(), 0, "geiseri@kde.org" );
+    about.addAuthor( QCoreApplication::translate("makekdewidgets about data", "Ian Reinhart Geiser"), QString(), "geiseri@kde.org" );
+    about.addAuthor( QCoreApplication::translate("makekdewidgets about data", "Daniel Molkentin"), QString(), "molkentin@kde.org" );
+    about.setupCommandLine(&parser);
+
     parser.process(app);
-
-    //K4AboutData about( "makekdewidgets", 0, ki18n( "makekdewidgets" ), version, description, K4AboutData::License_GPL, ki18n("(C) 2004-2005 Ian Reinhart Geiser"), KLocalizedString(), 0, "geiseri@kde.org" );
-    //about.addAuthor( ki18n("Ian Reinhart Geiser"), KLocalizedString(), "geiseri@kde.org" );
-    //about.addAuthor( ki18n("Daniel Molkentin"), KLocalizedString(), "molkentin@kde.org" );
-
+    about.processCommandLine(&parser);
     if (parser.positionalArguments().count() < 1) {
         parser.showHelp();
         return 1;
