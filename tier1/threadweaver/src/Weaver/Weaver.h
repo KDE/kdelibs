@@ -67,10 +67,8 @@ class THREADWEAVER_EXPORT Weaver : public Queue
 {
     Q_OBJECT
 public:
-    /** Construct a Weaver object. */
     explicit Weaver(QObject* parent = 0);
 
-    /** Construct a Weaver object, specifying the Weaver implementation to use. */
     explicit Weaver(Queue* implementation, QObject* parent = 0);
 
     /** Destruct a Weaver object. */
@@ -106,6 +104,13 @@ public:
     void reschedule() Q_DECL_OVERRIDE;
     void shutDown() Q_DECL_OVERRIDE;
 
+    /** @brief Interface for the global queue factory. */
+    struct GlobalQueueFactory {
+        virtual ~GlobalQueueFactory() {}
+        virtual Weaver* create(QObject* parent) = 0;
+
+    };
+    static void setGlobalQueueFactory(GlobalQueueFactory* factory);
 private:
     class Private;
     Private* const d;

@@ -28,6 +28,7 @@ public:
 };
 
 class JobCountingWeaver : public WeaverImpl {
+    Q_OBJECT
 public:
     explicit JobCountingWeaver(QObject* parent = 0) : WeaverImpl(parent) {}
     void enqueue(const JobPointer& job) Q_DECL_OVERRIDE {
@@ -36,16 +37,33 @@ public:
     }
 };
 
+class CountingGlobalQueueFactory : public Weaver::GlobalQueueFactory {
+    Weaver* create(QObject* parent = 0) Q_DECL_OVERRIDE {
+        return new Weaver(new JobCountingWeaver, parent);
+    }
+};
+
+int argc = 0;
+
 class QueueFactoryTests : public QObject
 {
     Q_OBJECT
 private Q_SLOTS:
     void testQueueFactory() {
-        int argc = 0;
+        counter.storeRelease(0);
         QCoreApplication app(argc, (char**)0);
         Weaver queue(new JobCountingWeaver(this));
-        queue.enqueue(Queueing::make_job( [](){} ));
+        queue.enqueue(Queueing::make_job( [](){} )); // nop
         queue.finish();
+        QCOMPARE(counter.loadAcquire(), 2);
+    }
+
+    void testGlobalQueueFactory() {
+        Weaver::setGlobalQueueFactory(new CountingGlobalQueueFactory());
+        QCoreApplication app(argc, (char**)0);
+        counter.storeRelease(0);
+        Weaver::instance()->enqueue(Queueing::make_job( [](){} )); //
+        Weaver::instance()->finish();
         QCOMPARE(counter.loadAcquire(), 2);
     }
 };

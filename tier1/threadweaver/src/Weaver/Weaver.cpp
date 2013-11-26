@@ -8,6 +8,10 @@
 
 using namespace ThreadWeaver;
 
+namespace {
+static Weaver::GlobalQueueFactory* globalQueueFactory;
+}
+
 class Weaver::Private
 {
 public:
@@ -18,25 +22,26 @@ public:
     Queue* implementation;
 };
 
+/** @brief Construct a Weaver object. */
 Weaver::Weaver(QObject* parent)
-    : Weaver(new WeaverImpl(this), parent)
+    : Weaver(new WeaverImpl, parent)
 {
 }
 
+/** @brief Construct a Weaver object, specifying the Weaver implementation to use.
+  * The Weaver instance will take ownership of the implementation object and delete it when destructed. */
 Weaver::Weaver(Queue *implementation, QObject *parent)
     : Queue(parent)
     , d(new Private)
 {
     Q_ASSERT_X(qApp!=0, Q_FUNC_INFO, "Cannot create global ThreadWeaver instance before QApplication!");
+    implementation->setParent(this);
     d->implementation = implementation;
-    //FIXME move to makeWeaverImpl(), so that implementations can be replaced
     connect(d->implementation, SIGNAL (finished()), SIGNAL (finished()));
     connect(d->implementation, SIGNAL (suspended()), SIGNAL (suspended()));
     connect(d->implementation, SIGNAL (jobDone(ThreadWeaver::JobPointer)),
             SIGNAL(jobDone(ThreadWeaver::JobPointer)));
 }
-
-
 
 Weaver::~Weaver()
 {
@@ -50,6 +55,19 @@ Weaver::~Weaver()
 void Weaver::shutDown()
 {
     d->implementation->shutDown();
+}
+
+/** @brief Set the factory object that will create the global queue.
+ *
+ * Once set, the global queue factory will be deleted when the global ThreadWeaver pool is deleted.
+ * The factory object needs to be set before the global ThreadWeaver pool is instantiated. Call this
+ * method before Q(Core)Application is constructed. */
+void Weaver::setGlobalQueueFactory(Weaver::GlobalQueueFactory *factory)
+{
+    if (globalQueueFactory) {
+        delete globalQueueFactory;
+    }
+    globalQueueFactory = factory;
 }
 
 const State* Weaver::state() const
@@ -80,6 +98,8 @@ public:
 
     ~StaticThreadWeaverInstanceGuard() {
         instance_.fetchAndStoreOrdered(0);
+        delete globalQueueFactory;
+        globalQueueFactory = 0;
     }
 private:
     static void shutDownGlobalQueue() {
@@ -98,7 +118,9 @@ private:
  * The instance will be deleted when Q(Core)Application is destructed. After that, the instance() method returns zero. */
 Weaver* Weaver::instance()
 {
-    static QAtomicPointer<Weaver> s_instance(new Weaver(qApp));
+    static QAtomicPointer<Weaver> s_instance(globalQueueFactory
+                                             ? globalQueueFactory->create(qApp)
+                                             : new Weaver(qApp));
     //Order is of importance here:
     //When s_instanceGuard is destructed (first, before s_instance), it sets the value of s_instance to zero. Next, qApp will delete
     //the object s_instance pointed to.
