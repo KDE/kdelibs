@@ -19,16 +19,24 @@ public:
 };
 
 Weaver::Weaver(QObject* parent)
+    : Weaver(new WeaverImpl(this), parent)
+{
+}
+
+Weaver::Weaver(Queue *implementation, QObject *parent)
     : Queue(parent)
     , d(new Private)
 {
-    d->implementation = makeWeaverImpl();
+    Q_ASSERT_X(qApp!=0, Q_FUNC_INFO, "Cannot create global ThreadWeaver instance before QApplication!");
+    d->implementation = implementation;
     //FIXME move to makeWeaverImpl(), so that implementations can be replaced
     connect(d->implementation, SIGNAL (finished()), SIGNAL (finished()));
     connect(d->implementation, SIGNAL (suspended()), SIGNAL (suspended()));
     connect(d->implementation, SIGNAL (jobDone(ThreadWeaver::JobPointer)),
             SIGNAL(jobDone(ThreadWeaver::JobPointer)));
 }
+
+
 
 Weaver::~Weaver()
 {
@@ -37,13 +45,6 @@ Weaver::~Weaver()
     }
     delete d->implementation;
     delete d;
-}
-
-Queue *Weaver::makeWeaverImpl()
-{
-    Q_ASSERT_X(qApp!=0, Q_FUNC_INFO, "Cannot create global ThreadWeaver instance before QApplication!");
-    Queue *queue = new WeaverImpl(this);
-    return queue;
 }
 
 void Weaver::shutDown()

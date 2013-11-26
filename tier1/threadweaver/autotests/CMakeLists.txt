@@ -57,3 +57,14 @@ ecm_mark_as_test(ThreadWeaverShutdownOnQApplicationQuitTest)
 
 target_link_libraries(ThreadWeaverShutdownOnQApplicationQuitTest Qt5::Test ThreadWeaver)
 set_target_properties(ThreadWeaverShutdownOnQApplicationQuitTest PROPERTIES MACOSX_BUNDLE FALSE)
+
+########### next target ###############
+
+set(QueueFactoryTest_SRCS QueueFactoryTests.cpp)
+
+add_executable(ThreadWeaverQueueFactoryTest ${QueueFactoryTest_SRCS})
+add_test(ThreadWeaverQueueFactoryTest ThreadWeaverQueueFactoryTest)
+ecm_mark_as_test(ThreadWeaverQueueFactoryTest)
+
+target_link_libraries(ThreadWeaverQueueFactoryTest Qt5::Test ThreadWeaver)
+Set_target_properties(ThreadWeaverQueueFactoryTest PROPERTIES MACOSX_BUNDLE FALSE)

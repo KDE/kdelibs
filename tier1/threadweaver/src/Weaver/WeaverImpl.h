@@ -54,7 +54,7 @@ class SuspendingState;
         which it assigns jobs from its queue. It extends the API of
         WeaverInterface to provide additional methods needed by the Thread
         objects. */
-class WeaverImpl : public QueueAPI
+class THREADWEAVER_EXPORT WeaverImpl : public QueueAPI
 {
     Q_OBJECT
 public:

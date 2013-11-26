@@ -68,10 +68,13 @@ class THREADWEAVER_EXPORT Weaver : public Queue
     Q_OBJECT
 public:
     /** Construct a Weaver object. */
-    explicit Weaver ( QObject* parent=0 );
+    explicit Weaver(QObject* parent = 0);
+
+    /** Construct a Weaver object, specifying the Weaver implementation to use. */
+    explicit Weaver(Queue* implementation, QObject* parent = 0);
 
     /** Destruct a Weaver object. */
-    virtual ~Weaver ();
+    virtual ~Weaver();
 
     const State* state() const;
 
@@ -102,12 +105,6 @@ public:
     void requestAbort() Q_DECL_OVERRIDE;
     void reschedule() Q_DECL_OVERRIDE;
     void shutDown() Q_DECL_OVERRIDE;
-
-protected:
-    /** The factory method to create the actual Weaver implementation.
-    Overload this method to use a different or adapted implementation.
-    */
-    virtual Queue* makeWeaverImpl ();
 
 private:
     class Private;
