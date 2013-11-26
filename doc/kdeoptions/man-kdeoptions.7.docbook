@@ -57,7 +57,7 @@ titlebar.</para></listitem>
 </varlistentry>
 <varlistentry>
 <term><option>--style</option> <parameter>style</parameter></term>
-<listitem><para>Sets the appliction &GUI; style.</para></listitem>
+<listitem><para>Sets the application &GUI; style.</para></listitem>
 </varlistentry>
 <varlistentry>
 <term><option>--geometry</option> <parameter>geometry</parameter></term>
