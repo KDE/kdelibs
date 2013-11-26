@@ -21,6 +21,7 @@ if (NOT MSVC)
   add_subdirectory(solid)
   add_subdirectory(kcoreaddons)
   add_subdirectory(kjs)
+  add_subdirectory(kimageformats)
 endif()
 
 if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")

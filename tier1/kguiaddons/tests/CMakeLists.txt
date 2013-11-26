@@ -1,6 +1,5 @@
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 remove_definitions(-DQT_NO_CAST_TO_ASCII)
-add_definitions(-DPLUGIN_DIR="${CMAKE_CURRENT_BINARY_DIR}/../src/plugins")
 
 include(ECMMarkAsTest)
 
@@ -15,7 +14,6 @@ macro(kguiaddons_executable_tests)
 endmacro()
 
 kguiaddons_executable_tests(
-  imageconverter
   kcolorcollectiontest
   kmodifierkeyinfotest
   openurltest
