@@ -31,7 +31,7 @@
 # not find the correct kdex.dtd because it is not reachable from dirs declared
 # in XDG_DATA_DIRS)
 # It should go away when that issue is sorted out.
-option(KDOCTOOLS_ENABLED ON)
+option(KDOCTOOLS_ENABLED "Enable kdoctools macros" ON)
 
 set(KDOCTOOLS_MEINPROC_EXECUTABLE "KF5::meinproc5")
 

@@ -4,7 +4,11 @@ include(CMakeParseArguments)
 
 set(SB_PACKAGE_VERSION_NUMBER "0.0.1" CACHE STRING "The version number for the source package.")
 
-set(SB_CMAKE_ARGS "" CACHE STRING "Additional arguments to CMake which will be used for all subprojects (e.g. \"-DFOO=Bar\"). For per-project arguments variables SB_CMAKE_ARGS_<ProjectName> can be defined.")
+# Setting KDOCTOOLS_ENABLED to OFF is a hack to temporarily avoid issues on
+# build.kde.org (meinproc does not find the correct kdex.dtd because it is not
+# reachable from dirs declared in XDG_DATA_DIRS)
+# It should go away when that issue is sorted out.
+set(SB_CMAKE_ARGS "-DKDOCTOOLS_ENABLED=OFF" CACHE STRING "Additional arguments to CMake which will be used for all subprojects (e.g. \"-DFOO=Bar\"). For per-project arguments variables SB_CMAKE_ARGS_<ProjectName> can be defined.")
 
 set(SB_SILENT_SKIPPED_PROJECTS FALSE)
 
