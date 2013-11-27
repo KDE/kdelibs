@@ -15,16 +15,25 @@ static Weaver::GlobalQueueFactory* globalQueueFactory;
 class Weaver::Private
 {
 public:
-    Private ()
-        : implementation(0)
-    {}
+    Private(Weaver* q, Queue *queue)
+        : implementation(queue)
+    {
+        Q_ASSERT_X(qApp!=0, Q_FUNC_INFO, "Cannot create global ThreadWeaver instance before QApplication!");
+        Q_ASSERT(queue);
+        queue->setParent(q);
+        q->connect(implementation, SIGNAL (finished()), SIGNAL (finished()));
+        q->connect(implementation, SIGNAL (suspended()), SIGNAL (suspended()));
+        q->connect(implementation, SIGNAL (jobDone(ThreadWeaver::JobPointer)), SIGNAL(jobDone(ThreadWeaver::JobPointer)));
+    }
 
     Queue* implementation;
+    void init(Queue *implementation);
 };
 
 /** @brief Construct a Weaver object. */
 Weaver::Weaver(QObject* parent)
-    : Weaver(new WeaverImpl, parent)
+    : Queue(parent)
+    , d(new Private(this, new WeaverImpl))
 {
 }
 
@@ -32,15 +41,8 @@ Weaver::Weaver(QObject* parent)
   * The Weaver instance will take ownership of the implementation object and delete it when destructed. */
 Weaver::Weaver(Queue *implementation, QObject *parent)
     : Queue(parent)
-    , d(new Private)
+    , d(new Private(this, implementation))
 {
-    Q_ASSERT_X(qApp!=0, Q_FUNC_INFO, "Cannot create global ThreadWeaver instance before QApplication!");
-    implementation->setParent(this);
-    d->implementation = implementation;
-    connect(d->implementation, SIGNAL (finished()), SIGNAL (finished()));
-    connect(d->implementation, SIGNAL (suspended()), SIGNAL (suspended()));
-    connect(d->implementation, SIGNAL (jobDone(ThreadWeaver::JobPointer)),
-            SIGNAL(jobDone(ThreadWeaver::JobPointer)));
 }
 
 Weaver::~Weaver()
