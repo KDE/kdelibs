@@ -23,6 +23,10 @@ set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
              PROPERTY EP_BASE ${CMAKE_CURRENT_BINARY_DIR}
             )
 
+if (NOT SB_INSTALL_PREFIX)
+  set(SB_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX})
+endif()
+
 macro(sb_add_project _subdir )
 
   set(oneValueArgs ) #CVS_REPOSITORY GIT_REPOSITORY SVN_REPOSITORY SOURCE_DIR SUBDIR)
@@ -34,49 +38,48 @@ macro(sb_add_project _subdir )
     set(name "${CMAKE_MATCH_2}")
   endif()
 
-  set(GET_SOURCES_ARGS SOURCE_DIR ${CMAKE_SOURCE_DIR}/${_subdir}
-                       DOWNLOAD_COMMAND "")
-
   message(STATUS "superbuild: Adding project ${_subdir}")
-
-  set(DEPENDS_ARGS)
-  if(_SB_DEPENDS)
-    set(existingDepends)
-
-    foreach(dep ${_SB_DEPENDS})
-      if(NOT TARGET sb_${dep})
-        message(FATAL_ERROR "'${dep}' is not defined as a superbuild project")
-        return()
-      endif()
-      list(APPEND existingDepends sb_${dep} )
-    endforeach(dep)
-
-    if(existingDepends)
-      set(DEPENDS_ARGS DEPENDS ${existingDepends} )
-    endif()
-
-  endif()
 
   externalproject_add(sb_${name}
                       ${_SB_UNPARSED_ARGUMENTS}
-                      ${GET_SOURCES_ARGS}
+                      DOWNLOAD_COMMAND ""
+                      SOURCE_DIR  ${CMAKE_SOURCE_DIR}/${_subdir}
                       TMP_DIR ${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/SuperBuild/tmpfiles/${name}
                       STAMP_DIR ${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/SuperBuild/stampfiles/${name}
                       DOWNLOAD_DIR ${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/SuperBuild/download/${name}
                       BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/${name}
-                      INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
+                      INSTALL_DIR ${SB_INSTALL_PREFIX}
                       CMAKE_ARGS --no-warn-unused-cli
                                  -DQT_QMAKE_EXECUTABLE=${QT_QMAKE_EXECUTABLE}
                                  -DCMAKE_PREFIX_PATH=${SB_INITIAL_DESTDIR}${CMAKE_INSTALL_PREFIX}
-                                 -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
+                                 -DCMAKE_INSTALL_PREFIX=${SB_INSTALL_PREFIX}
                                  -DCMAKE_SKIP_RPATH="${CMAKE_SKIP_RPATH}"
                                  -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                                  -DLIB_SUFFIX=${LIB_SUFFIX}
                                  ${SB_CMAKE_ARGS}
                                  ${SB_CMAKE_ARGS_${name}}
-                      STEP_TARGETS update configure
-                      ${DEPENDS_ARGS}
+                      STEP_TARGETS configure
                       )
+
+  if(_SB_DEPENDS)
+    # HACK1: Adding dependencies to sb_${name} (via externalproject_add DEPENDS)
+    # does not cause the dependencies to be satisfied before the *configure*
+    # step of sb_${name}. To avoid this we add the dependencies to the
+    # sb_${name}-configure target.
+    foreach(dep ${_SB_DEPENDS})
+      if(NOT TARGET sb_${dep})
+        message(FATAL_ERROR "'${dep}' is not defined as a superbuild project")
+        return()
+      endif()
+      add_dependencies(sb_${name}-configure sb_${dep})
+    endforeach(dep)
+
+    # HACK2: Adding dependencies to sb_${name}-configure does not cause them to
+    # be satisfied when building sb_${name}. I don't know why, but following
+    # line workarounds the issue.
+    add_dependencies(sb_${name} sb_${name}-configure)
+  endif()
+
   set_target_properties(sb_${name} PROPERTIES EXCLUDE_FROM_ALL TRUE)
 
   add_dependencies(sb_all sb_${name})
