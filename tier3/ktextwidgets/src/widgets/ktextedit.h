@@ -158,6 +158,8 @@ class KTEXTWIDGETS_EXPORT KTextEdit : public QTextEdit //krazy:exclude=qclasses
      * This has to be called after enabling spell checking with
      * setCheckSpellingEnabled(), otherwise it has no effect.
      *
+     * Ownership is transferred to the KTextEdit
+     *
      * @see highlighter()
      * @see createHighlighter()
      * @param highLighter the new highlighter which will be used now
@@ -168,7 +170,7 @@ class KTEXTWIDGETS_EXPORT KTextEdit : public QTextEdit //krazy:exclude=qclasses
      * Return standard KTextEdit popupMenu
      * @since 4.1
      */
-    QMenu *mousePopupMenu();
+    virtual QMenu *mousePopupMenu();
 
     /**
      * Enable find replace action.
@@ -309,14 +311,6 @@ class KTEXTWIDGETS_EXPORT KTextEdit : public QTextEdit //krazy:exclude=qclasses
      * @since 4.1
      */
     void replace();
-
-
-    /**
-     * @since 4.10
-     * Because of binary compatibility constraints, mousePopupMenu()
-     * is not virtual. Therefore it must dynamically detect and call this slot.  
-     */
-    void mousePopupMenuImplementation(const QPoint& pos);
 
   protected Q_SLOTS:
     /**

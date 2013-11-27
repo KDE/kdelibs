@@ -47,11 +47,21 @@
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <kwindowsystem.h>
+#include <spellcheckdecorator.h>
 
 #include "kreplacedialog.h"
 #include "kfinddialog.h"
 #include "kfind.h"
 #include "kreplace.h"
+
+class KTextDecorator : public Sonnet::SpellCheckDecorator
+{
+public:
+    KTextDecorator(KTextEdit *textEdit);
+    virtual bool isSpellCheckingEnabledForBlock(const QString &textBlock) const;
+private:
+    KTextEdit *m_textEdit;
+};
 
 class KTextEdit::Private
 {
@@ -63,7 +73,7 @@ class KTextEdit::Private
         findReplaceEnabled(true),
         showTabAction(true),
         showAutoCorrectionButton(false),
-        highlighter( 0 ), findDlg(0),find(0),repDlg(0),replace(0), findIndex(0), repIndex(0),
+        decorator( 0 ), findDlg(0),find(0),repDlg(0),replace(0), findIndex(0), repIndex(0),
         lastReplacedPosition(-1)
     {
         //Check the default sonnet settings to see if spellchecking should be enabled.
@@ -82,7 +92,7 @@ class KTextEdit::Private
 
     ~Private()
     {
-      delete highlighter;
+      delete decorator;
       delete findDlg;
       delete find;
       delete replace;
@@ -139,7 +149,7 @@ class KTextEdit::Private
     QTextDocumentFragment originalDoc;
     QString spellCheckingConfigFileName;
     QString spellCheckingLanguage;
-    Sonnet::Highlighter *highlighter;
+    KTextDecorator *decorator;
     KFindDialog *findDlg;
     KFind *find;
     KReplaceDialog *repDlg;
@@ -307,6 +317,18 @@ void KTextEdit::Private::init()
     parent->connect(parent, SIGNAL(languageChanged(QString)),
                     parent, SLOT(setSpellCheckingLanguage(QString)));
 }
+
+KTextDecorator::KTextDecorator(KTextEdit* textEdit):
+    SpellCheckDecorator(textEdit),
+    m_textEdit(textEdit)
+{
+}
+
+bool KTextDecorator::isSpellCheckingEnabledForBlock(const QString& textBlock) const
+{
+    return m_textEdit->shouldBlockBeSpellChecked(textBlock);
+}
+
 
 KTextEdit::KTextEdit( const QString& text, QWidget *parent )
   : QTextEdit( text, parent ), d( new Private( this ) )
@@ -594,111 +616,11 @@ void KTextEdit::slotSpeakText()
 
 void KTextEdit::contextMenuEvent(QContextMenuEvent *event)
 {
-    // Obtain the cursor at the mouse position and the current cursor
-    QTextCursor cursorAtMouse = cursorForPosition(event->pos());
-    const int mousePos = cursorAtMouse.position();
-    QTextCursor cursor = textCursor();
-
-    // Check if the user clicked a selected word
-    const bool selectedWordClicked = cursor.hasSelection() &&
-                               mousePos >= cursor.selectionStart() &&
-                               mousePos <= cursor.selectionEnd();
-
-    // Get the word under the (mouse-)cursor and see if it is misspelled.
-    // Don't include apostrophes at the start/end of the word in the selection.
-    QTextCursor wordSelectCursor(cursorAtMouse);
-    wordSelectCursor.clearSelection();
-    wordSelectCursor.select(QTextCursor::WordUnderCursor);
-    QString selectedWord = wordSelectCursor.selectedText();
-
-    bool isMouseCursorInsideWord = true;
-    if ((mousePos < wordSelectCursor.selectionStart() ||
-            mousePos >= wordSelectCursor.selectionEnd())
-                                        && (selectedWord.length() > 1)) {
-         isMouseCursorInsideWord = false;
-    }
-
-    // Clear the selection again, we re-select it below (without the apostrophes).
-    wordSelectCursor.setPosition(wordSelectCursor.position()-selectedWord.size());
-    if (selectedWord.startsWith(QLatin1Char('\'')) || selectedWord.startsWith(QLatin1Char('\"'))) {
-        selectedWord = selectedWord.right(selectedWord.size() - 1);
-        wordSelectCursor.movePosition(QTextCursor::NextCharacter, QTextCursor::MoveAnchor);
-    }
-    if (selectedWord.endsWith(QLatin1Char('\'')) || selectedWord.endsWith(QLatin1Char('\"')))
-        selectedWord.chop(1);
-
-    wordSelectCursor.movePosition(QTextCursor::NextCharacter,
-                                  QTextCursor::KeepAnchor, selectedWord.size());
-
-    const bool wordIsMisspelled = isMouseCursorInsideWord &&
-                            checkSpellingEnabled() &&
-                            !selectedWord.isEmpty() &&
-                            highlighter() &&
-                            highlighter()->isWordMisspelled(selectedWord);
-
-    // If the user clicked a selected word, do nothing.
-    // If the user clicked somewhere else, move the cursor there.
-    // If the user clicked on a misspelled word, select that word.
-    // Same behavior as in OpenOffice Writer.
-    bool inQuote = false;
-    if (!shouldBlockBeSpellChecked(cursorAtMouse.block().text()))
-        inQuote = true;
-    if (!selectedWordClicked) {
-        if (wordIsMisspelled && !inQuote)
-            setTextCursor(wordSelectCursor);
-        else
-            setTextCursor(cursorAtMouse);
-        cursor = textCursor();
-    }
-
-    // Use standard context menu for already selected words, correctly spelled
-    // words and words inside quotes.
-    if (!wordIsMisspelled || selectedWordClicked || inQuote) {
-        QMetaObject::invokeMethod(this, "mousePopupMenuImplementation", Q_ARG(QPoint, event->globalPos()));
-    }
-    else {
-        QMenu menu; //don't use KMenu here we don't want auto management accelerator
-
-        //Add the suggestions to the menu
-        const QStringList reps = highlighter()->suggestionsForWord(selectedWord);
-        if (reps.isEmpty()) {
-            QAction *suggestionsAction = menu.addAction(i18n("No suggestions for %1", selectedWord));
-            suggestionsAction->setEnabled(false);
-        }
-        else {
-            QStringList::const_iterator end(reps.constEnd());
-            for (QStringList::const_iterator it = reps.constBegin(); it != end; ++it) {
-                menu.addAction(*it);
-            }
-        }
-
-        menu.addSeparator();
-
-        QAction *ignoreAction = menu.addAction(i18n("Ignore"));
-        QAction *addToDictAction = menu.addAction(i18n("Add to Dictionary"));
-        //Execute the popup inline
-        const QAction *selectedAction = menu.exec(event->globalPos());
-
-        if (selectedAction) {
-            Q_ASSERT(cursor.selectedText() == selectedWord);
-
-            if (selectedAction == ignoreAction) {
-                highlighter()->ignoreWord(selectedWord);
-                highlighter()->rehighlight();
-            }
-            else if (selectedAction == addToDictAction) {
-                highlighter()->addWordToDictionary(selectedWord);
-                highlighter()->rehighlight();
-            }
-
-            // Other actions can only be one of the suggested words
-            else {
-                const QString replacement = selectedAction->text();
-                Q_ASSERT(reps.contains(replacement));
-                cursor.insertText(replacement);
-                setTextCursor(cursor);
-            }
-        }
+    QMenu *popup = mousePopupMenu();
+    if (popup) {
+       aboutToShowContextMenu(popup);
+       popup->exec( event->globalPos() );
+       delete popup;
     }
 }
 
@@ -709,13 +631,21 @@ void KTextEdit::createHighlighter()
 
 Sonnet::Highlighter* KTextEdit::highlighter() const
 {
-    return d->highlighter;
+    if (d->decorator) {
+        return d->decorator->highlighter();
+    } else {
+        return 0;
+    }
 }
 
 void KTextEdit::setHighlighter(Sonnet::Highlighter *_highLighter)
 {
-    delete d->highlighter;
-    d->highlighter = _highLighter;
+    d->decorator = new KTextDecorator(this);
+    d->decorator->setHighlighter(_highLighter);
+
+    //KTextEdit used to take ownership of the highlighter, Sonnet::SpellCheckDecorator does not.
+    //so we reparent the highlighter so it will be deleted when the decorator is destroyed
+    _highLighter->setParent(d->decorator);
 }
 
 void KTextEdit::setCheckSpellingEnabled(bool check)
@@ -739,15 +669,16 @@ void KTextEdit::setCheckSpellingEnabled(bool check)
     }
     else
     {
-        delete d->highlighter;
-        d->highlighter = 0;
+        delete d->decorator;
+        d->decorator = 0;
     }
 }
 
 void KTextEdit::focusInEvent( QFocusEvent *event )
 {
-  if ( d->checkSpellingEnabled && !isReadOnly() && !d->highlighter )
+  if ( d->checkSpellingEnabled && !isReadOnly() && !d->decorator) {
     createHighlighter();
+  }
 
   QTextEdit::focusInEvent( event );
 }
@@ -764,15 +695,16 @@ bool KTextEdit::shouldBlockBeSpellChecked( const QString& ) const
 
 void KTextEdit::setReadOnly( bool readOnly )
 {
-  if ( !readOnly && hasFocus() && d->checkSpellingEnabled && !d->highlighter )
+  if ( !readOnly && hasFocus() && d->checkSpellingEnabled && !d->decorator) {
     createHighlighter();
+  }
 
   if ( readOnly == isReadOnly() )
     return;
 
   if ( readOnly ) {
-    delete d->highlighter;
-    d->highlighter = 0;
+    delete d->decorator;
+    d->decorator = 0;
 
     d->customPalette = testAttribute( Qt::WA_SetPalette );
     QPalette p = palette();
@@ -1107,16 +1039,6 @@ void KTextEdit::focusOutEvent(QFocusEvent *ev)
 void KTextEdit::showAutoCorrectButton(bool show)
 {
     d->showAutoCorrectionButton = show;
-}
-
-void KTextEdit::mousePopupMenuImplementation(const QPoint& pos)
-{
-    QMenu *popup = mousePopupMenu();
-    if ( popup ) {
-       aboutToShowContextMenu(popup);
-       popup->exec( pos );
-       delete popup;
-    }
 }
 
 #include "moc_ktextedit.cpp"
