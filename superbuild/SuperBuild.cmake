@@ -27,12 +27,9 @@ if (NOT SB_INSTALL_PREFIX)
   set(SB_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX})
 endif()
 
+set(_SB_LAST_TARGET)
+
 macro(sb_add_project _subdir )
-
-  set(oneValueArgs ) #CVS_REPOSITORY GIT_REPOSITORY SVN_REPOSITORY SOURCE_DIR SUBDIR)
-  set(multiValueArgs DEPENDS)
-  cmake_parse_arguments(_SB "" "${oneValueArgs}" "${multiValueArgs}"  ${ARGN})
-
   set(name "${_subdir}")
   if("${_subdir}" MATCHES "(.+)/(.+)")
     set(name "${CMAKE_MATCH_2}")
@@ -58,32 +55,21 @@ macro(sb_add_project _subdir )
                                  -DLIB_SUFFIX=${LIB_SUFFIX}
                                  ${SB_CMAKE_ARGS}
                                  ${SB_CMAKE_ARGS_${name}}
-                      STEP_TARGETS configure
                       )
-
-  if(_SB_DEPENDS)
-    # HACK1: Adding dependencies to sb_${name} (via externalproject_add DEPENDS)
-    # does not cause the dependencies to be satisfied before the *configure*
-    # step of sb_${name}. To avoid this we add the dependencies to the
-    # sb_${name}-configure target.
-    foreach(dep ${_SB_DEPENDS})
-      if(NOT TARGET sb_${dep})
-        message(FATAL_ERROR "'${dep}' is not defined as a superbuild project")
-        return()
-      endif()
-      add_dependencies(sb_${name}-configure sb_${dep})
-    endforeach(dep)
-
-    # HACK2: Adding dependencies to sb_${name}-configure does not cause them to
-    # be satisfied when building sb_${name}. I don't know why, but following
-    # line workarounds the issue.
-    add_dependencies(sb_${name} sb_${name}-configure)
-  endif()
 
   set_target_properties(sb_${name} PROPERTIES EXCLUDE_FROM_ALL TRUE)
 
-  add_dependencies(sb_all sb_${name})
+  if(_SB_LAST_TARGET)
+    add_dependencies(sb_${name} ${_SB_LAST_TARGET})
+  endif()
+  set(_SB_LAST_TARGET sb_${name})
 endmacro(sb_add_project)
+
+macro(sb_end)
+  add_custom_target(sb_all)
+  set_target_properties(sb_all PROPERTIES EXCLUDE_FROM_ALL TRUE)
+  add_dependencies(sb_all ${_SB_LAST_TARGET})
+endmacro(sb_end)
 
 #file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/ThisIsASourcePackage.in "This is a generated source package.")
 
@@ -91,7 +77,5 @@ endmacro(sb_add_project)
 #install(FILES CMakeLists.txt DESTINATION src  COMPONENT SuperBuild )
 #install(FILES ${CMAKE_CURRENT_LIST_FILE} DESTINATION .  COMPONENT SuperBuild )
 
-add_custom_target(sb_all)
-set_target_properties(sb_all PROPERTIES EXCLUDE_FROM_ALL TRUE)
 
 set(CMAKE_SKIP_INSTALL_ALL_DEPENDENCY TRUE)
