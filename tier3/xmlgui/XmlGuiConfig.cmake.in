@@ -8,6 +8,7 @@ find_dependency(Qt5Xml @QT_REQUIRED_VERSION@)
 
 include("${CMAKE_CURRENT_LIST_DIR}/XmlGuiTargets.cmake")
 
+set(XMLGUI_DBUS_INTERFACES_DIR "${PACKAGE_PREFIX_DIR}/@DBUS_INTERFACES_INSTALL_DIR@")
 
 # XmlGui optionally adds LibAttica::attica to its public link interface
 set(XmlGUI_NEEDS_ATTICA @HAVE_ATTICA@)

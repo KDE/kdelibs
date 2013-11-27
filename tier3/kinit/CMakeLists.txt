@@ -46,11 +46,17 @@ if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
 endif()
 
 set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KInit")
+configure_package_config_file(
+  "${CMAKE_CURRENT_SOURCE_DIR}/KInitConfig.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/KInitConfig.cmake"
+  INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
+)
 
 add_subdirectory(src)
 
 install( FILES
-    KInitMacros.cmake KInitConfig.cmake ${CMAKE_CURRENT_BINARY_DIR}/KInitConfigVersion.cmake
+	"${CMAKE_CURRENT_BINARY_DIR}/KInitConfig.cmake"
+    KInitMacros.cmake ${CMAKE_CURRENT_BINARY_DIR}/KInitConfigVersion.cmake
     DESTINATION ${CMAKECONFIG_INSTALL_DIR} COMPONENT Devel )
 
 install(FILES
