@@ -27,30 +27,12 @@
 #  KDOCTOOLS_MEINPROC_EXECUTABLE - the meinproc5 executable
 #
 
-# This is a hack to temporarily avoid issues on build.kde.org (meinproc does
-# not find the correct kdex.dtd because it is not reachable from dirs declared
-# in XDG_DATA_DIRS)
-# It should go away when that issue is sorted out.
-option(KDOCTOOLS_ENABLED "Enable kdoctools macros" ON)
-
 set(KDOCTOOLS_MEINPROC_EXECUTABLE "KF5::meinproc5")
 
 if(KDE4_SERIALIZE_TOOL)
     # parallel build with many meinproc invocations can consume a huge amount of memory
     set(KDOCTOOLS_MEINPROC_EXECUTABLE ${KDE4_SERIALIZE_TOOL} ${KDOCTOOLS_MEINPROC_EXECUTABLE})
 endif(KDE4_SERIALIZE_TOOL)
-
-if (NOT KDOCTOOLS_ENABLED)
-   macro (KDOCTOOLS_CREATE_HANDBOOK _docbook)
-      message(WARNING "KDOCTOOLS_CREATE_HANDBOOK disabled because KDOCTOOLS_ENABLED is OFF")
-   endmacro()
-
-   macro (KDOCTOOLS_CREATE_MANPAGE _docbook _section)
-      message(WARNING "KDOCTOOLS_CREATE_MANPAGE disabled because KDOCTOOLS_ENABLED is OFF")
-   endmacro()
-
-   return()
-endif()
 
 macro (KDOCTOOLS_CREATE_HANDBOOK _docbook)
    get_filename_component(_input ${_docbook} ABSOLUTE)
