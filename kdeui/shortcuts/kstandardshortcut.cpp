@@ -149,7 +149,7 @@ static KStandardShortcutInfo g_infoStandardShortcut[] =
     { RotateDown               , "RotateDown"               , I18N_NOOP2("@action", "Next Item in List")        , Qt::Key_Down, 0, KShortcut(), false },
 
     { OpenRecent               , "OpenRecent"               , I18N_NOOP2("@action", "Open Recent")               , 0           , 0, KShortcut(), false },
-    { SaveAs                   , "SaveAs"                   , I18N_NOOP2("@action", "Save As")                   , 0           , 0, KShortcut(), false },
+    { SaveAs                   , "SaveAs"                   , I18N_NOOP2("@action", "Save As")                   , CTRLSHIFT(s) , 0, KShortcut(), false },
     { Revert                   , "Revert"                   , I18N_NOOP2("@action", "Revert")                   , 0           , 0, KShortcut(), false },
     { PrintPreview             , "PrintPreview"             , I18N_NOOP2("@action", "Print Preview")             , 0           , 0, KShortcut(), false },
     { Mail                     , "Mail"                     , I18N_NOOP2("@action", "Mail")                     , 0           , 0, KShortcut(), false },
