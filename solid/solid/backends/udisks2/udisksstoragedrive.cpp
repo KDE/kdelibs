@@ -48,7 +48,8 @@ qulonglong StorageDrive::size() const
 bool StorageDrive::isHotpluggable() const
 {
     const Solid::StorageDrive::Bus _bus = bus();
-    return _bus == Solid::StorageDrive::Usb || _bus == Solid::StorageDrive::Ieee1394;
+    return _bus == Solid::StorageDrive::Usb || _bus == Solid::StorageDrive::Ieee1394 ||
+            (m_udevDevice.deviceProperty("UDISKS_SYSTEM").isValid() && !m_udevDevice.deviceProperty("UDISKS_SYSTEM").toBool());
 }
 
 bool StorageDrive::isRemovable() const
