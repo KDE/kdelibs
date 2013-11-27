@@ -6,6 +6,12 @@ cmake_minimum_required(VERSION 2.8.12)
 
 include(SuperBuild.cmake)
 
+# This is a hack to temporarily avoid issues on build.kde.org (meinproc does
+# not find the correct kdex.dtd because it is not reachable from dirs declared
+# in XDG_DATA_DIRS)
+# It should go away when that issue is sorted out.
+set(SB_CMAKE_ARGS "-DKDOCTOOLS_ENABLED=OFF")
+
 sb_add_project(tier1/itemmodels )
 sb_add_project(tier1/itemviews )
 sb_add_project(tier1/karchive )
