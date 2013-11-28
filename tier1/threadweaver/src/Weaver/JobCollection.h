@@ -80,7 +80,7 @@ protected:
     /** Overload to dequeue the collection. */
     void aboutToBeDequeued_locked(QueueAPI *api) Q_DECL_OVERRIDE;
 
-    /** Return a reference to the job in the job list at position i. */
+    /** Return a ref-erence to the job in the job list at position i. */
     JobPointer jobAt(int i);
 
 

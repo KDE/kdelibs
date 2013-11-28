@@ -92,6 +92,7 @@ public:
     Private()
         : api ( 0 )
         , jobCounter (0)
+        , selfIsExecuting(false)
     {
     }
 
@@ -113,6 +114,7 @@ public:
     QAtomicInt jobsStarted;
     CollectionSelfExecuteWrapper selfExecuteWrapper;
     JobPointer self;
+    bool selfIsExecuting;
 };
 
 JobCollection::JobCollection()
@@ -137,8 +139,8 @@ JobCollection::~JobCollection()
 void JobCollection::addJob(JobPointer job)
 {
     QMutexLocker l(mutex()); Q_UNUSED(l);
-    REQUIRE( d->api == 0 ); // not queued yet
-    REQUIRE( job != 0);
+    REQUIRE(d->api == 0 || d->selfIsExecuting == true); // not queued yet or still running
+    REQUIRE(job != 0);
 
     CollectionExecuteWrapper* wrapper = new CollectionExecuteWrapper();
     wrapper->setCollection(this);
@@ -181,15 +183,12 @@ void JobCollection::aboutToBeDequeued_locked(QueueAPI *api )
 
 void JobCollection::execute(JobPointer job, Thread *thread)
 {
-    Q_ASSERT(d->self.isNull());
-    Q_ASSERT(d->api!= 0);
     {
         QMutexLocker l(mutex()); Q_UNUSED(l);
+        Q_ASSERT(d->self.isNull());
+        Q_ASSERT(d->api!= 0);
         d->self = job;
-        d->jobCounter.fetchAndStoreOrdered(d->elements.count() + 1); //including self
-        Q_FOREACH(const JobPointer& child, d->elements) {
-            d->api->enqueue(child);
-        }
+        d->selfIsExecuting = true; // reset in elementFinished
     }
     Job::execute(job, thread);
 }
@@ -218,7 +217,19 @@ void JobCollection::elementFinished(JobPointer job, Thread *thread)
     QMutexLocker l(mutex()); Q_UNUSED(l);
     Q_ASSERT(!d->self.isNull());
     Q_UNUSED(job) // except in Q_ASSERT
+    //FIXME test this assert with a decorated collection!
     Q_ASSERT(job.data() == d->self || std::find(d->elements.begin(), d->elements.end(), job) != d->elements.end());
+    if (d->selfIsExecuting) {
+        // the element that is finished is the collection itself
+        // the collection is always executed first
+        // queue the collection elements:
+        //        QMutexLocker l(mutex()); Q_UNUSED(l);
+        d->jobCounter.fetchAndStoreOrdered(d->elements.count() + 1); //including self
+        Q_FOREACH(const JobPointer& child, d->elements) {
+            d->api->enqueue(child);
+        }
+        d->selfIsExecuting = false;
+    }
     const int jobsStarted = d->jobsStarted.loadAcquire();
     Q_ASSERT(jobsStarted >=0); Q_UNUSED(jobsStarted);
     const int remainingJobs = d->jobCounter.fetchAndAddOrdered(-1) -1;
