@@ -40,9 +40,9 @@ macro (KDOCTOOLS_CREATE_HANDBOOK _docbook)
 
    #Bootstrap
    if (_kdeBootStrapping)
-      set(_bootstrapOption "--srcdir=${KDocTools_BINARY_DIR}/src")
+      set(_meinprocExtraArgs "--srcdir=${KDocTools_BINARY_DIR}/src")
    else ()
-      set(_bootstrapOption)
+      set(_meinprocExtraArgs "--srcdir=${KDOCTOOLS_DATA_INSTALL_DIR}/ksgmltools2")
    endif ()
    set(_ssheet "${KDOCTOOLS_CUSTOMIZATION_DIR}/kde-chunk.xsl")
 
@@ -55,7 +55,7 @@ macro (KDOCTOOLS_CREATE_HANDBOOK _docbook)
 #   endif (CMAKE_CROSSCOMPILING)
 
    add_custom_command(OUTPUT ${_doc}
-      COMMAND ${KDOCTOOLS_MEINPROC_EXECUTABLE} --check ${_bootstrapOption} --cache ${_doc} ${_input}
+      COMMAND ${KDOCTOOLS_MEINPROC_EXECUTABLE} --check ${_meinprocExtraArgs} --cache ${_doc} ${_input}
       DEPENDS ${_docs} ${_ssheet}
       WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
    )
@@ -66,7 +66,7 @@ macro (KDOCTOOLS_CREATE_HANDBOOK _docbook)
    if(KDOCTOOLS_ENABLE_HTMLHANDBOOK)
       set(_htmlDoc ${CMAKE_CURRENT_SOURCE_DIR}/index.html)
       add_custom_command(OUTPUT ${_htmlDoc}
-         COMMAND ${KDOCTOOLS_MEINPROC_EXECUTABLE} --check ${_bootstrapOption} -o ${_htmlDoc} ${_input}
+         COMMAND ${KDOCTOOLS_MEINPROC_EXECUTABLE} --check ${_meinprocExtraArgs} -o ${_htmlDoc} ${_input}
          DEPENDS ${_input} ${_ssheet}
          WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
       )
@@ -118,9 +118,9 @@ macro (KDOCTOOLS_CREATE_MANPAGE _docbook _section)
 
    #Bootstrap
    if (_kdeBootStrapping)
-      set(_bootstrapOption "--srcdir=${KDocTools_BINARY_DIR}/src")
+      set(_meinprocExtraArgs "--srcdir=${KDocTools_BINARY_DIR}/src")
    else ()
-      set(_bootstrapOption)
+      set(_meinprocExtraArgs "--srcdir=${KDOCTOOLS_DATA_INSTALL_DIR}/ksgmltools2")
    endif ()
    set(_ssheet "${KDOCTOOLS_CUSTOMIZATION_DIR}/kde-include-man.xsl")
 
@@ -131,7 +131,7 @@ macro (KDOCTOOLS_CREATE_MANPAGE _docbook _section)
 #   endif (CMAKE_CROSSCOMPILING)
 
    add_custom_command(OUTPUT ${_outdoc}
-      COMMAND ${KDOCTOOLS_MEINPROC_EXECUTABLE} --stylesheet ${_ssheet} --check ${_bootstrapOption} ${_input}
+      COMMAND ${KDOCTOOLS_MEINPROC_EXECUTABLE} --stylesheet ${_ssheet} --check ${_meinprocExtraArgs} ${_input}
       DEPENDS ${_input} ${_ssheet}
    )
    get_filename_component(_targ ${CMAKE_CURRENT_SOURCE_DIR} NAME)
