@@ -137,6 +137,44 @@ void JobTests::CollectionQueueingTest()
     QVERIFY(ThreadWeaver::Weaver::instance()->isIdle());
 }
 
+namespace {
+using namespace ThreadWeaver;
+using namespace ThreadWeaver::Queueing;
+
+QString SequenceTemplate = "abcdefghijklmnopqrstuvwxyz";
+
+class GeneratingCollection : public ThreadWeaver::JobCollection {
+public:
+    void run(JobPointer, Thread*) Q_DECL_OVERRIDE {
+        std::for_each(SequenceTemplate.cbegin(), SequenceTemplate.cend(),
+                      [this](QChar it) { *this << new AppendCharacterJob(it, &sequence_); } );
+    }
+    QString sequence_;
+};
+
+class GeneratingSequence : public ThreadWeaver::JobSequence {
+public:
+    void run(JobPointer, Thread*) Q_DECL_OVERRIDE {
+        std::for_each(SequenceTemplate.cbegin(), SequenceTemplate.cend(),
+                      [this](QChar it) { *this << new AppendCharacterJob(it, &sequence_); } );
+    }
+    QString sequence_;
+};
+
+}
+
+void JobTests::GeneratingCollectionTest()
+{
+    using namespace ThreadWeaver;
+    using namespace ThreadWeaver::Queueing;
+
+    GeneratingCollection collection;
+    WaitForIdleAndFinished w(ThreadWeaver::Weaver::instance());
+    queue() << make_job_raw(&collection);
+    ThreadWeaver::Weaver::instance()->finish();
+    QCOMPARE(collection.sequence_.count(), SequenceTemplate.length());
+}
+
 void JobTests::ShortJobSequenceTest() {
     QString sequence;
     ThreadWeaver::JobPointer jobA(new AppendCharacterJob(QChar('a'), &sequence));
@@ -167,6 +205,18 @@ void JobTests::EmptyJobSequenceTest() {
     QVERIFY(sequence.isFinished());
     QVERIFY(Weaver::instance()->isIdle());
     QCOMPARE(doneSignalSpy.count(), 1);
+}
+
+void JobTests::GeneratingSequenceTest()
+{
+    using namespace ThreadWeaver;
+    using namespace ThreadWeaver::Queueing;
+
+    GeneratingSequence sequence;
+    WaitForIdleAndFinished w(ThreadWeaver::Weaver::instance());
+    queue() << make_job_raw(&sequence);
+    ThreadWeaver::Weaver::instance()->finish();
+    QCOMPARE(sequence.sequence_, SequenceTemplate);
 }
 
 /** This test verifies that the done signal for a collection is only sent after all element of the collection have completed. */

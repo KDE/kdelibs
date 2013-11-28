@@ -22,8 +22,10 @@ private Q_SLOTS:
     void SimpleJobCollectionTest();
     void EmptyJobCollectionTest();
     void CollectionQueueingTest();
+    void GeneratingCollectionTest();
     void ShortJobSequenceTest();
     void EmptyJobSequenceTest();
+    void GeneratingSequenceTest();
     void IncompleteCollectionTest();
     void EmitStartedOnFirstElementTest();
     void CollectionDependenciesTest();
