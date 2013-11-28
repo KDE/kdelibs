@@ -76,20 +76,24 @@ BlurTestWindow::BlurTestWindow()
 void BlurTestWindow::disableBlur()
 {
     KWindowEffects::enableBlurBehind(winId(), false);
+    repaint();
 }
 void BlurTestWindow::enableBlur()
 {
     KWindowEffects::enableBlurBehind(winId(), true);
+    repaint();
 }
 void BlurTestWindow::enableBlurRect()
 {
     QRegion rgn(m_area->geometry());
     KWindowEffects::enableBlurBehind(winId(), true, rgn);
+    repaint();
 }
 void BlurTestWindow::enableBlurEllipse()
 {
     QRegion rgn(m_area->geometry(), QRegion::Ellipse);
     KWindowEffects::enableBlurBehind(winId(), true, rgn);
+    repaint();
 }
 
 
