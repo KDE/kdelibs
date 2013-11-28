@@ -246,6 +246,9 @@ configure_file(kdecore/config-klockfile.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/conf
 # Generate config-kstandarddirs.h
 configure_file(config-kstandarddirs.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kstandarddirs.h )
 
+if (CMAKE_COMPILER_IS_GNUCXX)
+  check_cxx_compiler_flag(-fvisibility=hidden __KDE_HAVE_GCC_VISIBILITY)
+endif (CMAKE_COMPILER_IS_GNUCXX)
 configure_file(kdemacros.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h )
 
 add_library(KDE4Support ${libkde4support_SRCS})
