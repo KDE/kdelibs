@@ -5366,7 +5366,7 @@ khtml::ChildFrame *KHTMLPart::recursiveFrameRequest( KHTMLPart *callingHtmlPart,
                                                      const KParts::BrowserArguments &browserArgs, bool callParent )
 {
 #ifdef DEBUG_FINDFRAME
-  kDebug( 6050 ) << this << "frame = " << args.frameName << "url = " << url;
+  kDebug( 6050 ) << this << "frame = " << browserArgs.frameName << "url = " << url;
 #endif
   khtml::ChildFrame *childFrame;
   KHTMLPart *childPart = findFrameParent(callingHtmlPart, browserArgs.frameName, &childFrame);
