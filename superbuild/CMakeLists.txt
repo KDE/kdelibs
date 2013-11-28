@@ -36,8 +36,7 @@ sb_add_project(tier2/kjobwidgets)
 sb_add_project(tier2/kwallet)
 
 # When adding a new framework, make sure it is listed *after* all its
-# dependencies, otherwise superbuild will not pick up the standalone version of
-# the framework build
+# dependencies, otherwise superbuild will fail.
 sb_add_project(tier3/kconfigwidgets)
 sb_add_project(tier3/kservice)
 sb_add_project(tier3/kiconthemes)

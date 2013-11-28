@@ -1,27 +1,23 @@
 == Superbuild ==
 
-Superbuild can be used to build all frameworks in tier1/ and tier2/ standalone
-and/or one-by-one. This is useful to check whether they actually build and
-install standalone cleanly.
-
-If the library depends on other libraries of kdelibs, i.e. it is a tier2/ or
-tier3/ library, it will try to use them from the superbuild. If the respective
-library has not been enabled in the superbuild, it will try to use the one
-installed on the system.
+Superbuild can be used to build all frameworks standalone.  This is useful to
+check whether they actually build and install standalone cleanly.
 
 # Building standalone frameworks
 
-To build framework 'foo' standalone, run `make sb_foo`.
+To build framework 'foo' standalone, run `make sb_foo`: this will build *and
+install* the framework.
 
-Note that running `make sb_foo` will actually build *and install* the
-framework.
+Note that this will also build *all* the frameworks listed before `foo` in
+CMakeLists.txt.
 
 Alternatively, you can go to the `superbuild/name_of_framework` subdir of the
-build dir and run `make` and `make install` from there.
+build dir and run `make` and `make install` from there. This won't trigger the
+build of frameworks listed before.
 
 To build all frameworks standalone, run `make sb_all`.
 
 # Adding new frameworks
 
-Edit `superbuild/CMakeLists.txt`, add a call to sb_add_project(). Follow the
-examples of other frameworks.
+Edit `superbuild/CMakeLists.txt`, add a call to sb_add_project(). Make sure a
+framework is listed *after* all its dependencies.
