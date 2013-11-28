@@ -30,12 +30,18 @@ class BlurTestWindow: public QWidget
 public:
     BlurTestWindow();
 
+    virtual void resizeEvent(QResizeEvent*) Q_DECL_OVERRIDE;
+
 private:
     QPushButton *m_btnNothing;
     QPushButton *m_btnFullWindow;
     QPushButton *m_btnRect;
     QPushButton *m_btnEllipse;
     QWidget *m_area;
+
+    enum {
+        Nothing, FullWindow, Rect, Ellipse
+    } m_state;
 
     void setWindowAlpha(int alpha);
 
@@ -47,6 +53,7 @@ private:
 
 BlurTestWindow::BlurTestWindow()
 {
+    m_state = Nothing;
     setAttribute(Qt::WA_TranslucentBackground);
     setAttribute(Qt::WA_NoSystemBackground, false);
     setWindowAlpha(192);
@@ -75,25 +82,39 @@ BlurTestWindow::BlurTestWindow()
 
 void BlurTestWindow::disableBlur()
 {
+    m_state = Nothing;
     KWindowEffects::enableBlurBehind(winId(), false);
     repaint();
 }
 void BlurTestWindow::enableBlur()
 {
+    m_state = FullWindow;
     KWindowEffects::enableBlurBehind(winId(), true);
     repaint();
 }
 void BlurTestWindow::enableBlurRect()
 {
+    m_state = Rect;
     QRegion rgn(m_area->geometry());
     KWindowEffects::enableBlurBehind(winId(), true, rgn);
     repaint();
 }
 void BlurTestWindow::enableBlurEllipse()
 {
+    m_state = Ellipse;
     QRegion rgn(m_area->geometry(), QRegion::Ellipse);
     KWindowEffects::enableBlurBehind(winId(), true, rgn);
     repaint();
+}
+
+
+void BlurTestWindow::resizeEvent(QResizeEvent*)
+{
+    if (m_state == Rect) {
+        enableBlurRect();
+    } else if (m_state == Ellipse) {
+        enableBlurEllipse();
+    }
 }
 
 
