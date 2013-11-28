@@ -112,6 +112,9 @@ protected:
      * We have to. */
     void run(JobPointer self, Thread* thread) Q_DECL_OVERRIDE;
 
+    /** @brief Enqueue the elements of the collection. */
+    virtual void enqueueElements();
+
 private:
     /** Dequeue all elements of the collection.
      * Note: This will not dequeue the collection itself.

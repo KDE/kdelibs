@@ -46,14 +46,8 @@ public:
     explicit JobSequence();
 
 protected:
-    /** Create the necessary dependencies before executing. */
-    void execute(JobPointer self, Thread *thread);
-
-//    /** Overload to queue the sequence. */
-//    void aboutToBeQueued_locked(QueueAPI *api) Q_DECL_OVERRIDE;
-
-    /** reimplemented */
     void elementFinished(JobPointer job, Thread *thread) Q_DECL_OVERRIDE;
+    void enqueueElements() Q_DECL_OVERRIDE;
 
 private:
     class Private;

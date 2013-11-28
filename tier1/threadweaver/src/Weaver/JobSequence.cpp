@@ -39,33 +39,23 @@ JobSequence::JobSequence()
 {
 }
 
-void JobSequence::execute(JobPointer self_, Thread *thread)
+void JobSequence::enqueueElements()
 {
-    {
-        QMutexLocker l(mutex()); Q_UNUSED(l);
-        const int jobs = jobListLength_locked();
-        if (jobs > 0) {
-            DependencyPolicy::instance().addDependency(jobAt(0), self_);
-            // set up the dependencies:
-            for (int i = 1; i < jobs; ++i) {
-                JobPointer jobA = jobAt(i);
-                JobPointer jobB = jobAt(i-1);
-                P_ASSERT(jobA != 0);
-                P_ASSERT(jobB != 0);
-                DependencyPolicy::instance().addDependency(jobA, jobB);
-            }
+    Q_ASSERT(!mutex()->tryLock());
+    const int jobs = jobListLength_locked();
+    if (jobs > 0) {
+        DependencyPolicy::instance().addDependency(jobAt(0), self());
+        // set up the dependencies:
+        for (int i = 1; i < jobs; ++i) {
+            JobPointer jobA = jobAt(i);
+            JobPointer jobB = jobAt(i-1);
+            P_ASSERT(jobA != 0);
+            P_ASSERT(jobB != 0);
+            DependencyPolicy::instance().addDependency(jobA, jobB);
         }
     }
-    JobCollection::execute(self_, thread);
+    JobCollection::enqueueElements();
 }
-
-//void JobSequence::aboutToBeQueued_locked(QueueAPI *api )
-//{
-//    Q_ASSERT(!mutex()->tryLock());
-//    REQUIRE (api != 0);
-
-//    JobCollection::aboutToBeQueued_locked(api);
-//}
 
 void JobSequence::elementFinished(JobPointer job, Thread *thread)
 {

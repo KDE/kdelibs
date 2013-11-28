@@ -198,6 +198,15 @@ void JobCollection::run(JobPointer, Thread*)
     //empty
 }
 
+void JobCollection::enqueueElements()
+{
+    Q_ASSERT(!mutex()->tryLock());
+    d->jobCounter.fetchAndStoreOrdered(d->elements.count() + 1); //including self
+    Q_FOREACH(const JobPointer& child, d->elements) {
+        d->api->enqueue(child);
+    }
+}
+
 void JobCollection::elementStarted(JobPointer job, Thread* thread)
 {
     Q_UNUSED(job) // except in Q_ASSERT
@@ -223,11 +232,7 @@ void JobCollection::elementFinished(JobPointer job, Thread *thread)
         // the element that is finished is the collection itself
         // the collection is always executed first
         // queue the collection elements:
-        //        QMutexLocker l(mutex()); Q_UNUSED(l);
-        d->jobCounter.fetchAndStoreOrdered(d->elements.count() + 1); //including self
-        Q_FOREACH(const JobPointer& child, d->elements) {
-            d->api->enqueue(child);
-        }
+        enqueueElements();
         d->selfIsExecuting = false;
     }
     const int jobsStarted = d->jobsStarted.loadAcquire();
