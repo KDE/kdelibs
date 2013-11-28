@@ -1010,24 +1010,6 @@ bool KZip::doPrepareWriting(const QString &name, const QString &user,
         return false;
     }
 
-    // delete entries in the filelist with the same fileName as the one we want
-    // to save, so that we don't have duplicate file entries when viewing the zip
-    // with konqi...
-    // CAUTION: the old file itself is still in the zip and won't be removed !!!
-    QMutableListIterator<KZipFileEntry*> it( d->m_fileList );
-	//kDebug(7040) << "fileName to write: " << name;
-    while(it.hasNext())
-    {
-	    it.next();
-    	//kDebug(7040) << "prepfileName: " << it.current()->path();
-		if (name == it.value()->path() )
-        {
-	    	//kDebug(7040) << "removing following entry: " << it.current()->path();
-		delete it.value();
-	        it.remove();
-        }
-
-    }
     // Find or create parent dir
     KArchiveDirectory* parentDir = rootDir();
     QString fileName( name );
@@ -1037,6 +1019,27 @@ bool KZip::doPrepareWriting(const QString &name, const QString &user,
         fileName = name.mid( i + 1 );
         //kDebug(7040) << "ensuring" << dir << "exists. fileName=" << fileName;
         parentDir = findOrCreate( dir );
+    }
+
+    // delete entries in the filelist with the same fileName as the one we want
+    // to save, so that we don't have duplicate file entries when viewing the zip
+    // with konqi...
+    // CAUTION: the old file itself is still in the zip and won't be removed !!!
+    QMutableListIterator<KZipFileEntry*> it( d->m_fileList );
+	//kDebug(7040) << "fileName to write: " << name;
+    while(it.hasNext())
+    {
+        it.next();
+        //kDebug(7040) << "prepfileName: " << it.current()->path();
+        if (name == it.value()->path() )
+        {
+            // also remove from the parentDir
+            parentDir->removeEntry(it.value());
+            //kDebug(7040) << "removing following entry: " << it.current()->path();
+            delete it.value();
+            it.remove();
+        }
+
     }
 
     // construct a KZipFileEntry and add it to list
