@@ -37,15 +37,6 @@ macro(sb_add_project _subdir )
 
   message(STATUS "superbuild: Adding project ${_subdir}")
 
-  if(UNIX)
-    # Wrap cmake to be able to handle DESTDIR. See content of sbcmake for more
-    # details.
-    set(_sb_cmake_command CMAKE_COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/sbcmake)
-    set(_sb_cmake_extra_args ${CMAKE_COMMAND} ${CMAKE_INSTALL_PREFIX})
-  else()
-    set(_sb_cmake_command)
-    set(_sb_cmake_extra_args)
-  endif()
   externalproject_add(sb_${name}
                       ${_SB_UNPARSED_ARGUMENTS}
                       DOWNLOAD_COMMAND ""
@@ -55,10 +46,9 @@ macro(sb_add_project _subdir )
                       DOWNLOAD_DIR ${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/SuperBuild/download/${name}
                       BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/${name}
                       INSTALL_DIR ${SB_INSTALL_PREFIX}
-                      ${_sb_cmake_command}
-                      CMAKE_ARGS ${_sb_cmake_extra_args}
-                                 --no-warn-unused-cli
+                      CMAKE_ARGS --no-warn-unused-cli
                                  -DQT_QMAKE_EXECUTABLE=${QT_QMAKE_EXECUTABLE}
+                                 -DCMAKE_PREFIX_PATH=${SB_INITIAL_DESTDIR}${CMAKE_INSTALL_PREFIX}
                                  -DCMAKE_INSTALL_PREFIX=${SB_INSTALL_PREFIX}
                                  -DCMAKE_SKIP_RPATH="${CMAKE_SKIP_RPATH}"
                                  -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
