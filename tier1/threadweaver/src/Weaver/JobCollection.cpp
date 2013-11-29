@@ -29,6 +29,7 @@ http://creative-destruction.me $
 #include "QueueAPI.h"
 #include "DebuggingAids.h"
 #include "ManagedJobPointer.h"
+#include "Queueing.h"
 
 #include <QtCore/QList>
 #include <QtCore/QObject>
@@ -280,6 +281,18 @@ void JobCollection::finalCleanup()
     freeQueuePolicyResources(self());
     setStatus(Status_Success);
     d->api = 0;
+}
+
+JobCollection &JobCollection::operator<<(JobInterface *job)
+{
+    addJob(make_job(job));
+    return *this;
+}
+
+JobCollection &JobCollection::operator<<(const JobPointer &job)
+{
+    addJob(job);
+    return *this;
 }
 
 void JobCollection::dequeueElements(bool queueApiIsLocked)

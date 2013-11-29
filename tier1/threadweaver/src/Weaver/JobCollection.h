@@ -95,6 +95,12 @@ protected:
      */
     void finalCleanup();
 
+    /** @brief Add the job to this collection by pointer. */
+    JobCollection& operator<<(ThreadWeaver::JobInterface* job);
+
+    /** @brief Add the job to this collection. */
+    JobCollection& operator<<(const ThreadWeaver::JobPointer& job);
+
 protected:
     friend class CollectionExecuteWrapper;
     virtual void elementStarted(JobPointer job, Thread* thread);
