@@ -38,6 +38,7 @@
 #include <sonnet/configdialog.h>
 #include <sonnet/dialog.h>
 #include <sonnet/backgroundchecker.h>
+#include <sonnet/spellcheckdecorator.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <kcursor.h>
@@ -47,7 +48,6 @@
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <kwindowsystem.h>
-#include <spellcheckdecorator.h>
 
 #include "kreplacedialog.h"
 #include "kfinddialog.h"
