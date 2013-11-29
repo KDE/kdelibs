@@ -79,7 +79,7 @@ class KDECORE_EXPORT KCmdLineOptions
      * Note that a long option can only have one short (single character) alias
      *
      * @since 4.6 Note that the following does not apply to options that begin
-     * with "no" and expect a parameter, like "nooption4" in the example bellow.
+     * with "no" and expect a parameter, like "nooption4" in the example below.
      *
      * Note that if the option name begin with "no" that you will need to test
      * for the name without the "no" and the result will be the inverse of what
