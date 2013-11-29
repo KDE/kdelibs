@@ -73,6 +73,12 @@ public:
     /** Return the number of jobs in the joblist. */
     int jobListLength() const;
 
+    /** @brief Add the job to this collection by pointer. */
+    JobCollection& operator<<(ThreadWeaver::JobInterface* job);
+
+    /** @brief Add the job to this collection. */
+    JobCollection& operator<<(const ThreadWeaver::JobPointer& job);
+
 protected:
     /** Overload to queue the collection. */
     void aboutToBeQueued_locked(QueueAPI *api) Q_DECL_OVERRIDE;
@@ -94,12 +100,6 @@ protected:
      * is finished or partly dequeued.
      */
     void finalCleanup();
-
-    /** @brief Add the job to this collection by pointer. */
-    JobCollection& operator<<(ThreadWeaver::JobInterface* job);
-
-    /** @brief Add the job to this collection. */
-    JobCollection& operator<<(const ThreadWeaver::JobPointer& job);
 
 protected:
     friend class CollectionExecuteWrapper;
