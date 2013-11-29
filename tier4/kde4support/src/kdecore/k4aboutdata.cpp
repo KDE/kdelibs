@@ -506,7 +506,15 @@ K4AboutData::operator KAboutData() const
     KAboutData aboutData(appName(), catalogName(), programName(), version(), shortDescription(),
                          KAboutData::License_Unknown, copyrightStatement(),
                          otherText(), d->_homepageAddress, bugAddress());
-    // TODO K4AboutLicense -> KAboutLicense conversion, using licenses()
+    for (auto it = d->_licenseList.constBegin(); it != d->_licenseList.constEnd(); ++it) {
+        if (it->key() == K4AboutData::License_Custom) {
+            aboutData.addLicenseText(it->text());
+        } else if (it->key() == K4AboutData::License_File) {
+            aboutData.addLicenseTextFile(it->d->_pathToLicenseTextFile);
+        } else {
+            aboutData.addLicense(static_cast<KAboutData::LicenseKey>(it->key()));
+        }
+    }
     return aboutData;
 }
 
