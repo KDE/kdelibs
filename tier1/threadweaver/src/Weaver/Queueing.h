@@ -10,7 +10,6 @@
 #include "Weaver.h"
 
 namespace ThreadWeaver {
-namespace Queueing {
 
 // make a job that calls a functor, anything that responds to operator[]
 template<typename T>
@@ -73,17 +72,6 @@ inline QObjectDecorator* decorate_q(JobInterface* job) {
     return new QObjectDecorator(job);
 }
 
-}
-}
-
-inline ThreadWeaver::JobCollection& operator<<(ThreadWeaver::JobCollection& collection, ThreadWeaver::JobInterface* job) {
-    collection.addJob(ThreadWeaver::Queueing::make_job(job));
-    return collection;
-}
-
-inline ThreadWeaver::JobCollection& operator<<(ThreadWeaver::JobCollection& collection, const ThreadWeaver::JobPointer& job) {
-    collection.addJob(job);
-    return collection;
 }
 
 #endif // THREADWEAVER_QUEUEING_H

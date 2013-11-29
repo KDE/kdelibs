@@ -53,7 +53,7 @@ private Q_SLOTS:
         counter.storeRelease(0);
         QCoreApplication app(argc, (char**)0);
         Weaver queue(new JobCountingWeaver(this));
-        queue.enqueue(Queueing::make_job( [](){} )); // nop
+        queue.enqueue(make_job( [](){} )); // nop
         queue.finish();
         QCOMPARE(counter.loadAcquire(), 2);
     }
@@ -62,7 +62,7 @@ private Q_SLOTS:
         Weaver::setGlobalQueueFactory(new CountingGlobalQueueFactory());
         QCoreApplication app(argc, (char**)0);
         counter.storeRelease(0);
-        Weaver::instance()->enqueue(Queueing::make_job( [](){} )); // nop
+        Weaver::instance()->enqueue(make_job( [](){} )); // nop
         Weaver::instance()->finish();
         QCOMPARE(counter.loadAcquire(), 2);
     }

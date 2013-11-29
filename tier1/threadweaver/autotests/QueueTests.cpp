@@ -59,7 +59,7 @@ void SecondThreadThatQueues::run()
     QString sequence;
     AppendCharacterJob a( 'a', &sequence );
 
-    ThreadWeaver::Queueing::enqueue_raw(&a);
+    ThreadWeaver::enqueue_raw(&a);
     ThreadWeaver::Weaver::instance()->finish();
     QCOMPARE( sequence, QString("a" ) );
 }
@@ -90,9 +90,9 @@ void QueueTests::SimpleQueuePrioritiesTest() {
 
     weaver.suspend();
 
-    Queueing::enqueue_raw(&weaver, &jobA);
-    Queueing::enqueue_raw(&weaver, &jobB);
-    Queueing::enqueue_raw(&weaver, &jobC);
+    enqueue_raw(&weaver, &jobA);
+    enqueue_raw(&weaver, &jobB);
+    enqueue_raw(&weaver, &jobC);
 
     weaver.resume();
     weaver.finish();
@@ -140,7 +140,7 @@ void QueueTests::DeleteDoneJobsFromSequenceTest()
     QVERIFY(autoDeleteJob != 0);
     QVERIFY(connect(autoDeleteJob, SIGNAL(done(ThreadWeaver::JobPointer)),
                     SLOT(deleteJob(ThreadWeaver::JobPointer))));
-    Queueing::enqueue_raw(&jobCollection);
+    enqueue_raw(&jobCollection);
     QTest::qWait(100); // return to event queue to make sure signals are delivered
     Weaver::instance()->finish();
     QTest::qWait(100); // return to event queue to make sure signals are delivered
@@ -168,7 +168,7 @@ void QueueTests::DeleteCollectionOnDoneTest()
     autoDeleteCollection->collection()->addRawJob(&a);
     autoDeleteCollection->collection()->addRawJob(&b);
 
-    Queueing::enqueue_raw(autoDeleteCollection);
+    enqueue_raw(autoDeleteCollection);
     // return to event queue to make sure signals are delivered
     // (otherwise, no slot calls would happen before the end of this function)
     // I assume the amount of time that we wait does not matter

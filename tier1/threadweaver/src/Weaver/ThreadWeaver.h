@@ -36,5 +36,6 @@
 #include "Job.h"
 #include "JobCollection.h"
 #include "JobSequence.h"
+#include "Queueing.h"
 
 #endif // THREADWEAVER_H

@@ -162,7 +162,7 @@ void QueueBenchmarksTest::IndividualJobsBenchmark()
     QVector<AccumulateJob> jobs(n);
     for(int i = 0; i < n; ++i) {
         jobs[i].setCount(m);
-        ThreadWeaver::Queueing::enqueue_raw(&weaver, &jobs[i]);
+        ThreadWeaver::enqueue_raw(&weaver, &jobs[i]);
     }
 
     QBENCHMARK_ONCE {

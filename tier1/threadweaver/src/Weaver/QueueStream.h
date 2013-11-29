@@ -16,7 +16,7 @@ public:
     void add(const JobPointer& job);
 
     inline QueueStream& operator<<(const JobPointer& job) { add(job); return *this; }
-    inline QueueStream& operator<<(JobInterface* job) { add(Queueing::make_job(job)); return *this; }
+    inline QueueStream& operator<<(JobInterface* job) { add(make_job(job)); return *this; }
 
 private:
     class Private;
