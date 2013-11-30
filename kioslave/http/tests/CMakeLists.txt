@@ -19,14 +19,14 @@ if(GSSAPI_FOUND)
 endif(GSSAPI_FOUND)
 
 kde4_add_unit_test(httpobjecttest httpobjecttest.cpp
-   ${kioslave-http_SOURCE_DIR}/http.cpp
+   ${kioslave-http_SOURCE_DIR}/http.cpp # requires solid
    ${kioslave-http_SOURCE_DIR}/httpauthentication.cpp
    ${httpfilter_STAT_SRCS}
    ${CMAKE_SOURCE_DIR}/kio/httpfilter/httpfilter.cc
 
 )
 target_link_libraries(httpobjecttest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY}
-                      ${QT_QTGUI_LIBRARY} ${KDE4_KIO_LIBS} kntlm)
+                      ${QT_QTGUI_LIBRARY} ${KDE4_KIO_LIBS} ${KDE4_SOLID_LIBS} kntlm)
 if(GSSAPI_FOUND)
   target_link_libraries(httpobjecttest ${GSSAPI_LIBS})
 endif(GSSAPI_FOUND)

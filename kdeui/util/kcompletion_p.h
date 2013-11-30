@@ -21,6 +21,8 @@
 #ifndef KCOMPLETION_PRIVATE_H
 #define KCOMPLETION_PRIVATE_H
 
+#include "kcompletion.h"
+
 #include <QtCore/QString>
 #include <ksortablelist.h>
 
