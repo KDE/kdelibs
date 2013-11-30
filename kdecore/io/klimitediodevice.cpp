@@ -71,7 +71,7 @@ bool KLimitedIODevice::seek( qint64 pos )
 
 qint64 KLimitedIODevice::bytesAvailable() const
 {
-     return m_length + QIODevice::bytesAvailable();
+     return QIODevice::bytesAvailable();
 }
 
 bool KLimitedIODevice::isSequential() const
