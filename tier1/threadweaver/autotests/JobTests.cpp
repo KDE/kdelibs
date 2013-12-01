@@ -57,7 +57,7 @@ void JobTests::initTestCase ()
 }
 
 // Call finish() before leaving a test or use a WaitForIdleAndFinished object to make sure the queue is empty
-// and in an idle state.GD
+// and in an idle state.
 
 void JobTests::WeaverLazyThreadCreationTest()
 {
@@ -67,7 +67,7 @@ void JobTests::WeaverLazyThreadCreationTest()
     WaitForIdleAndFinished w(&weaver);
     Q_ASSERT(weaver.isIdle());
     QCOMPARE (weaver.currentNumberOfThreads(), 0);
-    queue(&weaver) << new AppendCharacterJob(QChar('a'), &sequence);
+    weaver.stream() << new AppendCharacterJob(QChar('a'), &sequence);
     weaver.finish();
     QCOMPARE (weaver.currentNumberOfThreads(), 1);
     Q_ASSERT(weaver.isIdle());
@@ -77,7 +77,7 @@ void JobTests::SimpleJobTest() {
     QString sequence;
 
     WaitForIdleAndFinished w(Weaver::instance());
-    queue() << new AppendCharacterJob( QChar('1'), &sequence);
+    stream() << new AppendCharacterJob( QChar('1'), &sequence);
     Weaver::instance()->finish();
     QCOMPARE ( sequence, QString( "1" ) );
 }
@@ -90,7 +90,7 @@ void JobTests::SimpleJobCollectionTest() {
                   << new AppendCharacterJob(QChar('c'), &sequence);
 
     WaitForIdleAndFinished w(Weaver::instance());
-    queue() << make_job_raw(&jobCollection);
+    stream() << jobCollection;
 
     Weaver::instance()->finish();
 
@@ -101,13 +101,13 @@ void JobTests::SimpleJobCollectionTest() {
 }
 
 void JobTests::EmptyJobCollectionTest() {
-    QSharedPointer<JobCollection> collection(new JobCollection());
+    JobCollection collection;
 
     WaitForIdleAndFinished w(Weaver::instance());
     Q_ASSERT(Weaver::instance()->isIdle());
-    Weaver::instance()->enqueue(collection);
+    stream() << collection;
     Weaver::instance()->finish();
-    QVERIFY(collection->isFinished());
+    QVERIFY(collection.isFinished());
     QVERIFY(Weaver::instance()->isIdle());
 }
 
@@ -164,7 +164,7 @@ void JobTests::GeneratingCollectionTest()
 
     GeneratingCollection collection;
     WaitForIdleAndFinished w(Weaver::instance());
-    queue() << make_job_raw(&collection);
+    stream() << make_job_raw(&collection);
     Weaver::instance()->finish();
     QCOMPARE(collection.sequence_.count(), SequenceTemplate.length());
 }
@@ -207,7 +207,7 @@ void JobTests::GeneratingSequenceTest()
 
     GeneratingSequence sequence;
     WaitForIdleAndFinished w(Weaver::instance());
-    queue() << make_job_raw(&sequence);
+    stream() << make_job_raw(&sequence);
     Weaver::instance()->finish();
     QCOMPARE(sequence.sequence_, SequenceTemplate);
 }
@@ -1017,7 +1017,7 @@ void JobTests::QueueStreamLifecycletest()
     QString sequence;
     using namespace ThreadWeaver;
     WaitForIdleAndFinished w(Weaver::instance()); Q_UNUSED(w);
-    queue() << make_job(new AppendCharacterJob('a', &sequence)) // enqueues JobPointer
+    stream() << make_job(new AppendCharacterJob('a', &sequence)) // enqueues JobPointer
             << new AppendCharacterJob('b', &sequence) // enqueues JobInterface*
             << make_job(new AppendCharacterJob('c', &sequence));
     Weaver::instance()->finish();
