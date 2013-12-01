@@ -1,7 +1,8 @@
 #include <QVector>
 
-#include "Weaver.h"
 #include "QueueStream.h"
+#include "Weaver.h"
+#include "Queueing.h"
 
 namespace ThreadWeaver {
 
@@ -20,14 +21,7 @@ QueueStream::QueueStream(Weaver *queue)
 
 QueueStream::~QueueStream()
 {
-    if (d->jobs.isEmpty()) {
-        return;
-    }
-    Q_ASSERT(d->weaver);
-    //FIXME: this should be one atomic operation:
-    Q_FOREACH(const JobPointer& job, d->jobs) {
-        d->weaver->enqueue(job);
-    }
+    flush();
     delete d;
 }
 
@@ -37,16 +31,41 @@ void ThreadWeaver::QueueStream::add(const ThreadWeaver::JobPointer &job)
     d->jobs.append(job);
 }
 
-/** @brief Return a stream the enqueues jobs in the ThreadWeaver global queue. */
-QueueStream queue()
+void QueueStream::flush()
 {
-    return QueueStream(Weaver::instance());
+    if (d->jobs.isEmpty()) {
+        return;
+    }
+    Q_ASSERT(d->weaver);
+    //FIXME: this should be one atomic operation:
+    Q_FOREACH(const JobPointer& job, d->jobs) {
+        d->weaver->enqueue(job);
+    }
 }
 
-/** @brief Return a stream the enqueues jobs in the specified queue. */
-QueueStream queue(Weaver *weaver)
+QueueStream &QueueStream::operator<<(const JobPointer &job)
 {
-    return QueueStream(weaver);
+    add(job);
+    return *this;
+}
+
+QueueStream &QueueStream::operator<<(JobInterface *job)
+{
+    add(make_job(job));
+    return *this;
+}
+
+QueueStream &QueueStream::operator<<(Job &job)
+{
+    add(make_job_raw(&job));
+    return *this;
+}
+
+/** @brief Return a stream the enqueues jobs in the ThreadWeaver global queue.
+ *  Using this is synonymous to Weaver::instance()::stream(). */
+QueueStream stream()
+{
+    return QueueStream(Weaver::instance());
 }
 
 }
