@@ -54,6 +54,11 @@ Weaver::~Weaver()
     delete d;
 }
 
+QueueStream Weaver::stream()
+{
+    return QueueStream(this);
+}
+
 void Weaver::shutDown()
 {
     d->implementation->shutDown();

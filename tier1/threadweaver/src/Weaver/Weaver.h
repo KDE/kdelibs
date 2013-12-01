@@ -33,6 +33,7 @@
 #include <QtCore/QObject>
 
 #include "Queue.h"
+#include "QueueStream.h"
 
 namespace ThreadWeaver {
 
@@ -73,6 +74,9 @@ public:
 
     /** Destruct a Weaver object. */
     virtual ~Weaver();
+
+    /** Create a QueueStream to enqueue jobs into this queue. */
+    QueueStream stream();
 
     const State* state() const;
 
