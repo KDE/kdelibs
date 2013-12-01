@@ -266,5 +266,5 @@ bool KProtocolInfo::isKnownProtocol(const QString &protocol)
 {
   // We call the findProtocol (const QString&) to bypass any proxy settings.
   KProtocolInfoPrivate * prot = KProtocolInfoFactory::self()->findProtocol(protocol);
-  return prot || isHelperProtocol(protocol);
+  return prot;
 }
