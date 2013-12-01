@@ -171,12 +171,9 @@ void KRunUnitTest::testProcessDesktopExecNoFile_data()
     if (!QFile::exists(kioexec))
         QSKIP("kioexec not found, kdebase needed");
 
-    QString kmailservice = CMAKE_INSTALL_PREFIX "/" LIBEXEC_INSTALL_DIR "/kmailservice";
+    QString kmailservice = QStandardPaths::findExecutable("kmailservice");
     if (!QFile::exists(kmailservice))
         kmailservice = "kmailservice";
-    if (!kdeinit.isEmpty()) {
-        QVERIFY(!kmailservice.isEmpty());
-    }
 
     QTest::newRow("%U l0") << "kdeinit5 %U" << l0 << false << kdeinit;
     QTest::newRow("%U l1") << "kdeinit5 %U" << l1 << false << kdeinit + " /tmp";
