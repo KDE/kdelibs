@@ -105,6 +105,9 @@ static bool hasSchemeHandler(const QUrl& url)
     if (KProtocolInfo::isHelperProtocol(url)) {
         return true;
     }
+    if (KProtocolInfo::isKnownProtocol(url)) {
+        return false; // see schemeHandler()... this is case B, we prefer kioslaves over the competition
+    }
     const KService::Ptr service = KMimeTypeTrader::self()->preferredService(QString::fromLatin1("x-scheme-handler/") + url.scheme());
     return service;
 }
