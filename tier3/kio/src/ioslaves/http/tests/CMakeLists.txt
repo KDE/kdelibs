@@ -48,13 +48,13 @@ ecm_add_test(${httpobjecttest_SRCS}
    KF5::KI18n
    KF5::KIOCore
    kntlm
-   KF5::KArchive
+   KF5::Archive
    KF5::Solid)
 if(GSSAPI_FOUND)
   target_link_libraries(kioslave-httpobjecttest ${GSSAPI_LIBS})
 endif()
 
 add_executable(httpfiltertest httpfiltertest.cpp ../httpfilter.cpp)
-target_link_libraries(httpfiltertest Qt5::Test KF5::KArchive ${ZLIB_LIBRARIES})
+target_link_libraries(httpfiltertest Qt5::Test KF5::Archive ${ZLIB_LIBRARIES})
 add_test(kiohttp-httpfiltertest httpfiltertest)
 

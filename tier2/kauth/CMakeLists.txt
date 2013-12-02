@@ -11,7 +11,7 @@ include(KDECompilerSettings)
 include(KDECMakeSettings)
 
 if(NOT kdelibs_SOURCE_DIR)
-    find_package(KCoreAddons REQUIRED)
+    find_package(KF5CoreAddons REQUIRED)
 endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)

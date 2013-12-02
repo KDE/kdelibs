@@ -11,7 +11,7 @@ generate_export_header(KDEWebKit)
 add_library(KF5::KDEWebKit ALIAS KDEWebKit)
 
 target_link_libraries(KDEWebKit PUBLIC Qt5::WebKitWidgets
-                                PRIVATE KF5::KCoreAddons KF5::KWallet KF5::KIOWidgets KF5::KParts)
+                                PRIVATE KF5::CoreAddons KF5::KWallet KF5::KIOWidgets KF5::KParts)
 
 set_target_properties(KDEWebKit PROPERTIES VERSION   ${KDEWEBKIT_VERSION_STRING}
                                            SOVERSION ${KDEWEBKIT_SOVERSION})

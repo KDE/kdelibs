@@ -16,7 +16,7 @@ target_link_libraries(kdeinit_klauncher ${X11_LIBRARIES}
    KF5::KIOCore # KIO::ConnectionServer
    KF5::KIOWidgets # KRun
    KF5::KCrash  # sig_handler
-   KF5::KWindowSystem # KStartupInfo + fixx11
+   KF5::WindowSystem # KStartupInfo + fixx11
    KF5::KI18n   # i18n()
    Qt5::DBus
 )

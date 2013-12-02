@@ -19,14 +19,14 @@ add_library(KF5::KConfigWidgets ALIAS KConfigWidgets)
 
 target_link_libraries(KConfigWidgets
   PUBLIC
-    KF5::KCodecs # KCodecActions uses KCharsets, KEncodingProber
-    KF5::KWidgetsAddons # For K*Action, KPage*, KViewStateSerializer, KAcceleratorManager, K*GuiItem
-    KF5::KConfigGui # KStandardAction uses KStandardShortcut
+    KF5::Codecs # KCodecActions uses KCharsets, KEncodingProber
+    KF5::WidgetsAddons # For K*Action, KPage*, KViewStateSerializer, KAcceleratorManager, K*GuiItem
+    KF5::ConfigGui # KStandardAction uses KStandardShortcut
     KF5::KAuth # KCModule uses KAuth::Action
   PRIVATE
     Qt5::DBus # KPasteTextAction talks to Klipper via DBus
-    KF5::KCoreAddons # KCModule uses KAboutData, KTip uses KRandom
-    KF5::KGuiAddons # KColorScheme uses KColorUtils
+    KF5::CoreAddons # KCModule uses KAboutData, KTip uses KRandom
+    KF5::GuiAddons # KColorScheme uses KColorUtils
     KF5::KI18n # For action and widget texts
 )
 

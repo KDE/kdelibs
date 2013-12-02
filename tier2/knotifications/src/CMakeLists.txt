@@ -41,7 +41,7 @@ target_link_libraries(KNotifications PUBLIC
    Qt5::Widgets
 )
 target_link_libraries(KNotifications PRIVATE
-   KF5::KWindowSystem
+   KF5::WindowSystem
    Qt5::DBus
 )
 

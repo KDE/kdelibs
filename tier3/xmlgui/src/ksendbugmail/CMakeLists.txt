@@ -11,7 +11,7 @@ ecm_mark_nongui_executable(ksendbugmail)
 target_link_libraries(ksendbugmail
    Qt5::Widgets
    Qt5::Network
-   KF5::KConfigCore # KEmailSettings
+   KF5::ConfigCore # KEmailSettings
    KF5::KI18n
 )
 

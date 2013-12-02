@@ -8,7 +8,7 @@ set(krossui_LIB_SRCS
 
 add_library(KrossUi ${krossui_LIB_SRCS})
 target_link_libraries(KrossUi KrossCore
-   KF5::KWidgetsAddons
+   KF5::WidgetsAddons
    KF5::KIOWidgets
    KF5::KParts
    KF5::KI18n

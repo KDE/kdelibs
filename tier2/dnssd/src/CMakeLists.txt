@@ -65,7 +65,7 @@ target_link_libraries(KDNSSD PRIVATE Qt5::DBus)
 
 if (DNSSD_FOUND)
   target_link_libraries(KDNSSD PRIVATE ${DNSSD_LIBRARIES}
-                                            KF5::KConfigCore # settings.kcfgc
+                                            KF5::ConfigCore # settings.kcfgc
                        )
 endif ()
 

@@ -28,8 +28,8 @@ generate_export_header(KWallet)
 add_library(KF5::KWallet ALIAS KWallet)
 
 target_link_libraries(KWallet PUBLIC  Qt5::Widgets
-                              PRIVATE KF5::KWindowSystem # KWindowSystem::allowExternalProcessWindowActivation
-                                           KF5::KConfigCore   # used to store the wallet to be used
+                              PRIVATE KF5::WindowSystem # KWindowSystem::allowExternalProcessWindowActivation
+                                      KF5::ConfigCore   # used to store the wallet to be used
 )
 
 if(MAC_USE_OSXKEYCHAIN)

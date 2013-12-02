@@ -33,7 +33,7 @@ PRIVATE
   KF5::KI18n
   KF5::KService
   KF5::KConfigWidgets
-  KF5::KWindowSystem
+  KF5::WindowSystem
   KF5::KIconThemes
   KF5::KCompletion
 )

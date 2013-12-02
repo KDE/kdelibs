@@ -13,7 +13,7 @@ include(KDECMakeSettings)
 find_package(Qt5 "${REQUIRED_QT_VERSION}" CONFIG REQUIRED Core)
 
 if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
-  find_package(KCoreAddons ${KF5_VERSION} REQUIRED)
+  find_package(KF5CoreAddons ${KF5_VERSION} REQUIRED)
   find_package(KI18n ${KF5_VERSION} REQUIRED)
 endif()
 

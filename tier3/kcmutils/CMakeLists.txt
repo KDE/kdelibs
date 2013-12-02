@@ -23,9 +23,9 @@ ecm_setup_version(${KF5_VERSION} VARIABLE_PREFIX KCMUTILS
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KCMUtilsConfigVersion.cmake")
 
 if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
-    find_package(ItemViews ${KF5_VERSION} REQUIRED)
+    find_package(KF5ItemViews ${KF5_VERSION} REQUIRED)
     find_package(KConfigWidgets ${KF5_VERSION} REQUIRED)
-    find_package(KCoreAddons ${KF5_VERSION} REQUIRED)
+    find_package(KF5CoreAddons ${KF5_VERSION} REQUIRED)
     find_package(KI18n ${KF5_VERSION} REQUIRED)
     find_package(KIconThemes ${KF5_VERSION} REQUIRED)
     find_package(KService ${KF5_VERSION} REQUIRED)

@@ -111,14 +111,14 @@ target_include_directories(KIOCore PUBLIC
 
 target_link_libraries(KIOCore
 PUBLIC
- KF5::KCoreAddons   # KJob
+ KF5::CoreAddons   # KJob
  KF5::KService
 PRIVATE
  Qt5::Network
  Qt5::Concurrent            # QtConcurrentRun in hostinfo.cpp
  Qt5::Xml                   # davjob.cpp uses QDom
  KF5::KI18n
- KF5::KDBusAddons           # KDBusConnectionPool
+ KF5::DBusAddons           # KDBusConnectionPool
 )
 
 if(ACL_FOUND)

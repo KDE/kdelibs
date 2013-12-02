@@ -36,7 +36,7 @@ if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
   # Content of this block is only executed when building the framework
   # standalone
   # Required KF5 frameworks to build this framework
-  find_package(KWindowSystem ${KF5_VERSION} REQUIRED)
+  find_package(KF5WindowSystem ${KF5_VERSION} REQUIRED)
 endif()
 
 remove_definitions(-DQT_NO_CAST_TO_ASCII)

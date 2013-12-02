@@ -15,7 +15,7 @@ add_executable( kbuildsycoca5 ${kbuildsycoca_SRCS})
 target_link_libraries(kbuildsycoca5
    KF5::KService #KBuildMimeTypeFactory subclasses KMimeTypeFactory, KServiceGroupFactory and KService used as well
    KF5::KCrash  #set a crash handler for ksycoca binary
-   KF5::KCoreAddons # KAboutData
+   KF5::CoreAddons # KAboutData
    Qt5::Xml #vfolder menui QDomDocument and family
    Qt5::DBus #kbuildsycoca uses QDBus to talk with interested applications
 )

@@ -13,8 +13,8 @@ set_target_properties(kmultipart PROPERTIES PREFIX "${CMAKE_SHARED_LIBRARY_PREFI
 target_link_libraries(kmultipart
                         ${ZLIB_LIBRARY}
                         KF5::KParts
-                        KF5::KArchive
-                        KF5::KWidgetsAddons
+                        KF5::Archive
+                        KF5::WidgetsAddons
                         KF5::XmlGui
                         KF5::KI18n
                         KF5::KTextWidgets)

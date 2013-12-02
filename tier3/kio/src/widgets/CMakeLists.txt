@@ -95,12 +95,12 @@ target_link_libraries(KIOWidgets
     KF5::KJobWidgets
     Qt5::Network        # SSL
     KF5::KCompletion    # KUrlCompletion uses KCompletion
-    KF5::KWidgetsAddons # keditlistwidget
+    KF5::WidgetsAddons # keditlistwidget
   PRIVATE
     Qt5::DBus
     KF5::KI18n
     KF5::KIconThemes   # KIconLoader
-    KF5::KWindowSystem # KStartupInfo
+    KF5::WindowSystem # KStartupInfo
     KF5::KConfigWidgets # KColorScheme
 )
 

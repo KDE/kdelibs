@@ -19,7 +19,7 @@ endif()
 # needed by KIO, need to export it
 add_library(XsltKde STATIC xslt.cpp xslt_kde.cpp)
 add_library(KF5::XsltKde ALIAS XsltKde)
-target_link_libraries(XsltKde Qt5::Core KF5::KArchive)
+target_link_libraries(XsltKde Qt5::Core KF5::Archive)
 install(TARGETS XsltKde ${INSTALL_TARGETS_DEFAULT_ARGS})
 install(FILES
     xslt.h xslt_kde.h
@@ -41,7 +41,7 @@ else ()
         add_definitions(-DMEINPROC_NO_KARCHIVE) #we don't have saveToCache when compiling without KArchive, which is used in xslt_kde.cpp
     else ()
         set(meinproc_additional_SRCS xslt_kde.cpp)
-        set(meinproc_additional_LIBS KF5::KArchive)
+        set(meinproc_additional_LIBS KF5::Archive)
     endif()
 
     add_executable(meinproc5 meinproc.cpp meinproc_common.cpp xslt.cpp ${meinproc_additional_SRCS})

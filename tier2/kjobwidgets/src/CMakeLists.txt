@@ -22,10 +22,10 @@ add_library(KF5::KJobWidgets ALIAS KJobWidgets)
 target_link_libraries(KJobWidgets
    PUBLIC
       Qt5::Widgets
-      KF5::KCoreAddons    # KJob
+      KF5::CoreAddons    # KJob
    PRIVATE
       Qt5::DBus
-      KF5::KWidgetsAddons # KSqueezedTextLabel
+      KF5::WidgetsAddons # KSqueezedTextLabel
 )
 
 if (HAVE_X11)
