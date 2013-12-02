@@ -260,7 +260,6 @@ is no longer available. To simply make the code build, for the sake of porting o
 <li>KCmdLineArgs uses K4AboutData rather than KAboutData: K4AboutData keeps the old mechanism for delayed translations
  (I18N_NOOP), while KAboutData is the one used by plugins, which can use immediate translation (i18n).
 <li>Make sure to call KAboutData::setApplicationData() from the main() of the application.</li>
-</li>
 <li>KEncodingDetector is removed, port to KEncodingProber. Porting guide:
 <pre>
     KEncodingDetector detector -&gt; KEncodingProber prober
@@ -429,10 +428,7 @@ K4Style users should use K_EXPORT_K4STYLE instead of K_EXPORT_STYLE</li>
     <pre>QToolBar *toolbar = new QToolBar();
 toolbar->setToolButtonStyle(Qt::ToolButtonFollowStyle);
 toolbar->setProperty("otherToolbar", true);</pre>
-   </li>
-
-   Settings from "Other toolbars" will only work on  a widget style that derives from KStyle
-</li>
+   Settings from "Other toolbars" will only work on  a widget style that derives from KStyle</li>
 </ul>
 <li>NETWinInfo2 class got removed. All methods are merged into NETWinInfo. Use NETWinInfo instead of NETWinInfo2.</li>
 <li>NETRootInfo and NETWinInfo use xcb datatypes instead of XLib datatypes. Inheriting classes need to adjust
@@ -487,11 +483,7 @@ toolbar->setProperty("otherToolbar", true);</pre>
 
 <h2 id="itemviews">Changes in itemviews</h2>
 <ul>
-<li>KCategoryDrawer margins should be set by overriding the leftMargin/rightMargin methods as appropriate.
-</ul>
-
-<h2 id="itemviews">Changes in itemviews</h2>
-<ul>
+<li>KCategoryDrawer margins should be set by overriding the leftMargin/rightMargin methods as appropriate.</li>
 <li>KWidgetItemDelegate::createItemWidgets now has an QModelIndex with the index to create widgets for. It does not need to be used</li>
 </ul>
 
