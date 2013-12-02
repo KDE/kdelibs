@@ -256,6 +256,7 @@ A script is available in kdesdk/kde-dev-scripts/kf5/convert-kstandarddirs.pl to 
 </pre>
 is no longer available. To simply make the code build, for the sake of porting other things first, just remove or comment out these calls. This will stop translations from working, and to fully port them eventually, follow the section "Connecting Calls to Catalogs" in ki18n programmer's guide.
 </li>
+<li>i18n*() functions no longer handle KUIT markup. If you use KUIT markup, use the new xi18n*() functions.</li>
 <li>KCmdLineArgs uses K4AboutData rather than KAboutData: K4AboutData keeps the old mechanism for delayed translations
  (I18N_NOOP), while KAboutData is the one used by plugins, which can use immediate translation (i18n).
 <li>Make sure to call KAboutData::setApplicationData() from the main() of the application.</li>
