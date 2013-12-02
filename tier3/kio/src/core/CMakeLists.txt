@@ -48,6 +48,7 @@ set(kiocore_SRCS
   dataslave.cpp
   dataprotocol.cpp
   dataprotocol.cpp
+  desktopexecparser.cpp
   authinfo.cpp
   slaveinterface.cpp
   slave.cpp
@@ -160,6 +161,7 @@ install( FILES
   jobclasses.h
   authinfo.h
   davjob.h
+  desktopexecparser.h
   ${CMAKE_CURRENT_BINARY_DIR}/kiocore_export.h
 
    DESTINATION ${INCLUDE_INSTALL_DIR}/kio COMPONENT Devel)

@@ -22,7 +22,6 @@
 #include "krun.h"
 #include "krun_p.h"
 #include <config-kiowidgets.h> // HAVE_X11
-#include <config-kiocore.h> // CMAKE_INSTALL_PREFIX
 
 #include <assert.h>
 #include <stdlib.h>
@@ -54,6 +53,7 @@
 #include "kopenwithdialog.h"
 #include "krecentdocument.h"
 #include "kdesktopfileactions.h"
+#include <kio/desktopexecparser.h>
 
 #include <kurlauthorized.h>
 #include <kmessagebox.h>
@@ -72,7 +72,6 @@
 #include <QtCore/QRegExp>
 #include <QDir>
 #include <kdesktopfile.h>
-#include <kmacroexpander.h>
 #include <kshell.h>
 #include <kconfiggroup.h>
 #include <kstandardguiitem.h>
@@ -99,18 +98,6 @@ void KRun::KRunPrivate::startTimer()
 }
 
 // ---------------------------------------------------------------------------
-
-static bool hasSchemeHandler(const QUrl& url)
-{
-    if (KProtocolInfo::isHelperProtocol(url)) {
-        return true;
-    }
-    if (KProtocolInfo::isKnownProtocol(url)) {
-        return false; // see schemeHandler()... this is case B, we prefer kioslaves over the competition
-    }
-    const KService::Ptr service = KMimeTypeTrader::self()->preferredService(QString::fromLatin1("x-scheme-handler/") + url.scheme());
-    return service;
-}
 
 static QString schemeHandler(const QString& protocol)
 {
@@ -287,339 +274,13 @@ void KRun::shellQuote(QString &_str)
 #endif
 
 
-class KRunMX1 : public KMacroExpanderBase
-{
-public:
-    KRunMX1(const KService &_service) :
-            KMacroExpanderBase('%'), hasUrls(false), hasSpec(false), service(_service) {}
-
-    bool hasUrls: 1, hasSpec: 1;
-
-protected:
-    virtual int expandEscapedMacro(const QString &str, int pos, QStringList &ret);
-
-private:
-    const KService &service;
-};
-
-int
-KRunMX1::expandEscapedMacro(const QString &str, int pos, QStringList &ret)
-{
-    uint option = str[pos + 1].unicode();
-    switch (option) {
-    case 'c':
-        ret << service.name().replace('%', "%%");
-        break;
-    case 'k':
-        ret << service.entryPath().replace('%', "%%");
-        break;
-    case 'i':
-        ret << "--icon" << service.icon().replace('%', "%%");
-        break;
-    case 'm':
-//       ret << "-miniicon" << service.icon().replace( '%', "%%" );
-        qWarning() << "-miniicon isn't supported anymore (service"
-        << service.name() << ')';
-        break;
-    case 'u':
-    case 'U':
-        hasUrls = true;
-        /* fallthrough */
-    case 'f':
-    case 'F':
-    case 'n':
-    case 'N':
-    case 'd':
-    case 'D':
-    case 'v':
-        hasSpec = true;
-        /* fallthrough */
-    default:
-        return -2; // subst with same and skip
-    }
-    return 2;
-}
-
-class KRunMX2 : public KMacroExpanderBase
-{
-public:
-    KRunMX2(const QList<QUrl> &_urls) :
-            KMacroExpanderBase('%'), ignFile(false), urls(_urls) {}
-
-    bool ignFile: 1;
-
-protected:
-    virtual int expandEscapedMacro(const QString &str, int pos, QStringList &ret);
-
-private:
-    void subst(int option, const QUrl &url, QStringList &ret);
-
-    const QList<QUrl> &urls;
-};
-
-void
-KRunMX2::subst(int option, const QUrl &url, QStringList &ret)
-{
-    switch (option) {
-    case 'u':
-        ret << ((url.isLocalFile() && url.fragment().isNull() && url.query().isNull()) ?
-                QDir::toNativeSeparators(url.toLocalFile())  : url.toString());
-        break;
-    case 'd':
-        ret << url.adjusted(QUrl::RemoveFilename).path();
-        break;
-    case 'f':
-        ret << QDir::toNativeSeparators(url.toLocalFile());
-        break;
-    case 'n':
-        ret << url.fileName();
-        break;
-    case 'v':
-        if (url.isLocalFile() && QFile::exists(url.toLocalFile())) {
-            ret << KDesktopFile(url.toLocalFile()).desktopGroup().readEntry("Dev");
-        }
-        break;
-    }
-    return;
-}
-
-int
-KRunMX2::expandEscapedMacro(const QString &str, int pos, QStringList &ret)
-{
-    uint option = str[pos + 1].unicode();
-    switch (option) {
-    case 'f':
-    case 'u':
-    case 'n':
-    case 'd':
-    case 'v':
-        if (urls.isEmpty()) {
-            if (!ignFile) {
-                //qDebug() << "No URLs supplied to single-URL service" << str;
-            }
-        }
-        else if (urls.count() > 1) {
-            qWarning() << urls.count() << "URLs supplied to single-URL service" << str;
-        }
-        else {
-            subst(option, urls.first(), ret);
-        }
-        break;
-    case 'F':
-    case 'U':
-    case 'N':
-    case 'D':
-        option += 'a' - 'A';
-        for (QList<QUrl>::ConstIterator it = urls.begin(); it != urls.end(); ++it)
-            subst(option, *it, ret);
-        break;
-    case '%':
-        ret = QStringList(QLatin1String("%"));
-        break;
-    default:
-        return -2; // subst with same and skip
-    }
-    return 2;
-}
-
-static QStringList supportedProtocols(const KService& _service)
-{
-    // Check which protocols the application supports.
-    // This can be a list of actual protocol names, or just KIO for KDE apps.
-    QStringList supportedProtocols = _service.property("X-KDE-Protocols").toStringList();
-    KRunMX1 mx1(_service);
-    QString exec = _service.exec();
-    if (mx1.expandMacrosShellQuote(exec) && !mx1.hasUrls) {
-        Q_ASSERT(supportedProtocols.isEmpty());   // huh? If you support protocols you need %u or %U...
-    }
-    else {
-        if (supportedProtocols.isEmpty()) {
-            // compat mode: assume KIO if not set and it's a KDE app (or a KDE service)
-            const QStringList categories = _service.property("Categories").toStringList();
-            if (categories.contains("KDE")
-                    || !_service.isApplication()
-                    || _service.entryPath().isEmpty() /*temp service*/) {
-                supportedProtocols.append("KIO");
-            }
-            else { // if no KDE app, be a bit over-generic
-                supportedProtocols.append("http");
-                supportedProtocols.append("https"); // #253294
-                supportedProtocols.append("ftp");
-            }
-        }
-    }
-    //qDebug() << "supportedProtocols:" << supportedProtocols;
-    return supportedProtocols;
-}
-
-static bool isProtocolInSupportedList(const QUrl& url, const QStringList& supportedProtocols)
-{
-    if (supportedProtocols.contains("KIO"))
-        return true;
-    return url.isLocalFile() || supportedProtocols.contains(url.scheme().toLower());
-}
 
 QStringList KRun::processDesktopExec(const KService &_service, const QList<QUrl>& _urls, bool tempFiles, const QString& suggestedFileName)
 {
-    QString exec = _service.exec();
-    if (exec.isEmpty()) {
-        qWarning() << "KRun: no Exec field in `" << _service.entryPath() << "' !";
-        return QStringList();
-    }
-
-    QStringList result;
-    bool appHasTempFileOption;
-
-    KRunMX1 mx1(_service);
-    KRunMX2 mx2(_urls);
-
-    if (!mx1.expandMacrosShellQuote(exec)) {    // Error in shell syntax
-        qWarning() << "KRun: syntax error in command" << _service.exec() << ", service" << _service.name();
-        return QStringList();
-    }
-
-    // FIXME: the current way of invoking kioexec disables term and su use
-
-    // Check if we need "tempexec" (kioexec in fact)
-    appHasTempFileOption = tempFiles && _service.property("X-KDE-HasTempFileOption").toBool();
-    if (tempFiles && !appHasTempFileOption && _urls.size()) {
-        const QString kioexec = QFile::decodeName(CMAKE_INSTALL_PREFIX "/" LIBEXEC_INSTALL_DIR "/kioexec");
-        Q_ASSERT(QFile::exists(kioexec));
-        result << kioexec << "--tempfiles" << exec;
-        if (!suggestedFileName.isEmpty()) {
-            result << "--suggestedfilename";
-            result << suggestedFileName;
-        }
-        result += QUrl::toStringList(_urls);
-        return result;
-    }
-
-    // Check if we need kioexec
-    bool useKioexec = false;
-    if (!mx1.hasUrls) {
-        for (QList<QUrl>::ConstIterator it = _urls.begin(); it != _urls.end(); ++it)
-            if (!(*it).isLocalFile() && !hasSchemeHandler(*it)) {
-                useKioexec = true;
-                //qDebug() << "non-local files, application does not support urls, using kioexec";
-                break;
-            }
-    } else { // app claims to support %u/%U, check which protocols
-        QStringList appSupportedProtocols = supportedProtocols(_service);
-        for (QList<QUrl>::ConstIterator it = _urls.begin(); it != _urls.end(); ++it)
-            if (!isProtocolInSupportedList(*it, appSupportedProtocols) && !hasSchemeHandler(*it)) {
-                useKioexec = true;
-                //qDebug() << "application does not support url, using kioexec:" << *it;
-                break;
-            }
-    }
-    if (useKioexec) {
-        // We need to run the app through kioexec
-        const QString kioexec = CMAKE_INSTALL_PREFIX "/" LIBEXEC_INSTALL_DIR "/kioexec";
-        Q_ASSERT(QFile::exists(kioexec));
-        result << kioexec;
-        if (tempFiles) {
-            result << "--tempfiles";
-        }
-        if (!suggestedFileName.isEmpty()) {
-            result << "--suggestedfilename";
-            result << suggestedFileName;
-        }
-        result << exec;
-        result += QUrl::toStringList(_urls);
-        return result;
-    }
-
-    if (appHasTempFileOption) {
-        exec += " --tempfile";
-    }
-
-    // Did the user forget to append something like '%f'?
-    // If so, then assume that '%f' is the right choice => the application
-    // accepts only local files.
-    if (!mx1.hasSpec) {
-        exec += " %f";
-        mx2.ignFile = true;
-    }
-
-    mx2.expandMacrosShellQuote(exec);   // syntax was already checked, so don't check return value
-
-    /*
-     1 = need_shell, 2 = terminal, 4 = su
-
-     0                                                           << split(cmd)
-     1                                                           << "sh" << "-c" << cmd
-     2 << split(term) << "-e"                                    << split(cmd)
-     3 << split(term) << "-e"                                    << "sh" << "-c" << cmd
-
-     4                        << "kdesu" << "-u" << user << "-c" << cmd
-     5                        << "kdesu" << "-u" << user << "-c" << ("sh -c " + quote(cmd))
-     6 << split(term) << "-e" << "su"            << user << "-c" << cmd
-     7 << split(term) << "-e" << "su"            << user << "-c" << ("sh -c " + quote(cmd))
-
-     "sh -c" is needed in the "su" case, too, as su uses the user's login shell, not sh.
-     this could be optimized with the -s switch of some su versions (e.g., debian linux).
-    */
-
-    if (_service.terminal()) {
-        KConfigGroup cg(KSharedConfig::openConfig(), "General");
-        QString terminal = cg.readPathEntry("TerminalApplication", "konsole");
-        if (terminal == "konsole") {
-            if (!_service.path().isEmpty()) {
-                terminal += " --workdir " + KShell::quoteArg(_service.path());
-            }
-            terminal += " -caption=%c %i %m";
-        }
-        terminal += ' ';
-        terminal += _service.terminalOptions();
-        if (!mx1.expandMacrosShellQuote(terminal)) {
-            qWarning() << "KRun: syntax error in command" << terminal << ", service" << _service.name();
-            return QStringList();
-        }
-        mx2.expandMacrosShellQuote(terminal);
-        result = KShell::splitArgs(terminal);   // assuming that the term spec never needs a shell!
-        result << "-e";
-    }
-
-    KShell::Errors err;
-    QStringList execlist = KShell::splitArgs(exec, KShell::AbortOnMeta | KShell::TildeExpand, &err);
-    if (err == KShell::NoError && !execlist.isEmpty()) { // mx1 checked for syntax errors already
-        // Resolve the executable to ensure that helpers in libexec are found.
-        // Too bad for commands that need a shell - they must reside in $PATH.
-        QString exePath = QStandardPaths::findExecutable(execlist.first());
-        if (exePath.isEmpty()) {
-            exePath = QFile::decodeName(CMAKE_INSTALL_PREFIX "/" LIBEXEC_INSTALL_DIR "/") + execlist.first();
-        }
-        if (QFile::exists(exePath)) {
-            execlist[0] = exePath;
-        }
-    }
-    if (_service.substituteUid()) {
-        if (_service.terminal()) {
-            result << "su";
-        }
-        else {
-            result << QStandardPaths::findExecutable("kdesu") << "-u";
-        }
-
-        result << _service.username() << "-c";
-        if (err == KShell::FoundMeta) {
-            exec = "/bin/sh -c " + KShell::quoteArg(exec);
-        }
-        else {
-            exec = KShell::joinArgs(execlist);
-        }
-        result << exec;
-    }
-    else {
-        if (err == KShell::FoundMeta) {
-            result << "/bin/sh" << "-c" << exec;
-        }
-        else {
-            result += execlist;
-        }
-    }
-
-    return result;
+    KIO::DesktopExecParser parser(_service, _urls);
+    parser.setUrlsAreTempFiles(tempFiles);
+    parser.setSuggestedFileName(suggestedFileName);
+    return parser.resultingArguments();
 }
 
 //static
@@ -755,7 +416,7 @@ static bool runTempService(const KService& _service, const QList<QUrl>& _urls, Q
         //qDebug() << "runTempService: first url " << _urls.first();
     }
 
-    QStringList args;
+    QList<QUrl> urlsToRun = _urls;
     if ((_urls.count() > 1) && !_service.allowMultipleFiles()) {
         // We need to launch the application N times. That sucks.
         // We ignore the result for application 2 to N.
@@ -768,13 +429,13 @@ static bool runTempService(const KService& _service, const QList<QUrl>& _urls, Q
             singleUrl.append(*it);
             runTempService(_service, singleUrl, window, tempFiles, suggestedFileName, QByteArray());
         }
-        QList<QUrl> singleUrl;
-        singleUrl.append(_urls.first());
-        args = KRun::processDesktopExec(_service, singleUrl, tempFiles, suggestedFileName);
+        urlsToRun.clear();
+        urlsToRun.append(_urls.first());
     }
-    else {
-        args = KRun::processDesktopExec(_service, _urls, tempFiles, suggestedFileName);
-    }
+    KIO::DesktopExecParser execParser(_service, urlsToRun);
+    execParser.setUrlsAreTempFiles(tempFiles);
+    execParser.setSuggestedFileName(suggestedFileName);
+    const QStringList args = execParser.resultingArguments();
     if (args.isEmpty()) {
         KMessageBox::sorry(window, i18n("Error processing Exec field in %1", _service.entryPath()));
         return false;
@@ -785,17 +446,18 @@ static bool runTempService(const KService& _service, const QList<QUrl>& _urls, Q
                               _service.name(), _service.icon(), window, asn, _service.path());
 }
 
-// WARNING: don't call this from processDesktopExec, since klauncher uses that too...
+// WARNING: don't call this from DesktopExecParser, since klauncher uses that too...
+// TODO: make this async, see the job->exec() in there...
 static QList<QUrl> resolveURLs(const QList<QUrl>& _urls, const KService& _service)
 {
     // Check which protocols the application supports.
     // This can be a list of actual protocol names, or just KIO for KDE apps.
-    QStringList appSupportedProtocols = supportedProtocols(_service);
+    QStringList appSupportedProtocols = KIO::DesktopExecParser::supportedProtocols(_service);
     QList<QUrl> urls(_urls);
     if (!appSupportedProtocols.contains("KIO")) {
         for (QList<QUrl>::Iterator it = urls.begin(); it != urls.end(); ++it) {
             const QUrl url = *it;
-            bool supported = isProtocolInSupportedList(url, appSupportedProtocols);
+            bool supported = KIO::DesktopExecParser::isProtocolInSupportedList(url, appSupportedProtocols);
             //qDebug() << "Looking at url=" << url << " supported=" << supported;
             if (!supported && KProtocolInfo::protocolClass(url.scheme()) == ":local") {
                 // Maybe we can resolve to a local URL?
@@ -1240,7 +902,7 @@ void KRun::init()
             return;
         }
     }
-    else if (hasSchemeHandler(d->m_strURL)) {
+    else if (KIO::DesktopExecParser::hasSchemeHandler(d->m_strURL)) {
         //qDebug() << "Using scheme handler";
         const QString exec = schemeHandler(d->m_strURL.scheme());
         if (exec.isEmpty()) {

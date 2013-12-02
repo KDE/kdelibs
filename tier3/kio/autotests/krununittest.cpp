@@ -30,6 +30,7 @@ QTEST_GUILESS_MAIN(KRunUnitTest)
 #include <qstandardpaths.h>
 
 #include "krun.h"
+#include <desktopexecparser.h>
 #include <kshell.h>
 #include <kservice.h>
 #include <kconfiggroup.h>
@@ -75,7 +76,7 @@ void KRunUnitTest::testBinaryName()
 }
 
 //static const char *bt(bool tr) { return tr?"true":"false"; }
-static void checkPDE(const char* exec, const char* term, const char* sus,
+static void checkDesktopExecParser(const char* exec, const char* term, const char* sus,
                      const QList<QUrl> &urls, bool tf, const QString& b)
 {
     QFile out( "kruntest.desktop" );
@@ -99,7 +100,9 @@ static void checkPDE(const char* exec, const char* term, const char* sus,
         service.exec().toLatin1().constData(), bt(service.terminal()), service.terminalOptions().toLatin1().constData(), bt(service.substituteUid()), service.username().toLatin1().constData(),
         KShell::joinArgs(urls.toStringList()).toLatin1().constData(), bt(tf));
     */
-    QCOMPARE(KShell::joinArgs(KRun::processDesktopExec(service,urls,tf)), b);
+    KIO::DesktopExecParser parser(service, urls);
+    parser.setUrlsAreTempFiles(tf);
+    QCOMPARE(KShell::joinArgs(parser.resultingArguments()), b);
 
     QFile::remove("kruntest.desktop");
 }
@@ -145,7 +148,7 @@ void KRunUnitTest::testProcessDesktopExec()
                 const QString result = QString::fromLatin1(rslts[pt])
                     .replace("/bin/sh", shellPath)
                     .replace("/bin/date", datePath);
-                checkPDE( execs[ex], terms[te], sus[su], l0, false, exe + result);
+                checkDesktopExecParser( execs[ex], terms[te], sus[su], l0, false, exe + result);
             }
 }
 
@@ -206,7 +209,9 @@ void KRunUnitTest::testProcessDesktopExecNoFile()
     QFETCH(QList<QUrl>, urls);
     QFETCH(bool, tempfiles);
     QFETCH(QString, expected);
-    QCOMPARE(KShell::joinArgs(KRun::processDesktopExec(service,urls,tempfiles)), expected);
+    KIO::DesktopExecParser parser(service, urls);
+    parser.setUrlsAreTempFiles(tempfiles);
+    QCOMPARE(KShell::joinArgs(parser.resultingArguments()), expected);
 }
 
 class KRunImpl : public KRun

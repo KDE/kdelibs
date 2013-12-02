@@ -320,11 +320,14 @@ public:
      *        when the application exits.
      * @param suggestedFileName see setSuggestedFileName
      *
-     * @return a list of arguments suitable for KProcess::setProgram().
+     * @return a list of arguments suitable for QProcess.
+     * @deprecated since 5.0, use KIO::DesktopExecParser
      */
-    static QStringList processDesktopExec(const KService &_service, const QList<QUrl> &_urls,
-                                          bool tempFiles = false,
-                                          const QString& suggestedFileName = QString());
+#ifndef KDE_NO_DEPRECATED
+    static KIOWIDGETS_DEPRECATED QStringList processDesktopExec(const KService &_service, const QList<QUrl> &_urls,
+                                                                bool tempFiles = false,
+                                                                const QString& suggestedFileName = QString());
+#endif
 
     /**
      * Given a full command line (e.g. the Exec= line from a .desktop file),

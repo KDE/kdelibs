@@ -47,11 +47,12 @@
 #include <QDebug>
 #include <klibrary.h>
 #include <klocalizedstring.h>
+#include <kdesktopfile.h>
 #include <kprotocolmanager.h>
 #include <kprotocolinfo.h>
-#include <krun.h>
-#include <kdesktopfile.h>
+#include <krun.h> // TODO port away from kiofilewidgets
 
+#include <kio/desktopexecparser.h>
 #include <kio/global.h>
 #include <kio/slaveinterface.h>
 
@@ -962,14 +963,12 @@ void
 KLauncher::createArgs( KLaunchRequest *request, const KService::Ptr service ,
                        const QList<QUrl> &urls)
 {
-  const QStringList params = KRun::processDesktopExec(*service, urls);
-
-  for(QStringList::ConstIterator it = params.begin();
-      it != params.end(); ++it)
-  {
-     request->arg_list.append(*it);
-  }
-  request->cwd = service->path();
+    KIO::DesktopExecParser parser(*service, urls);
+    const QStringList params = parser.resultingArguments();
+    Q_FOREACH(const QString &arg, params) {
+        request->arg_list.append(arg);
+    }
+    request->cwd = service->path();
 }
 
 ///// IO-Slave functions
