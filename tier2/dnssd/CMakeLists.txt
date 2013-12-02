@@ -48,7 +48,7 @@ if(NOT AVAHI_FOUND)
 
     # If using DNSSD and building standalone, we also need KConfig
     if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
-        find_package(KConfig ${KF5_VERSION} REQUIRED)
+        find_package(KF5Config ${KF5_VERSION} REQUIRED)
     endif()
 endif()
 

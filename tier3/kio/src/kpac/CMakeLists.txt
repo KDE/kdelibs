@@ -30,7 +30,7 @@ if (Qt5Script_FOUND)
        Qt5::Script
        ${KPAC_EXTRA_LIBS}
        KF5::KIOCore      # KIO::get
-       KF5::KDBusAddons  # KDEDModule
+       KF5::DBusAddons  # KDEDModule
        KF5::KI18n
        KF5::KNotifications # proxyscout.cpp uses KNotifications
     )

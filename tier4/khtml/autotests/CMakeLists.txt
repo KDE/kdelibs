@@ -32,5 +32,5 @@ set(kencodingdetector_SRCS
 
 add_executable(kencodingdetectortest kencodingdetectortest.cpp ${kencodingdetector_SRCS})
 add_test(khtml-kencodingdetectortest kencodingdetectortest)
-target_link_libraries(kencodingdetectortest KF5::KCodecs KF5::KI18n KHtml Qt5::Test)
+target_link_libraries(kencodingdetectortest KF5::Codecs KF5::KI18n KHtml Qt5::Test)
 ecm_mark_as_test(kencodingdetectortest)

@@ -28,9 +28,9 @@ find_package(Qt5 ${QT_REQUIRED_VERSION} NO_MODULE REQUIRED Widgets Xml DBus)
 
 if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
   find_package(KConfigWidgets ${KF5_VERSION} REQUIRED)
-  find_package(KCoreAddons ${KF5_VERSION} REQUIRED)
+  find_package(KF5CoreAddons ${KF5_VERSION} REQUIRED)
   find_package(KIconThemes ${KF5_VERSION} REQUIRED)
-  find_package(KWidgetsAddons ${KF5_VERSION} REQUIRED)
+  find_package(KF5WidgetsAddons ${KF5_VERSION} REQUIRED)
   find_package(XmlGui ${KF5_VERSION} REQUIRED)
 endif()
 

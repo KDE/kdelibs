@@ -79,7 +79,7 @@ target_link_libraries(kio_http
    Qt5::Network # QLocalSocket etc.
    Qt5::Xml     # QDom
    KF5::KIOCore
-   KF5::KArchive
+   KF5::Archive
    KF5::Solid
    kntlm
    ${ZLIB_LIBRARY}

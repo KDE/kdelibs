@@ -4,7 +4,7 @@ ecm_mark_nongui_executable(ktelnetservice)
 
 target_link_libraries(ktelnetservice
    KF5::KService
-   KF5::KWidgetsAddons
+   KF5::WidgetsAddons
    KF5::KI18n
    Qt5::Widgets
 )

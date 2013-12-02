@@ -277,10 +277,10 @@ PUBLIC
    Qt5::Widgets
    Qt5::DBus
    Qt5::PrintSupport
-   KF5::KCoreAddons
+   KF5::CoreAddons
    KF5::KCrash
-   KF5::KWidgetsAddons
-   KF5::KConfigCore # KSharedConfig in kcomponentdata.h
+   KF5::WidgetsAddons
+   KF5::ConfigCore # KSharedConfig in kcomponentdata.h
    KF5::KConfigWidgets
    KF5::KIOCore
    KF5::KIOFileWidgets
@@ -288,8 +288,8 @@ PUBLIC
    KF5::KCompletion
    KF5::KNotifications
    KF5::KIconThemes
-   KF5::KWindowSystem
-   KF5::KGuiAddons
+   KF5::WindowSystem
+   KF5::GuiAddons
    KF5::KUnitConversion
    KF5::KTextWidgets
    KF5::KParts
@@ -329,7 +329,7 @@ endif()
 
 if(NOT KIO_NO_NEPOMUK)
     add_executable(kfilemetadatareader kio/kfilemetadatareaderprocess.cpp)
-    target_link_libraries(kfilemetadatareader ${KDE4_NEPOMUK_LIBRARY} nepomukutils KF5::KCoreAddons KF5::KI18n KDE4Support)
+    target_link_libraries(kfilemetadatareader ${KDE4_NEPOMUK_LIBRARY} nepomukutils KF5::CoreAddons KF5::KI18n KDE4Support)
     install(TARGETS kfilemetadatareader ${INSTALL_TARGETS_DEFAULT_ARGS})
 endif()
 
@@ -360,9 +360,9 @@ add_library(kdedeprecated MODULE ${kdedeprecated_PART_SRCS})
 target_link_libraries(kdedeprecated KDE4Support
                                     Qt5::Widgets
                                     Qt5::Designer
-                                    KF5::KConfigCore
+                                    KF5::ConfigCore
                                     KF5::KCompletion
-                                    KF5::KWidgetsAddons
+                                    KF5::WidgetsAddons
                                     KF5::KAuth
                                     )
 if(NOT WIN32)

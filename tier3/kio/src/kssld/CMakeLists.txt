@@ -8,7 +8,7 @@ add_library(kded_kssld MODULE ${kded_kssld_SRCS})
 target_link_libraries(kded_kssld
 PUBLIC
    KF5::KIOCore     # ksslcertificatemanager
-   KF5::KDBusAddons # kdedmodule
+   KF5::DBusAddons # kdedmodule
 PRIVATE
    KF5::KService    # kpluginfactory
    Qt5::Network

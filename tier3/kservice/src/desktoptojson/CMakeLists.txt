@@ -8,7 +8,7 @@ add_executable(KF5::desktoptojson ALIAS desktoptojson)
 
 target_link_libraries(desktoptojson
     Qt5::Core
-    KF5::KConfigCore
+    KF5::ConfigCore
 )
 
 # "export" this target too so we can use the LOCATION property of the imported target in

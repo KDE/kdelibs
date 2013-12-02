@@ -28,8 +28,8 @@ set(REQUIRED_QT_VERSION "5.2.0")
 find_package(Qt5 ${REQUIRED_QT_VERSION} NO_MODULE REQUIRED Widgets Xml)
 
 if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
-  find_package(KConfig ${KF5_VERSION} REQUIRED)
-  find_package(KWidgetsAddons ${KF5_VERSION} REQUIRED)
+  find_package(KF5Config ${KF5_VERSION} REQUIRED)
+  find_package(KF5WidgetsAddons ${KF5_VERSION} REQUIRED)
 endif()
 
 remove_definitions(-DQT_NO_CAST_TO_ASCII)

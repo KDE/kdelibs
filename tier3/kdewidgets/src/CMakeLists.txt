@@ -9,8 +9,8 @@ add_subdirectory( pics )
 add_executable(makekdewidgets makekdewidgets.cpp)
 ecm_mark_nongui_executable(makekdewidgets)
 
-target_link_libraries(makekdewidgets KF5::KConfigCore # KConfig + KConfigGroup
-                                     KF5::KCoreAddons # KMacroExpander
+target_link_libraries(makekdewidgets KF5::ConfigCore # KConfig + KConfigGroup
+                                     KF5::CoreAddons # KMacroExpander
                                      )
 
 # "export" this target too so we can use the LOCATION property of the imported target in
@@ -43,7 +43,7 @@ if(Qt5Designer_FOUND)
 
   add_library(kdewidgets MODULE ${kdewidgets_PART_SRCS})
 
-  target_link_libraries(kdewidgets KF5::KIOFileWidgets KF5::KPlotting KF5::KWidgetsAddons KF5::KI18n KF5::KIconThemes KF5::KTextWidgets KF5::ItemViews)
+  target_link_libraries(kdewidgets KF5::KIOFileWidgets KF5::Plotting KF5::WidgetsAddons KF5::KI18n KF5::KIconThemes KF5::KTextWidgets KF5::ItemViews)
   if(NOT WIN32)
     set_target_properties(kdewidgets PROPERTIES
                                      INSTALL_RPATH_USE_LINK_PATH TRUE

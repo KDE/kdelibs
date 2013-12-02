@@ -11,7 +11,7 @@ add_library(kio_metainfo MODULE ${kio_metainfo_PART_SRCS})
 
 target_link_libraries(kio_metainfo
    KDE4Support
-   KF5::KCoreAddons
+   KF5::CoreAddons
    KF5::KI18n
    KF5::KIOCore
 )

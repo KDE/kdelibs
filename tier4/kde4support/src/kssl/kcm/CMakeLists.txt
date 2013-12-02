@@ -10,7 +10,7 @@ target_link_libraries(kcm_ssl
    Qt5::Network
    KF5::KIOCore
    KF5::KIOWidgets
-   KF5::KCoreAddons
+   KF5::CoreAddons
    KF5::KConfigWidgets   # KCModule
    KF5::KI18n
 )

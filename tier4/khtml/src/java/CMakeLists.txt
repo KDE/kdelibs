@@ -19,8 +19,8 @@ add_library(kjavaappletviewer MODULE ${kjavaappletviewer_PART_SRCS})
 target_link_libraries(kjavaappletviewer
                       Qt5::Network
                       KF5::KParts
-                      KF5::KWindowSystem
-                      KF5::KWidgetsAddons
+                      KF5::WindowSystem
+                      KF5::WidgetsAddons
                       KF5::XmlGui
                       KF5::KI18n
                       KF5::KIconThemes )

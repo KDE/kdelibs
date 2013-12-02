@@ -19,8 +19,8 @@ find_package(X11)
 set(HAVE_X11 ${X11_FOUND})
 
 if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
-    find_package(KCoreAddons ${KF5_VERSION} REQUIRED)
-    find_package(KWidgetsAddons ${KF5_VERSION} REQUIRED)
+    find_package(KF5CoreAddons ${KF5_VERSION} REQUIRED)
+    find_package(KF5WidgetsAddons ${KF5_VERSION} REQUIRED)
 endif()
 
 include(FeatureSummary)

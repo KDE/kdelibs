@@ -32,7 +32,7 @@ find_package(Perl)
 set_package_properties(Perl PROPERTIES URL "http://www.perl.org" TYPE REQUIRED PURPOSE "Needed for building kdelibs")
 
 if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
-  find_package(KJS ${KF5_VERSION} REQUIRED)
+  find_package(KF5JS ${KF5_VERSION} REQUIRED)
 else()
   set(KJS_CREATE_HASH_TABLE "${CMAKE_SOURCE_DIR}/tier1/kjs/src/kjs/create_hash_table")
 endif()

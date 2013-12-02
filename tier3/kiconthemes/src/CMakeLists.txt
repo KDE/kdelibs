@@ -19,7 +19,7 @@ target_link_libraries(KIconThemes
     Qt5::DBus
     Qt5::Svg
     KF5::KI18n          # for i18n in KIconDialog
-    KF5::KWidgetsAddons # for KPixmapSequence family
+    KF5::WidgetsAddons # for KPixmapSequence family
     KF5::ItemViews      # for KListWidgetSearchLine
     KF5::KConfigWidgets # for KColorScheme
 )

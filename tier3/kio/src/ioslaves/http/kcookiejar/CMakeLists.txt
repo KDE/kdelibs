@@ -15,7 +15,7 @@ ecm_mark_nongui_executable(kcookiejar5)
 target_link_libraries( kcookiejar5
    Qt5::DBus
    KF5::KI18n
-   KF5::KWidgetsAddons
+   KF5::WidgetsAddons
 )
 
 install(TARGETS kcookiejar5 ${INSTALL_TARGETS_DEFAULT_ARGS} )
@@ -34,11 +34,11 @@ qt5_add_dbus_adaptor( kded_kcookiejar_SRCS ${CMAKE_CURRENT_BINARY_DIR}/org.kde.K
 add_library(kded_kcookiejar MODULE ${kded_kcookiejar_SRCS})
 
 target_link_libraries(kded_kcookiejar
-   KF5::KWindowSystem
+   KF5::WindowSystem
    KF5::KService # kpluginfactory
-   KF5::KDBusAddons
+   KF5::DBusAddons
    KF5::KI18n
-   KF5::KWidgetsAddons
+   KF5::WidgetsAddons
 )
 
 install(TARGETS kded_kcookiejar  DESTINATION ${PLUGIN_INSTALL_DIR} )

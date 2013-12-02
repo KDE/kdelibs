@@ -14,9 +14,9 @@ generate_export_header(KCompletion)
 add_library(KF5::KCompletion ALIAS KCompletion)
 
 target_link_libraries(KCompletion PUBLIC Qt5::Widgets
-                                  PRIVATE KF5::KConfigCore      # KConfigGroup, used in many places
-                                               KF5::KConfigGui       # KStandardShortcut
-                                               KF5::KWidgetsAddons   # KCursor
+                                  PRIVATE KF5::ConfigCore      # KConfigGroup, used in many places
+                                          KF5::ConfigGui       # KStandardShortcut
+                                          KF5::WidgetsAddons   # KCursor
 )
 
 set_target_properties(KCompletion PROPERTIES VERSION   ${KCOMPLETION_VERSION_STRING}

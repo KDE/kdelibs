@@ -22,7 +22,7 @@ ecm_setup_version(${KF5_VERSION} VARIABLE_PREFIX KJSEMBED
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KJsEmbedConfigVersion.cmake")
 
 if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
-  find_package(KJS ${KF5_VERSION} REQUIRED)
+  find_package(KF5JS ${KF5_VERSION} REQUIRED)
   find_package(KI18n ${KF5_VERSION} REQUIRED)
   find_package(KDocTools ${KF5_VERSION} REQUIRED)
 else()

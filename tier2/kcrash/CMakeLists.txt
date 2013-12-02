@@ -12,8 +12,8 @@ include(KDECompilerSettings)
 include(KDECMakeSettings)
 
 if(NOT kdelibs_SOURCE_DIR)
-  find_package(KCoreAddons 5.0.0 REQUIRED)
-  find_package(KWindowSystem 5.0.0 REQUIRED)
+  find_package(KF5CoreAddons 5.0.0 REQUIRED)
+  find_package(KF5WindowSystem 5.0.0 REQUIRED)
 endif()
 
 find_package(X11)

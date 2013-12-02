@@ -14,7 +14,7 @@ include(KDECMakeSettings)
 
 set(KF5_VERSION "5.0.0")
 if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
-  find_package(KCoreAddons ${KF5_VERSION} REQUIRED)
+  find_package(KF5CoreAddons ${KF5_VERSION} REQUIRED)
   find_package(KService ${KF5_VERSION} REQUIRED)
   find_package(KPty ${KF5_VERSION} REQUIRED)
 endif()
