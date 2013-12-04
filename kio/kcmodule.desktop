@@ -114,3 +114,8 @@ Type=QString
 # sets the order of the modules in the TreeList/IconList
 [PropertyDef::X-KDE-Weight]
 Type=int
+
+# The keyword to be used when loading the plugin using KPluginFactory (to support multiple KCModules in a single plugin). See KService::pluginKeyword().
+[PropertyDef::X-KDE-PluginKeyword]
+Type=QString
+
