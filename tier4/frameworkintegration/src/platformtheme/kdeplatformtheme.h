@@ -48,7 +48,6 @@ public:
 
 private:
     void loadSettings();
-    void iconChanged(int group);
 
     KHintsSettings *m_hints;
     KFontSettingsData* m_fontsData;
