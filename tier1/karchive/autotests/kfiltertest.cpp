@@ -371,4 +371,21 @@ void KFilterTest::test_pushData() // ### UNFINISHED
     // ### indeed, doesn't work currently. So we use HTTPFilter instead, for now.
 }
 
-
+void KFilterTest::test_saveFile()
+{
+    const QString currentdir = QDir::currentPath();
+    const QString outFile = QDir::currentPath() + "/test_saveFile.gz";
+    {
+        QSaveFile file(outFile);
+        QVERIFY(file.open(QIODevice::WriteOnly));
+        KCompressionDevice device(&file, false, KCompressionDevice::GZip);
+        QVERIFY(device.open(QIODevice::WriteOnly));
+        device.write("The data to be compressed");
+        device.close();
+        QVERIFY(file.commit());
+    }
+    QVERIFY(QFile::exists(outFile));
+    KCompressionDevice reader(outFile, KCompressionDevice::GZip);
+    QVERIFY(reader.open(QIODevice::ReadOnly));
+    QCOMPARE(reader.readAll(), QByteArray("The data to be compressed"));
+}

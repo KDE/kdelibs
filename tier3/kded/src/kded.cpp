@@ -589,6 +589,7 @@ void Kded::readDirectory( const QString& _path )
   if ( m_pDirWatch->contains( path ) ) // Already seen this one?
      return;
 
+  Q_ASSERT(path != QDir::homePath());
   m_pDirWatch->addDir(path,KDirWatch::WatchFiles|KDirWatch::WatchSubDirs);          // add watch on this dir
   return; // KDirWatch now claims to also support recursive watching
 #if 0
@@ -697,6 +698,7 @@ KUpdateD::KUpdateD()
          ++it )
     {
        QString path = *it;
+       Q_ASSERT(path != QDir::homePath());
        if (path[path.length()-1] != '/')
           path += '/';
 

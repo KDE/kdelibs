@@ -696,6 +696,7 @@ int main(int argc, char **argv)
      quint32 ksycoca_update_sig = KSycoca::self()->updateSignature();
      QString current_prefixes = QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation).join(QString(QLatin1Char(':')));
      QString ksycoca_prefixes = static_cast<KBuildSycoca*>(KSycoca::self())->kfsstnd_prefixes();
+     Q_ASSERT(!ksycoca_prefixes.split(':').contains(QDir::homePath()));
 
      if ((current_update_sig != ksycoca_update_sig) ||
          (current_language != ksycoca_language) ||
