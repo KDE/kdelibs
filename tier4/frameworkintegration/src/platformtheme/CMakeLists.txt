@@ -3,6 +3,7 @@ set(platformtheme_SRCS
    kdeplatformtheme.cpp
    kfontsettingsdata.cpp
    khintssettings.cpp
+   kdeplatformfiledialoghelper.cpp
    main.cpp
 )
 
@@ -14,6 +15,6 @@ remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 add_library(KDEPlatformTheme MODULE ${platformtheme_SRCS})
 
 # We link to KIO to pull in the qfiledialog hooks
-target_link_libraries(KDEPlatformTheme PRIVATE Qt5::DBus KF5::KConfigWidgets KF5::KConfigCore KF5::KIconThemes)
+target_link_libraries(KDEPlatformTheme PRIVATE Qt5::DBus KF5::KConfigWidgets KF5::KConfigCore KF5::KIconThemes KF5::KIOFileWidgets KF5::KI18n)
 
 install(TARGETS KDEPlatformTheme DESTINATION ${QT_PLUGIN_INSTALL_DIR}/platformthemes)

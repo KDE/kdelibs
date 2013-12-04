@@ -22,6 +22,7 @@
 #include "kdeplatformtheme.h"
 #include "kfontsettingsdata.h"
 #include "khintssettings.h"
+#include "kdeplatformfiledialoghelper.h"
 
 #include <QCoreApplication>
 #include <QFont>
@@ -188,5 +189,23 @@ QList<QKeySequence> KdePlatformTheme::keyBindings(QKeySequence::StandardKey key)
             return KStandardShortcut::shortcut(KStandardShortcut::Deselect);
         default:
             return QPlatformTheme::keyBindings(key);
+    }
+}
+
+bool KdePlatformTheme::usePlatformNativeDialog(QPlatformTheme::DialogType type) const
+{
+    return type == QPlatformTheme::FileDialog;
+}
+
+QPlatformDialogHelper* KdePlatformTheme::createPlatformDialogHelper(QPlatformTheme::DialogType type) const
+{
+    switch(type) {
+        case QPlatformTheme::FileDialog:
+            return new KDEPlatformFileDialogHelper;
+        case QPlatformTheme::FontDialog:
+        case QPlatformTheme::ColorDialog:
+        case QPlatformTheme::MessageDialog:
+        default:
+            return 0;
     }
 }
