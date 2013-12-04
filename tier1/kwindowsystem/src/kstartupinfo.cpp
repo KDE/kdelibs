@@ -981,7 +981,7 @@ void KStartupInfo::Private::startups_cleanup_internal( bool age_P )
             if (age_P)
                 (*it).age++;
             unsigned int tout = timeout;
-            if ((*it).silent() == Data::Yes) {
+            if ((*it).silent() == KStartupInfo::Data::Yes) {
                 // give kdesu time to get a password
                 tout *= 20;
             }
