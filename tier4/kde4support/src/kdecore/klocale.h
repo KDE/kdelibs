@@ -24,6 +24,10 @@
 #include <kde4support_export.h>
 #include <ksharedconfig.h>
 
+
+// Include for providing source code compatibility
+#include <klocalizedstring.h>
+
 #include <QtCore/QString>
 #include <QtCore/QList>
 
