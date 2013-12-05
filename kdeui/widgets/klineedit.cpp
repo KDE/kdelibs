@@ -1130,7 +1130,7 @@ void KLineEdit::mousePressEvent( QMouseEvent* e )
     // if middle clicking and if text is present in the clipboard then clear the selection
     // to prepare paste operation
     if ( e->button() == Qt::MidButton ) {
-        if ( hasSelectedText() ) {
+        if ( hasSelectedText() && !isReadOnly() ) {
             if ( QApplication::clipboard()->text( QClipboard::Selection ).length() >0 ) {
                 backspace();
             }
