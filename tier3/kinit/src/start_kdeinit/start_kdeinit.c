@@ -28,7 +28,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#define EXECUTE BIN_INSTALL_DIR "/kdeinit5"
+#define EXECUTE CMAKE_INSTALL_PREFIX"/"BIN_INSTALL_DIR "/kdeinit5"
 
 #if KDEINIT_OOM_PROTECT
 

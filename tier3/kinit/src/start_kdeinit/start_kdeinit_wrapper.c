@@ -23,7 +23,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#define EXECUTE LIBEXEC_INSTALL_DIR "/start_kdeinit"
+#define EXECUTE CMAKE_INSTALL_PREFIX"/"LIBEXEC_INSTALL_DIR "/start_kdeinit"
 
 #if KDEINIT_OOM_PROTECT
 
