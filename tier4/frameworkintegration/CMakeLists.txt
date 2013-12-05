@@ -30,6 +30,7 @@ if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
   find_package(KIconThemes ${KF5_VERSION} REQUIRED)
   find_package(KNotifications ${KF5_VERSION} REQUIRED)
   find_package(KI18n ${KF5_VERSION} REQUIRED)
+  find_package(KIO ${KF5_VERSION} REQUIRED)
 endif()
 
 add_subdirectory(src)
