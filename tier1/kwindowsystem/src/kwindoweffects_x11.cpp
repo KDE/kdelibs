@@ -62,6 +62,9 @@ bool isEffectAvailable(Effect effect)
         // TODO: Better namespacing for atoms
         effectName = QByteArrayLiteral("_WM_EFFECT_KDE_DASHBOARD");
         break;
+    case BackgroundContrast:
+        effectName = QByteArrayLiteral("_KDE_NET_WM_BACKGROUND_CONTRAST_REGION");
+        break;
     default:
         return false;
     }
@@ -281,6 +284,34 @@ void enableBlurBehind(WId window, bool enable, const QRegion &region)
         Q_FOREACH (const QRect &r, rects) {
             data << r.x() << r.y() << r.width() << r.height();
         }
+
+        xcb_change_property(c, XCB_PROP_MODE_REPLACE, window, atom->atom, XCB_ATOM_CARDINAL,
+                            32, data.size(), data.constData());
+    } else {
+        xcb_delete_property(c, window, atom->atom);
+    }
+}
+
+void enableBackgroundContrast(WId window, bool enable, qreal brightness, const QRegion &region)
+{
+    xcb_connection_t *c = QX11Info::connection();
+    const QByteArray effectName = QByteArrayLiteral("_KDE_NET_WM_BACKGROUND_CONTRAST_REGION");
+    xcb_intern_atom_cookie_t atomCookie = xcb_intern_atom_unchecked(c, false, effectName.length(), effectName.constData());
+    QScopedPointer<xcb_intern_atom_reply_t, QScopedPointerPodDeleter> atom(xcb_intern_atom_reply(c, atomCookie, NULL));
+    if (!atom) {
+        return;
+    }
+
+    if (enable) {
+        QVector<QRect> rects = region.rects();
+        QVector<uint32_t> data;
+        Q_FOREACH (const QRect &r, rects) {
+            data << r.x() << r.y() << r.width() << r.height();
+        }
+        data << brightness*1000 << 0 << 0 << 0
+             << 0 << brightness*1000 << 0 << 0
+             << 0 << 0 << brightness*1000 << 0
+             << 0 << 0 << 0 << 1;
 
         xcb_change_property(c, XCB_PROP_MODE_REPLACE, window, atom->atom, XCB_ATOM_CARDINAL,
                             32, data.size(), data.constData());
