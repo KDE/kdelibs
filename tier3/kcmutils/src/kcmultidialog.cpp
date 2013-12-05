@@ -237,7 +237,7 @@ void KCMultiDialogPrivate::init()
 
     q->setButtonBox(buttonBox);
 
-    q->connect(q, SIGNAL(finished()), SLOT(_k_dialogClosed()));
+    q->connect(q, SIGNAL(finished(int)), SLOT(_k_dialogClosed()));
     q->connect(q, SIGNAL(currentPageChanged(KPageWidgetItem*,KPageWidgetItem*)),
             SLOT(_k_slotCurrentPageChanged(KPageWidgetItem*,KPageWidgetItem*)));
 
