@@ -31,3 +31,4 @@ if(exitstatus != KJSEmbed::Engine::Success) {
 \author Sebastian Sauer (mail@dipe.org)
 
 */
+// DOXYGEN_SET_PROJECT_NAME = KJSEmbed

@@ -23,5 +23,5 @@ Matthias Hoelzer-Kluepfel \<hoelzer@kde.org\>
 */
 
 // DOXYGEN_REFERENCES = kdecore kdeui kio
-// DOXYGEN_SET_PROJECT_NAME = KUtils
+// DOXYGEN_SET_PROJECT_NAME = KCMUtils
 // vim:ts=4:sw=4:expandtab:filetype=doxygen
