@@ -20,6 +20,52 @@ qhppages=0
 api_searchbox=0
 searchengine=0
 
+TITLE="KDE API Reference"
+
+usage() {
+    cat <<EOF
+Usage: doxygen.sh [--options] <top_srcdir> [<subdir>]
+
+--help             This screen.
+
+--recurse,         Also generate dox in subdirs of the given <subdir>. If no
+--no-recurse       <subdir> is given, --recurse is the default and can be
+                   turned off with --no-recurse.
+
+--no-cleanup       Do not remove Doxyfile and other cruft from build.
+
+--modulename,      By default, apidox are generated in a subdirectory
+--no-modulename    <modulename>-apidocs/ . You can use --no-modulename to
+                   suppress the <modulename> and generate the apidox in
+                   a subdirectory apidocs/ . Modulename is the last part of
+                   the <top_srcdir> (usually a KDE module name).
+
+--doxdatadir=<dir> Locate the HTML header files and support graphics.  In
+                   apidox, the subdirectory common/ contains these files. In an
+                   installed KDE system, $KDEDIR/share/doc/HTML/en/common/
+                   contains a copy.
+                   This argument is mandatory if doxygen.sh can't guess where
+                   the doxdata lives.
+
+--installdir=<dir> Locate the directory where apidox from other modules
+                   is installed. Subdirectories named *-apidocs/ under the
+                   named <dir> are searched for tag files, for cross-module
+                   cross-referencing.
+
+--preprocess       Generate source code (KConfigXT, uic, etc.)
+
+--manpages         Generate man pages in addition to html.
+
+--qhppages         Generate pages for Qt Assistant.
+
+--api-searchbox    Add an api search box in all pages, like api.kde.org's.
+
+--searchengine     Enable search engine.
+
+--title=<title>    String to use for the page titles, defaults to "$TITLE".
+EOF
+}
+
 while test -n "$1" ; do
 case $1 in
 --no-cleanup)
@@ -55,20 +101,8 @@ case $1 in
         searchengine=1
         ;;
 --help)
-	echo "doxygen.sh usage:"
-	echo "doxygen.sh [--options] <srcdir> [<subdir>]"
-	echo "  --no-cleanup     Do not remove Doxyfile and other cruft from build"
-	echo "  --no-recurse     Build only the given top-level directory"
-	echo "  --no-modulename  Build in apidocs/, not apidocs-module/"
-	echo "  --doxdatadir=dir Use dir as the source of global Doxygen files"
-	echo "  --installdir=dir Use dir as target to install to"
-        echo "  --title=title    String to use for the page titles"
-	echo "  --preprocess     Generate source code (KConfigXT, uic, etc.)"
-        echo "  --manpages       Generate man pages in addition to html"
-        echo "  --qhppages       Generate pages for Qt Assistant"
-	echo "  --api-searchbox  Add an api search box in all pages, like api.kde.org's"
-        echo "  --searchengine   Enable search engine"
-	exit 2
+    usage
+    exit 2
 	;;
 --doxdatadir=*)
 	DOXDATA=`echo $1 | sed -e 's+--doxdatadir=++'`
@@ -126,11 +160,6 @@ if test -n "$DOXDATA"; then
 		exit 1
 	fi
     fi
-fi
-
-## Title
-if test -n "$TITLE"; then
-  TITLE="KDE API Reference"
 fi
 
 ### Sanity check and guess QTDOCDIR.
