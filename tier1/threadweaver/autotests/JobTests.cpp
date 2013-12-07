@@ -79,7 +79,7 @@ void JobTests::SimpleJobTest() {
     WaitForIdleAndFinished w(Weaver::instance());
     stream() << new AppendCharacterJob( QChar('1'), &sequence);
     Weaver::instance()->finish();
-    QCOMPARE ( sequence, QString( "1" ) );
+    QCOMPARE(sequence, QString("1"));
 }
 
 void JobTests::SimpleJobCollectionTest() {
@@ -113,23 +113,20 @@ void JobTests::EmptyJobCollectionTest() {
 
 void JobTests::CollectionQueueingTest()
 {
-    QString sequence;
-    JobPointer jobA(new AppendCharacterJob(QChar('a'), &sequence));
-    JobPointer jobB(new AppendCharacterJob(QChar('b'), &sequence));
-    JobPointer jobC(new AppendCharacterJob(QChar('c'), &sequence));
-    QSharedPointer<JobCollection> jobCollection(new JobCollection());
-    jobCollection->addJob(jobA);
-    jobCollection->addJob(jobB);
-    jobCollection->addJob(jobC);
+    QString output;
+    JobCollection jobCollection;
+    jobCollection << new AppendCharacterJob(QChar('a'), &output)
+                  << new AppendCharacterJob(QChar('b'), &output)
+                  << new AppendCharacterJob(QChar('c'), &output);
 
     Weaver weaver;
     WaitForIdleAndFinished w(&weaver);
     weaver.suspend();
-    weaver.enqueue(jobCollection);
+    weaver.stream() << jobCollection;
     QCOMPARE(weaver.queueLength(), 1); //collection queues itself, and it's elements upon execution of self
     weaver.resume();
     weaver.finish();
-    QCOMPARE(sequence.length(), 3);
+    QCOMPARE(output.length(), 3);
     QVERIFY(Weaver::instance()->isIdle());
 }
 
