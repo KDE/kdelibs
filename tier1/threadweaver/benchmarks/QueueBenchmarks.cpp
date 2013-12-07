@@ -198,9 +198,9 @@ void QueueBenchmarksTest::CollectionsBenchmark()
         for (int operation = 0; operation < c; ++operation) {
             const int index = block * b + operation;
             jobs[index].setCount(m);
-            collection->addRawJob(&jobs[index]);
+            *collection << jobs[index];
         }
-        weaver.enqueue(ThreadWeaver::JobPointer(collection));
+        weaver.stream() << collection;
     }
 
     qDebug() << b << "blocks" << c << "operations, executing...";
@@ -235,9 +235,9 @@ void QueueBenchmarksTest::SequencesBenchmark()
         for (int operation = 0; operation < c; ++operation) {
             const int index = block * b + operation;
             jobs[index].setCount(m);
-            sequence->addRawJob(&jobs[index]);
+            *sequence << jobs[index];
         }
-        weaver.enqueue(ThreadWeaver::JobPointer(sequence));
+        weaver.stream() << sequence;
     }
 
     qDebug() << b << "blocks" << c << "operations, executing...";

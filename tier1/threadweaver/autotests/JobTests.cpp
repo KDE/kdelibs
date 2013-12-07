@@ -218,7 +218,7 @@ void JobTests::IncompleteCollectionTest()
     QObjectDecorator jobA(new AppendCharacterJob(QChar('a'), &result));
     AppendCharacterJob jobB(QChar('b'), &result); //jobB does not get added to the sequence and queued
     QObjectDecorator col(new JobCollection());
-    col.collection()->addRawJob(&jobA);
+    *col.collection() << jobA;
 
     WaitForIdleAndFinished w(Weaver::instance());
     DependencyPolicy::instance().addDependency(Dependency(&jobA, &jobB));
@@ -632,7 +632,7 @@ void JobTests::MassiveJobSequenceTest() {
 
     for ( int i = 0; i<NoOfChars; ++i ) {
         jobs[i].setValues( in.at(i), &sequence, in );
-        jobSequence.addRawJob(&jobs[i]);
+        jobSequence << jobs[i];
     }
 
     WaitForIdleAndFinished w(Weaver::instance());
@@ -647,14 +647,14 @@ void JobTests::SimpleRecursiveSequencesTest() {
     QString sequence;
     AppendCharacterJob jobB(QChar('b'), &sequence);
     JobSequence jobSequence1;
-    jobSequence1.addRawJob(&jobB);
+    jobSequence1 << jobB;
 
     AppendCharacterJob jobC(QChar('c'), &sequence);
     AppendCharacterJob jobA(QChar('a'), &sequence);
     JobSequence jobSequence2;
-    jobSequence2.addRawJob(&jobA);
-    jobSequence2.addRawJob(&jobSequence1);
-    jobSequence2.addRawJob(&jobC);
+    jobSequence2 << jobA;
+    jobSequence2 << jobSequence1;
+    jobSequence2 << jobC;
 
     WaitForIdleAndFinished w(Weaver::instance());
     enqueue_raw(&jobSequence2);
@@ -675,26 +675,17 @@ void JobTests::SequenceOfSequencesTest() {
     AppendCharacterJob jobI ( QChar( 'i' ), &sequence);
     AppendCharacterJob jobJ ( QChar( 'j' ), &sequence);
     JobSequence jobSequence1;
-    jobSequence1.addRawJob(&jobA);
-    jobSequence1.addRawJob(&jobB);
-    jobSequence1.addRawJob(&jobC);
+    jobSequence1 << jobA << jobB << jobC;
     JobSequence jobSequence2;
-    jobSequence2.addRawJob(&jobD);
-    jobSequence2.addRawJob(&jobE);
-    jobSequence2.addRawJob(&jobF);
+    jobSequence2 << jobD << jobE << jobF;
     JobSequence jobSequence3;
-    jobSequence3.addRawJob(&jobG);
-    jobSequence3.addRawJob(&jobH);
-    jobSequence3.addRawJob(&jobI);
-    jobSequence3.addRawJob(&jobJ);
+    jobSequence3 << jobG << jobH << jobI << jobJ;
     // sequence 4 will contain sequences 1, 2, and 3, in that order:
     JobSequence jobSequence4;
-    jobSequence4.addRawJob(&jobSequence1);
-    jobSequence4.addRawJob(&jobSequence2);
-    jobSequence4.addRawJob(&jobSequence3);
+    jobSequence4 << jobSequence1 << jobSequence2 << jobSequence3;
 
     WaitForIdleAndFinished w(Weaver::instance());
-    enqueue_raw(&jobSequence4);
+    stream() << jobSequence4;
     // Job::DumpJobDependencies();
     Weaver::instance()->finish();
     QCOMPARE(sequence,QString("abcdefghij"));
@@ -710,16 +701,10 @@ void JobTests::QueueAndStopTest() {
     AppendCharacterJob f( 'f', &sequence );
     AppendCharacterJob g( 'g', &sequence );
     JobSequence jobSequence;
-    jobSequence.addRawJob(&a);
-    jobSequence.addRawJob(&b);
-    jobSequence.addRawJob(&c);
-    jobSequence.addRawJob(&d);
-    jobSequence.addRawJob(&e);
-    jobSequence.addRawJob(&f);
-    jobSequence.addRawJob(&g);
+    jobSequence << a << b << c << d << e << f << g;
 
     WaitForIdleAndFinished w(Weaver::instance());
-    enqueue_raw(&jobSequence);
+    stream() << jobSequence;
     Weaver::instance()->finish();
     QCOMPARE(sequence, QString("abcd"));
 }
@@ -728,32 +713,26 @@ void JobTests::ResourceRestrictionPolicyBasicsTest () {
     // this test tests that with resource restrictions assigned, jobs
     // still get executed as expected
     QString sequence;
-    ResourceRestrictionPolicy restriction (2);
-    AppendCharacterJob a( 'a', &sequence );
-    AppendCharacterJob b( 'b', &sequence );
-    AppendCharacterJob c( 'c', &sequence );
-    AppendCharacterJob d( 'd', &sequence );
-    AppendCharacterJob e( 'e', &sequence );
-    AppendCharacterJob f( 'f', &sequence );
-    AppendCharacterJob g( 'g', &sequence );
+    ResourceRestrictionPolicy restriction(2);
+    AppendCharacterJob a('a', &sequence);
+    AppendCharacterJob b('b', &sequence);
+    AppendCharacterJob c('c', &sequence);
+    AppendCharacterJob d('d', &sequence);
+    AppendCharacterJob e('e', &sequence);
+    AppendCharacterJob f('f', &sequence);
+    AppendCharacterJob g('g', &sequence);
     JobCollection collection;
-    collection.addRawJob( &a );
-    a.assignQueuePolicy ( &restriction);
-    collection.addRawJob( &b );
-    b.assignQueuePolicy ( &restriction);
-    collection.addRawJob( &c );
-    c.assignQueuePolicy ( &restriction);
-    collection.addRawJob( &d );
-    d.assignQueuePolicy ( &restriction);
-    collection.addRawJob( &e );
-    e.assignQueuePolicy ( &restriction);
-    collection.addRawJob( &f );
-    f.assignQueuePolicy ( &restriction);
-    collection.addRawJob( &g );
-    g.assignQueuePolicy ( &restriction);
+    collection << a << b << c << d <<e << f << g;
+    a.assignQueuePolicy(&restriction);
+    b.assignQueuePolicy(&restriction);
+    c.assignQueuePolicy(&restriction);
+    d.assignQueuePolicy(&restriction);
+    e.assignQueuePolicy(&restriction);
+    f.assignQueuePolicy(&restriction);
+    g.assignQueuePolicy(&restriction);
 
     WaitForIdleAndFinished w(Weaver::instance());
-    enqueue_raw(&collection);
+    stream() << collection;
     Weaver::instance()->finish();
     QVERIFY ( Weaver::instance()->isIdle() );
 }

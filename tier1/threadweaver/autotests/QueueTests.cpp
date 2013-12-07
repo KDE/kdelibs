@@ -134,13 +134,11 @@ void QueueTests::DeleteDoneJobsFromSequenceTest()
     AppendCharacterJob b(QChar('b'), &sequence);
     AppendCharacterJob c(QChar('c'), &sequence);
     JobCollection jobCollection;
-    jobCollection.addRawJob(autoDeleteJob);
-    jobCollection.addRawJob(&b);
-    jobCollection.addRawJob(&c);
+    jobCollection << make_job_raw(autoDeleteJob) << b << c;
     QVERIFY(autoDeleteJob != 0);
     QVERIFY(connect(autoDeleteJob, SIGNAL(done(ThreadWeaver::JobPointer)),
                     SLOT(deleteJob(ThreadWeaver::JobPointer))));
-    enqueue_raw(&jobCollection);
+    stream() << jobCollection;
     QTest::qWait(100); // return to event queue to make sure signals are delivered
     Weaver::instance()->finish();
     QTest::qWait(100); // return to event queue to make sure signals are delivered
@@ -165,8 +163,7 @@ void QueueTests::DeleteCollectionOnDoneTest()
 
     AppendCharacterJob a( QChar( 'a' ), &sequence );
     AppendCharacterJob b( QChar( 'b' ), &sequence );
-    autoDeleteCollection->collection()->addRawJob(&a);
-    autoDeleteCollection->collection()->addRawJob(&b);
+    *autoDeleteCollection->collection() << a << b;
 
     enqueue_raw(autoDeleteCollection);
     // return to event queue to make sure signals are delivered

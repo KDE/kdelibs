@@ -19,6 +19,7 @@ public:
 
     QueueStream& operator<<(const JobPointer& job);
     QueueStream& operator<<(JobInterface* job);
+    //FIXME try with QObjectDecorator (JobInterface&)
     QueueStream& operator<<(Job& job);
 
 private:

@@ -149,11 +149,6 @@ void JobCollection::addJob(JobPointer job)
     d->elements.append(job);
 }
 
-void JobCollection::addRawJob(JobInterface *job)
-{
-    addJob(ManagedJobPointer<JobInterface>(job));
-}
-
 void JobCollection::stop(JobPointer job)
 {
     Q_UNUSED( job );
@@ -292,6 +287,12 @@ JobCollection &JobCollection::operator<<(JobInterface *job)
 JobCollection &JobCollection::operator<<(const JobPointer &job)
 {
     addJob(job);
+    return *this;
+}
+
+JobCollection &JobCollection::operator<<(JobInterface &job)
+{
+    addJob(make_job_raw(&job));
     return *this;
 }
 

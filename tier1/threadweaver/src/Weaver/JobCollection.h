@@ -58,11 +58,6 @@ public:
      *
      * @note Once the job has been added, execute wrappers can no more be set on it */
     virtual void addJob(JobPointer);
-    /** Append an naked job pointer to the collection.
-     *
-     * Use this overloaded method to queue jobs that are memory-managed by the caller, instead of being
-     * QSharedPointers. */
-    virtual void addRawJob(JobInterface* job);
 
     /** Stop processing, dequeue all remaining Jobs.
      * job is supposed to be an element of the collection.
@@ -78,6 +73,7 @@ public:
 
     /** @brief Add the job to this collection. */
     JobCollection& operator<<(const ThreadWeaver::JobPointer& job);
+    JobCollection& operator<<(JobInterface& job);
 
 protected:
     /** Overload to queue the collection. */
