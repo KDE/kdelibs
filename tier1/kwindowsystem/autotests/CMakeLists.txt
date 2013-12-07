@@ -27,13 +27,14 @@ macro(KWINDOWSYSTEM_EXECUTABLE_TESTS)
    endforeach()
 endmacro()
 
-kwindowsystem_unit_tests(
-   kmanagerselectiontest
-   kstartupinfo_unittest
-   kxmessages_unittest
-)
 
 if(X11_FOUND)
+    kwindowsystem_unit_tests(
+        kmanagerselectiontest
+        kstartupinfo_unittest
+        kxmessages_unittest
+    )
+
     kwindowsystem_unit_tests(
         kwindoweffectstest
         kwindowsystemx11test
@@ -41,9 +42,11 @@ if(X11_FOUND)
         netwininfotestclient
         netwininfotestwm
     )
+    
+    kwindowsystem_executable_tests(
+        fixx11h_test
+        fixx11h_test2
+    )
 endif()
 
-kwindowsystem_executable_tests(
-   fixx11h_test
-   fixx11h_test2
-)
+
