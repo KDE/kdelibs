@@ -114,7 +114,7 @@ public:
     QStringList mountOptions() const;
 
     /**
-     * Checks if the filesystem that is probably slow (nfs mounts).
+     * Checks if the filesystem that is probably slow (network mounts).
      * @return true if the filesystem is probably slow
      */
     bool probablySlow() const;
