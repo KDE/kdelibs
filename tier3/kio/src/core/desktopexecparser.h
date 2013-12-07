@@ -98,6 +98,22 @@ public:
      */
     static bool hasSchemeHandler(const QUrl &url);
 
+    /**
+     * Given a full command line (e.g. the Exec= line from a .desktop file),
+     * extract the name of the executable being run (removing the path, if specified).
+     * @param execLine the full command line
+     * @return the name of the executable to run, example: "ls"
+     */
+    static QString executableName(const QString &execLine);
+
+    /**
+     * Given a full command line (e.g. the Exec= line from a .desktop file),
+     * extract the name of the executable being run, including its full path, if specified.
+     * @param execLine the full command line
+     * @return the name of the executable to run, example: "/bin/ls"
+     */
+    static QString executablePath(const QString &execLine);
+
 private:
     QScopedPointer<DesktopExecParserPrivate> d;
 };

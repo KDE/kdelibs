@@ -42,7 +42,7 @@
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <kshell.h>
-#include <krun.h>
+#include <kio/desktopexecparser.h>
 #include <kstringhandler.h>
 #include <kurlcompletion.h>
 #include <kurlrequester.h>
@@ -815,14 +815,14 @@ bool KOpenWithDialogPrivate::checkAccept()
         // No service selected - check the command line
 
         // Find out the name of the service from the command line, removing args and paths
-        serviceName = KRun::binaryName( typedExec, true );
+        serviceName = KIO::DesktopExecParser::executableName(typedExec);
         if (serviceName.isEmpty()) {
             KMessageBox::error(q, i18n("Could not extract executable name from '%1', please type a valid program name.", serviceName));
             return false;
         }
         initialServiceName = serviceName;
-        // Also remember the binaryName with a path, if any, for the
-        // check that the binary exists.
+        // Also remember the executableName with a path, if any, for the
+        // check that the executable exists.
         // qDebug() << "initialServiceName=" << initialServiceName;
         int i = 1; // We have app, app-2, app-3... Looks better for the user.
         bool ok = false;
@@ -863,7 +863,7 @@ bool KOpenWithDialogPrivate::checkAccept()
         initialServiceName = serviceName;
         fullExec = m_pService->exec();
     } else {
-        const QString binaryName = KRun::binaryName(typedExec, false);
+        const QString binaryName = KIO::DesktopExecParser::executablePath(typedExec);
         // qDebug() << "binaryName=" << binaryName;
         // Ensure that the typed binary name actually exists (#81190)
         if (QStandardPaths::findExecutable(binaryName).isEmpty()) {

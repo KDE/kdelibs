@@ -782,7 +782,7 @@ KLauncher::start_service(KService::Ptr service, const QStringList &_urls,
                request->dbus_name = v.toString();
            }
            if (request->dbus_name.isEmpty()) {
-               const QString binName = KRun::binaryName(service->exec(), true);
+               const QString binName = KIO::DesktopExecParser::executableName(service->exec());
                request->dbus_name = QString::fromLatin1("org.kde.") + binName;
                request->tolerant_dbus_name = QString::fromLatin1("*.") + binName;
            }

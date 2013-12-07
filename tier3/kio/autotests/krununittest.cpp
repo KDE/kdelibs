@@ -72,7 +72,11 @@ void KRunUnitTest::testBinaryName()
     QFETCH(QString, execLine);
     QFETCH(bool, removePath);
     QFETCH(QString, expected);
-    QCOMPARE(KRun::binaryName(execLine, removePath), expected);
+    if (removePath) {
+        QCOMPARE(KIO::DesktopExecParser::executableName(execLine), expected);
+    } else {
+        QCOMPARE(KIO::DesktopExecParser::executablePath(execLine), expected);
+    }
 }
 
 //static const char *bt(bool tr) { return tr?"true":"false"; }

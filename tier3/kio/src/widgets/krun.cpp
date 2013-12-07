@@ -283,18 +283,12 @@ QStringList KRun::processDesktopExec(const KService &_service, const QList<QUrl>
     return parser.resultingArguments();
 }
 
-//static
-QString KRun::binaryName(const QString & execLine, bool removePath)
+#ifndef KDE_NO_DEPRECATED
+QString KRun::binaryName(const QString &execLine, bool removePath)
 {
-    // Remove parameters and/or trailing spaces.
-    const QStringList args = KShell::splitArgs(execLine);
-    for (QStringList::ConstIterator it = args.begin(); it != args.end(); ++it)
-        if (!(*it).contains('=')) {
-            // Remove path if wanted
-            return removePath ? (*it).mid((*it).lastIndexOf('/') + 1) : *it;
-        }
-    return QString();
+    return removePath ? KIO::DesktopExecParser::executableName(execLine) : KIO::DesktopExecParser::executablePath(execLine);
 }
+#endif
 
 static bool runCommandInternal(const QString &command, const KService* service, const QString& executable,
                                const QString &userVisibleName, const QString & iconName, QWidget* window,
@@ -311,7 +305,7 @@ static bool runCommandInternal(const QString &command, const KService* service, 
         return false;
     }
 
-    QString bin = KRun::binaryName(executable, true);
+    QString bin = KIO::DesktopExecParser::executableName(executable);
 #if HAVE_X11 // Startup notification doesn't work with QT/E, service isn't needed without Startup notification
     bool silent;
     QByteArray wmclass;
@@ -442,7 +436,7 @@ static bool runTempService(const KService& _service, const QList<QUrl>& _urls, Q
     }
     //qDebug() << "runTempService: KProcess args=" << args;
 
-    return runCommandInternal(args.join(" "), &_service, KRun::binaryName(_service.exec(), false),
+    return runCommandInternal(args.join(" "), &_service, KIO::DesktopExecParser::executablePath(_service.exec()),
                               _service.name(), _service.icon(), window, asn, _service.path());
 }
 
@@ -801,7 +795,7 @@ bool KRun::runCommand(const QString& cmd, const QString &execName, const QString
     if (!workingDirectory.isEmpty()) {
         proc->setWorkingDirectory(workingDirectory);
     }
-    QString bin = binaryName(execName, true);
+    QString bin = KIO::DesktopExecParser::executableName(execName);
     KService::Ptr service = KService::serviceByDesktopName(bin);
     return runCommandInternal(cmd, service.data(),
                               execName /*executable to check for in slotProcessExited*/,

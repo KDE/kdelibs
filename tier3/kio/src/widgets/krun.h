@@ -334,9 +334,13 @@ public:
      * extract the name of the binary being run.
      * @param execLine the full command line
      * @param removePath if true, remove a (relative or absolute) path. E.g. /usr/bin/ls becomes ls.
-     * @return the name of the binary to run
+     * @return the name of the executable to run
+     * @deprecated since 5.0, use KIO::DesktopExecParser::executableName if removePath was true,
+     * or KIO::DesktopExecParser::executablePath if removePath was false.
      */
+#ifndef KDE_NO_DEPRECATED
     static QString binaryName(const QString & execLine, bool removePath);
+#endif
 
     /**
      * Returns whether @p serviceType refers to an executable program instead

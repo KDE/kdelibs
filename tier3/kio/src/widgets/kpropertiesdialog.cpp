@@ -113,6 +113,7 @@ extern "C" {
 #include <ksqueezedtextlabel.h>
 #include <kmimetypetrader.h>
 #include <krun.h>
+#include <kio/desktopexecparser.h>
 #include <kacl.h>
 #include <kconfiggroup.h>
 #include <kshell.h>
@@ -3235,8 +3236,8 @@ void KDesktopPropsPlugin::slotDelFiletype()
 
 void KDesktopPropsPlugin::checkCommandChanged()
 {
-    if (KRun::binaryName(d->w->commandEdit->text(), true) !=
-        KRun::binaryName(d->m_origCommandStr, true))
+    if (KIO::DesktopExecParser::executableName(d->w->commandEdit->text()) !=
+        KIO::DesktopExecParser::executableName(d->m_origCommandStr))
     {
         d->m_origCommandStr = d->w->commandEdit->text();
         d->m_dbusStartupType.clear(); // Reset

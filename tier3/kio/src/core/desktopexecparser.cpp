@@ -416,3 +416,23 @@ QStringList KIO::DesktopExecParser::resultingArguments() const
     return result;
 }
 
+//static
+QString KIO::DesktopExecParser::executableName(const QString &execLine)
+{
+    const QString bin = executablePath(execLine);
+    return bin.mid(bin.lastIndexOf('/') + 1);
+}
+
+//static
+QString KIO::DesktopExecParser::executablePath(const QString &execLine)
+{
+    // Remove parameters and/or trailing spaces.
+    const QStringList args = KShell::splitArgs(execLine);
+    for (QStringList::ConstIterator it = args.begin(); it != args.end(); ++it) {
+        if (!(*it).contains('=')) {
+            return *it;
+        }
+    }
+    return QString();
+}
+
