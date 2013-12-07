@@ -6,7 +6,9 @@ include_directories( ${ASPELL_INCLUDE_DIR})
 
 set(kspell_aspell_PART_SRCS kspell_aspellclient.cpp kspell_aspelldict.cpp )
 
-
+if(WIN32)
+add_definitions(-DCMAKE_INSTALL_PREFIX="${CMAKE_INSTALL_PREFIX}")
+endif()
 add_library(kspell_aspell MODULE ${kspell_aspell_PART_SRCS})
 
 target_link_libraries(kspell_aspell PRIVATE SonnetCore ${ASPELL_LIBRARIES})
