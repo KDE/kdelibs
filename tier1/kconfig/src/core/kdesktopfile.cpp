@@ -83,10 +83,10 @@ QString KDesktopFile::locateLocal(const QString &path)
 {
     QString relativePath;
     // Relative to config? (e.g. for autostart)
-    Q_FOREACH(const QString& dir, QStandardPaths::standardLocations(QStandardPaths::ConfigLocation)) {
+    Q_FOREACH(const QString& dir, QStandardPaths::standardLocations(QStandardPaths::GenericConfigLocation)) {
         if (path.startsWith(dir) + '/') {
             relativePath = dir.mid(path.length() + 1);
-            return QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QLatin1Char('/') + relativePath;
+            return QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) + QLatin1Char('/') + relativePath;
         }
     }
     // Relative to xdg data dir? (much more common)
@@ -134,7 +134,7 @@ bool KDesktopFile::isAuthorizedDesktopFile(const QString& path)
       }
   }
   const QString autostartDir = QLatin1String("autostart/");
-  Q_FOREACH (const QString &xdgDataPrefix, QStandardPaths::standardLocations(QStandardPaths::ConfigLocation)) {
+  Q_FOREACH (const QString &xdgDataPrefix, QStandardPaths::standardLocations(QStandardPaths::GenericConfigLocation)) {
       if (QDir(xdgDataPrefix).exists()) {
           const QString prefix = QFileInfo(xdgDataPrefix).canonicalFilePath();
           if (realPath.startsWith(prefix + QLatin1Char('/') + autostartDir))

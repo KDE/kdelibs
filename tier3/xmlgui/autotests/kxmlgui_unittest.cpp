@@ -110,7 +110,7 @@ void KXmlGui_UnitTest::initTestCase()
 {
     QStandardPaths::enableTestMode(true);
     // Leftover configuration breaks testAutoSaveSettings
-    const QString configFile = QStandardPaths::locate(QStandardPaths::ConfigLocation, "kxmlgui_unittestrc");
+    const QString configFile = QStandardPaths::locate(QStandardPaths::GenericConfigLocation, "kxmlgui_unittestrc");
     if (!configFile.isEmpty())
         QFile::remove(configFile);
 }

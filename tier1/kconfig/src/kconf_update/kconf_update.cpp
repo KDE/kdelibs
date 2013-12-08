@@ -425,7 +425,7 @@ void KonfUpdate::gotFile(const QString &_file)
         delete m_oldConfig2;
         m_oldConfig2 = 0;
 
-        QString file = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QLatin1Char('/') + m_oldFile;
+        QString file = QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) + QLatin1Char('/') + m_oldFile;
         QFileInfo info(file);
         if (info.exists() && info.size() == 0) {
             // Delete empty file.

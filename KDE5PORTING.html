@@ -131,7 +131,7 @@ The porting depends on the resource type:
 <pre>
     KStandardDirs "data" -&gt; QStandardPaths::GenericDataLocation
     KStandardDirs "appdata" -&gt; QStandardPaths::DataLocation
-    KStandardDirs "config" -&gt; QStandardPaths::ConfigLocation
+    KStandardDirs "config" -&gt; QStandardPaths::GenericConfigLocation
     KStandardDirs "xdgdata-apps" -&gt; QStandardPaths::ApplicationsLocation
     KStandardDirs "cache" -&gt; QStandardPaths::GenericCacheLocation
     KStandardDirs "socket" -&gt; QStandardPaths::RuntimeLocation
@@ -151,7 +151,7 @@ Otherwise, you need to use GenericDataLocation and add the subdirectory name man
 <pre>
     dirs()-&gt;resourceDirs("xdgdata-icon") -&gt; QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "icons", QStandardPaths::LocateDirectory) // xdgata-icon is the "icons" subdir under the xdg data locations
     dirs()-&gt;findAllResources("xdgdata-mime", file) -&gt; QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "mime/" + file)
-    Similarly, xdgconf-menu is QStandardPaths::ConfigLocation + "menus", and xdgconf-autostart is QStandardPaths::ConfigLocation + "autostart";
+    Similarly, xdgconf-menu is QStandardPaths::GenericConfigLocation + "menus", and xdgconf-autostart is QStandardPaths::GenericConfigLocation + "autostart";
     "xdgdata-dirs" is QStandardPaths::GenericDataLocation + "desktop-directories"
     "templates" is QStandardPaths::GenericDataLocation + "templates"
     "emoticons" is QStandardPaths::GenericDataLocation + "emoticons

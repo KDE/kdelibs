@@ -43,14 +43,14 @@ void KDebugTest::initTestCase()
 
     QStandardPaths::enableTestMode(true);
 
-    QString kdebugrc = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QLatin1Char('/') + "kdebugrc";
+    QString kdebugrc = QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) + QLatin1Char('/') + "kdebugrc";
     if (!kdebugrc.isEmpty())
         QFile::remove(kdebugrc);
     QFile::remove("kdebug.dbg");
     QFile::remove("myarea.dbg");
 
     // Check that we can find kdebugrc and kdebug.areas
-    QString filename(QStandardPaths::locate(QStandardPaths::ConfigLocation, QLatin1String("kdebug.areas")));
+    QString filename(QStandardPaths::locate(QStandardPaths::GenericConfigLocation, QLatin1String("kdebug.areas")));
     QVERIFY2(QFile::exists(filename), filename.toLatin1() + " not found");
     QVERIFY(QFile::exists(QFINDTESTDATA("../src/kdebugrc")));
 
@@ -76,7 +76,7 @@ void KDebugTest::initTestCase()
 
 void KDebugTest::cleanupTestCase()
 {
-    QString kdebugrc = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QLatin1Char('/') + "kdebugrc";
+    QString kdebugrc = QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) + QLatin1Char('/') + "kdebugrc";
     if (!kdebugrc.isEmpty())
         QFile::remove(kdebugrc);
     // TODO QFile::remove("kdebug.dbg");

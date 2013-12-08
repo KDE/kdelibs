@@ -69,7 +69,7 @@ public:
      */
     static KSharedConfig::Ptr openConfig(const QString& fileName = QString(),
                                          OpenFlags mode = FullConfig,
-                                         QStandardPaths::StandardLocation type = QStandardPaths::ConfigLocation);
+                                         QStandardPaths::StandardLocation type = QStandardPaths::GenericConfigLocation);
 
     virtual ~KSharedConfig();
 

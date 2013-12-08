@@ -38,7 +38,7 @@ void KSharedConfigTest::initTestCase()
 {
     QStandardPaths::enableTestMode(true);
 
-    m_path = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + "/ksharedconfigtestrc";
+    m_path = QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) + "/ksharedconfigtestrc";
     QFile::remove(m_path);
 }
 

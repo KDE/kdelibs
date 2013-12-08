@@ -192,9 +192,9 @@ void KXMLGUIClient::setComponentName(const QString &componentName, const QString
 
 void KXMLGUIClient::loadStandardsXmlFile()
 {
-    const QString file = QStandardPaths::locate(QStandardPaths::ConfigLocation, QStringLiteral("ui/ui_standards.rc"));
+    const QString file = QStandardPaths::locate(QStandardPaths::GenericConfigLocation, QStringLiteral("ui/ui_standards.rc"));
     if (file.isEmpty()) {
-        qWarning() << "ui/ui_standards.rc not found in" << QStandardPaths::standardLocations(QStandardPaths::ConfigLocation);
+        qWarning() << "ui/ui_standards.rc not found in" << QStandardPaths::standardLocations(QStandardPaths::GenericConfigLocation);
     } else {
         const QString doc = KXMLGUIFactory::readConfigFile( file );
         setXML( doc );

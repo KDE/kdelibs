@@ -165,7 +165,7 @@ void MainWindow::createShellGUI( bool create )
         }
 
         QString f = xmlFile();
-        setXMLFile(QStandardPaths::locate(QStandardPaths::ConfigLocation, QStringLiteral("ui/ui_standards.rc")));
+        setXMLFile(QStandardPaths::locate(QStandardPaths::GenericConfigLocation, QStringLiteral("ui/ui_standards.rc")));
         if (!f.isEmpty()) {
             setXMLFile(f, true);
         } else {

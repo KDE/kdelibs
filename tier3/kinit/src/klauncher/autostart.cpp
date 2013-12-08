@@ -78,7 +78,7 @@ AutoStart::loadAutoStartList()
 
     // Make unique list of relative paths
     QStringList files;
-    QStringList dirs = QStandardPaths::locateAll(QStandardPaths::ConfigLocation, QStringLiteral("autostart"), QStandardPaths::LocateDirectory);
+    QStringList dirs = QStandardPaths::locateAll(QStandardPaths::GenericConfigLocation, QStringLiteral("autostart"), QStandardPaths::LocateDirectory);
     Q_FOREACH (const QString& dir, dirs) {
         const QStringList fileNames = QDir(dir).entryList(QStringList() << QStringLiteral("*.desktop"));
         Q_FOREACH (const QString& file, fileNames) {
@@ -88,7 +88,7 @@ AutoStart::loadAutoStartList()
     }
 
    for (QStringList::ConstIterator it = files.constBegin(); it != files.constEnd(); ++it) {
-       const QString file = QStandardPaths::locate(QStandardPaths::ConfigLocation, QStringLiteral("autostart/") + *it);
+       const QString file = QStandardPaths::locate(QStandardPaths::GenericConfigLocation, QStringLiteral("autostart/") + *it);
        KAutostart config(file);
        if (!config.autostarts(QStringLiteral("KDE"), KAutostart::CheckAll))
            continue;

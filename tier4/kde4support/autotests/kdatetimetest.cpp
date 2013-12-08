@@ -82,7 +82,7 @@ void KDateTimeTest::cleanupTestCase()
     removeDir(QLatin1String("kdatetimetest/America"));
     removeDir(QLatin1String("kdatetimetest/Europe"));
     removeDir(QLatin1String("kdatetimetest"));
-    QFile::remove(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QLatin1Char('/') + "ktimezonedrc");
+    QFile::remove(QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) + QLatin1Char('/') + "ktimezonedrc");
 }
 
 void KDateTimeTest::removeDir(const QString &subdir)

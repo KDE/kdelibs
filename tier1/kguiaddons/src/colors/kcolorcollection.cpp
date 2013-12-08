@@ -53,7 +53,7 @@ KColorCollectionPrivate::KColorCollectionPrivate(const QString &_name)
 {
     if (name.isEmpty()) return;
 
-    QString filename = QStandardPaths::locate(QStandardPaths::ConfigLocation, QLatin1String("colors/") + name);
+    QString filename = QStandardPaths::locate(QStandardPaths::GenericConfigLocation, QLatin1String("colors/") + name);
   if (filename.isEmpty()) return;
 
   QFile paletteFile(filename);
@@ -105,7 +105,7 @@ KColorCollectionPrivate::KColorCollectionPrivate(const KColorCollectionPrivate& 
 
 QStringList KColorCollection::installedCollections()
 {
-  QStringList paletteDirs = QStandardPaths::locateAll(QStandardPaths::ConfigLocation,
+  QStringList paletteDirs = QStandardPaths::locateAll(QStandardPaths::GenericConfigLocation,
                                                       QLatin1String("colors"),
                                                       QStandardPaths::LocateDirectory);
 
@@ -137,7 +137,7 @@ KColorCollection::~KColorCollection()
 bool
 KColorCollection::save()
 {
-   QString filename = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QLatin1String("/colors/")
+   QString filename = QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) + QLatin1String("/colors/")
                                                                                        + d->name;
    QSaveFile sf(filename);
    if (!sf.open(QIODevice::WriteOnly)) return false;

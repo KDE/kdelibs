@@ -39,7 +39,7 @@ public:
         removeDir(QLatin1String("ktimezonestest/Asia"));
         removeDir(QLatin1String("ktimezonestest/Europe"));
         removeDir(QLatin1String("ktimezonestest"));
-        QFile::remove(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QLatin1Char('/') + "ktimezonedrc");
+        QFile::remove(QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) + QLatin1Char('/') + "ktimezonedrc");
     }
 
     void setupTimeZoneTest()

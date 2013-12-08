@@ -45,11 +45,11 @@ QTEST_MAIN(KServiceTest)
 
 static void eraseProfiles()
 {
-    QString profilerc = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + "/profilerc" ;
+    QString profilerc = QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) + "/profilerc" ;
     if ( !profilerc.isEmpty() )
         QFile::remove( profilerc );
 
-    profilerc = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + "/servicetype_profilerc" ;
+    profilerc = QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) + "/servicetype_profilerc" ;
     if ( !profilerc.isEmpty() )
         QFile::remove( profilerc );
 }
@@ -478,7 +478,7 @@ void KServiceTest::testWriteServiceTypeProfile()
     KServiceTypeProfile::writeServiceTypeProfile( serviceType, services, disabledServices );
 
     // Check that the file got written
-    QString profilerc = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + "/servicetype_profilerc" ;
+    QString profilerc = QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) + "/servicetype_profilerc" ;
     QVERIFY(!profilerc.isEmpty());
     QVERIFY(QFile::exists(profilerc));
 

@@ -45,7 +45,7 @@ typedef QSharedPointer<QSettings> QSettingsPtr;
 
 static QSettingsPtr localeOverridesSettings()
 {
-    const QString configPath = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
+    const QString configPath = QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation);
     const QDir configDir(configPath);
     if (!configDir.exists())
         configDir.mkpath(QStringLiteral("."));

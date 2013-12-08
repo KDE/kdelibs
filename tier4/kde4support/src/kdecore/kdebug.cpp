@@ -283,7 +283,7 @@ struct KDebugPrivate
             m_nullOutputYesNoCache[i] = -1;
         }
 
-        QString filename(QStandardPaths::locate(QStandardPaths::ConfigLocation, QLatin1String("kdebug.areas")));
+        QString filename(QStandardPaths::locate(QStandardPaths::GenericConfigLocation, QLatin1String("kdebug.areas")));
         if (!QFile::exists(filename)) {
             return;
         }

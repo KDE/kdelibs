@@ -44,7 +44,7 @@ public:
     void createGUI(const QByteArray& xml, bool withUiStandards = false)
     {
         if (withUiStandards) {
-            QString uis = QStandardPaths::locate(QStandardPaths::ConfigLocation, QStringLiteral("ui/ui_standards.rc"));
+            QString uis = QStandardPaths::locate(QStandardPaths::GenericConfigLocation, QStringLiteral("ui/ui_standards.rc"));
             QVERIFY(!uis.isEmpty());
             setXMLFile(uis);
         }

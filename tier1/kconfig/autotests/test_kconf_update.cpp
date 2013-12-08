@@ -258,8 +258,8 @@ void TestKConfUpdate::test()
     // Prepend the Id= field to the upd content
     updContent = QString("Id=%1\n").arg(QTest::currentDataTag()) + updContent;
 
-    QString oldConfPath = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QLatin1Char('/') + oldConfName;
-    QString newConfPath = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QLatin1Char('/') + newConfName;
+    QString oldConfPath = QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) + QLatin1Char('/') + oldConfName;
+    QString newConfPath = QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) + QLatin1Char('/') + newConfName;
 
     QFile::remove(oldConfPath);
     QFile::remove(newConfPath);
@@ -538,7 +538,7 @@ void TestKConfUpdate::testScript()
     QString scriptPath = scriptDir + "/test.sh";
     writeFile(scriptPath, updScript);
 
-    QString confPath = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QLatin1Char('/') + "testrc";
+    QString confPath = QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) + QLatin1Char('/') + "testrc";
     writeFile(confPath, oldConfContent);
 
     runKConfUpdate(updFile->fileName());

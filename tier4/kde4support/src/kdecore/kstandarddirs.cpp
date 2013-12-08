@@ -1818,7 +1818,7 @@ void KStandardDirs::addKDEDefaults()
 #endif
     }
 
-    QString localXdgDir = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
+    QString localXdgDir = QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation);
     addXdgConfigPrefix(localXdgDir);
 
     for (QStringList::ConstIterator it = xdgdirList.constBegin();

@@ -35,7 +35,7 @@ static void prepareEnvironment()
 {
     QStandardPaths::setTestModeEnabled(true);
 
-    QString configPath = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
+    QString configPath = QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation);
     configPath.append("/kdeglobals");
 
     QFile::remove(configPath);

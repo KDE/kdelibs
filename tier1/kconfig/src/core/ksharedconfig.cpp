@@ -77,7 +77,7 @@ KSharedConfigPtr KSharedConfig::openConfig(const QString& _fileName,
         }
     }
     KSharedConfigPtr ptr(new KSharedConfig(fileName, flags, resType));
-    if (_fileName.isEmpty() && flags == FullConfig && resType == QStandardPaths::ConfigLocation) {
+    if (_fileName.isEmpty() && flags == FullConfig && resType == QStandardPaths::GenericConfigLocation) {
         list->mainConfig = ptr;
 
         static bool userWarned = false;

@@ -699,7 +699,7 @@ public:
      * @return the toplevel directory
      * @deprecated since 5.0, there is no KDEDIRS nor KDEHOME anymore.
      * Use QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) or
-     * QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) instead.
+     * QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) instead.
      */
 #ifndef KDE_NO_DEPRECATED
     KDE4SUPPORT_DEPRECATED QString localkdedir() const;
@@ -717,7 +717,7 @@ public:
     /**
      * @return @c $XDG_CONFIG_HOME
      * See also http://www.freedesktop.org/standards/basedir/draft/basedir-spec/basedir-spec.html
-     * @deprecated since 5.0 use QStandardPaths::writableLocation(QStandardPaths::ConfigLocation)
+     * @deprecated since 5.0 use QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation)
      */
 #ifndef KDE_NO_DEPRECATED
     KDE4SUPPORT_DEPRECATED QString localxdgconfdir() const;

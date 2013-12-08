@@ -64,7 +64,7 @@ void DomainBrowser::startBrowse()
 		Q_FOREACH(const QString &s, edomains) d->gotNewDomain(-1,-1,s,0);
 	    }
 	    //FIXME: watch this file and restart browser if it changes
-	    QString confDir = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
+	    QString confDir = QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation);
 	    QFile domains_cfg(confDir + "/avahi/browse-domains");
 	    if (domains_cfg.open(QIODevice::ReadOnly | QIODevice::Text))
 		while (!domains_cfg.atEnd())

@@ -45,7 +45,7 @@ public:
    *
    * @param resourceType   Allows you to change what sort of resource
    *                       to search for if @p fileName is not absolute.
-   *                       For instance, you might want to specify ConfigLocation.
+   *                       For instance, you might want to specify GenericConfigLocation.
    * @param fileName       The name or path of the desktop file. If it
    *                       is not absolute, it will be located
    *                       using the resource type @p resType.

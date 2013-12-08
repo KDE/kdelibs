@@ -717,7 +717,7 @@ void KApplication::saveState( QSessionManager& sm )
     if ( KConfigGui::hasSessionConfig() ) {
         KConfigGui::sessionConfig()->sync();
         QStringList discard;
-        discard  << QLatin1String("rm") << QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + '/' + KConfigGui::sessionConfigName();
+        discard  << QLatin1String("rm") << QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) + '/' + KConfigGui::sessionConfigName();
         sm.setDiscardCommand( discard );
     } else {
     sm.setDiscardCommand( QStringList( QLatin1String("") ) );

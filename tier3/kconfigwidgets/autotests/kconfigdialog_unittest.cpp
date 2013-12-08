@@ -115,7 +115,7 @@ private Q_SLOTS:
     {
         QStandardPaths::enableTestMode(true);
         // Leftover configuration breaks combosTest
-        const QString configFile = QStandardPaths::locate(QStandardPaths::ConfigLocation, "kconfigdialog_unittestrc");
+        const QString configFile = QStandardPaths::locate(QStandardPaths::GenericConfigLocation, "kconfigdialog_unittestrc");
         if (!configFile.isEmpty())
             QFile::remove(configFile);
     }

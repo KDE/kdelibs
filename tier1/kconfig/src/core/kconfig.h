@@ -128,7 +128,7 @@ public:
      * @sa KSharedConfig::openConfig(const QString&, OpenFlags, const char*)
      */
     explicit KConfig(const QString& file = QString(), OpenFlags mode = FullConfig,
-                     QStandardPaths::StandardLocation type = QStandardPaths::ConfigLocation);
+                     QStandardPaths::StandardLocation type = QStandardPaths::GenericConfigLocation);
 
     /**
      * @internal
@@ -142,7 +142,7 @@ public:
      *
      * @since 4.1
      */
-    KConfig(const QString& file, const QString& backend, QStandardPaths::StandardLocation type = QStandardPaths::ConfigLocation);
+    KConfig(const QString& file, const QString& backend, QStandardPaths::StandardLocation type = QStandardPaths::GenericConfigLocation);
 
     virtual ~KConfig();
 

@@ -58,7 +58,7 @@ KConfigPrivate::KConfigPrivate(KConfig::OpenFlags flags,
       bFileImmutable(false), bForceGlobal(false), bSuppressGlobal(false),
       configState(KConfigBase::NoAccess)
 {
-    sGlobalFileName = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QLatin1String("/kdeglobals");
+    sGlobalFileName = QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) + QLatin1String("/kdeglobals");
 
     static int use_etc_kderc = -1;
     if (use_etc_kderc < 0)
@@ -554,7 +554,7 @@ void KConfigPrivate::changeFileName(const QString& name)
             fileName = KConfig::mainConfigName();
             file = QStandardPaths::writableLocation(resourceType) + QLatin1Char('/') + fileName;
         } else if (wantGlobals()) { // accessing "kdeglobals" - XXX used anywhere?
-            resourceType = QStandardPaths::ConfigLocation;
+            resourceType = QStandardPaths::GenericConfigLocation;
             fileName = QLatin1String("kdeglobals");
             file = sGlobalFileName;
         } else {
@@ -609,9 +609,9 @@ void KConfig::reparseConfiguration()
 QStringList KConfigPrivate::getGlobalFiles() const
 {
     QStringList globalFiles;
-    Q_FOREACH (const QString& dir1, QStandardPaths::locateAll(QStandardPaths::ConfigLocation, QLatin1String("kdeglobals")))
+    Q_FOREACH (const QString& dir1, QStandardPaths::locateAll(QStandardPaths::GenericConfigLocation, QLatin1String("kdeglobals")))
         globalFiles.push_front(dir1);
-    Q_FOREACH (const QString& dir2, QStandardPaths::locateAll(QStandardPaths::ConfigLocation, QLatin1String("system.kdeglobals")))
+    Q_FOREACH (const QString& dir2, QStandardPaths::locateAll(QStandardPaths::GenericConfigLocation, QLatin1String("system.kdeglobals")))
         globalFiles.push_front(dir2);
     if (!etc_kderc.isEmpty())
         globalFiles.push_front(etc_kderc);

@@ -48,7 +48,7 @@ void KConfigCompatTest::initTestCase()
 
 void KConfigCompatTest::cleanupTestCase()
 {
-    QFile::remove(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QLatin1String("/kconfig_compat_test"));
+    QFile::remove(QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) + QLatin1String("/kconfig_compat_test"));
 }
 
 void KConfigCompatTest::testKUrl()

@@ -38,7 +38,7 @@ private Q_SLOTS:
 void KConfigNoKdeHomeTest::testNoKdeHome()
 {
     QStandardPaths::setTestModeEnabled(true);
-    QString configPath = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
+    QString configPath = QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation);
     QDir configDir(configPath);
     configDir.removeRecursively();
     QVERIFY(!QFile::exists(configPath));
