@@ -112,31 +112,31 @@ public:
     */
    void setDeleted( bool deleted );
 
-
    /*
     * @returns true, if this is a separator
     */
    bool isSeparator() const;
 
-   /**
-    * @internal
-    * @return the position of the entry in the sycoca file
-    */
-   int offset() const;
-
-   /**
-    * @internal
-    * Save ourselves to the database.
-    */
-   void save(QDataStream &s);
-
-//   KSycocaEntry(const KSycocaEntry &copy);
-//   KSycocaEntry &operator=(const KSycocaEntry &right);
 protected:
    KSycocaEntry(KSycocaEntryPrivate &d);
    KSycocaEntryPrivate *d_ptr;
 
 private:
+    // All these need access to offset()
+    friend class KSycocaFactory;
+    friend class KBuildServiceFactory;
+    friend class KMimeTypeTrader;
+    friend class KServiceTypeTrader;
+    friend class KService;
+    friend class KSycocaDict;
+    friend class KSycocaDictTest;
+
+    /**
+     * @internal
+     * @return the position of the entry in the sycoca file
+     */
+    int offset() const;
+
     Q_DISABLE_COPY(KSycocaEntry)
 
     Q_DECLARE_PRIVATE(KSycocaEntry)

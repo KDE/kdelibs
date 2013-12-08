@@ -20,6 +20,7 @@
 #include "ksycoca.h"
 #include "ksycocatype.h"
 #include "ksycocaentry.h"
+#include "ksycocaentry_p.h"
 #include "ksycocadict_p.h"
 
 #include <QDebug>
@@ -113,7 +114,7 @@ KSycocaFactory::save(QDataStream &str)
         it != m_entryDict->end(); ++it)
     {
         KSycocaEntry::Ptr entry = *it;
-        entry->save(str);
+        entry->d_ptr->save(str);
         entryCount++;
     }
 

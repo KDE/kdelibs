@@ -540,6 +540,7 @@ void KServiceTest::testActionsAndDataStream()
     const KServiceAction rootAction = actions[2];
     QCOMPARE(rootAction.name(), QString("Root"));
 
+#if 0 // disabled due to making KService::save internal. This will all go away when moving to the xdg cache.
     QByteArray data;
     QDataStream stream(&data, QIODevice::WriteOnly);
     service.save(stream);
@@ -556,6 +557,7 @@ void KServiceTest::testActionsAndDataStream()
     QCOMPARE(loadedService.name(), service.name());
     QCOMPARE(loadedService.exec(), service.exec());
     QCOMPARE(loadedService.actions().count(), 3);
+#endif
 }
 
 void KServiceTest::testServiceGroups()

@@ -22,6 +22,7 @@
 
 #include <kservice.h>
 class KServiceOffer;
+typedef QList<KServiceOffer> KServiceOfferList;
 
 /**
  * KDE's trader for services associated to a given mimetype.
@@ -190,6 +191,9 @@ private:
     class Private;
     Private * const d;
 
+    // class-static so that it can access KSycocaEntry::offset()
+    static void filterMimeTypeOffers(KServiceOfferList& list, const QString& genericServiceType);
+    static void filterMimeTypeOffers(KService::List& list, const QString& genericServiceType);
     friend class KMimeTypeTraderSingleton;
 };
 

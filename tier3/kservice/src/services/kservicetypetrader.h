@@ -20,6 +20,8 @@
 #define __kservicetypetrader_h__
 
 #include "kservice.h"
+class KServiceOffer;
+typedef QList<KServiceOffer> KServiceOfferList;
 
 /**
  * KDE's trader interface (similar to the CORBA Trader), which provides a way
@@ -205,9 +207,11 @@ private:
      */
     KServiceTypeTrader();
 
-    // dissalow copy ctor and assignment operator
+    // disallow copy ctor and assignment operator
     KServiceTypeTrader( const KServiceTypeTrader& other );
     KServiceTypeTrader& operator=( const KServiceTypeTrader& rhs );
+
+    static KServiceOfferList weightedOffers( const QString& serviceType );
 
     class Private;
     Private * const d;

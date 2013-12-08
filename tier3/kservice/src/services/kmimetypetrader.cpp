@@ -119,7 +119,7 @@ static KService::List mimeTypeSycocaServiceOffers(const QString& mimeType)
  * @param list list of offers (key=service, value=initialPreference)
  * @param genericServiceType the generic service type (e.g. "Application" or "KParts/ReadOnlyPart")
  */
-static void filterMimeTypeOffers(KServiceOfferList& list, const QString& genericServiceType)
+void KMimeTypeTrader::filterMimeTypeOffers(KServiceOfferList& list, const QString& genericServiceType) // static, internal
 {
     KServiceType::Ptr genericServiceTypePtr = KServiceType::serviceType(genericServiceType);
     CHECK_SERVICETYPE(genericServiceTypePtr);
@@ -137,7 +137,7 @@ static void filterMimeTypeOffers(KServiceOfferList& list, const QString& generic
     }
 }
 
-static void filterMimeTypeOffers(KService::List& list, const QString& genericServiceType)
+void KMimeTypeTrader::filterMimeTypeOffers(KService::List& list, const QString& genericServiceType) // static, internal
 {
     KServiceType::Ptr genericServiceTypePtr = KServiceType::serviceType(genericServiceType);
     CHECK_SERVICETYPE(genericServiceTypePtr);

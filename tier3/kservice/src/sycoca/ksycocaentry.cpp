@@ -94,12 +94,6 @@ void KSycocaEntryPrivate::save(QDataStream &s)
     s << qint32(sycocaType()) << path;
 }
 
-void KSycocaEntry::save(QDataStream &s)
-{
-    Q_D(KSycocaEntry);
-    d->save(s);
-}
-
 bool KSycocaEntry::isValid() const
 {
     Q_D(const KSycocaEntry);
