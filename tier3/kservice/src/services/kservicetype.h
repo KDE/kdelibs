@@ -52,12 +52,6 @@ public:
      */
     explicit KServiceType( KDesktopFile *config );
 
-    /**
-     * @internal construct a service from a stream.
-     * The stream must already be positionned at the correct offset
-     */
-    KServiceType( QDataStream& _str, int offset );
-
     virtual ~KServiceType();
 
     /**
@@ -158,28 +152,14 @@ public:
      */
     static List allServiceTypes();
 
-protected: // used by KMimeType
-
-    /**
-     * Construct a servicetype from another servicetype's private object
-     *
-     * @param dd the private object
-      */
-     KServiceType( KServiceTypePrivate &dd);
-
-    /**
-     * Construct a servicetype based on another servicetype's private object
-     *
-     * Allows the name and comment to be overridden.
-     *
-     * @param dd the private object
-     * @param _name the name of the service type
-     * @param _comment a comment (can be empty)
-     */
-    KServiceType( KServiceTypePrivate &dd, const QString& _name,
-                  const QString& _comment );
-
 private:
+    friend class KServiceTypeFactory;
+    /**
+     * @internal construct a service from a stream.
+     * The stream must already be positionned at the correct offset
+     */
+    KServiceType( QDataStream& _str, int offset );
+
     Q_DECLARE_PRIVATE(KServiceType)
 };
 

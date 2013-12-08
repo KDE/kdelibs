@@ -81,13 +81,6 @@ public:
      */
     explicit KService(const KDesktopFile *config, const QString& entryPath = QString());
 
-    /**
-     * @internal
-     * Construct a service from a stream.
-     * The stream must already be positionned at the correct offset.
-     */
-    KService( QDataStream& str, int offset );
-
     virtual ~KService();
 
     /**
@@ -594,7 +587,7 @@ public:
     }
 #endif
 
-protected:
+private:
     friend class KBuildServiceFactory;
 
     /// @internal for KBuildSycoca only
@@ -612,7 +605,16 @@ protected:
 
     friend QDataStream& operator>>( QDataStream&, ServiceTypeAndPreference& );
     friend QDataStream& operator<<( QDataStream&, const ServiceTypeAndPreference& );
-private:
+
     Q_DECLARE_PRIVATE(KService)
+
+    friend class KServiceFactory;
+
+    /**
+     * @internal
+     * Construct a service from a stream.
+     * The stream must already be positionned at the correct offset.
+     */
+    KService( QDataStream& str, int offset );
 };
 #endif

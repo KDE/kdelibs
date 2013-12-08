@@ -80,12 +80,6 @@ public:
    */
   KServiceGroup( const QString & _fullpath, const QString & _relpath );
 
-  /**
-   * @internal construct a service from a stream.
-   * The stream must already be positionned at the correct offset
-   */
-  KServiceGroup( QDataStream& _str, int offset, bool deep );
-
   virtual ~KServiceGroup();
 
   /**
@@ -280,7 +274,15 @@ protected:
    * Add a service to this group
    */
   void addEntry( const KSycocaEntry::Ptr& entry);
+
 private:
+    friend class KServiceGroupFactory;
+    /**
+     * @internal construct a service from a stream.
+     * The stream must already be positionned at the correct offset
+     */
+    KServiceGroup( QDataStream& _str, int offset, bool deep );
+
     Q_DECLARE_PRIVATE(KServiceGroup)
 };
 

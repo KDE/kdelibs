@@ -34,15 +34,6 @@ extern int servicesDebugArea();
 template QDataStream& operator>> <QString, QVariant>(QDataStream&, QMap<QString, QVariant>&);
 template QDataStream& operator<< <QString, QVariant>(QDataStream&, const QMap<QString, QVariant>&);
 
-KServiceType::KServiceType( KServiceTypePrivate &dd, const QString& _name,
-                            const QString& _comment )
-    : KSycocaEntry(dd)
-{
-    Q_D(KServiceType);
-    d->m_strName = _name;
-    d->m_strComment = _comment;
-}
-
 KServiceType::KServiceType( KDesktopFile *config )
     : KSycocaEntry(*new KServiceTypePrivate(config->fileName()))
 {
@@ -96,11 +87,6 @@ KServiceType::KServiceType( QDataStream& _str, int offset )
 {
     Q_D(KServiceType);
     d->load(_str);
-}
-
-KServiceType::KServiceType( KServiceTypePrivate &dd)
-    : KSycocaEntry(dd)
-{
 }
 
 void
