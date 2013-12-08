@@ -24,7 +24,7 @@
 
 #include <QtCore/QStringList>
 
-#include "ksycocafactory.h"
+#include "ksycocafactory_p.h"
 #include "kservicetype.h"
 
 class KSycoca;

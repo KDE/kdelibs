@@ -22,7 +22,7 @@
 #include "ksycoca_p.h"
 #include "ksycocautils_p.h"
 #include "ksycocatype.h"
-#include "ksycocafactory.h"
+#include "ksycocafactory_p.h"
 #include "kmemfile_p.h"
 #include "kconfiggroup.h"
 #include "ksharedconfig.h"

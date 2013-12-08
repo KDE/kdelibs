@@ -19,7 +19,7 @@
 #ifndef KDED_KCTIME_FACTORY_H
 #define KDED_KCTIME_FACTORY_H
 
-#include <ksycocafactory.h>
+#include <ksycocafactory_p.h>
 #include <QtCore/QHash>
 
 /**

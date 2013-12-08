@@ -24,7 +24,7 @@
 #include <QtCore/QStringList>
 
 #include "kserviceoffer.h"
-#include "ksycocafactory.h"
+#include "ksycocafactory_p.h"
 #include <assert.h>
 
 class KSycoca;

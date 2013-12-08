@@ -22,7 +22,7 @@
 #include <QtCore/QStringList>
 
 #include "kservicegroup.h"
-#include "ksycocafactory.h"
+#include "ksycocafactory_p.h"
 #include <assert.h>
 
 class KSycoca;

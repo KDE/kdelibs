@@ -24,7 +24,7 @@
 
 #include <QtCore/QStringList>
 
-#include "ksycocafactory.h"
+#include "ksycocafactory_p.h"
 #include "ksycocaentry_p.h"
 
 class KSycoca;

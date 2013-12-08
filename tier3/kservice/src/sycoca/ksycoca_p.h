@@ -21,7 +21,7 @@
 #ifndef KSYCOCA_P_H
 #define KSYCOCA_P_H
 
-#include "ksycocafactory.h"
+#include "ksycocafactory_p.h"
 #include <QStringList>
 class QFile;
 class QDataStream;

@@ -16,7 +16,7 @@
  *  Boston, MA 02110-1301, USA.
  */
 
-#include "ksycocafactory.h"
+#include "ksycocafactory_p.h"
 #include "ksycoca.h"
 #include "ksycocatype.h"
 #include "ksycocaentry.h"
