@@ -193,7 +193,7 @@ public:
      *
      * It is mandatory that the action->objectName() doesn't change once the shortcut has been sucessfully registered.
      *
-     * \note QActionCollection::insert(name, action) will set action's objectName to name so you often
+     * \note KActionCollection::insert(name, action) will set action's objectName to name so you often
      * don't have to set an objectName explicitly.
      *
      * When an action, identified by main component name and objectName(), is assigned
