@@ -50,7 +50,7 @@ public:
    virtual ~KSycocaEntry();
 
    /**
-    * internal
+    * Returns true if this sycoca entry is of the given type.
     */
    bool isType(KSycocaType t) const;
    /**
@@ -60,18 +60,6 @@ public:
 
    typedef QExplicitlySharedDataPointer<KSycocaEntry> Ptr;
    typedef QList<Ptr> List;
-
-   /**
-    * Default constructor
-    */
-//   explicit KSycocaEntry(const QString &path);
-
-   /**
-    * Safe demarshalling functions.
-    */
-   static void read( QDataStream &s, QString &str );
-   static void read( QDataStream &s, QStringList &list );
-
 
    /**
     * @return the name of this entry

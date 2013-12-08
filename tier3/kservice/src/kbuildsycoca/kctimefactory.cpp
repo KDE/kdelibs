@@ -18,6 +18,7 @@
 
 #include "kctimefactory.h"
 #include <ksycoca.h>
+#include <ksycocautils_p.h>
 #include <ksycocatype.h>
 #include <QDebug>
 
@@ -75,7 +76,7 @@ void KCTimeDict::load(QDataStream &str)
     quint32 ctime;
     while(true)
     {
-        KSycocaEntry::read(str, key);
+        KSycocaUtilsPrivate::read(str, key);
         str >> ctime;
         if (key.isEmpty()) break;
         m_hash.insert(key, ctime);

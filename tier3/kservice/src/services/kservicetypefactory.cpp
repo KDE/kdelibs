@@ -18,6 +18,7 @@
 
 #include "kservicetypefactory.h"
 #include "ksycoca.h"
+#include "ksycocautils_p.h"
 #include "ksycocatype.h"
 #include "ksycocadict_p.h"
 #include "kservicetypeprofile.h"
@@ -44,7 +45,7 @@ KServiceTypeFactory::KServiceTypeFactory()
                 QString string;
                 qint32 i;
                 for(;n;--n) {
-                    KSycocaEntry::read(*str, string);
+                    KSycocaUtilsPrivate::read(*str, string);
                     (*str) >> i;
                     m_propertyTypeDict.insert(string, i);
                 }

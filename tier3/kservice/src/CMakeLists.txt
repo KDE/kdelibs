@@ -28,6 +28,7 @@ set(kservice_SRCS
    sycoca/ksycocadict.cpp
    sycoca/ksycocaentry.cpp
    sycoca/ksycocafactory.cpp
+   sycoca/ksycocautils.cpp
    sycoca/kmemfile.cpp
    plugin/klibrary.cpp
    plugin/kpluginfactory.cpp

@@ -20,6 +20,7 @@
 
 #include "ksycoca.h"
 #include "ksycoca_p.h"
+#include "ksycocautils_p.h"
 #include "ksycocatype.h"
 #include "ksycocafactory.h"
 #include "kmemfile_p.h"
@@ -529,11 +530,11 @@ QString KSycoca::kfsstnd_prefixes()
    }
    // We now point to the header
    QString prefixes;
-   KSycocaEntry::read(*str, prefixes);
+   KSycocaUtilsPrivate::read(*str, prefixes);
    *str >> d->timeStamp;
-   KSycocaEntry::read(*str, d->language);
+   KSycocaUtilsPrivate::read(*str, d->language);
    *str >> d->updateSig;
-   KSycocaEntry::read(*str, d->allResourceDirs);
+   KSycocaUtilsPrivate::read(*str, d->allResourceDirs);
    return prefixes;
 }
 
