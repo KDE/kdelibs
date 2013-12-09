@@ -33,7 +33,7 @@ target_link_libraries(KF5Declarative
     KF5::ConfigCore # KCoreConfigSkeleton, in ConfigPropertyMap
     KF5::I18n       #i18n bindings
     KF5::KIOWidgets     #KIO::AccessManager
-    KF5::KIconThemes #KIconProvider
+    KF5::IconThemes #KIconProvider
 )
 target_include_directories(KF5Declarative PUBLIC "$<BUILD_INTERFACE:${KDeclarative_BINARY_DIR}>")
 

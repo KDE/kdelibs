@@ -17,10 +17,10 @@ if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
     find_package(KF5I18n ${KF5_VERSION} REQUIRED) #
     find_package(KF5CoreAddons ${KF5_VERSION} REQUIRED)
     find_package(KF5DBusAddons ${KF5_VERSION} REQUIRED)
-    find_package(KService ${KF5_VERSION} REQUIRED)
+    find_package(KF5Service ${KF5_VERSION} REQUIRED)
     find_package(KF5WindowSystem ${KF5_VERSION} REQUIRED) #
     find_package(KF5Crash ${KF5_VERSION} REQUIRED)
-    find_package(KInit ${KF5_VERSION} REQUIRED)
+    find_package(KF5Init ${KF5_VERSION} REQUIRED)
     find_package(KF5DocTools ${KF5_VERSION} REQUIRED)
 else()
     set(_kdeBootStrapping TRUE)

@@ -6,10 +6,11 @@ set(kmediaplayer_LIB_SRCS
 
 add_library(KF5MediaPlayer ${kmediaplayer_LIB_SRCS})
 generate_export_header(KF5MediaPlayer BASE_NAME KMediaPlayer)
+add_library(KF5::MediaPlayer ALIAS KF5MediaPlayer)
 
 target_link_libraries(KF5MediaPlayer PUBLIC
    Qt5::Widgets
-   KF5::KParts
+   KF5::Parts
    KF5::I18n
 )
 target_link_libraries(KF5MediaPlayer PRIVATE

@@ -43,7 +43,7 @@ if(Qt5Designer_FOUND)
 
   add_library(kdewidgets MODULE ${kdewidgets_PART_SRCS})
 
-  target_link_libraries(kdewidgets KF5::KIOFileWidgets KF5::Plotting KF5::WidgetsAddons KF5::I18n KF5::KIconThemes KF5::KTextWidgets KF5::ItemViews)
+  target_link_libraries(kdewidgets KF5::KIOFileWidgets KF5::Plotting KF5::WidgetsAddons KF5::I18n KF5::IconThemes KF5::TextWidgets KF5::ItemViews)
   if(NOT WIN32)
     set_target_properties(kdewidgets PROPERTIES
                                      INSTALL_RPATH_USE_LINK_PATH TRUE

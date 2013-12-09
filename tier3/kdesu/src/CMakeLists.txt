@@ -31,10 +31,10 @@ target_include_directories(KF5Su PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/..)
 
 target_link_libraries(KF5Su
   PUBLIC
-    KF5::KPty
+    KF5::Pty
   PRIVATE
     KF5::CoreAddons # KUser::loginName
-    KF5::KService # KToolInvocation::kdeinitExecWait
+    KF5::Service # KToolInvocation::kdeinitExecWait
 )
 
 if(KDESU_USE_SUDO_DEFAULT)
@@ -42,7 +42,7 @@ if(KDESU_USE_SUDO_DEFAULT)
                                COMPILE_FLAGS -DKDESU_USE_SUDO_DEFAULT)
 endif()
 
-set_target_properties(KDESu PROPERTIES
+set_target_properties(KF5Su PROPERTIES
   VERSION ${KDESU_VERSION_STRING}
   SOVERSION ${KDESU_SOVERSION}
   EXPORT_NAME Su

@@ -112,7 +112,7 @@ target_include_directories(KIOCore PUBLIC
 target_link_libraries(KIOCore
 PUBLIC
  KF5::CoreAddons   # KJob
- KF5::KService
+ KF5::Service
 PRIVATE
  Qt5::Network
  Qt5::Concurrent            # QtConcurrentRun in hostinfo.cpp

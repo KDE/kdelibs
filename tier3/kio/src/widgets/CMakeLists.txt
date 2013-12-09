@@ -99,9 +99,9 @@ target_link_libraries(KIOWidgets
   PRIVATE
     Qt5::DBus
     KF5::I18n
-    KF5::KIconThemes   # KIconLoader
+    KF5::IconThemes   # KIconLoader
     KF5::WindowSystem # KStartupInfo
-    KF5::KConfigWidgets # KColorScheme
+    KF5::ConfigWidgets # KColorScheme
 )
 
 if(ACL_FOUND)

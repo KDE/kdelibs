@@ -23,11 +23,11 @@ ecm_setup_version(5.0.0 VARIABLE_PREFIX FRAMEWORKINTEGRATION
 if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
   find_package(KF5I18n ${KF5_VERSION} REQUIRED)
   find_package(KF5GuiAddons ${KF5_VERSION} REQUIRED) #
-  find_package(KWidgetsAddons ${KF5_VERSION} REQUIRED) #
-  find_package(KConfigWidgets ${KF5_VERSION} REQUIRED)
+  find_package(KF5WidgetsAddons ${KF5_VERSION} REQUIRED) #
+  find_package(KF5ConfigWidgets ${KF5_VERSION} REQUIRED)
   find_package(KF5ItemViews ${KF5_VERSION} REQUIRED) #
   find_package(KF5Config ${KF5_VERSION} REQUIRED)
-  find_package(KIconThemes ${KF5_VERSION} REQUIRED)
+  find_package(KF5IconThemes ${KF5_VERSION} REQUIRED)
   find_package(KF5Notifications ${KF5_VERSION} REQUIRED)
   find_package(KF5I18n ${KF5_VERSION} REQUIRED)
   find_package(KIO ${KF5_VERSION} REQUIRED)

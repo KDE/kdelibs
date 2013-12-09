@@ -18,12 +18,12 @@ add_library(kjavaappletviewer MODULE ${kjavaappletviewer_PART_SRCS})
 
 target_link_libraries(kjavaappletviewer
                       Qt5::Network
-                      KF5::KParts
+                      KF5::Parts
                       KF5::WindowSystem
                       KF5::WidgetsAddons
                       KF5::XmlGui
                       KF5::I18n
-                      KF5::KIconThemes )
+                      KF5::IconThemes )
 
 install(TARGETS kjavaappletviewer  DESTINATION ${PLUGIN_INSTALL_DIR} )
 

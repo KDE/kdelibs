@@ -17,10 +17,10 @@ add_executable(testserver ${testserver_SRCS})
 ecm_mark_as_test(testserver)
 
 target_link_libraries(testserver
-    KF5::KParts
+    KF5::Parts
     KF5::I18n
     KF5::XmlGui
-    KF5::KIconThemes
+    KF5::IconThemes
     KF5::WindowSystem
     Qt5::Network
 )
