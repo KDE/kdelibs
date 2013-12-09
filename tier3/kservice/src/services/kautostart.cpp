@@ -83,7 +83,7 @@ KAutostart::KAutostart(const QString& entryName, QObject* parent)
         d->name.append(QString::fromLatin1(".desktop"));
     }
 
-    const QString path = QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) + QLatin1String("/autostart/") + d->name;
+    const QString path = QStandardPaths::locate(QStandardPaths::GenericConfigLocation, QStringLiteral("autostart/") + d->name);
     if (path.isEmpty()) {
         // just a new KDesktopFile, since we have nothing to use
         d->df = new KDesktopFile(QStandardPaths::GenericConfigLocation, QString::fromLatin1("autostart/") + d->name);
