@@ -89,7 +89,7 @@ AutoStart::loadAutoStartList()
 
    for (QStringList::ConstIterator it = files.constBegin(); it != files.constEnd(); ++it) {
        const QString file = QStandardPaths::locate(QStandardPaths::GenericConfigLocation, QStringLiteral("autostart/") + *it);
-       KAutostart config(file);
+       KAutostart config(*it);
        if (!config.autostarts(QStringLiteral("KDE"), KAutostart::CheckAll))
            continue;
 
