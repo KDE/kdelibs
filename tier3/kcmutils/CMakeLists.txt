@@ -24,12 +24,12 @@ ecm_setup_version(${KF5_VERSION} VARIABLE_PREFIX KCMUTILS
 
 if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
     find_package(KF5ItemViews ${KF5_VERSION} REQUIRED)
-    find_package(KConfigWidgets ${KF5_VERSION} REQUIRED)
+    find_package(KF5ConfigWidgets ${KF5_VERSION} REQUIRED)
     find_package(KF5CoreAddons ${KF5_VERSION} REQUIRED)
     find_package(KF5I18n ${KF5_VERSION} REQUIRED)
-    find_package(KIconThemes ${KF5_VERSION} REQUIRED)
-    find_package(KService ${KF5_VERSION} REQUIRED)
-    find_package(XmlGui ${KF5_VERSION} REQUIRED)
+    find_package(KF5IconThemes ${KF5_VERSION} REQUIRED)
+    find_package(KF5Service ${KF5_VERSION} REQUIRED)
+    find_package(KF5XmlGui ${KF5_VERSION} REQUIRED)
 endif()
 
 add_subdirectory(src)

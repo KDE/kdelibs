@@ -12,7 +12,7 @@ endif ()
 
 target_link_libraries(kdeinit_kded5
     Qt5::Widgets # QApplication
-    KF5::KService # Needed for ksycoca.h
+    KF5::Service # Needed for ksycoca.h
     KF5::CoreAddons # Needed for KDirWatch
     KF5::DBusAddons # Needed for kdedmodule.h
     KF5::Crash # Sets it as autostart

@@ -35,7 +35,7 @@ target_link_libraries(KF5PrintUtils
     Qt5::Widgets
     Qt5::PrintSupport
   PRIVATE
-    KF5::KParts
+    KF5::Parts
     KF5::I18n
 )
 set_target_properties(KF5PrintUtils PROPERTIES

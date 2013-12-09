@@ -281,20 +281,20 @@ PUBLIC
    KF5::Crash
    KF5::WidgetsAddons
    KF5::ConfigCore # KSharedConfig in kcomponentdata.h
-   KF5::KConfigWidgets
+   KF5::ConfigWidgets
    KF5::KIOCore
    KF5::KIOFileWidgets
    KF5::I18n
    KF5::Completion
    KF5::Notifications
-   KF5::KIconThemes
+   KF5::IconThemes
    KF5::WindowSystem
    KF5::GuiAddons
-   KF5::KUnitConversion
-   KF5::KTextWidgets
-   KF5::KParts
+   KF5::UnitConversion
+   KF5::TextWidgets
+   KF5::Parts
 PRIVATE
-   KF5::KUnitConversion
+   KF5::UnitConversion
    KF5::ItemViews
    KF5::GlobalAccel
    Qt5::Svg

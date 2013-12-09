@@ -38,8 +38,8 @@ target_link_libraries(KStyle
   PUBLIC
     Qt5::Widgets
   PRIVATE
-    KF5::KConfigWidgets
-    KF5::KIconThemes
+    KF5::ConfigWidgets
+    KF5::IconThemes
 )
 
 set_target_properties(KStyle PROPERTIES VERSION   ${KSTYLE_VERSION_STRING}

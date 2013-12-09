@@ -35,7 +35,7 @@ add_library(kded_kcookiejar MODULE ${kded_kcookiejar_SRCS})
 
 target_link_libraries(kded_kcookiejar
    KF5::WindowSystem
-   KF5::KService # kpluginfactory
+   KF5::Service # kpluginfactory
    KF5::DBusAddons
    KF5::I18n
    KF5::WidgetsAddons

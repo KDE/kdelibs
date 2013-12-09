@@ -2,7 +2,7 @@ project(kservicetojsontest)
 cmake_minimum_required(VERSION 2.8)
 
 find_package(Qt5 CONFIG REQUIRED Core)
-find_package(KService CONFIG REQUIRED)
+find_package(KF5Service CONFIG REQUIRED)
 
 set(CMAKE_AUTOMOC TRUE)
 set(BUILD_SHARED_LIBS TRUE)

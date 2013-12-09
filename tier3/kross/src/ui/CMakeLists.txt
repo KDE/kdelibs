@@ -10,9 +10,9 @@ add_library(KrossUi ${krossui_LIB_SRCS})
 target_link_libraries(KrossUi KrossCore
    KF5::WidgetsAddons
    KF5::KIOWidgets
-   KF5::KParts
+   KF5::Parts
    KF5::I18n
-   KF5::KIconThemes
+   KF5::IconThemes
 )
 set_target_properties(KrossUi PROPERTIES VERSION ${KROSS_VERSION_STRING}
                                          SOVERSION ${KROSS_SOVERSION}

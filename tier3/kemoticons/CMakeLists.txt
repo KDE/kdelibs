@@ -31,7 +31,7 @@ if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
   find_package(KF5I18n ${KF5_VERSION} REQUIRED)
 
   find_package(KF5Archive ${KF5_VERSION} REQUIRED)
-  find_package(KService ${KF5_VERSION} REQUIRED)
+  find_package(KF5Service ${KF5_VERSION} REQUIRED)
 endif()
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/kemoticons_version.h

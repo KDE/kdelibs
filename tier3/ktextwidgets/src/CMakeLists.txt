@@ -31,10 +31,10 @@ PRIVATE
   Qt5::DBus
   KF5::SonnetCore
   KF5::I18n
-  KF5::KService
-  KF5::KConfigWidgets
+  KF5::Service
+  KF5::ConfigWidgets
   KF5::WindowSystem
-  KF5::KIconThemes
+  KF5::IconThemes
   KF5::Completion
 )
 

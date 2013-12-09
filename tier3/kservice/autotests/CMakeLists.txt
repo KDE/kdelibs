@@ -11,7 +11,7 @@ macro(KSERVICE_UNIT_TESTS)
     add_executable(${_testname} ${_testname}.cpp kwaitforsignal.cpp)
     add_test(kservice-${_testname} ${_testname})
     target_link_libraries(${_testname}
-       KService
+       KF5::Service
        Qt5::Test
        Qt5::Concurrent
     )
@@ -25,7 +25,7 @@ endmacro(KSERVICE_UNIT_TESTS)
 add_library(fakeplugin MODULE nsaplugin.cpp)
 ecm_mark_as_test(fakeplugin)
 set_target_properties(fakeplugin PROPERTIES PREFIX "")
-target_link_libraries(fakeplugin KService)
+target_link_libraries(fakeplugin KF5::Service)
 
 
 kservice_unit_tests(

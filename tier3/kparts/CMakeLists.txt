@@ -19,29 +19,27 @@ include(ECMSetupVersion)
 set(KF5_VERSION "5.0.0")
 ecm_setup_version(${KF5_VERSION} VARIABLE_PREFIX KPARTS
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kparts_version.h"
-                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KPartsConfigVersion.cmake")
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KF5PartsConfigVersion.cmake")
 
 if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
   #NOTE: here the dependencies of dependencies are displayed as well, this shouldn't be needed
   #after cmake 3.0.0 is released
     find_package(KF5I18n ${KF5_VERSION} REQUIRED)
     find_package(KF5GuiAddons ${KF5_VERSION} REQUIRED)
-    find_package(KConfigWidgets ${KF5_VERSION} REQUIRED)
+    find_package(KF5ConfigWidgets ${KF5_VERSION} REQUIRED)
     find_package(KF5DBusAddons ${KF5_VERSION} REQUIRED)
-    find_package(KService ${KF5_VERSION} REQUIRED)
+    find_package(KF5Service ${KF5_VERSION} REQUIRED)
     find_package(KF5Completion ${KF5_VERSION} REQUIRED)
     find_package(KF5WindowSystem ${KF5_VERSION} REQUIRED)
     find_package(KF5ItemViews ${KF5_VERSION} REQUIRED)
     find_package(KF5WidgetsAddons ${KF5_VERSION} REQUIRED)
-    find_package(KIconThemes ${KF5_VERSION} REQUIRED)
-    find_package(KTextWidgets ${KF5_VERSION} REQUIRED)
-    find_package(XmlGui ${KF5_VERSION} REQUIRED)
+    find_package(KF5IconThemes ${KF5_VERSION} REQUIRED)
     find_package(KF5Solid ${KF5_VERSION} REQUIRED)
-    find_package(KBookmarks ${KF5_VERSION} REQUIRED)
+    find_package(KF5Bookmarks ${KF5_VERSION} REQUIRED)
 
     find_package(KIO ${KF5_VERSION} REQUIRED)
-    find_package(XmlGui ${KF5_VERSION} REQUIRED)
-    find_package(KTextWidgets ${KF5_VERSION} REQUIRED)
+    find_package(KF5XmlGui ${KF5_VERSION} REQUIRED)
+    find_package(KF5TextWidgets ${KF5_VERSION} REQUIRED)
     find_package(KF5Notifications ${KF5_VERSION} REQUIRED)
 endif()
 
@@ -54,24 +52,24 @@ add_subdirectory( autotests )
 add_subdirectory( src )
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
-set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KParts")
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KF5Parts")
 
 include(CMakePackageConfigHelpers)
 
 configure_package_config_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/KPartsConfig.cmake.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/KPartsConfig.cmake"
+  "${CMAKE_CURRENT_SOURCE_DIR}/KF5PartsConfig.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5PartsConfig.cmake"
   INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
 )
 
 install(FILES
-  "${CMAKE_CURRENT_BINARY_DIR}/KPartsConfig.cmake"
-  "${CMAKE_CURRENT_BINARY_DIR}/KPartsConfigVersion.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5PartsConfig.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5PartsConfigVersion.cmake"
   DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
   COMPONENT Devel
 )
 
-install(EXPORT KPartsTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KPartsTargets.cmake NAMESPACE KF5:: )
+install(EXPORT KF5PartsTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KF5PartsTargets.cmake NAMESPACE KF5:: )
 
 install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/kparts_version.h

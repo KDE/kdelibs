@@ -22,7 +22,7 @@ include_directories(
 
 add_executable(khtmlparttest khtmlparttest.cpp)
 add_test(khtml-parttest khtmlparttest)
-target_link_libraries(khtmlparttest Qt5::Test KHtml Qt5::Widgets KF5::XmlGui KF5::KTextWidgets KF5::KParts)
+target_link_libraries(khtmlparttest Qt5::Test KHtml Qt5::Widgets KF5::XmlGui KF5::TextWidgets KF5::Parts)
 ecm_mark_as_test(khtmlparttest)
 
 set(kencodingdetector_SRCS

@@ -7,7 +7,7 @@ if( Qt5UiTools_FOUND )
 
     target_link_libraries(KrossModuleForms
        Qt5::UiTools
-       KF5::KParts
+       KF5::Parts
        KF5::KIOFileWidgets
        KrossCore
        KrossUi
@@ -23,7 +23,7 @@ set(krossmodulekdetranslation_SRCS translation.cpp)
 add_library(KrossModuleKdeTranslation MODULE ${krossmodulekdetranslation_SRCS})
 
 target_link_libraries(KrossModuleKdeTranslation
-   KF5::KParts
+   KF5::Parts
    KrossCore
    KF5::I18n
 )

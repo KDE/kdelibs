@@ -80,8 +80,8 @@ target_link_libraries(KF5NewStuff
     KF5::Archive               # For decompressing archives
     KF5::I18n                  # For translations
     KF5::ItemViews             # For buttons on download dialog
-    KF5::KIconThemes           # For KIcon
-    KF5::KTextWidgets          # For KTextEdit in upload dialog
+    KF5::IconThemes           # For KIcon
+    KF5::TextWidgets          # For KTextEdit in upload dialog
 )
 
 generate_export_header(KF5NewStuff BASE_NAME KNewStuff)
