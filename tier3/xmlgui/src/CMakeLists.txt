@@ -39,9 +39,6 @@ set(xmlgui_SRCS
   kedittoolbar.cpp
   kgesture.cpp
   kgesturemap.cpp
-  kglobalaccel.cpp
-  kglobalshortcutinfo.cpp
-  kglobalshortcutinfo_dbus.cpp
   khelpmenu.cpp
   kkeysequencewidget.cpp
   kmainwindow.cpp
@@ -69,16 +66,6 @@ set(xmlgui_SRCS
   kcheckaccelerators.cpp
   khelpclient.cpp
 )
-
-set(kglobalaccel_xml ${CMAKE_CURRENT_SOURCE_DIR}/org.kde.KGlobalAccel.xml)
-set_source_files_properties(${kglobalaccel_xml} PROPERTIES INCLUDE "kglobalshortcutinfo_p.h")
-qt5_add_dbus_interface(xmlgui_SRCS ${kglobalaccel_xml} kglobalaccel_interface )
-install(FILES ${kglobalaccel_xml} DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
-
-set(kglobalaccel_component_xml ${CMAKE_CURRENT_SOURCE_DIR}/org.kde.kglobalaccel.Component.xml)
-set_source_files_properties(${kglobalaccel_component_xml} PROPERTIES INCLUDE "kglobalshortcutinfo_p.h")
-qt5_add_dbus_interface(xmlgui_SRCS ${kglobalaccel_component_xml} kglobalaccel_component_interface )
-install(FILES ${kglobalaccel_component_xml} DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 
 set( xmlgui_UI
    kshortcutsdialog.ui
@@ -108,6 +95,7 @@ PRIVATE
     KF5::KIconThemes         #KIconLoader and KIconThemes in KToolBar
     KF5::KTextWidgets        #KTextEdit in kbugreport
     KF5::KWindowSystem       #KKeyServer in kkeysequencewidget
+    KF5::GlobalAccel         #KActionCollection and shortcut widgets
     ${XMLGUI_EXTRA_LIBS}
 )
 
@@ -125,8 +113,6 @@ install(FILES
   kedittoolbar.h
   kgesture_p.h
   kgesturemap_p.h
-  kglobalaccel.h
-  kglobalshortcutinfo.h
   khelpmenu.h
   kkeysequencewidget.h
   kmainwindow.h

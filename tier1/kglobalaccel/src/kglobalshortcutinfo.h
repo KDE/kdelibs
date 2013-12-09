@@ -18,7 +18,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <xmlgui_export.h>
+#include <kglobalaccel_export.h>
 
 #include <QtCore/QList>
 #include <QtCore/QObject>
@@ -32,7 +32,7 @@ class KGlobalShortcutInfoPrivate;
 /**
  * @author Michael Jansen <kde@michael-jansen.biz>
  */
-class XMLGUI_EXPORT KGlobalShortcutInfo : public QObject
+class KGLOBALACCEL_EXPORT KGlobalShortcutInfo : public QObject
     {
     Q_OBJECT
 
@@ -80,7 +80,7 @@ private:
 
     friend class GlobalShortcut;
 
-    friend XMLGUI_EXPORT const QDBusArgument &operator>> (
+    friend KGLOBALACCEL_EXPORT const QDBusArgument &operator>> (
             const QDBusArgument &argument,
             KGlobalShortcutInfo &shortcut);
 
@@ -88,11 +88,11 @@ private:
     KGlobalShortcutInfoPrivate *d;
 };
 
-XMLGUI_EXPORT QDBusArgument &operator<< (
+KGLOBALACCEL_EXPORT QDBusArgument &operator<< (
         QDBusArgument &argument,
         const KGlobalShortcutInfo &shortcut);
 
-XMLGUI_EXPORT const QDBusArgument &operator>> (
+KGLOBALACCEL_EXPORT const QDBusArgument &operator>> (
         const QDBusArgument &argument,
         KGlobalShortcutInfo &shortcut);
 

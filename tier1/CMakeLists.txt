@@ -15,6 +15,7 @@ add_subdirectory(sonnet)
 add_subdirectory(kconfig)
 add_subdirectory(kwindowsystem)
 add_subdirectory(solid)
+add_subdirectory(kglobalaccel)
 
 if (NOT MSVC)
   add_subdirectory(karchive)

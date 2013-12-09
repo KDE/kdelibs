@@ -296,6 +296,7 @@ PUBLIC
 PRIVATE
    KF5::KUnitConversion
    KF5::ItemViews
+   KF5::GlobalAccel
    Qt5::Svg
    Qt5::Test # for qtest_kde.cpp
    ${KIO_EXTRA_LIBS}

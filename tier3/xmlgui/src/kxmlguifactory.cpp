@@ -26,7 +26,6 @@
 #include "kxmlguibuilder.h"
 #include "kshortcutsdialog.h"
 #include "kactioncollection.h"
-#include "kglobalaccel.h"
 
 #include <QAction>
 #include <QtCore/QDir>
@@ -43,6 +42,7 @@
 
 #include <ksharedconfig.h>
 #include <kconfiggroup.h>
+#include <kglobalaccel.h>
 
 Q_DECLARE_METATYPE(QList<QKeySequence>)
 

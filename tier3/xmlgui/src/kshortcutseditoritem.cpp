@@ -33,7 +33,7 @@
 #include <kgesturemap.h>
 #endif
 
-#include "kglobalaccel.h"
+#include <kglobalaccel.h>
 
 KShortcutsEditorItem::KShortcutsEditorItem(QTreeWidgetItem *parent, QAction *action)
     : QTreeWidgetItem(parent, ActionItem)

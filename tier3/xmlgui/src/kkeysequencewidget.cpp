@@ -34,8 +34,8 @@
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <kkeyserver.h>
+#include <kglobalaccel.h>
 
-#include "kglobalaccel.h"
 #include "kactioncollection.h"
 
 #include "config-xmlgui.h"

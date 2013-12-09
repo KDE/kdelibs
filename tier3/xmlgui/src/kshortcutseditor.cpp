@@ -43,10 +43,10 @@
 
 #include <kconfig.h>
 #include <kconfiggroup.h>
+#include <kglobalaccel.h>
 #include <kmessagebox.h>
 #include "kactioncollection.h"
 #include "kactioncategory.h"
-#include "kglobalaccel.h"
 
 //---------------------------------------------------------------------
 // KShortcutsEditor

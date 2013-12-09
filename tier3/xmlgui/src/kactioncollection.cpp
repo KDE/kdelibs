@@ -27,12 +27,12 @@
 #include "kactioncollection.h"
 
 #include "kactioncategory.h"
-#include "kglobalaccel.h"
 #include "kxmlguiclient.h"
 #include "kxmlguifactory.h"
 
 #include <kauthorized.h>
 #include <kconfiggroup.h>
+#include <kglobalaccel.h>
 #include <ksharedconfig.h>
 
 #include <QtXml/QDomDocument>

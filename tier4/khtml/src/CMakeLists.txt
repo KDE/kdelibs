@@ -573,6 +573,7 @@ target_link_libraries(KHtml
     KF5::KNotifications
     KF5::KBookmarks
     KF5::KIOWidgets # KUrlRequester
+    KF5::GlobalAccel
 )
 if (KJS_DEBUGGER)
   target_link_libraries(KHtml PRIVATE KF5::KTextEditor)
