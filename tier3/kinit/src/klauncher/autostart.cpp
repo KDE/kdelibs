@@ -88,14 +88,14 @@ AutoStart::loadAutoStartList()
     }
 
    for (QStringList::ConstIterator it = files.constBegin(); it != files.constEnd(); ++it) {
-       const QString file = QStandardPaths::locate(QStandardPaths::GenericConfigLocation, QStringLiteral("autostart/") + *it);
        KAutostart config(*it);
        if (!config.autostarts(QStringLiteral("KDE"), KAutostart::CheckAll))
            continue;
 
+       const QString file = QStandardPaths::locate(QStandardPaths::GenericConfigLocation, QStringLiteral("autostart/") + *it);
        AutoStartItem *item = new AutoStartItem;
        item->name = extractName(*it);
-       item->service = *it;
+       item->service = file;
        item->startAfter = config.startAfter();
        item->phase = config.startPhase();
        if (item->phase < 0)
