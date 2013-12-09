@@ -21,7 +21,7 @@ set(KF5_VERSION "5.0.0")
 
 ecm_setup_version(${KF5_VERSION} VARIABLE_PREFIX KEMOTICONS
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kemoticons_version.h"
-                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KEmoticonsConfigVersion.cmake")
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KF5EmoticonsConfigVersion.cmake")
 
 if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
   #NOTE: here the dependencies of dependencies are displayed as well, this shouldn't be needed
@@ -47,17 +47,17 @@ add_subdirectory(autotests)
 add_subdirectory(tests)
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
-set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KEmoticons")
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KF5Emoticons")
 
-install(EXPORT KEmoticonsTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KEmoticonsTargets.cmake NAMESPACE KF5:: )
+install(EXPORT KF5EmoticonsTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KF5EmoticonsTargets.cmake NAMESPACE KF5:: )
 
-configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/KEmoticonsConfig.cmake.in"
-                              "${CMAKE_CURRENT_BINARY_DIR}/KEmoticonsConfig.cmake"
+configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/KF5EmoticonsConfig.cmake.in"
+                              "${CMAKE_CURRENT_BINARY_DIR}/KF5EmoticonsConfig.cmake"
                               INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
                              )
 
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/KEmoticonsConfig.cmake"
-              "${CMAKE_CURRENT_BINARY_DIR}/KEmoticonsConfigVersion.cmake"
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/KF5EmoticonsConfig.cmake"
+              "${CMAKE_CURRENT_BINARY_DIR}/KF5EmoticonsConfigVersion.cmake"
         DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
         COMPONENT Devel
        )

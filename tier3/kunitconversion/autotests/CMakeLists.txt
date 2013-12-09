@@ -10,7 +10,7 @@ macro(KUNITCONVERSION_UNIT_TESTS)
         add_executable(${_testname} ${_testname}.cpp)
         add_test(kunitconversion-${_testname} ${_testname})
         ecm_mark_as_test(${_testname})
-        target_link_libraries(${_testname} KUnitConversion Qt5::Test)
+        target_link_libraries(${_testname} KF5::UnitConversion Qt5::Test)
     endforeach(_testname)
 endmacro(KUNITCONVERSION_UNIT_TESTS)
 

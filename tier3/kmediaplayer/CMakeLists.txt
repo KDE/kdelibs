@@ -23,7 +23,7 @@ include(ECMSetupVersion)
 ecm_setup_version(5.0.0
    VARIABLE_PREFIX KMEDIAPLAYER
    VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kmediaplayer_version.h"
-   PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KMediaPlayerConfigVersion.cmake")
+   PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KF5MediaPlayerConfigVersion.cmake")
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/kmediaplayer_version.h
         DESTINATION ${INCLUDE_INSTALL_DIR}
         COMPONENT Devel)
@@ -74,23 +74,23 @@ add_subdirectory(autotests)
 #
 # Config.cmake stuff
 #
-set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KMediaPlayer")
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KF5MediaPlayer")
 configure_package_config_file(
-   "${CMAKE_CURRENT_SOURCE_DIR}/KMediaPlayerConfig.cmake.in"
-   "${CMAKE_CURRENT_BINARY_DIR}/KMediaPlayerConfig.cmake"
+   "${CMAKE_CURRENT_SOURCE_DIR}/KF5MediaPlayerConfig.cmake.in"
+   "${CMAKE_CURRENT_BINARY_DIR}/KF5MediaPlayerConfig.cmake"
    INSTALL_DESTINATION ${CMAKECONFIG_INSTALL_DIR})
 
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/KMediaPlayerConfigVersion.cmake"
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/KF5MediaPlayerConfigVersion.cmake"
         DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
         COMPONENT Devel)
 
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/KMediaPlayerConfig.cmake"
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/KF5MediaPlayerConfig.cmake"
         DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
         COMPONENT Devel)
 
-install(EXPORT KMediaPlayerTargets
+install(EXPORT KF5MediaPlayerTargets
         DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
-        FILE KMediaPlayerTargets.cmake
+        FILE KF5MediaPlayerTargets.cmake
         NAMESPACE KF5::)
 
 

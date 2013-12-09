@@ -26,11 +26,11 @@ endif ()
 
 qt5_wrap_ui(kprintutils_LIB_SRCS ${kprintutils_UI})
 
-add_library(KPrintUtils ${kprintutils_LIB_SRCS})
-generate_export_header(KPrintUtils)
-add_library(KF5::KPrintUtils ALIAS KPrintUtils)
+add_library(KF5PrintUtils ${kprintutils_LIB_SRCS})
+generate_export_header(KF5PrintUtils BASE_NAME KPrintUtils)
+add_library(KF5::PrintUtils ALIAS KF5PrintUtils)
 
-target_link_libraries(KPrintUtils
+target_link_libraries(KF5PrintUtils
   PUBLIC
     Qt5::Widgets
     Qt5::PrintSupport
@@ -38,9 +38,11 @@ target_link_libraries(KPrintUtils
     KF5::KParts
     KF5::I18n
 )
-set_target_properties(KPrintUtils PROPERTIES
+set_target_properties(KF5PrintUtils PROPERTIES
                       VERSION ${KPRINTUTILS_VERSION_STRING}
-                      SOVERSION ${KPRINTUTILS_SOVERSION})
+                      SOVERSION ${KPRINTUTILS_SOVERSION}
+                      EXPORT_NAME PrintUtils
+)
 
 install( FILES
  ${CMAKE_CURRENT_BINARY_DIR}/kprintutils_export.h
@@ -48,6 +50,6 @@ install( FILES
  kprintpreview.h
  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
 
-install(TARGETS KPrintUtils EXPORT KPrintUtilsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KF5PrintUtils EXPORT KF5PrintUtilsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 

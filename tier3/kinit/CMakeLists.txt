@@ -18,7 +18,7 @@ include(ECMSetupVersion)
 
 ecm_setup_version(5.0.0 VARIABLE_PREFIX KINIT
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kinit_version.h"
-                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KInitConfigVersion.cmake")
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KF5InitConfigVersion.cmake")
 
 ########### Configuring (mainly for proctitle) ###########
 include(ConfigureChecks.cmake)
@@ -45,18 +45,18 @@ if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
   # Remove when we depend on CMake 3.0.0
 endif()
 
-set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KInit")
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KF5Init")
 configure_package_config_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/KInitConfig.cmake.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/KInitConfig.cmake"
+  "${CMAKE_CURRENT_SOURCE_DIR}/KF5InitConfig.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5InitConfig.cmake"
   INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
 )
 
 add_subdirectory(src)
 
 install( FILES
-	"${CMAKE_CURRENT_BINARY_DIR}/KInitConfig.cmake"
-    KInitMacros.cmake ${CMAKE_CURRENT_BINARY_DIR}/KInitConfigVersion.cmake
+	"${CMAKE_CURRENT_BINARY_DIR}/KF5InitConfig.cmake"
+    KF5InitMacros.cmake ${CMAKE_CURRENT_BINARY_DIR}/KF5InitConfigVersion.cmake
     DESTINATION ${CMAKECONFIG_INSTALL_DIR} COMPONENT Devel )
 
 install(FILES

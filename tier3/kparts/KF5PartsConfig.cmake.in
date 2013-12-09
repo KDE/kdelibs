@@ -5,5 +5,5 @@ find_dependency(KIO "@KF5_VERSION@")
 find_dependency(KTextWidgets "@KF5_VERSION@")
 
 
-include("${CMAKE_CURRENT_LIST_DIR}/KPartsTargets.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/KF5PartsTargets.cmake")
 

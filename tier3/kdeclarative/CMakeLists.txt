@@ -33,7 +33,7 @@ ecm_setup_version(
   ${KF5_VERSION}
   VARIABLE_PREFIX KDECLARATIVE
   VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kdeclarative_version.h"
-  PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KDeclarativeConfigVersion.cmake"
+  PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KF5DeclarativeConfigVersion.cmake"
 )
 
 # Subdirectories
@@ -41,25 +41,25 @@ add_subdirectory(src)
 add_subdirectory(tests)
 
 # Create a Config.cmake and a ConfigVersion.cmake file and install them
-set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KDeclarative")
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KF5Declarative")
 
 configure_package_config_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/KDeclarativeConfig.cmake.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/KDeclarativeConfig.cmake"
+  "${CMAKE_CURRENT_SOURCE_DIR}/KF5DeclarativeConfig.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5DeclarativeConfig.cmake"
   INSTALL_DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
 )
 
 install(FILES
-  "${CMAKE_CURRENT_BINARY_DIR}/KDeclarativeConfig.cmake"
-  "${CMAKE_CURRENT_BINARY_DIR}/KDeclarativeConfigVersion.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5DeclarativeConfig.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5DeclarativeConfigVersion.cmake"
   DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
   COMPONENT Devel
 )
 
 install(EXPORT
-  KDeclarativeTargets
+  KF5DeclarativeTargets
   DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
-  FILE KDeclarativeTargets.cmake
+  FILE KF5DeclarativeTargets.cmake
   NAMESPACE KF5::
 )
 

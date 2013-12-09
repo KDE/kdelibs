@@ -65,11 +65,11 @@ qt5_wrap_ui(KNewStuff_SRCS
     uploaddialog.ui
 )
 
-add_library(KNewStuff ${KNewStuff_SRCS} )
-add_library(KF5::KNewStuff ALIAS KNewStuff)
+add_library(KF5NewStuff ${KNewStuff_SRCS} )
+add_library(KF5::NewStuff ALIAS KF5NewStuff)
 
-target_include_directories(KNewStuff PUBLIC "$<BUILD_INTERFACE:${KNewStuff_BINARY_DIR}>")
-target_link_libraries(KNewStuff
+target_include_directories(KF5NewStuff PUBLIC "$<BUILD_INTERFACE:${KNewStuff_BINARY_DIR}>")
+target_link_libraries(KF5NewStuff
   PUBLIC
     Qt5::Widgets
     ${LibAttica_LIBRARIES}     # For interacting with ocs providers, public for uploaddialog slots
@@ -84,14 +84,15 @@ target_link_libraries(KNewStuff
     KF5::KTextWidgets          # For KTextEdit in upload dialog
 )
 
-generate_export_header(KNewStuff)
+generate_export_header(KF5NewStuff BASE_NAME KNewStuff)
 
-set_target_properties(KNewStuff PROPERTIES
+set_target_properties(KF5NewStuff PROPERTIES
    VERSION ${KNEWSTUFF_VERSION_STRING}
    SOVERSION ${KNEWSTUFF_SOVERSION}
+   EXPORT_NAME NewStuff
 )
 
-install(TARGETS KNewStuff EXPORT KNewStuffTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KF5NewStuff EXPORT KF5NewStuffTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
   downloaddialog.h

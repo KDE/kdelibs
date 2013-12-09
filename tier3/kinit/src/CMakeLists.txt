@@ -1,6 +1,6 @@
 add_definitions(-DTRANSLATION_DOMAIN="kinit")
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/../KInitMacros.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/../KF5InitMacros.cmake)
 include(ECMMarkNonGuiExecutable)
 
 configure_file(config-kdeinit.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kdeinit.h)

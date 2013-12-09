@@ -6,17 +6,19 @@ set(KDEWebKit_LIB_SRCS
     kwebpluginfactory.cpp
 )
 
-add_library(KDEWebKit ${KDEWebKit_LIB_SRCS})
-generate_export_header(KDEWebKit)
-add_library(KF5::KDEWebKit ALIAS KDEWebKit)
+add_library(KF5WebKit ${KDEWebKit_LIB_SRCS})
+generate_export_header(KF5WebKit BASE_NAME KDEWebKit)
+add_library(KF5::WebKit ALIAS KF5WebKit)
 
-target_link_libraries(KDEWebKit PUBLIC Qt5::WebKitWidgets
-                                PRIVATE KF5::CoreAddons KF5::Wallet KF5::KIOWidgets KF5::KParts)
+target_link_libraries(KF5WebKit PUBLIC Qt5::WebKitWidgets
+                                PRIVATE KF5::KCoreAddons KF5::KWallet KF5::KIOWidgets KF5::KParts)
 
-set_target_properties(KDEWebKit PROPERTIES VERSION   ${KDEWEBKIT_VERSION_STRING}
-                                           SOVERSION ${KDEWEBKIT_SOVERSION})
+set_target_properties(KF5WebKit PROPERTIES VERSION   ${KDEWEBKIT_VERSION_STRING}
+                                           SOVERSION ${KDEWEBKIT_SOVERSION}
+                                           EXPORT_NAME WebKit
+)
 
-install(TARGETS KDEWebKit EXPORT KDEWebKitTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KF5WebKit EXPORT KF5WebKitTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 install(FILES
     ${CMAKE_CURRENT_BINARY_DIR}/kdewebkit_export.h
     kwebwallet.h

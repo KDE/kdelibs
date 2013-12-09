@@ -16,23 +16,24 @@ set(kbookmarks_SRCS
   kbookmarkdialog.cpp
 )
 
-add_library(KBookmarks ${kbookmarks_SRCS})
-generate_export_header(KBookmarks)
-add_library(KF5::KBookmarks ALIAS KBookmarks)
+add_library(KF5Bookmarks ${kbookmarks_SRCS})
+generate_export_header(KF5Bookmarks BASE_NAME KBookmarks)
+add_library(KF5::Bookmarks ALIAS KF5Bookmarks)
 
-target_link_libraries(KBookmarks PUBLIC Qt5::Widgets Qt5::Xml)
-target_link_libraries(KBookmarks PRIVATE
+target_link_libraries(KF5Bookmarks PUBLIC Qt5::Widgets Qt5::Xml)
+target_link_libraries(KF5Bookmarks PRIVATE
     Qt5::DBus # dbus usage in kbookmarkmanager.cpp
     KF5::KConfigWidgets # for KStandardAction
     KF5::XmlGui # for KActionCollection
     KF5::KIconThemes # for SmallIcon
 )
 
-set_target_properties(KBookmarks PROPERTIES VERSION   ${KBOOKMARKS_VERSION_STRING}
-                                           SOVERSION ${KBOOKMARKS_SOVERSION}
+set_target_properties(KF5Bookmarks PROPERTIES VERSION   ${KBOOKMARKS_VERSION_STRING}
+                                              SOVERSION ${KBOOKMARKS_SOVERSION}
+                                              EXPORT_NAME Bookmarks
 )
 
-install(TARGETS KBookmarks EXPORT KBookmarksTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KF5Bookmarks EXPORT KF5BookmarksTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install( FILES
   kbookmark.h

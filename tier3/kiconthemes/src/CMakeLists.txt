@@ -8,11 +8,11 @@ set(kiconthemes_SRCS
   kicontheme.cpp
 )
 
-add_library(KIconThemes ${kiconthemes_SRCS})
-generate_export_header(KIconThemes)
-add_library(KF5::KIconThemes ALIAS KIconThemes)
+add_library(KF5IconThemes ${kiconthemes_SRCS})
+generate_export_header(KF5IconThemes BASE_NAME KIconThemes)
+add_library(KF5::IconThemes ALIAS KF5IconThemes)
 
-target_link_libraries(KIconThemes
+target_link_libraries(KF5IconThemes
   PUBLIC
     Qt5::Widgets
   PRIVATE
@@ -24,11 +24,12 @@ target_link_libraries(KIconThemes
     KF5::KConfigWidgets # for KColorScheme
 )
 
-set_target_properties(KIconThemes PROPERTIES VERSION   ${KICONTHEMES_VERSION_STRING}
-                                             SOVERSION ${KICONTHEMES_SOVERSION}
+set_target_properties(KF5IconThemes PROPERTIES VERSION   ${KICONTHEMES_VERSION_STRING}
+                                               SOVERSION ${KICONTHEMES_SOVERSION}
+                                               EXPORT_NAME IconThemes
 )
 
-install(TARGETS KIconThemes EXPORT KIconThemesTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KF5IconThemes EXPORT KF5IconThemesTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
   kiconbutton.h

@@ -7,7 +7,7 @@ add_library(emoticonstheme_adium MODULE ${adiumemoticons_SRCS})
 find_package(Qt5Xml REQUIRED)
 target_link_libraries(emoticonstheme_adium
 PRIVATE
-    KEmoticons
+    KF5::Emoticons
     Qt5::Xml # for QDomDocument
 )
 

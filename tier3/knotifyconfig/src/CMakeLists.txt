@@ -20,11 +20,11 @@ set( knotifyconfig_UI knotifyconfigactionswidgetbase.ui )
 
 qt5_wrap_ui(knotifyconfig_LIB_SRCS ${knotifyconfig_UI} )
 
-add_library(KNotifyConfig ${knotifyconfig_LIB_SRCS})
-generate_export_header(KNotifyConfig)
-add_library(KF5::KNotifyConfig ALIAS KNotifyConfig)
+add_library(KF5NotifyConfig ${knotifyconfig_LIB_SRCS})
+generate_export_header(KF5NotifyConfig BASE_NAME KNotifyConfig)
+add_library(KF5::NotifyConfig ALIAS KF5NotifyConfig)
 
-target_link_libraries(KNotifyConfig
+target_link_libraries(KF5NotifyConfig
         PUBLIC
             Qt5::Widgets
         PRIVATE
@@ -33,11 +33,12 @@ target_link_libraries(KNotifyConfig
             ${PHONON_LIBS}
             Qt5::DBus)
 
-set_target_properties(KNotifyConfig PROPERTIES
+set_target_properties(KF5NotifyConfig PROPERTIES
    VERSION      ${KNOTIFYCONFIG_VERSION_STRING}
    SOVERSION    ${KNOTIFYCONFIG_SOVERSION}
+   EXPORT_NAME  NotifyConfig
 )
-install(TARGETS KNotifyConfig EXPORT KNotifyConfigTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KF5NotifyConfig EXPORT KF5NotifyConfigTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 ########### install files ###############
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/knotifyconfig_export.h knotifyconfigwidget.h  DESTINATION  ${INCLUDE_INSTALL_DIR}  COMPONENT Devel)

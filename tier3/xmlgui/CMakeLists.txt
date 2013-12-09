@@ -19,7 +19,7 @@ set(KF5_VERSION "5.0.0")
 ecm_setup_version(${KF5_VERSION}
                   VARIABLE_PREFIX XMLGUI
                   VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/xmlgui_version.h"
-                  PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/XmlGuiConfigVersion.cmake")
+                  PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KF5XmlGuiConfigVersion.cmake")
 
 # Dependencies
 set(QT_REQUIRED_VERSION 5.2.0)
@@ -52,24 +52,24 @@ add_subdirectory(autotests)
 
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
-set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/XmlGui")
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KF5XmlGui")
 
 include(CMakePackageConfigHelpers)
 
 configure_package_config_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/XmlGuiConfig.cmake.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/XmlGuiConfig.cmake"
+  "${CMAKE_CURRENT_SOURCE_DIR}/KF5XmlGuiConfig.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5XmlGuiConfig.cmake"
   INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
 )
 
 install(FILES
-  "${CMAKE_CURRENT_BINARY_DIR}/XmlGuiConfig.cmake"
-  "${CMAKE_CURRENT_BINARY_DIR}/XmlGuiConfigVersion.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5XmlGuiConfig.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5XmlGuiConfigVersion.cmake"
   DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
   COMPONENT Devel
 )
 
-install(EXPORT XmlGuiTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE XmlGuiTargets.cmake NAMESPACE KF5:: )
+install(EXPORT KF5XmlGuiTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KF5XmlGuiTargets.cmake NAMESPACE KF5:: )
 
 install(FILES
    ${CMAKE_CURRENT_BINARY_DIR}/xmlgui_version.h

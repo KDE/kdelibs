@@ -7,5 +7,5 @@ ecm_mark_as_test(kdeclarativetest)
 target_link_libraries(kdeclarativetest
    Qt5::Quick
    Qt5::Test
-   KF5::KDeclarative
+   KF5::Declarative
 )

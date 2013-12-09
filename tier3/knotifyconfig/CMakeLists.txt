@@ -53,7 +53,7 @@ ecm_setup_version(
   ${KF5_VERSION}
   VARIABLE_PREFIX KNOTIFYCONFIG
   VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/knotifyconfig_version.h"
-  PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KNotifyConfigConfigVersion.cmake"
+  PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KF5NotifyConfigConfigVersion.cmake"
 )
 
 # Subdirectories
@@ -61,25 +61,25 @@ add_subdirectory(src)
 add_subdirectory(tests)
 
 # Create a Config.cmake and a ConfigVersion.cmake file and install them
-set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KNotifyConfig")
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KF5NotifyConfig")
 
 configure_package_config_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/KNotifyConfigConfig.cmake.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/KNotifyConfigConfig.cmake"
+  "${CMAKE_CURRENT_SOURCE_DIR}/KF5NotifyConfigConfig.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5NotifyConfigConfig.cmake"
   INSTALL_DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
 )
 
 install(FILES
-  "${CMAKE_CURRENT_BINARY_DIR}/KNotifyConfigConfig.cmake"
-  "${CMAKE_CURRENT_BINARY_DIR}/KNotifyConfigConfigVersion.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5NotifyConfigConfig.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5NotifyConfigConfigVersion.cmake"
   DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
   COMPONENT Devel
 )
 
 install(EXPORT
-  KNotifyConfigTargets
+  KF5NotifyConfigTargets
   DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
-  FILE KNotifyConfigTargets.cmake
+  FILE KF5NotifyConfigTargets.cmake
   NAMESPACE KF5::
 )
 

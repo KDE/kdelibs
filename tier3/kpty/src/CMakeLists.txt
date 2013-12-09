@@ -4,9 +4,9 @@ set(kpty_LIB_SRCS
    kptyprocess.cpp
 )
 
-add_library(KPty ${kpty_LIB_SRCS})
-generate_export_header(KPty)
-add_library(KF5::KPty ALIAS KPty)
+add_library(KF5Pty ${kpty_LIB_SRCS})
+generate_export_header(KF5Pty BASE_NAME KPty)
+add_library(KF5::Pty ALIAS KF5Pty)
 
 include(ConfigureChecks.cmake)
 configure_file(config-pty.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-pty.h )
@@ -18,13 +18,14 @@ target_link_libraries(KPty PUBLIC Qt5::Core
                                 ${UTEMPTER_LIBRARY}
                                 KF5::I18n)
 
-target_include_directories(KPty PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/..)
+target_include_directories(KF5Pty PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/..)
 
-set_target_properties(KPty PROPERTIES
+set_target_properties(KF5Pty PROPERTIES
    VERSION ${KPTY_VERSION_STRING}
    SOVERSION ${KPTY_SOVERSION}
+   EXPORT_NAME Pty
 )
-install(TARGETS KPty EXPORT KPtyTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KF5Pty EXPORT KF5PtyTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install( FILES
    ${CMAKE_CURRENT_BINARY_DIR}/kpty_export.h
