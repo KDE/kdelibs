@@ -23,13 +23,13 @@ set(kdesu_LIB_SRCS
 )
 
 
-add_library(KDESu ${kdesu_LIB_SRCS})
-generate_export_header(KDESu EXPORT_FILE_NAME kdesu/kdesu_export.h)
-add_library(KF5::KDESu ALIAS KDESu)
+add_library(KF5Su ${kdesu_LIB_SRCS})
+generate_export_header(KF5Su BASE_NAME KDESu EXPORT_FILE_NAME kdesu/kdesu_export.h)
+add_library(KF5::Su ALIAS KF5Su)
 
-target_include_directories(KDESu PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/..)
+target_include_directories(KF5Su PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/..)
 
-target_link_libraries(KDESu
+target_link_libraries(KF5Su
   PUBLIC
     KF5::KPty
   PRIVATE
@@ -45,9 +45,10 @@ endif()
 set_target_properties(KDESu PROPERTIES
   VERSION ${KDESU_VERSION_STRING}
   SOVERSION ${KDESU_SOVERSION}
+  EXPORT_NAME Su
 )
 
-install(TARGETS KDESu EXPORT KDESuTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KF5Su EXPORT KF5SuTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 ########### next target ###############
 

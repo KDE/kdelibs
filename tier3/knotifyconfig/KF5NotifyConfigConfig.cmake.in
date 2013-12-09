@@ -4,5 +4,5 @@
 # For example:
 find_dependency(Qt5Widgets "@REQUIRED_QT_VERSION@")
 
-include("${CMAKE_CURRENT_LIST_DIR}/KNotifyConfigTargets.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/KF5NotifyConfigTargets.cmake")
 

@@ -28,29 +28,29 @@ include(ECMSetupVersion)
 
 ecm_setup_version(${KF5_VERSION} VARIABLE_PREFIX KDESU
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kdesu_version.h"
-                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KDESuConfigVersion.cmake")
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KF5SuConfigVersion.cmake")
 
 add_subdirectory(src)
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
-set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KDESu")
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KF5Su")
 
 include(CMakePackageConfigHelpers)
 
 configure_package_config_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/KDESuConfig.cmake.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/KDESuConfig.cmake"
+  "${CMAKE_CURRENT_SOURCE_DIR}/KF5SuConfig.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5SuConfig.cmake"
   INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
 )
 
 install(FILES
-  "${CMAKE_CURRENT_BINARY_DIR}/KDESuConfig.cmake"
-  "${CMAKE_CURRENT_BINARY_DIR}/KDESuConfigVersion.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5SuConfig.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5SuConfigVersion.cmake"
   DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
   COMPONENT Devel
 )
 
-install(EXPORT KDESuTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KDESuTargets.cmake NAMESPACE KF5:: )
+install(EXPORT KF5SuTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KF5SuTargets.cmake NAMESPACE KF5:: )
 
 install(FILES
    ${CMAKE_CURRENT_BINARY_DIR}/kdesu_version.h

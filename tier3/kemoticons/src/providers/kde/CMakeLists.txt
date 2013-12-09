@@ -7,7 +7,7 @@ add_library(emoticonstheme_kde MODULE ${kdeemoticons_SRCS})
 find_package(Qt5Xml REQUIRED)
 target_link_libraries(emoticonstheme_kde
 PRIVATE
-    KEmoticons
+    KF5::Emoticons
     Qt5::Xml # for QDomDocument
 )
 ########### install files ###############

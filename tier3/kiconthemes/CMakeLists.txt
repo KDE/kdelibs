@@ -17,7 +17,7 @@ set(KF5_VERSION "5.0.0")
 ecm_setup_version(${KF5_VERSION}
                   VARIABLE_PREFIX KICONTHEMES
                   VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kiconthemes_version.h"
-                  PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KIconThemesConfigVersion.cmake")
+                  PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KF5IconThemesConfigVersion.cmake")
 
 # Dependencies
 set(QT_REQUIRED_VERSION 5.2.0)
@@ -42,24 +42,24 @@ add_subdirectory(autotests)
 
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
-set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KIconThemes")
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KF5IconThemes")
 
 include(CMakePackageConfigHelpers)
 
 configure_package_config_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/KIconThemesConfig.cmake.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/KIconThemesConfig.cmake"
+  "${CMAKE_CURRENT_SOURCE_DIR}/KF5IconThemesConfig.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5IconThemesConfig.cmake"
   INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
 )
 
 install(FILES
-  "${CMAKE_CURRENT_BINARY_DIR}/KIconThemesConfig.cmake"
-  "${CMAKE_CURRENT_BINARY_DIR}/KIconThemesConfigVersion.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5IconThemesConfig.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5IconThemesConfigVersion.cmake"
   DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
   COMPONENT Devel
 )
 
-install(EXPORT KIconThemesTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KIconThemesTargets.cmake NAMESPACE KF5:: )
+install(EXPORT KF5IconThemesTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KF5IconThemesTargets.cmake NAMESPACE KF5:: )
 
 install(FILES
    ${CMAKE_CURRENT_BINARY_DIR}/kiconthemes_version.h

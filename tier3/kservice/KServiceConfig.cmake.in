@@ -1,8 +1,0 @@
-@PACKAGE_INIT@
-
-find_dependency(KConfig "@KF5_VERSION@")
-
-
-include("${CMAKE_CURRENT_LIST_DIR}/KServiceTargets.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/KServiceMacros.cmake")
-

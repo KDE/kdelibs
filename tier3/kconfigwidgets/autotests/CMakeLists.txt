@@ -8,7 +8,7 @@ macro(KCONFIGWIDGETS_TESTS)
         add_executable(${_testname} ${_testname}.cpp)
         add_test(kconfigwidgets-${_testname} ${_testname})
         ecm_mark_as_test(${_testname})
-        target_link_libraries(${_testname} Qt5::Test KConfigWidgets)
+        target_link_libraries(${_testname} Qt5::Test KF5::ConfigWidgets)
     endforeach(_testname)
 endmacro()
 

@@ -40,30 +40,30 @@ include(ECMSetupVersion)
 
 ecm_setup_version(5.0.0 VARIABLE_PREFIX KPRINTUTILS
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kprintutils_version.h"
-                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KPrintUtilsConfigVersion.cmake")
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KF5PrintUtilsConfigVersion.cmake")
 
 add_subdirectory(src)
 add_subdirectory(tests)
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
-set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KPrintUtils")
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KF5PrintUtils")
 
 include(CMakePackageConfigHelpers)
 
 configure_package_config_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/KPrintUtilsConfig.cmake.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/KPrintUtilsConfig.cmake"
+  "${CMAKE_CURRENT_SOURCE_DIR}/KF5PrintUtilsConfig.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5PrintUtilsConfig.cmake"
   INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
 )
 
 install(FILES
-  "${CMAKE_CURRENT_BINARY_DIR}/KPrintUtilsConfig.cmake"
-  "${CMAKE_CURRENT_BINARY_DIR}/KPrintUtilsConfigVersion.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5PrintUtilsConfig.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5PrintUtilsConfigVersion.cmake"
   DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
   COMPONENT Devel
 )
 
-install(EXPORT KPrintUtilsTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KPrintUtilsTargets.cmake NAMESPACE KF5:: )
+install(EXPORT KF5PrintUtilsTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KF5PrintUtilsTargets.cmake NAMESPACE KF5:: )
 
 
 install(FILES

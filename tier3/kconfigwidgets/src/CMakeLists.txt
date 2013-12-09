@@ -13,11 +13,11 @@ set(kconfigwidgets_SRCS
   ktip.cpp
 )
 
-add_library(KConfigWidgets ${kconfigwidgets_SRCS})
-generate_export_header(KConfigWidgets)
-add_library(KF5::KConfigWidgets ALIAS KConfigWidgets)
+add_library(KF5ConfigWidgets ${kconfigwidgets_SRCS})
+generate_export_header(KF5ConfigWidgets BASE_NAME KConfigWidgets)
+add_library(KF5::ConfigWidgets ALIAS KF5ConfigWidgets)
 
-target_link_libraries(KConfigWidgets
+target_link_libraries(KF5ConfigWidgets
   PUBLIC
     KF5::Codecs # KCodecActions uses KCharsets, KEncodingProber
     KF5::WidgetsAddons # For K*Action, KPage*, KViewStateSerializer, KAcceleratorManager, K*GuiItem
@@ -30,11 +30,12 @@ target_link_libraries(KConfigWidgets
     KF5::I18n # For action and widget texts
 )
 
-set_target_properties(KConfigWidgets PROPERTIES VERSION   ${KCONFIGWIDGETS_VERSION_STRING}
-                                             SOVERSION ${KCONFIGWIDGETS_SOVERSION}
+set_target_properties(KF5ConfigWidgets PROPERTIES VERSION   ${KCONFIGWIDGETS_VERSION_STRING}
+                                                  SOVERSION ${KCONFIGWIDGETS_SOVERSION}
+                                                  EXPORT_NAME ConfigWidgets
 )
 
-install(TARGETS KConfigWidgets EXPORT KConfigWidgetsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KF5ConfigWidgets EXPORT KF5ConfigWidgetsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
   kcodecaction.h

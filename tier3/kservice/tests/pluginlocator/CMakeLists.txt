@@ -8,6 +8,6 @@ add_test(kservice-pluginloadertest plugintest)
 
 target_link_libraries(plugintest
     Qt5::Core
-    KService
+    KF5::Service
 )
 ecm_mark_as_test(plugintest)

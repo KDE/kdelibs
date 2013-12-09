@@ -16,7 +16,7 @@ ecm_mark_as_test(knotifytest)
 target_link_libraries(knotifytest
    Qt5::Core
    Qt5::Test
-   KNotifyConfig
+   KF5::NotifyConfig
    KF5::Notifications
    KF5::I18n
    KF5::XmlGui

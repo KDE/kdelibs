@@ -4,24 +4,25 @@ set(kmediaplayer_LIB_SRCS
    kmediaplayeradaptor.cpp
 )
 
-add_library(KMediaPlayer ${kmediaplayer_LIB_SRCS})
-generate_export_header(KMediaPlayer)
+add_library(KF5MediaPlayer ${kmediaplayer_LIB_SRCS})
+generate_export_header(KF5MediaPlayer BASE_NAME KMediaPlayer)
 
-target_link_libraries(KMediaPlayer PUBLIC
+target_link_libraries(KF5MediaPlayer PUBLIC
    Qt5::Widgets
    KF5::KParts
    KF5::I18n
 )
-target_link_libraries(KMediaPlayer PRIVATE
+target_link_libraries(KF5MediaPlayer PRIVATE
    KF5::XmlGui
 )
-set_target_properties(KMediaPlayer PROPERTIES
+set_target_properties(KF5MediaPlayer PROPERTIES
    VERSION ${KMEDIAPLAYER_VERSION_STRING}
    SOVERSION ${KMEDIAPLAYER_SOVERSION}
+   EXPORT_NAME MediaPlayer
 )
 
-install(TARGETS KMediaPlayer
-        EXPORT KMediaPlayerTargets
+install(TARGETS KF5MediaPlayer
+        EXPORT KF5MediaPlayerTargets
         ${INSTALL_TARGETS_DEFAULT_ARGS})
 install(FILES
    player.h

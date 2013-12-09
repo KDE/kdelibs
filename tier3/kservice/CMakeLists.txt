@@ -17,7 +17,7 @@ set(KF5_VERSION "5.0.0")
 ecm_setup_version(${KF5_VERSION}
                   VARIABLE_PREFIX KSERVICE
                   VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kservice_version.h"
-                  PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KServiceConfigVersion.cmake")
+                  PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KF5ServiceConfigVersion.cmake")
 
 # TODO: Remove these
 remove_definitions(-DQT_NO_CAST_TO_ASCII)
@@ -42,20 +42,20 @@ else()
 endif()
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
-set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KService")
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KF5Service")
 
 include(CMakePackageConfigHelpers)
 
-configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/KServiceConfig.cmake.in"
-                              "${CMAKE_CURRENT_BINARY_DIR}/KServiceConfig.cmake"
+configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/KF5ServiceConfig.cmake.in"
+                              "${CMAKE_CURRENT_BINARY_DIR}/KF5ServiceConfig.cmake"
                               INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
                              )
 
-install(EXPORT KServiceTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KServiceTargets.cmake NAMESPACE KF5:: )
+install(EXPORT KF5ServiceTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KF5ServiceTargets.cmake NAMESPACE KF5:: )
 
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/KServiceConfig.cmake"
-              "${CMAKE_CURRENT_BINARY_DIR}/KServiceConfigVersion.cmake"
-              "${CMAKE_CURRENT_SOURCE_DIR}/KServiceMacros.cmake"
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/KF5ServiceConfig.cmake"
+              "${CMAKE_CURRENT_BINARY_DIR}/KF5ServiceConfigVersion.cmake"
+              "${CMAKE_CURRENT_SOURCE_DIR}/KF5ServiceMacros.cmake"
         DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
         COMPONENT Devel
        )

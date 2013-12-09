@@ -21,11 +21,11 @@ set(kdeclarative_SRCS
   private/qmlobject_p.h
 )
 
-add_library(KDeclarative ${kdeclarative_SRCS})
-generate_export_header(KDeclarative EXPORT_FILE_NAME ${KDeclarative_BINARY_DIR}/kdeclarative/kdeclarative_export.h)
-add_library(KF5::KDeclarative ALIAS KDeclarative)
+add_library(KF5Declarative ${kdeclarative_SRCS})
+generate_export_header(KF5Declarative EXPORT_FILE_NAME ${KDeclarative_BINARY_DIR}/kdeclarative/kdeclarative_export.h BASE_NAME KDeclarative)
+add_library(KF5::Declarative ALIAS KF5Declarative)
 
-target_link_libraries(KDeclarative
+target_link_libraries(KF5Declarative
   PUBLIC
     Qt5::Qml
   PRIVATE
@@ -35,16 +35,17 @@ target_link_libraries(KDeclarative
     KF5::KIOWidgets     #KIO::AccessManager
     KF5::KIconThemes #KIconProvider
 )
-target_include_directories(KDeclarative PUBLIC "$<BUILD_INTERFACE:${KDeclarative_BINARY_DIR}>")
+target_include_directories(KF5Declarative PUBLIC "$<BUILD_INTERFACE:${KDeclarative_BINARY_DIR}>")
 
-set_target_properties(KDeclarative
+set_target_properties(KF5Declarative
   PROPERTIES VERSION ${KDECLARATIVE_VERSION_STRING}
   SOVERSION ${KDECLARATIVE_SOVERSION}
+  EXPORT_NAME Declarative
 )
 
 # Install files
-install(TARGETS KDeclarative
-  EXPORT KDeclarativeTargets
+install(TARGETS KF5Declarative
+  EXPORT KF5DeclarativeTargets
   ${INSTALL_TARGETS_DEFAULT_ARGS}
 )
 

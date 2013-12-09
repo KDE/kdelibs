@@ -6,7 +6,7 @@ find_dependency(Qt5DBus @QT_REQUIRED_VERSION@)
 find_dependency(Qt5Xml @QT_REQUIRED_VERSION@)
 
 
-include("${CMAKE_CURRENT_LIST_DIR}/XmlGuiTargets.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/KF5XmlGuiTargets.cmake")
 
 set(XMLGUI_DBUS_INTERFACES_DIR "${PACKAGE_PREFIX_DIR}/@DBUS_INTERFACES_INSTALL_DIR@")
 

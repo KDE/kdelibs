@@ -1,4 +1,4 @@
-set(PARTS_TEST_LIBRARY_DEPENDENCIES KF5::KParts Qt5::Test KF5::XmlGui)
+set(PARTS_TEST_LIBRARY_DEPENDENCIES KF5::Parts Qt5::Test KF5::XmlGui)
 
 include(ECMMarkAsTest)
 

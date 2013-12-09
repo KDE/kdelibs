@@ -7,5 +7,5 @@ include(ECMMarkAsTest)
 add_executable(kbookmarktest kbookmarktest.cpp)
 ecm_mark_as_test(kbookmarktest)
 add_test(kbookmark-kbookmarktest kbookmarktest)
-target_link_libraries(kbookmarktest KBookmarks Qt5::Test)
+target_link_libraries(kbookmarktest KF5::Bookmarks Qt5::Test)
 

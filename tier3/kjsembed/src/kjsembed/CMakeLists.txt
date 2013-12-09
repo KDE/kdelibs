@@ -29,12 +29,12 @@ set(KJsEmbed_LIB_SRCS
    quiloader_binding.cpp
 )
 
-add_library(KJsEmbed ${KJsEmbed_LIB_SRCS})
-target_include_directories(KJsEmbed PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..;${CMAKE_CURRENT_BINARY_DIR}/..>")
+add_library(KF5JsEmbed ${KJsEmbed_LIB_SRCS})
+target_include_directories(KF5JsEmbed PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..;${CMAKE_CURRENT_BINARY_DIR}/..>")
 
-generate_export_header(KJsEmbed)
+generate_export_header(KF5JsEmbed BASE_NAME KJsEmbed)
 
-target_link_libraries(KJsEmbed
+target_link_libraries(KF5JsEmbed
     PUBLIC  KF5::I18n KF5::JS
     PRIVATE
         #all these are required for its respective bindings
@@ -43,12 +43,13 @@ target_link_libraries(KJsEmbed
         Qt5::Xml
         Qt5::Svg
 )
-add_library(KF5::KJsEmbed ALIAS KJsEmbed)
+add_library(KF5::JsEmbed ALIAS KF5JsEmbed)
 
-set_target_properties(KJsEmbed PROPERTIES VERSION   "${KJSEMBED_VERSION_STRING}"
-                                          SOVERSION "${KJSEMBED_SOVERSION}")
+set_target_properties(KF5JsEmbed PROPERTIES VERSION   "${KJSEMBED_VERSION_STRING}"
+                                            SOVERSION "${KJSEMBED_SOVERSION}")
+                                            EXPORT_NAME JsEmbed
 
-install(TARGETS KJsEmbed EXPORT KJsEmbedTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KF5JsEmbed EXPORT KF5JsEmbedTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 install(FILES ${KJsEmbed_HEADERS}
                 ${CMAKE_CURRENT_BINARY_DIR}/kjsembed_export.h
                 DESTINATION ${INCLUDE_INSTALL_DIR}/KJsEmbed COMPONENT Devel)

@@ -74,11 +74,11 @@ set( xmlgui_UI
 
 qt5_wrap_ui(xmlgui_SRCS ${xmlgui_UI} )
 
-add_library(XmlGui ${xmlgui_SRCS})
-generate_export_header(XmlGui)
-add_library(KF5::XmlGui ALIAS XmlGui)
+add_library(KF5XmlGui ${xmlgui_SRCS})
+generate_export_header(KF5XmlGui BASE_NAME XmlGui)
+add_library(KF5::XmlGui ALIAS KF5XmlGui)
 
-target_link_libraries(XmlGui
+target_link_libraries(KF5XmlGui
 PUBLIC
     Qt5::DBus           #QDBus connect to signal in KToolBar
     Qt5::Xml            #To parse the configuration (QDomDocument etc)
@@ -99,11 +99,12 @@ PRIVATE
     ${XMLGUI_EXTRA_LIBS}
 )
 
-set_target_properties(XmlGui PROPERTIES VERSION   ${XMLGUI_VERSION_STRING}
-                                        SOVERSION ${XMLGUI_SOVERSION}
+set_target_properties(KF5XmlGui PROPERTIES VERSION   ${XMLGUI_VERSION_STRING}
+                                           SOVERSION ${XMLGUI_SOVERSION}
+                                           EXPORT_NAME XmlGui
 )
 
-install(TARGETS XmlGui EXPORT XmlGuiTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KF5XmlGui EXPORT KF5XmlGuiTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
   kaboutapplicationdialog.h

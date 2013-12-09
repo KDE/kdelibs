@@ -5,7 +5,7 @@ find_package(Qt5 ${REQUIRED_QT_VERSION} CONFIG REQUIRED Test PrintSupport Widget
 macro(kprintutils_executable_tests)
   foreach(_testname ${ARGN})
     add_executable(${_testname} ${_testname}.cpp)
-    target_link_libraries(${_testname} Qt5::Test KPrintUtils)
+    target_link_libraries(${_testname} Qt5::Test KF5::PrintUtils)
     ecm_mark_as_test(${_testname})
   endforeach()
 endmacro()

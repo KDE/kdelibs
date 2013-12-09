@@ -19,7 +19,7 @@ include(ECMSetupVersion)
 set(KF5_VERSION "5.0.0")
 ecm_setup_version(${KF5_VERSION} VARIABLE_PREFIX KDEWebKit
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kdewebkit_version.h"
-                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KDEWebKitConfigVersion.cmake")
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KF5WebKitConfigVersion.cmake")
 
 if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
   #dependencies of dependencies, remove when depending on cmake 3.0.0
@@ -54,24 +54,24 @@ remove_definitions(-DQT_NO_CAST_FROM_BYTEARRAY)
 add_subdirectory(src)
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
-set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KDEWebKit")
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KF5WebKit")
 
 include(CMakePackageConfigHelpers)
 
 configure_package_config_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/KDEWebKitConfig.cmake.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/KDEWebKitConfig.cmake"
+  "${CMAKE_CURRENT_SOURCE_DIR}/KF5WebKitConfig.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5WebKitConfig.cmake"
   INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
 )
 
 install(FILES
-  "${CMAKE_CURRENT_BINARY_DIR}/KDEWebKitConfig.cmake"
-  "${CMAKE_CURRENT_BINARY_DIR}/KDEWebKitConfigVersion.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5WebKitConfig.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5WebKitConfigVersion.cmake"
   DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
   COMPONENT Devel
 )
 
-install(EXPORT KDEWebKitTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KDEWebKitTargets.cmake NAMESPACE KF5:: )
+install(EXPORT KF5WebKitTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KF5WebKitTargets.cmake NAMESPACE KF5:: )
 
 install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/kdewebkit_version.h

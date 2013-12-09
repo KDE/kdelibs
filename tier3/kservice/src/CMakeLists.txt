@@ -50,9 +50,9 @@ endif()
 # Temporary until we can depend on the kinit framework being installed and can generate it from klauncher_adaptor.h
 qt5_add_dbus_interface(kservice_SRCS kdeinit/org.kde.KLauncher.xml klauncher_iface)
 
-add_library(KService ${kservice_SRCS})
-generate_export_header(KService)
-add_library(KF5::KService ALIAS KService)
+add_library(KF5Service ${kservice_SRCS})
+generate_export_header(KF5Service BASE_NAME KService)
+add_library(KF5::Service ALIAS KF5Service)
 set(kservice_includes
    ${CMAKE_CURRENT_BINARY_DIR}/.. # Since we publicly include kservice_version.h
    ${CMAKE_CURRENT_SOURCE_DIR}/services
@@ -60,9 +60,9 @@ set(kservice_includes
    ${CMAKE_CURRENT_SOURCE_DIR}/plugin
    ${CMAKE_CURRENT_SOURCE_DIR}/kdeinit
 )
-target_include_directories(KService PUBLIC "$<BUILD_INTERFACE:${kservice_includes}>")
+target_include_directories(KF5Service PUBLIC "$<BUILD_INTERFACE:${kservice_includes}>")
 
-target_link_libraries(KService
+target_link_libraries(KF5Service
   PUBLIC
     KF5::ConfigCore   # KConfig and friends
   PRIVATE
@@ -71,10 +71,12 @@ target_link_libraries(KService
     KF5::DBusAddons   # KDEInitInterface
 )
 
-set_target_properties(KService PROPERTIES VERSION ${KSERVICE_VERSION_STRING}
-                                        SOVERSION ${KSERVICE_SOVERSION})
+set_target_properties(KF5Service PROPERTIES VERSION ${KSERVICE_VERSION_STRING}
+                                            SOVERSION ${KSERVICE_SOVERSION}
+                                            EXPORT_NAME Service
+)
 
-install(TARGETS KService EXPORT KServiceTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KF5Service EXPORT KF5ServiceTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
    "${CMAKE_CURRENT_BINARY_DIR}/kservice_export.h"

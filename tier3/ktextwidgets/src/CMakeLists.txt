@@ -10,9 +10,9 @@ set(ktextwidgets_LIB_SRCS
   widgets/nestedlisthelper.cpp
 )
 
-add_library(KTextWidgets ${ktextwidgets_LIB_SRCS})
-generate_export_header(KTextWidgets)
-add_library(KF5::KTextWidgets ALIAS KTextWidgets)
+add_library(KF5TextWidgets ${ktextwidgets_LIB_SRCS})
+generate_export_header(KF5TextWidgets BASE_NAME KTextWidgets)
+add_library(KF5::TextWidgets ALIAS KF5TextWidgets)
 
 set(ktextwidgets_INCLUDES
   ${CMAKE_CURRENT_SOURCE_DIR}/dialogs
@@ -20,10 +20,10 @@ set(ktextwidgets_INCLUDES
   ${CMAKE_CURRENT_SOURCE_DIR}/kregexpeditor
   ${CMAKE_CURRENT_SOURCE_DIR}/widgets
 )
-target_include_directories(KTextWidgets PUBLIC "$<BUILD_INTERFACE:${ktextwidgets_INCLUDES}>"
+target_include_directories(KF5TextWidgets PUBLIC "$<BUILD_INTERFACE:${ktextwidgets_INCLUDES}>"
 )
 
-target_link_libraries(KTextWidgets
+target_link_libraries(KF5TextWidgets
 PUBLIC
   Qt5::Widgets
   KF5::SonnetUi
@@ -38,11 +38,12 @@ PRIVATE
   KF5::Completion
 )
 
-set_target_properties(KTextWidgets PROPERTIES VERSION ${KTEXTWIDGETS_VERSION_STRING}
-                                   SOVERSION ${KTEXTWIDGETS_SOVERSION}
+set_target_properties(KF5TextWidgets PROPERTIES VERSION ${KTEXTWIDGETS_VERSION_STRING}
+                                                SOVERSION ${KTEXTWIDGETS_SOVERSION}
+                                                EXPORT_NAME TextWidgets
 )
 
-install(TARGETS KTextWidgets EXPORT KTextWidgetsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KF5TextWidgets EXPORT KF5TextWidgetsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
   findreplace/kfind.h
