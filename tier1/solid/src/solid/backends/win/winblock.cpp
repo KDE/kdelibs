@@ -106,7 +106,7 @@ QString WinBlock::driveLetterFromUdi(const QString &udi)
 QString WinBlock::udiFromDriveLetter(const QString &drive)
 {
     QString out;
-    for(QMap<QString,QString>::const_iterator it = m_driveLetters.begin();it != m_driveLetters.end();++it)
+    for(QMap<QString,QString>::const_iterator it = m_driveLetters.cbegin();it != m_driveLetters.cend();++it)
     {
         if(it.value() == drive)
         {

@@ -14,6 +14,10 @@ include(KDECMakeSettings)
 set(REQUIRED_QT_VERSION 5.2.0)
 find_package(Qt5 ${REQUIRED_QT_VERSION} CONFIG REQUIRED Xml Concurrent DBus Widgets Test)
 
+if(WIN32)
+    find_package(Qt5 ${REQUIRED_QT_VERSION} CONFIG REQUIRED Network)
+endif()
+
 include(FeatureSummary)
 include(CMakePackageConfigHelpers)
 include(ECMSetupVersion)

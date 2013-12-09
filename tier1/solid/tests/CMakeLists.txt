@@ -25,6 +25,9 @@ add_executable(networkingclient ${networkingclient_SRCS})
 set_target_properties(networkingclient PROPERTIES COMPILE_FLAGS -DSOLID_STATIC_DEFINE=1)
 
 target_link_libraries(networkingclient Solid_static Qt5::Widgets)
+if(WIN32)
+    target_link_libraries(networkingclient Qt5::Network)
+endif()
 ecm_mark_as_test(networkingclient)
 ########### install files ###############
 

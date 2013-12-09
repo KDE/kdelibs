@@ -429,7 +429,7 @@ qt5_add_dbus_interface(solid_LIB_SRCS org.kde.Solid.Networking.Client.xml
 set(solid_OPTIONAL_LIBS)
 
 if(WIN32)
-   set(solid_OPTIONAL_LIBS ${solid_OPTIONAL_LIBS} ${KDEWIN_LIBRARY} ${QT_QTNETWORK_LIBRARY})
+   set(solid_OPTIONAL_LIBS ${solid_OPTIONAL_LIBS} Qt5::Network)
    if(WITH_SOLID_WMI)
       set(solid_OPTIONAL_LIBS ${solid_OPTIONAL_LIBS} ${WBEM_LIBRARIES})
    else()
