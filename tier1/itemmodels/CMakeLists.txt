@@ -19,7 +19,7 @@ include(ECMSetupVersion)
 
 ecm_setup_version(5.0.0 VARIABLE_PREFIX ITEMMODELS
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/itemmodels_version.h"
-                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/ItemModelsConfigVersion.cmake")
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KF5ItemModelsConfigVersion.cmake")
 
 
 add_subdirectory(src)
@@ -28,24 +28,24 @@ add_subdirectory(src)
 
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
-set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/ItemModels")
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KF5ItemModels")
 
 include(CMakePackageConfigHelpers)
 
 configure_package_config_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/ItemModelsConfig.cmake.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/ItemModelsConfig.cmake"
+  "${CMAKE_CURRENT_SOURCE_DIR}/KF5ItemModelsConfig.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5ItemModelsConfig.cmake"
   INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
 )
 
 install(FILES
-  "${CMAKE_CURRENT_BINARY_DIR}/ItemModelsConfig.cmake"
-  "${CMAKE_CURRENT_BINARY_DIR}/ItemModelsConfigVersion.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5ItemModelsConfig.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5ItemModelsConfigVersion.cmake"
   DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
   COMPONENT Devel
 )
 
-install(EXPORT ItemModelsTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE ItemModelsTargets.cmake NAMESPACE KF5:: )
+install(EXPORT KF5ItemModelsTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KF5ItemModelsTargets.cmake NAMESPACE KF5:: )
 
 install(FILES
    ${CMAKE_CURRENT_BINARY_DIR}/itemmodels_version.h

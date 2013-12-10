@@ -74,23 +74,24 @@ set(kwidgetsaddon_UI
 
 qt5_wrap_ui(kwidgetsaddons_SRCS ${kwidgetsaddon_UI} )
 
-add_library(KWidgetsAddons ${kwidgetsaddons_SRCS})
-generate_export_header(KWidgetsAddons)
-add_library(KF5::KWidgetsAddons ALIAS KWidgetsAddons)
+add_library(KF5WidgetsAddons ${kwidgetsaddons_SRCS})
+generate_export_header(KF5WidgetsAddons BASE_NAME KWidgetsAddons)
+add_library(KF5::WidgetsAddons ALIAS KF5WidgetsAddons)
 
-target_link_libraries(KWidgetsAddons PUBLIC Qt5::Widgets)
+target_link_libraries(KF5WidgetsAddons PUBLIC Qt5::Widgets)
 
 if(IS_ABSOLUTE "${INCLUDE_INSTALL_DIR}")
-  target_include_directories(KWidgetsAddons INTERFACE "$<INSTALL_INTERFACE:${INCLUDE_INSTALL_DIR}>" )
+  target_include_directories(KF5WidgetsAddons INTERFACE "$<INSTALL_INTERFACE:${INCLUDE_INSTALL_DIR}>" )
 else()
-  target_include_directories(KWidgetsAddons INTERFACE "$<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/${INCLUDE_INSTALL_DIR}>" )
+  target_include_directories(KF5WidgetsAddons INTERFACE "$<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/${INCLUDE_INSTALL_DIR}>" )
 endif()
 
-set_target_properties(KWidgetsAddons PROPERTIES VERSION   ${KWIDGETSADDONS_VERSION_STRING}
-                                                SOVERSION ${KWIDGETSADDONS_SOVERSION}
+set_target_properties(KF5WidgetsAddons PROPERTIES VERSION   ${KWIDGETSADDONS_VERSION_STRING}
+                                                  SOVERSION ${KWIDGETSADDONS_SOVERSION}
+                                                  EXPORT_NAME WidgetsAddons
 )
 
-install(TARGETS KWidgetsAddons EXPORT KWidgetsAddonsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KF5WidgetsAddons EXPORT KF5WidgetsAddonsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
   kacceleratormanager.h

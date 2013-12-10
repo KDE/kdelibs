@@ -9,17 +9,18 @@ set(itemmodels_SRCS
   kselectionproxymodel.cpp
 )
 
-add_library(ItemModels ${itemmodels_SRCS})
-generate_export_header(ItemModels)
-add_library(KF5::ItemModels ALIAS ItemModels)
+add_library(KF5ItemModels ${itemmodels_SRCS})
+generate_export_header(KF5ItemModels BASE_NAME ItemModels)
+add_library(KF5::ItemModels ALIAS KF5ItemModels)
 
-target_link_libraries(ItemModels PUBLIC Qt5::Core)
+target_link_libraries(KF5ItemModels PUBLIC Qt5::Core)
 
-set_target_properties(ItemModels PROPERTIES VERSION   ${ITEMMODELS_VERSION_STRING}
-                                            SOVERSION ${ITEMMODELS_SOVERSION}
+set_target_properties(KF5ItemModels PROPERTIES VERSION   ${ITEMMODELS_VERSION_STRING}
+                                               SOVERSION ${ITEMMODELS_SOVERSION}
+                                               EXPORT_NAME ItemModels
 )
 
-install(TARGETS ItemModels EXPORT ItemModelsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KF5ItemModels EXPORT KF5ItemModelsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
   kbreadcrumbselectionmodel.h

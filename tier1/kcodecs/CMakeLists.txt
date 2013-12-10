@@ -19,26 +19,26 @@ include(ECMSetupVersion)
 
 ecm_setup_version(5.0.0 VARIABLE_PREFIX KCODECS
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kcodecs_version.h"
-                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KCodecsConfigVersion.cmake")
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KF5CodecsConfigVersion.cmake")
 
 add_subdirectory(src)
 
 add_subdirectory(autotests)
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
-set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KCodecs")
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KF5Codecs")
 
-configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/KCodecsConfig.cmake.in"
-                              "${CMAKE_CURRENT_BINARY_DIR}/KCodecsConfig.cmake"
+configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/KF5CodecsConfig.cmake.in"
+                              "${CMAKE_CURRENT_BINARY_DIR}/KF5CodecsConfig.cmake"
                               INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
                               )
 
-install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/KCodecsConfig.cmake"
-               "${CMAKE_CURRENT_BINARY_DIR}/KCodecsConfigVersion.cmake"
+install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/KF5CodecsConfig.cmake"
+               "${CMAKE_CURRENT_BINARY_DIR}/KF5CodecsConfigVersion.cmake"
         DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
         COMPONENT Devel )
 
-install(EXPORT KCodecsTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KCodecsTargets.cmake NAMESPACE KF5:: )
+install(EXPORT KF5CodecsTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KF5CodecsTargets.cmake NAMESPACE KF5:: )
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/kcodecs_version.h
         DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )

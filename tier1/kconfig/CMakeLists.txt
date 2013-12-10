@@ -14,36 +14,36 @@ include(FeatureSummary)
 include(ECMSetupVersion)
 ecm_setup_version(5.0.0 VARIABLE_PREFIX KCONFIG
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kconfig_version.h"
-                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KConfigConfigVersion.cmake")
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KF5ConfigConfigVersion.cmake")
 
 
 # Needed for the tests or examples to build correctly
 set(KConfig_KCFGC_EXECUTABLE kconfig_compiler)
-include(KConfigMacros.cmake)
+include(KF5ConfigMacros.cmake)
 
 add_subdirectory(src)
 add_subdirectory(autotests)
 
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
-set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KConfig")
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KF5Config")
 
 include(CMakePackageConfigHelpers)
 
-configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/KConfigConfig.cmake.in"
-                              "${CMAKE_CURRENT_BINARY_DIR}/KConfigConfig.cmake"
+configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/KF5ConfigConfig.cmake.in"
+                              "${CMAKE_CURRENT_BINARY_DIR}/KF5ConfigConfig.cmake"
                               INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
                               )
 
-install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/KConfigConfig.cmake"
-               "${CMAKE_CURRENT_BINARY_DIR}/KConfigConfigVersion.cmake"
-               "${CMAKE_CURRENT_SOURCE_DIR}/KConfigMacros.cmake"
+install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/KF5ConfigConfig.cmake"
+               "${CMAKE_CURRENT_BINARY_DIR}/KF5ConfigConfigVersion.cmake"
+               "${CMAKE_CURRENT_SOURCE_DIR}/KF5ConfigMacros.cmake"
         DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
         COMPONENT Devel )
 
 
-install(EXPORT KConfigTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
-        FILE KConfigTargets.cmake NAMESPACE KF5:: COMPONENT Devel)
+install(EXPORT KF5ConfigTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
+        FILE KF5ConfigTargets.cmake NAMESPACE KF5:: COMPONENT Devel)
 
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/kconfig_version.h

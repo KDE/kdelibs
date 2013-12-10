@@ -20,19 +20,20 @@ qt5_add_dbus_adaptor(libkdbusaddons_SRCS
    kdbusserviceextensions_adaptor
    KDBusServiceExtensionsAdaptor)
 
-add_library(KDBusAddons ${libkdbusaddons_SRCS})
-generate_export_header(KDBusAddons)
-add_library(KF5::KDBusAddons ALIAS KDBusAddons)
+add_library(KF5DBusAddons ${libkdbusaddons_SRCS})
+generate_export_header(KF5DBusAddons BASE_NAME KDBusAddons)
+add_library(KF5::DBusAddons ALIAS KF5DBusAddons)
 
 
 
-target_link_libraries(KDBusAddons PUBLIC Qt5::DBus)
+target_link_libraries(KF5DBusAddons PUBLIC Qt5::DBus)
 
-set_target_properties(KDBusAddons PROPERTIES VERSION   ${KDBUSADDONS_VERSION_STRING}
-                                             SOVERSION ${KDBUSADDONS_SOVERSION}
+set_target_properties(KF5DBusAddons PROPERTIES VERSION   ${KDBUSADDONS_VERSION_STRING}
+                                               SOVERSION ${KDBUSADDONS_SOVERSION}
+                                               EXPORT_NAME DBusAddons
 )
 
-install(TARGETS KDBusAddons EXPORT KDBusAddonsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KF5DBusAddons EXPORT KF5DBusAddonsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
     kdbusconnectionpool.h

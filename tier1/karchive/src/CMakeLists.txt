@@ -34,18 +34,19 @@ set(karchive_SRCS
    kzip.cpp
 )
 
-add_library(KArchive ${karchive_SRCS} ${karchive_OPTIONAL_SRCS})
-generate_export_header(KArchive)
-add_library(KF5::KArchive ALIAS KArchive)
+add_library(KF5Archive ${karchive_SRCS} ${karchive_OPTIONAL_SRCS})
+generate_export_header(KF5Archive BASE_NAME KArchive)
+add_library(KF5::Archive ALIAS KF5Archive)
 
-target_link_libraries(KArchive PUBLIC Qt5::Core)
-target_link_libraries(KArchive PRIVATE ${karchive_OPTIONAL_LIBS} ${ZLIB_LIBRARY} )
+target_link_libraries(KF5Archive PUBLIC Qt5::Core)
+target_link_libraries(KF5Archive PRIVATE ${karchive_OPTIONAL_LIBS} ${ZLIB_LIBRARY} )
 
-set_target_properties(KArchive PROPERTIES VERSION   ${KARCHIVE_VERSION_STRING}
-                                          SOVERSION ${KARCHIVE_SOVERSION}
+set_target_properties(KF5Archive PROPERTIES VERSION   ${KARCHIVE_VERSION_STRING}
+                                            SOVERSION ${KARCHIVE_SOVERSION}
+                                            EXPORT_NAME "Archive"
 )
 
-install(TARGETS KArchive EXPORT KArchiveTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KF5Archive EXPORT KF5ArchiveTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install( FILES
   karchive.h

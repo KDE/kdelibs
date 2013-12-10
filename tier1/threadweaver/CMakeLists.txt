@@ -21,7 +21,7 @@ include(ECMSetupVersion)
 # -- Maintained by scripty
 ecm_setup_version(5.0.0 VARIABLE_PREFIX THREADWEAVER
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/threadweaver_version.h"
-                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/ThreadWeaverConfigVersion.cmake")
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KF5ThreadWeaverConfigVersion.cmake")
 # --
 
 add_subdirectory(src)
@@ -29,12 +29,12 @@ add_subdirectory(autotests)
 add_subdirectory(benchmarks)
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
-set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/ThreadWeaver")
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KF5ThreadWeaver")
 
 include(CMakePackageConfigHelpers)
 
-configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/ThreadWeaverConfig.cmake.in"
-                              "${CMAKE_CURRENT_BINARY_DIR}/ThreadWeaverConfig.cmake"
+configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/KF5ThreadWeaverConfig.cmake.in"
+                              "${CMAKE_CURRENT_BINARY_DIR}/KF5ThreadWeaverConfig.cmake"
                               INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
                               )
 
@@ -42,13 +42,13 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/threadweaver_version.h
         DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
 
 install(FILES
-  "${CMAKE_CURRENT_BINARY_DIR}/ThreadWeaverConfig.cmake"
-  "${CMAKE_CURRENT_BINARY_DIR}/ThreadWeaverConfigVersion.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5ThreadWeaverConfig.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5ThreadWeaverConfigVersion.cmake"
   DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
   COMPONENT Devel
 )
 
-install(EXPORT ThreadWeaverTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE ThreadWeaverTargets.cmake NAMESPACE KF5:: )
+install(EXPORT KF5ThreadWeaverTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KF5ThreadWeaverTargets.cmake NAMESPACE KF5:: )
 
 if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
     feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)

@@ -46,7 +46,7 @@ include(ECMSetupVersion)
 
 ecm_setup_version(5.0.0 VARIABLE_PREFIX KARCHIVE
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/karchive_version.h"
-                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KArchiveConfigVersion.cmake")
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KF5ArchiveConfigVersion.cmake")
 
 
 add_subdirectory(src)
@@ -55,13 +55,13 @@ add_subdirectory(tests)
 
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
-set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KArchive")
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KF5Archive")
 
 include(CMakePackageConfigHelpers)
 
 configure_package_config_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/KArchiveConfig.cmake.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/KArchiveConfig.cmake"
+  "${CMAKE_CURRENT_SOURCE_DIR}/KF5ArchiveConfig.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5ArchiveConfig.cmake"
   INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
 )
 
@@ -69,10 +69,10 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/karchive_version.h
         DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
 
 install(FILES
-  "${CMAKE_CURRENT_BINARY_DIR}/KArchiveConfig.cmake"
-  "${CMAKE_CURRENT_BINARY_DIR}/KArchiveConfigVersion.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5ArchiveConfig.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5ArchiveConfigVersion.cmake"
   DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
   COMPONENT Devel
 )
 
-install(EXPORT KArchiveTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KArchiveTargets.cmake NAMESPACE KF5:: )
+install(EXPORT KF5ArchiveTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KF5ArchiveTargets.cmake NAMESPACE KF5:: )

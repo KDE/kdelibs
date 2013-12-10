@@ -11,23 +11,24 @@ set(libkconfiggui_SRCS
    kwindowconfig.cpp
 )
 
-add_library(KConfigGui ${libkconfiggui_SRCS})
-generate_export_header(KConfigGui)
-add_library(KF5::KConfigGui ALIAS KConfigGui)
+add_library(KF5ConfigGui ${libkconfiggui_SRCS})
+generate_export_header(KF5ConfigGui BASE_NAME KConfigGui)
+add_library(KF5::ConfigGui ALIAS KF5ConfigGui)
 
-target_link_libraries(KConfigGui PUBLIC Qt5::Gui Qt5::Xml KConfigCore)
+target_link_libraries(KF5ConfigGui PUBLIC Qt5::Gui Qt5::Xml KF5::ConfigCore)
 
 if(IS_ABSOLUTE "${INCLUDE_INSTALL_DIR}")
-  target_include_directories(KConfigGui INTERFACE "$<INSTALL_INTERFACE:${INCLUDE_INSTALL_DIR}>" )
+  target_include_directories(KF5ConfigGui INTERFACE "$<INSTALL_INTERFACE:${INCLUDE_INSTALL_DIR}>" )
 else()
-  target_include_directories(KConfigGui INTERFACE "$<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/${INCLUDE_INSTALL_DIR}>" )
+  target_include_directories(KF5ConfigGui INTERFACE "$<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/${INCLUDE_INSTALL_DIR}>" )
 endif()
 
-set_target_properties(KConfigGui PROPERTIES VERSION   ${KCONFIG_VERSION_STRING}
-                                            SOVERSION ${KCONFIG_SOVERSION}
+set_target_properties(KF5ConfigGui PROPERTIES VERSION   ${KCONFIG_VERSION_STRING}
+                                              SOVERSION ${KCONFIG_SOVERSION}
+                                              EXPORT_NAME ConfigGui
 )
 
-install(TARGETS KConfigGui EXPORT KConfigTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KF5ConfigGui EXPORT KF5ConfigTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install( FILES
    ${CMAKE_CURRENT_BINARY_DIR}/kconfiggui_export.h

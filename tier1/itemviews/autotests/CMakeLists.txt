@@ -10,7 +10,7 @@ macro(ITEMVIEWS_TESTS)
         add_executable(${_testname} ${_testname}.cpp)
         add_test(itemviews-${_testname} ${_testname})
         ecm_mark_as_test(${_testname})
-        target_link_libraries(${_testname} Qt5::Test ItemViews)
+        target_link_libraries(${_testname} Qt5::Test KF5::ItemViews)
     endforeach(_testname)
 endmacro()
 

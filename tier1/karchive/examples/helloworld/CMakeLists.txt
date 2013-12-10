@@ -13,4 +13,4 @@ find_package(KArchive "5.0.0" REQUIRED)
 add_executable(helloworld main.cpp)
 
 # Link our executable with the KArchive library
-target_link_libraries(helloworld KF5::KArchive)
+target_link_libraries(helloworld KF5::Archive)

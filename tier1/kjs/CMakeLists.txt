@@ -12,7 +12,7 @@ include(ECMSetupVersion)
 
 ecm_setup_version(5.0.0 VARIABLE_PREFIX KJS
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kjs_version.h"
-                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KJSConfigVersion.cmake")
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KF5JSConfigVersion.cmake")
 
 # Dependencies
 include(KDEInstallDirs)
@@ -45,19 +45,19 @@ add_subdirectory(autotests)
 add_subdirectory(tests)
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
-set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KJS")
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KF5JS")
 
-configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/KJSConfig.cmake.in"
-                              "${CMAKE_CURRENT_BINARY_DIR}/KJSConfig.cmake"
+configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/KF5JSConfig.cmake.in"
+                              "${CMAKE_CURRENT_BINARY_DIR}/KF5JSConfig.cmake"
                               INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
                               )
 
-install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/KJSConfig.cmake"
-               "${CMAKE_CURRENT_BINARY_DIR}/KJSConfigVersion.cmake"
+install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/KF5JSConfig.cmake"
+               "${CMAKE_CURRENT_BINARY_DIR}/KF5JSConfigVersion.cmake"
         DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
         COMPONENT Devel )
 
-install(EXPORT KJSTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KJSTargets.cmake NAMESPACE KF5:: )
+install(EXPORT KF5JSTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KF5JSTargets.cmake NAMESPACE KF5:: )
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/kjs_version.h DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
 

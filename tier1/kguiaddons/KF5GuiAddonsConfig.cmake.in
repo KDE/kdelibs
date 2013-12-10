@@ -5,5 +5,5 @@
 find_dependency(Qt5Gui @REQUIRED_QT_VERSION@)
 
 
-include("${CMAKE_CURRENT_LIST_DIR}/KGuiAddonsTargets.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/KF5GuiAddonsTargets.cmake")
 

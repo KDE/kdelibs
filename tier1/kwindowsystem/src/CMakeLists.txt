@@ -46,25 +46,27 @@ if (WIN32)
    )
 endif ()
 
-add_library(KWindowSystem ${kwindowsystem_SRCS})
-generate_export_header(KWindowSystem)
-add_library(KF5::KWindowSystem ALIAS KWindowSystem)
+add_library(KF5WindowSystem ${kwindowsystem_SRCS})
+generate_export_header(KF5WindowSystem BASE_NAME KWindowSystem)
+add_library(KF5::WindowSystem ALIAS KF5WindowSystem)
 
-target_link_libraries(KWindowSystem
+target_link_libraries(KF5WindowSystem
   PUBLIC Qt5::Gui
   PRIVATE Qt5::Widgets ${platformLinkLibraries}
 )
 
 if(IS_ABSOLUTE "${INCLUDE_INSTALL_DIR}")
-  target_include_directories(KWindowSystem INTERFACE "$<INSTALL_INTERFACE:${INCLUDE_INSTALL_DIR}>" )
+  target_include_directories(KF5WindowSystem INTERFACE "$<INSTALL_INTERFACE:${INCLUDE_INSTALL_DIR}>" )
 else()
-  target_include_directories(KWindowSystem INTERFACE "$<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/${INCLUDE_INSTALL_DIR}>" )
+  target_include_directories(KF5WindowSystem INTERFACE "$<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/${INCLUDE_INSTALL_DIR}>" )
 endif()
 
-set_target_properties(KWindowSystem PROPERTIES VERSION   ${KWINDOWSYSTEM_VERSION_STRING}
-                                               SOVERSION ${KWINDOWSYSTEM_SOVERSION})
+set_target_properties(KF5WindowSystem PROPERTIES VERSION   ${KWINDOWSYSTEM_VERSION_STRING}
+                                                 SOVERSION ${KWINDOWSYSTEM_SOVERSION}
+                                                 EXPORT_NAME WindowSystem
+)
 
-install(TARGETS KWindowSystem EXPORT KWindowSystemTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KF5WindowSystem EXPORT KF5WindowSystemTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install( FILES
    fixx11h.h

@@ -11,7 +11,7 @@ find_package(Qt5 ${REQUIRED_QT_VERSION} CONFIG REQUIRED Qml)
 
 target_link_libraries(
     solidextensionplugin
-    Solid
+    KF5::Solid
     Qt5::Core
     Qt5::Qml
 )

@@ -9,7 +9,7 @@ add_executable(fakehardwaretest ${fakehardwaretest_SRCS})
 add_test(fakehardwaretest fakehardwaretest)
 ecm_mark_as_test(fakehardwaretest)
 
-target_link_libraries(fakehardwaretest Solid_static Qt5::DBus Qt5::Xml Qt5::Test)
+target_link_libraries(fakehardwaretest KF5Solid_static Qt5::DBus Qt5::Xml Qt5::Test)
 # QT5 TODO Port solid to QFINDTESTDATA
 set_target_properties(fakehardwaretest PROPERTIES COMPILE_FLAGS -DTEST_DATA="\\"${CMAKE_CURRENT_SOURCE_DIR}/../src/solid/backends/fakehw/fakecomputer.xml\\"")
 
@@ -21,7 +21,7 @@ if(NOT WIN32 AND NOT APPLE)
 
    add_executable(halbasictest ${halbasictest_SRCS})
 
-   target_link_libraries(halbasictest Solid_static Qt5::DBus Qt5::Xml Qt5::Test)
+   target_link_libraries(halbasictest KF5Solid_static Qt5::DBus Qt5::Xml Qt5::Test)
 
    ecm_mark_as_test(halbasictest)
 endif()
@@ -39,7 +39,7 @@ set_target_properties(solidhwtest PROPERTIES COMPILE_FLAGS -DSOLID_STATIC_DEFINE
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../src/solid/backends/fakehw )
 
-target_link_libraries(solidhwtest Qt5::DBus Qt5::Xml Qt5::Test ${LIBS} Solid_static)
+target_link_libraries(solidhwtest Qt5::DBus Qt5::Xml Qt5::Test ${LIBS} KF5Solid_static)
 
 ########### solidmttest ###############
 
@@ -55,5 +55,5 @@ set_target_properties(solidmttest PROPERTIES COMPILE_FLAGS -DSOLID_STATIC_DEFINE
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../src/solid/backends/fakehw )
 
-target_link_libraries(solidmttest Qt5::DBus Qt5::Xml Qt5::Test ${LIBS} Solid_static Qt5::Concurrent)
+target_link_libraries(solidmttest Qt5::DBus Qt5::Xml Qt5::Test ${LIBS} KF5Solid_static Qt5::Concurrent)
 

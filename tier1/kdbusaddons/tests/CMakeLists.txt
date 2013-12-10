@@ -6,7 +6,7 @@ macro(KDBUSADDONS_TESTS)
     foreach(_testname ${ARGN})
         add_executable(${_testname} ${_testname}.cpp)
         ecm_mark_as_test(${_testname})
-        target_link_libraries(${_testname} KDBusAddons)
+        target_link_libraries(${_testname} KF5::DBusAddons)
     endforeach()
 endmacro()
 

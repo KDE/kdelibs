@@ -7,17 +7,18 @@ set(kplotting_SRCS
  kplotwidget.cpp
 )
 
-add_library(KPlotting ${kplotting_SRCS})
-generate_export_header(KPlotting)
-add_library(KF5::KPlotting ALIAS KPlotting)
+add_library(KF5Plotting ${kplotting_SRCS})
+generate_export_header(KF5Plotting BASE_NAME KPlotting)
+add_library(KF5::Plotting ALIAS KF5Plotting)
 
-target_link_libraries(KPlotting PUBLIC Qt5::Widgets)
+target_link_libraries(KF5Plotting PUBLIC Qt5::Widgets)
 
-set_target_properties(KPlotting PROPERTIES VERSION   ${KPLOTTING_VERSION_STRING}
-                                           SOVERSION ${KPLOTTING_SOVERSION}
+set_target_properties(KF5Plotting PROPERTIES VERSION   ${KPLOTTING_VERSION_STRING}
+                                             SOVERSION ${KPLOTTING_SOVERSION}
+                                             EXPORT_NAME Plotting
 )
 
-install(TARGETS KPlotting EXPORT KPlottingTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KF5Plotting EXPORT KF5PlottingTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install( FILES
   kplotaxis.h

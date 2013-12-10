@@ -21,7 +21,7 @@ find_dependency(Qt5Core @REQUIRED_QT_VERSION@)
 
 set(SOLID_DBUS_INTERFACES_DIR "${PACKAGE_PREFIX_DIR}/@DBUS_INTERFACES_INSTALL_DIR@")
 
-include("${CMAKE_CURRENT_LIST_DIR}/SolidTargets.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/KF5SolidTargets.cmake")
 
 # "public" variables:
 

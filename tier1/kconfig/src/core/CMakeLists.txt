@@ -15,25 +15,27 @@ set(libkconfigcore_SRCS
    kemailsettings.cpp
 )
 
-add_library(KConfigCore ${libkconfigcore_SRCS})
-generate_export_header(KConfigCore)
-add_library(KF5::KConfigCore ALIAS KConfigCore)
+add_library(KF5ConfigCore ${libkconfigcore_SRCS})
+generate_export_header(KF5ConfigCore BASE_NAME KConfigCore)
+add_library(KF5::ConfigCore ALIAS KF5ConfigCore)
 
-target_link_libraries(KConfigCore PUBLIC Qt5::Core)
+target_link_libraries(KF5ConfigCore PUBLIC Qt5::Core)
 if(WIN32)
-    target_link_libraries(KConfigCore PRIVATE ${KDEWIN_LIBRARIES})
+    target_link_libraries(KF5ConfigCore PRIVATE ${KDEWIN_LIBRARIES})
 endif()
 
 if(IS_ABSOLUTE "${INCLUDE_INSTALL_DIR}")
-  target_include_directories(KConfigCore INTERFACE "$<INSTALL_INTERFACE:${INCLUDE_INSTALL_DIR}>" )
+  target_include_directories(KF5ConfigCore INTERFACE "$<INSTALL_INTERFACE:${INCLUDE_INSTALL_DIR}>" )
 else()
-  target_include_directories(KConfigCore INTERFACE "$<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/${INCLUDE_INSTALL_DIR}>" )
+  target_include_directories(KF5ConfigCore INTERFACE "$<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/${INCLUDE_INSTALL_DIR}>" )
 endif()
 
-set_target_properties(KConfigCore PROPERTIES VERSION   ${KCONFIG_VERSION_STRING}
-                                             SOVERSION ${KCONFIG_SOVERSION} )
+set_target_properties(KF5ConfigCore PROPERTIES VERSION   ${KCONFIG_VERSION_STRING}
+                                               SOVERSION ${KCONFIG_SOVERSION}
+                                               EXPORT_NAME ConfigCore
+)
 
-install(TARGETS KConfigCore EXPORT KConfigTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KF5ConfigCore EXPORT KF5ConfigTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install( FILES
    ${CMAKE_CURRENT_BINARY_DIR}/kconfigcore_export.h
