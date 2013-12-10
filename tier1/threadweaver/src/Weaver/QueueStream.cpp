@@ -37,10 +37,7 @@ void QueueStream::flush()
         return;
     }
     Q_ASSERT(d->weaver);
-    //FIXME: this should be one atomic operation:
-    Q_FOREACH(const JobPointer& job, d->jobs) {
-        d->weaver->enqueue(job);
-    }
+    d->weaver->enqueue(d->jobs);
 }
 
 QueueStream &QueueStream::operator<<(const JobPointer &job)
