@@ -23,16 +23,17 @@ get_filename_component(_kf5_install_prefix "${CMAKE_CURRENT_LIST_DIR}/.." ABSOLU
 set(_KF5_NOTFOUND_MESSAGE)
 
 foreach(module ${KF5_FIND_COMPONENTS})
-    find_package(${module}
+    find_package(KF5${module}
         ${_KF5_FIND_PARTS_QUIET}
         ${_KF5_FIND_PARTS_REQUIRED}
         PATHS "${_kf5_install_prefix}" NO_DEFAULT_PATH
     )
-    if (NOT ${module}_FOUND)
+    set(_kf5_config_cmake_path "${_kf5_install_prefix}/KF5${module}/KF5${module}Config.cmake")
+    if (NOT KF5${module}_FOUND)
         if (KF5_FIND_REQUIRED_${module})
-            set(_KF5_NOTFOUND_MESSAGE "${_KF5_NOTFOUND_MESSAGE}Failed to find KF5 component \"${module}\" config file at \"${_kf5_install_prefix}/${module}/${module}Config.cmake\"\n")
+            set(_KF5_NOTFOUND_MESSAGE "${_KF5_NOTFOUND_MESSAGE}Failed to find KF5 component \"${module}\" config file at \"${_kf5_config_cmake_path}\"\n")
         elseif(NOT KF5_FIND_QUIETLY)
-            message(WARNING "Failed to find KF5 component \"${module}\" config file at \"${_kf5_install_prefix}/${module}/${module}Config.cmake\"")
+            message(WARNING "Failed to find KF5 component \"${module}\" config file at \"${_kf5_config_cmake_path}\"")
         endif()
     endif()
 endforeach()
