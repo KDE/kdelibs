@@ -76,35 +76,36 @@ set(kcoreaddons_INCLUDE_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}/util/
 )
 
-add_library(KCoreAddons ${libkcoreaddons_SRCS})
-generate_export_header(KCoreAddons)
-add_library(KF5::KCoreAddons ALIAS KCoreAddons)
+add_library(KF5CoreAddons ${libkcoreaddons_SRCS})
+generate_export_header(KF5CoreAddons BASE_NAME KCoreAddons)
+add_library(KF5::CoreAddons ALIAS KF5CoreAddons)
 
-target_include_directories(KCoreAddons PUBLIC "$<BUILD_INTERFACE:${kcoreaddons_INCLUDE_DIRS}>")
+target_include_directories(KF5CoreAddons PUBLIC "$<BUILD_INTERFACE:${kcoreaddons_INCLUDE_DIRS}>")
 
-target_link_libraries(KCoreAddons
+target_link_libraries(KF5CoreAddons
   PUBLIC
     Qt5::Core
   PRIVATE
     ${kcoreaddons_OPTIONAL_LIBS}
 )
 if(NOT WIN32)
-    target_link_libraries(KCoreAddons PRIVATE pthread)
+    target_link_libraries(KF5CoreAddons PRIVATE pthread)
 else()
-    target_link_libraries(KCoreAddons PRIVATE netapi32)
+    target_link_libraries(KF5CoreAddons PRIVATE netapi32)
 endif()
 
 if(IS_ABSOLUTE "${INCLUDE_INSTALL_DIR}")
-  target_include_directories(KCoreAddons INTERFACE "$<INSTALL_INTERFACE:${INCLUDE_INSTALL_DIR}>" )
+  target_include_directories(KF5CoreAddons INTERFACE "$<INSTALL_INTERFACE:${INCLUDE_INSTALL_DIR}>" )
 else()
-  target_include_directories(KCoreAddons INTERFACE "$<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/${INCLUDE_INSTALL_DIR}>" )
+  target_include_directories(KF5CoreAddons INTERFACE "$<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/${INCLUDE_INSTALL_DIR}>" )
 endif()
 
-set_target_properties(KCoreAddons PROPERTIES VERSION   ${KCOREADDONS_VERSION_STRING}
-                                             SOVERSION ${KCOREADDONS_SOVERSION}
+set_target_properties(KF5CoreAddons PROPERTIES VERSION   ${KCOREADDONS_VERSION_STRING}
+                                               SOVERSION ${KCOREADDONS_SOVERSION}
+                                               EXPORT_NAME CoreAddons
 )
 
-install(TARGETS KCoreAddons EXPORT KCoreAddonsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KF5CoreAddons EXPORT KF5CoreAddonsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
     kaboutdata.h

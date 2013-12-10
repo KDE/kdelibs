@@ -32,17 +32,18 @@ set(kcodecs_SRCS
     probers/nsUniversalDetector.cpp
 )
 
-add_library(KCodecs ${kcodecs_SRCS})
-generate_export_header(KCodecs)
-add_library(KF5::KCodecs ALIAS KCodecs)
+add_library(KF5Codecs ${kcodecs_SRCS})
+generate_export_header(KF5Codecs BASE_NAME KCodecs)
+add_library(KF5::Codecs ALIAS KF5Codecs)
 
-target_link_libraries(KCodecs PUBLIC Qt5::Core )
+target_link_libraries(KF5Codecs PUBLIC Qt5::Core)
 
-set_target_properties(KCodecs PROPERTIES VERSION   ${KCODECS_VERSION_STRING}
-                                         SOVERSION ${KCODECS_SOVERSION}
+set_target_properties(KF5Codecs PROPERTIES VERSION   ${KCODECS_VERSION_STRING}
+                                           SOVERSION ${KCODECS_SOVERSION}
+                                           EXPORT_NAME Codecs
 )
 
-install(TARGETS KCodecs EXPORT KCodecsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KF5Codecs EXPORT KF5CodecsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
     kcharsets.h

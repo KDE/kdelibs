@@ -3,7 +3,7 @@
 # Any changes in this ".cmake" file will be overwritten by CMake, the source is the ".cmake.in" file.
 
 
-include("${CMAKE_CURRENT_LIST_DIR}/KConfigTargets.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/KF5ConfigTargets.cmake")
 
 find_dependency(Qt5Xml "@REQUIRED_QT_VERSION@")
 
@@ -11,4 +11,4 @@ get_target_property(KConfig_KCFGC_EXECUTABLE  KF5::kconfig_compiler  LOCATION)
 
 
 unset( _KDE4_KCONFIG_COMPILER_DEP)
-include("${CMAKE_CURRENT_LIST_DIR}/KConfigMacros.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/KF5ConfigMacros.cmake")

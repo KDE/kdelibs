@@ -26,10 +26,10 @@ else ()
     set (kguiaddons_LIB_SRCS ${kguiaddons_LIB_SRCS} util/kmodifierkeyinfoprovider_dummy.cpp)
 endif ()
 
-add_library(KGuiAddons ${kguiaddons_LIB_SRCS})
+add_library(KF5GuiAddons ${kguiaddons_LIB_SRCS})
 
-generate_export_header(KGuiAddons)
-add_library(KF5::KGuiAddons ALIAS KGuiAddons)
+generate_export_header(KF5GuiAddons BASE_NAME KGuiAddons)
+add_library(KF5::GuiAddons ALIAS KF5GuiAddons)
 
 set(kguiaddons_INCLUDES
   ${CMAKE_CURRENT_SOURCE_DIR}/colors
@@ -37,18 +37,20 @@ set(kguiaddons_INCLUDES
   ${CMAKE_CURRENT_SOURCE_DIR}/text
   ${CMAKE_CURRENT_SOURCE_DIR}/util
   )
-target_include_directories(KGuiAddons PUBLIC "$<BUILD_INTERFACE:${kguiaddons_INCLUDES}>")
-target_link_libraries(KGuiAddons PUBLIC Qt5::Gui)
+target_include_directories(KF5GuiAddons PUBLIC "$<BUILD_INTERFACE:${kguiaddons_INCLUDES}>")
+target_link_libraries(KF5GuiAddons PUBLIC Qt5::Gui)
 
 if(X11_FOUND AND X11_Xkb_FOUND)
-    target_link_libraries(KGuiAddons LINK_PRIVATE ${X11_LIBRARIES} ${XCB_XCB_LIBRARY})
+    target_link_libraries(KF5GuiAddons LINK_PRIVATE ${X11_LIBRARIES} ${XCB_XCB_LIBRARY})
 endif()
 
-set_target_properties(KGuiAddons PROPERTIES VERSION   ${KGUIADDONS_VERSION_STRING}
-                                            SOVERSION ${KGUIADDONS_SOVERSION} )
+set_target_properties(KF5GuiAddons PROPERTIES VERSION   ${KGUIADDONS_VERSION_STRING}
+                                              SOVERSION ${KGUIADDONS_SOVERSION}
+                                              EXPORT_NAME GuiAddons
+)
 
 
-install(TARGETS KGuiAddons EXPORT KGuiAddonsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KF5GuiAddons EXPORT KF5GuiAddonsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install( FILES
  ${CMAKE_CURRENT_BINARY_DIR}/kguiaddons_export.h

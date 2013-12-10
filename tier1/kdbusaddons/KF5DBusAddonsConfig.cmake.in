@@ -3,5 +3,5 @@
 find_dependency(Qt5DBus @REQUIRED_QT_VERSION@)
 
 
-include("${CMAKE_CURRENT_LIST_DIR}/KDBusAddonsTargets.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/KF5DBusAddonsTargets.cmake")
 

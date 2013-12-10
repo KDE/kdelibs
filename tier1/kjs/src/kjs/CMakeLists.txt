@@ -171,8 +171,8 @@ set(kjs_LIB_SRCS
    )
 
 
-add_library(KJS ${kjs_LIB_SRCS})
-add_library(KF5::KJS ALIAS KJS)
+add_library(KF5JS ${kjs_LIB_SRCS})
+add_library(KF5::JS ALIAS KF5JS)
 
 set(kjs_INCLUDES
   ${CMAKE_CURRENT_BINARY_DIR}/..
@@ -181,26 +181,29 @@ set(kjs_INCLUDES
   ${CMAKE_CURRENT_SOURCE_DIR}/../wtf
 )
 
-target_include_directories(KJS PUBLIC "$<BUILD_INTERFACE:${kjs_INCLUDES}>")
+target_include_directories(KF5JS PUBLIC "$<BUILD_INTERFACE:${kjs_INCLUDES}>")
 
 if(WIN32)
-   target_link_libraries(KJS PRIVATE ${KDEWIN_LIBRARIES})
+   target_link_libraries(KF5JS PRIVATE ${KDEWIN_LIBRARIES})
 endif()
 
 if(CMAKE_THREAD_LIBS_INIT)
-   target_link_libraries(KJS PRIVATE ${CMAKE_THREAD_LIBS_INIT})
+   target_link_libraries(KF5JS PRIVATE ${CMAKE_THREAD_LIBS_INIT})
 endif()
 
 if(UNIX)
-   target_link_libraries(KJS PRIVATE m)
+   target_link_libraries(KF5JS PRIVATE m)
 endif()
 
 if(PCRE_FOUND)
-   target_link_libraries(KJS PRIVATE ${PCRE_LIBRARIES})
+   target_link_libraries(KF5JS PRIVATE ${PCRE_LIBRARIES})
 endif()
 
-set_target_properties(KJS PROPERTIES VERSION ${KJS_VERSION_STRING} SOVERSION ${KJS_SOVERSION} )
-install(TARGETS KJS EXPORT KJSTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+set_target_properties(KF5JS PROPERTIES VERSION ${KJS_VERSION_STRING}
+                                       SOVERSION ${KJS_SOVERSION}
+                                       EXPORT_NAME JS
+)
+install(TARGETS KF5JS EXPORT KF5JSTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 ########### kjs - basic shell ###############
 
@@ -215,7 +218,7 @@ add_executable(kjs_bin ${kjs_SRCS})
 
 set_target_properties(kjs_bin PROPERTIES RUNTIME_OUTPUT_NAME ${kjs_bin_OUTPUT_NAME})
 
-target_link_libraries(kjs_bin KJS)
+target_link_libraries(kjs_bin KF5JS)
 
 install(TARGETS kjs_bin ${INSTALL_TARGETS_DEFAULT_ARGS})
 

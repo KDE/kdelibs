@@ -16,7 +16,7 @@ include(ECMSetupVersion)
 
 ecm_setup_version(5.0.0 VARIABLE_PREFIX ITEMVIEWS
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/itemviews_version.h"
-                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/ItemViewsConfigVersion.cmake")
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KF5ItemViewsConfigVersion.cmake")
 
 
 add_subdirectory(src)
@@ -25,24 +25,24 @@ add_subdirectory(tests)
 
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
-set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/ItemViews")
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KF5ItemViews")
 
 include(CMakePackageConfigHelpers)
 
 configure_package_config_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/ItemViewsConfig.cmake.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/ItemViewsConfig.cmake"
+  "${CMAKE_CURRENT_SOURCE_DIR}/KF5ItemViewsConfig.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5ItemViewsConfig.cmake"
   INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
 )
 
 install(FILES
-  "${CMAKE_CURRENT_BINARY_DIR}/ItemViewsConfig.cmake"
-  "${CMAKE_CURRENT_BINARY_DIR}/ItemViewsConfigVersion.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5ItemViewsConfig.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5ItemViewsConfigVersion.cmake"
   DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
   COMPONENT Devel
 )
 
-install(EXPORT ItemViewsTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE ItemViewsTargets.cmake NAMESPACE KF5:: )
+install(EXPORT KF5ItemViewsTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KF5ItemViewsTargets.cmake NAMESPACE KF5:: )
 
 install(FILES
    ${CMAKE_CURRENT_BINARY_DIR}/itemviews_version.h

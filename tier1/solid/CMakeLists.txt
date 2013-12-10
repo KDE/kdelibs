@@ -67,7 +67,7 @@ option(WITH_SOLID_WMI "Enables the deprecated WMI backend on Windows")
 
 ecm_setup_version(5.0.0 VARIABLE_PREFIX SOLID
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/solid_version.h"
-                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/SolidConfigVersion.cmake")
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KF5SolidConfigVersion.cmake")
 
 # TODO: Remove these
 remove_definitions(-DQT_NO_CAST_TO_ASCII)
@@ -82,19 +82,19 @@ add_subdirectory(autotests)
 add_subdirectory(tests)
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
-set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/Solid")
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KF5Solid")
 
-configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/SolidConfig.cmake.in"
-                              "${CMAKE_CURRENT_BINARY_DIR}/SolidConfig.cmake"
+configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/KF5SolidConfig.cmake.in"
+                              "${CMAKE_CURRENT_BINARY_DIR}/KF5SolidConfig.cmake"
                               INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
                               )
 
-install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/SolidConfig.cmake"
-               "${CMAKE_CURRENT_BINARY_DIR}/SolidConfigVersion.cmake"
+install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/KF5SolidConfig.cmake"
+               "${CMAKE_CURRENT_BINARY_DIR}/KF5SolidConfigVersion.cmake"
         DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
         COMPONENT Devel )
 
-install(EXPORT SolidTargets  DESTINATION "${CMAKECONFIG_INSTALL_DIR}"  FILE SolidTargets.cmake  NAMESPACE KF5:: )
+install(EXPORT KF5SolidTargets  DESTINATION "${CMAKECONFIG_INSTALL_DIR}"  FILE KF5SolidTargets.cmake  NAMESPACE KF5:: )
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/solid_version.h  DESTINATION ${INCLUDE_INSTALL_DIR}  COMPONENT Devel )
 

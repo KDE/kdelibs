@@ -449,22 +449,24 @@ if ( UDEV_FOUND )
    set(solid_OPTIONAL_LIBS ${solid_OPTIONAL_LIBS} ${UDEV_LIBS})
 endif ()
 
-add_library(Solid  ${solid_LIB_SRCS})
-target_include_directories(Solid PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..;${CMAKE_CURRENT_BINARY_DIR}/..>")
-generate_export_header(Solid)
-add_library(KF5::Solid ALIAS Solid)
+add_library(KF5Solid  ${solid_LIB_SRCS})
+target_include_directories(KF5Solid PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..;${CMAKE_CURRENT_BINARY_DIR}/..>")
+generate_export_header(KF5Solid BASE_NAME Solid)
+add_library(KF5::Solid ALIAS KF5Solid)
 
-target_link_libraries(Solid PUBLIC Qt5::Core
-                            PRIVATE Qt5::DBus
-                                         Qt5::Xml
-                                         Qt5::Widgets
-                                         ${solid_OPTIONAL_LIBS}
+target_link_libraries(KF5Solid PUBLIC Qt5::Core
+                               PRIVATE Qt5::DBus
+                                       Qt5::Xml
+                                       Qt5::Widgets
+                                       ${solid_OPTIONAL_LIBS}
  )
 
-set_target_properties(Solid PROPERTIES  VERSION ${SOLID_VERSION_STRING}
-                                        SOVERSION ${SOLID_SOVERSION} )
+set_target_properties(KF5Solid PROPERTIES  VERSION ${SOLID_VERSION_STRING}
+                                           SOVERSION ${SOLID_SOVERSION}
+                                           EXPORT_NAME Solid
+)
 
-install(TARGETS Solid EXPORT SolidTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KF5Solid EXPORT KF5SolidTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES org.kde.Solid.Networking.Client.xml
               org.kde.Solid.PowerManagement.PolicyAgent.xml
@@ -474,12 +476,12 @@ install(FILES org.kde.Solid.Networking.Client.xml
 
 ########### static lib for tests  ###############
 
-add_library(Solid_static STATIC ${solid_LIB_SRCS})
-set_target_properties(Solid_static PROPERTIES COMPILE_FLAGS -DSOLID_STATIC_DEFINE=1)
+add_library(KF5Solid_static STATIC ${solid_LIB_SRCS})
+set_target_properties(KF5Solid_static PROPERTIES COMPILE_FLAGS -DSOLID_STATIC_DEFINE=1)
 
-target_link_libraries(Solid_static PUBLIC Qt5::Core)
-target_link_libraries(Solid_static PRIVATE Qt5::DBus Qt5::Xml Qt5::Widgets ${solid_OPTIONAL_LIBS})
-target_include_directories(Solid_static PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..;${CMAKE_CURRENT_BINARY_DIR}/..>")
+target_link_libraries(KF5Solid_static PUBLIC Qt5::Core)
+target_link_libraries(KF5Solid_static PRIVATE Qt5::DBus Qt5::Xml Qt5::Widgets ${solid_OPTIONAL_LIBS})
+target_include_directories(KF5Solid_static PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..;${CMAKE_CURRENT_BINARY_DIR}/..>")
 
 ########### install files ###############
 

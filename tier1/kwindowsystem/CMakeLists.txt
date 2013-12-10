@@ -12,7 +12,7 @@ include(ECMSetupVersion)
 
 ecm_setup_version(5.0.0 VARIABLE_PREFIX KWINDOWSYSTEM
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kwindowsystem_version.h"
-                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KWindowSystemConfigVersion.cmake")
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KF5WindowSystemConfigVersion.cmake")
 
 # Dependencies
 set(REQUIRED_QT_VERSION 5.2.0)
@@ -51,19 +51,19 @@ add_subdirectory(autotests)
 add_subdirectory(tests)
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
-set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KWindowSystem")
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KF5WindowSystem")
 
-configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/KWindowSystemConfig.cmake.in"
-                              "${CMAKE_CURRENT_BINARY_DIR}/KWindowSystemConfig.cmake"
+configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/KF5WindowSystemConfig.cmake.in"
+                              "${CMAKE_CURRENT_BINARY_DIR}/KF5WindowSystemConfig.cmake"
                               INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
                               )
 
-install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/KWindowSystemConfig.cmake"
-               "${CMAKE_CURRENT_BINARY_DIR}/KWindowSystemConfigVersion.cmake"
+install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/KF5WindowSystemConfig.cmake"
+               "${CMAKE_CURRENT_BINARY_DIR}/KF5WindowSystemConfigVersion.cmake"
         DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
         COMPONENT Devel )
 
-install(EXPORT KWindowSystemTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KWindowSystemTargets.cmake NAMESPACE KF5:: )
+install(EXPORT KF5WindowSystemTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KF5WindowSystemTargets.cmake NAMESPACE KF5:: )
 
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/kwindowsystem_version.h

@@ -8,7 +8,7 @@ macro(KARCHIVE_UNIT_TESTS)
    foreach(_testname ${ARGN})
       add_executable(${_testname} ${_testname}.cpp) # TODO NOGUI
       add_test(karchive-${_testname} ${_testname})
-      target_link_libraries(${_testname} KArchive Qt5::Test)
+      target_link_libraries(${_testname} KF5::Archive Qt5::Test)
       ecm_mark_as_test(${_testname})
    endforeach(_testname)
 endmacro(KARCHIVE_UNIT_TESTS)
@@ -23,11 +23,11 @@ add_executable(klimitediodevicetest klimitediodevicetest.cpp ../src/klimitediode
 ecm_mark_as_test(klimitediodevicetest)
 add_test(karchive-klimitediodevicetest klimitediodevicetest)
 target_link_libraries(klimitediodevicetest Qt5::Test )
-target_include_directories(klimitediodevicetest PRIVATE $<TARGET_PROPERTY:KArchive,INTERFACE_INCLUDE_DIRECTORIES>)
+target_include_directories(klimitediodevicetest PRIVATE $<TARGET_PROPERTY:KF5Archive,INTERFACE_INCLUDE_DIRECTORIES>)
 
 ########### kfiltertest ###############
 
 add_executable(kfiltertest kfiltertest.cpp)
 ecm_mark_as_test(kfiltertest)
 add_test(karchive-kfiltertest kfiltertest)
-target_link_libraries(kfiltertest Qt5::Test KArchive ${ZLIB_LIBRARIES})
+target_link_libraries(kfiltertest Qt5::Test KF5::Archive ${ZLIB_LIBRARIES})

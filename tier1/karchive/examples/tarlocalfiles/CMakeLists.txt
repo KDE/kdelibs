@@ -5,4 +5,4 @@ project(TarLocalFiles)
 find_package(KArchive "5.0.0" REQUIRED)
 
 add_executable(tarlocalfiles main.cpp)
-target_link_libraries(tarlocalfiles KF5::KArchive)
+target_link_libraries(tarlocalfiles KF5::Archive)

@@ -11,18 +11,19 @@ set(itemviews_SRCS
   kwidgetitemdelegatepool.cpp
 )
 
-add_library(ItemViews ${itemviews_SRCS})
-generate_export_header(ItemViews)
-add_library(KF5::ItemViews ALIAS ItemViews)
+add_library(KF5ItemViews ${itemviews_SRCS})
+generate_export_header(KF5ItemViews BASE_NAME ItemViews)
+add_library(KF5::ItemViews ALIAS KF5ItemViews)
 
 
-target_link_libraries(ItemViews PUBLIC Qt5::Widgets)
+target_link_libraries(KF5ItemViews PUBLIC Qt5::Widgets)
 
-set_target_properties(ItemViews PROPERTIES VERSION   ${ITEMVIEWS_VERSION_STRING}
-                                           SOVERSION ${ITEMVIEWS_SOVERSION}
+set_target_properties(KF5ItemViews PROPERTIES VERSION   ${ITEMVIEWS_VERSION_STRING}
+                                              SOVERSION ${ITEMVIEWS_SOVERSION}
+                                              EXPORT_NAME ItemViews
 )
 
-install(TARGETS ItemViews EXPORT ItemViewsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KF5ItemViews EXPORT KF5ItemViewsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
   kcategorizedsortfilterproxymodel.h

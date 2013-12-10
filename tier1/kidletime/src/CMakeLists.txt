@@ -34,16 +34,18 @@ elseif (WIN32)
    set(kidletime_LIB_SRCS ${kidletime_LIB_SRCS} windowspoller.cpp)
 endif ()
 
-add_library(KIdleTime ${kidletime_LIB_SRCS})
-generate_export_header(KIdleTime)
-add_library(KF5::KIdleTime ALIAS KIdleTime)
-target_link_libraries(KIdleTime PUBLIC Qt5::Core)
-target_link_libraries(KIdleTime PRIVATE Qt5::Widgets ${kidletime_LIBS})
+add_library(KF5IdleTime ${kidletime_LIB_SRCS})
+generate_export_header(KF5IdleTime BASE_NAME KIdleTime)
+add_library(KF5::IdleTime ALIAS KF5IdleTime)
+target_link_libraries(KF5IdleTime PUBLIC Qt5::Core)
+target_link_libraries(KF5IdleTime PRIVATE Qt5::Widgets ${kidletime_LIBS})
 
-set_target_properties(KIdleTime PROPERTIES  VERSION ${KIDLETIME_VERSION_STRING}
-                                            SOVERSION ${KIDLETIME_SOVERSION})
+set_target_properties(KF5IdleTime PROPERTIES  VERSION ${KIDLETIME_VERSION_STRING}
+                                              SOVERSION ${KIDLETIME_SOVERSION}
+                                              EXPORT_NAME IdleTime
+)
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/kidletime_export.h
                kidletime.h
          DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
 
-install(TARGETS KIdleTime EXPORT KIdleTimeTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KF5IdleTime EXPORT KF5IdleTimeTargets ${INSTALL_TARGETS_DEFAULT_ARGS})

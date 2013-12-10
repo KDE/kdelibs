@@ -12,6 +12,6 @@ set(kconf_update_SRCS
     )
 
 add_executable(kconf_update ${kconf_update_SRCS})
-target_link_libraries(kconf_update Qt5::Core KConfigCore)
+target_link_libraries(kconf_update Qt5::Core KF5::ConfigCore)
 
 install(TARGETS kconf_update DESTINATION ${LIBEXEC_INSTALL_DIR})

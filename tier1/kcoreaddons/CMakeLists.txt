@@ -35,7 +35,7 @@ configure_file(src/lib/io/config-kdirwatch.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/s
 
 ecm_setup_version(5.0.0 VARIABLE_PREFIX KCOREADDONS
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kcoreaddons_version.h"
-                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KCoreAddonsConfigVersion.cmake")
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KF5CoreAddonsConfigVersion.cmake")
 
 
 add_subdirectory(src)
@@ -43,19 +43,19 @@ add_subdirectory(autotests)
 add_subdirectory(tests)
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
-set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KCoreAddons")
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KF5CoreAddons")
 
-configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/KCoreAddonsConfig.cmake.in"
-                              "${CMAKE_CURRENT_BINARY_DIR}/KCoreAddonsConfig.cmake"
+configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/KF5CoreAddonsConfig.cmake.in"
+                              "${CMAKE_CURRENT_BINARY_DIR}/KF5CoreAddonsConfig.cmake"
                               INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
                               )
 
-install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/KCoreAddonsConfig.cmake"
-               "${CMAKE_CURRENT_BINARY_DIR}/KCoreAddonsConfigVersion.cmake"
+install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/KF5CoreAddonsConfig.cmake"
+               "${CMAKE_CURRENT_BINARY_DIR}/KF5CoreAddonsConfigVersion.cmake"
         DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
         COMPONENT Devel )
 
-install(EXPORT KCoreAddonsTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KCoreAddonsTargets.cmake NAMESPACE KF5:: )
+install(EXPORT KF5CoreAddonsTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KF5CoreAddonsTargets.cmake NAMESPACE KF5:: )
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/kcoreaddons_version.h
         DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )

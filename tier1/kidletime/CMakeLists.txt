@@ -12,7 +12,7 @@ include(ECMSetupVersion)
 
 ecm_setup_version(5.0.0 VARIABLE_PREFIX KIDLETIME
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kidletime_version.h"
-                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KIdleTimeConfigVersion.cmake")
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KF5IdleTimeConfigVersion.cmake")
 
 # Dependencies
 include(KDEInstallDirs)
@@ -55,19 +55,19 @@ add_subdirectory(src)
 add_subdirectory(examples)
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
-set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KIdleTime")
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KF5IdleTime")
 
-configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/KIdleTimeConfig.cmake.in"
-                              "${CMAKE_CURRENT_BINARY_DIR}/KIdleTimeConfig.cmake"
+configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/KF5IdleTimeConfig.cmake.in"
+                              "${CMAKE_CURRENT_BINARY_DIR}/KF5IdleTimeConfig.cmake"
                               INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
                               )
 
-install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/KIdleTimeConfig.cmake"
-               "${CMAKE_CURRENT_BINARY_DIR}/KIdleTimeConfigVersion.cmake"
+install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/KF5IdleTimeConfig.cmake"
+               "${CMAKE_CURRENT_BINARY_DIR}/KF5IdleTimeConfigVersion.cmake"
         DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
         COMPONENT Devel )
 
-install(EXPORT KIdleTimeTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KIdleTimeTargets.cmake NAMESPACE KF5:: )
+install(EXPORT KF5IdleTimeTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KF5IdleTimeTargets.cmake NAMESPACE KF5:: )
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/kidletime_version.h
         DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)

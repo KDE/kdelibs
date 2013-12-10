@@ -19,30 +19,30 @@ include(FeatureSummary)
 include(ECMSetupVersion)
 ecm_setup_version(5.0.0 VARIABLE_PREFIX KGUIADDONS
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kguiaddons_version.h"
-                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KGuiAddonsConfigVersion.cmake")
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KF5GuiAddonsConfigVersion.cmake")
 
 add_subdirectory(src)
 add_subdirectory(autotests)
 add_subdirectory(tests)
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
-set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KGuiAddons")
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KF5GuiAddons")
 
 include(CMakePackageConfigHelpers)
 
-configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/KGuiAddonsConfig.cmake.in"
-                              "${CMAKE_CURRENT_BINARY_DIR}/KGuiAddonsConfig.cmake"
+configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/KF5GuiAddonsConfig.cmake.in"
+                              "${CMAKE_CURRENT_BINARY_DIR}/KF5GuiAddonsConfig.cmake"
                               INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
                               )
 
-install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/KGuiAddonsConfig.cmake"
-               "${CMAKE_CURRENT_BINARY_DIR}/KGuiAddonsConfigVersion.cmake"
+install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/KF5GuiAddonsConfig.cmake"
+               "${CMAKE_CURRENT_BINARY_DIR}/KF5GuiAddonsConfigVersion.cmake"
         DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
         COMPONENT Devel )
 
 
-install(EXPORT KGuiAddonsTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
-        FILE KGuiAddonsTargets.cmake NAMESPACE KF5:: COMPONENT Devel)
+install(EXPORT KF5GuiAddonsTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
+        FILE KF5GuiAddonsTargets.cmake NAMESPACE KF5:: COMPONENT Devel)
 
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/kguiaddons_version.h
