@@ -11,17 +11,18 @@
 
 namespace ThreadWeaver {
 
-// make a job that calls a functor, anything that responds to operator[]
+// make a job that calls a functor, anything that responds to operator()
 template<typename T>
-JobPointer make_job(T t) {
-    JobPointer ret(new Lambda<T>(t));
+QSharedPointer<Lambda<T> > make_job(T t) {
+    QSharedPointer<Lambda<T> > ret(new Lambda<T>(t));
     return ret;
 }
 
 // make a job pointer holding a pointer to a Job(Interface)
 template<typename T>
-inline JobPointer make_job(T* job) {
-    return JobPointer(static_cast<JobInterface*>(job));
+inline QSharedPointer<T> make_job(T* job) {
+    JobInterface* test = static_cast<JobInterface*>(job); Q_UNUSED(test);
+    return QSharedPointer<T>(job);
 }
 
 // make a job pointer holding anything resembling JobInterface
@@ -38,8 +39,9 @@ JobPointer enqueue(Weaver* weaver, T t) {
 }
 
 template<typename T>
-JobPointer enqueue(Weaver* weaver, T* t) {
-    JobPointer ret(make_job(static_cast<JobInterface*>(t)));
+QSharedPointer<T>  enqueue(Weaver* weaver, T* t) {
+    JobInterface* test = static_cast<JobInterface*>(t); Q_UNUSED(test);
+    QSharedPointer<T> ret(make_job(t));
     weaver->enqueue(ret);
     return ret;
 }
@@ -65,11 +67,6 @@ inline JobPointer enqueue_raw(Weaver* weaver, JobInterface* job) {
 // overload to enqueue to the global pool
 inline JobPointer enqueue_raw(JobInterface* job) {
     return enqueue(Weaver::instance(), make_job_raw(job));
-}
-
-// create a QObjectDecorator decorating the job
-inline QObjectDecorator* decorate_q(JobInterface* job) {
-    return new QObjectDecorator(job);
 }
 
 }
