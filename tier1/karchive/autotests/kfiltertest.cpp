@@ -371,21 +371,33 @@ void KFilterTest::test_pushData() // ### UNFINISHED
     // ### indeed, doesn't work currently. So we use HTTPFilter instead, for now.
 }
 
+void KFilterTest::test_saveFile_data()
+{
+    QTest::addColumn<QString>("fileName");
+    QTest::addColumn<KCompressionDevice::CompressionType>("compressionType");
+
+    QTest::newRow("gz") << "test_saveFile.gz" << KCompressionDevice::GZip;
+    QTest::newRow("none") << "test_saveFile" << KCompressionDevice::None;
+}
+
 void KFilterTest::test_saveFile()
 {
+    QFETCH(QString, fileName);
+    QFETCH(KCompressionDevice::CompressionType, compressionType);
+
     const QString currentdir = QDir::currentPath();
-    const QString outFile = QDir::currentPath() + "/test_saveFile.gz";
+    const QString outFile = QDir::currentPath() + '/' + fileName;
     {
         QSaveFile file(outFile);
         QVERIFY(file.open(QIODevice::WriteOnly));
-        KCompressionDevice device(&file, false, KCompressionDevice::GZip);
+        KCompressionDevice device(&file, false, compressionType);
         QVERIFY(device.open(QIODevice::WriteOnly));
         device.write("The data to be compressed");
         device.close();
         QVERIFY(file.commit());
     }
     QVERIFY(QFile::exists(outFile));
-    KCompressionDevice reader(outFile, KCompressionDevice::GZip);
+    KCompressionDevice reader(outFile, compressionType);
     QVERIFY(reader.open(QIODevice::ReadOnly));
     QCOMPARE(reader.readAll(), QByteArray("The data to be compressed"));
 }

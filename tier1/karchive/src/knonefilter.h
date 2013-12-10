@@ -53,6 +53,8 @@ public:
     virtual Result compress( bool finish );
 
 private:
+    Result copyData();
+
     class Private;
     Private* const d;
 };

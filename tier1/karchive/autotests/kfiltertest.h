@@ -38,6 +38,7 @@ private Q_SLOTS:
     void test_findFilterByMimeType();
     void test_deflateWithZlibHeader();
     void test_pushData();
+    void test_saveFile_data();
     void test_saveFile();
 
 private:

@@ -28,15 +28,15 @@ class KNoneFilter::Private
 {
 public:
     Private()
-        : mode(0), outBufferSize(0), inBufferSize(0)
+        : mode(0), avail_out(0), avail_in(0), next_in(NULL), next_out(NULL)
     {
     }
 
     int mode;
-    int outBufferSize;
-    int inBufferSize;
-    QByteArray inBuffer;
-    char* outBuffer;
+    int avail_out;
+    int avail_in;
+    const char *next_in;
+    char *next_out;
 };
 
 KNoneFilter::KNoneFilter()
@@ -52,14 +52,6 @@ KNoneFilter::~KNoneFilter()
 
 bool KNoneFilter::init(int mode)
 {
-    if (mode == QIODevice::ReadOnly) {
-        device()->open(QIODevice::ReadOnly);
-    } else if (mode == QIODevice::WriteOnly) {
-        device()->open(QIODevice::WriteOnly);
-    } else {
-        return false;
-    }
-
     d->mode = mode;
     return true;
 }
@@ -73,7 +65,6 @@ bool KNoneFilter::terminate()
 {
     return true;
 }
-
 
 void KNoneFilter::reset()
 {
@@ -91,51 +82,54 @@ bool KNoneFilter::writeHeader( const QByteArray & /*fileName*/ )
 
 void KNoneFilter::setOutBuffer( char * data, uint maxlen )
 {
-    d->outBufferSize = maxlen;
-    d->outBuffer = data;
+    d->avail_out = maxlen;
+    d->next_out = data;
 }
 
 void KNoneFilter::setInBuffer( const char * data, uint size )
 {
-    d->inBuffer.setRawData(data, size);
-    d->inBufferSize = size;
+    d->next_in = data;
+    d->avail_in = size;
 }
 
 int KNoneFilter::inBufferAvailable() const
 {
-    return 0;
+    return d->avail_in;
 }
 
 int KNoneFilter::outBufferAvailable() const
 {
-    return d->outBufferSize - d->inBufferSize;
+    return d->avail_out;
 }
 
 KNoneFilter::Result KNoneFilter::uncompress()
 {
 #ifndef NDEBUG
-    if (d->mode == 0) {
-        return KFilterBase::Error;
-    } else if (d->mode == QIODevice::WriteOnly) {
+    if (d->mode != QIODevice::ReadOnly) {
         return KFilterBase::Error;
     }
-    Q_ASSERT ( d->mode == QIODevice::ReadOnly );
 #endif
-
-    memcpy( d->outBuffer, d->inBuffer.data(), d->inBufferSize );
-    d->outBuffer = d->inBuffer.data();
-    return KFilterBase::End;
+    return copyData();
 }
 
 KNoneFilter::Result KNoneFilter::compress( bool finish )
 {
-    Q_ASSERT ( d->mode == QIODevice::WriteOnly );
+    Q_ASSERT(d->mode == QIODevice::WriteOnly);
+    Q_UNUSED(finish);
 
-    if (finish) {
-        device()->close();
-        return KFilterBase::End;
-    } else {
-        device()->write(d->inBuffer.data(), d->inBufferSize);
+    return copyData();
+}
+
+KNoneFilter::Result KNoneFilter::copyData()
+{
+    if (d->avail_in > 0) {
+        const int n = qMin(d->avail_in, d->avail_out);
+        memcpy( d->next_out, d->next_in, n );
+        d->avail_out -= n;
+        d->next_in += n;
+        d->avail_in -= n;
         return KFilterBase::Ok;
+    } else {
+        return KFilterBase::End;
     }
 }
