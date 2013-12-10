@@ -28,6 +28,7 @@ target_link_libraries(KF5Auth PUBLIC Qt5::Core KF5::CoreAddons)
 target_link_libraries(KF5Auth PRIVATE Qt5::Widgets Qt5::DBus)
 set_target_properties(KF5Auth PROPERTIES VERSION   ${KAUTH_VERSION_STRING}
                                          SOVERSION ${KAUTH_SOVERSION}
+                                         EXPORT_NAME Auth
 )
 
 # KAuth policy generator executable

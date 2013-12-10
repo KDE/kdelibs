@@ -20,6 +20,7 @@ endif()
 add_library(KF5XsltKde STATIC xslt.cpp xslt_kde.cpp)
 add_library(KF5::XsltKde ALIAS KF5XsltKde)
 target_link_libraries(KF5XsltKde Qt5::Core KF5::Archive)
+set_target_properties(KF5XsltKde PROPERTIES EXPORT_NAME XsltKde)
 install(TARGETS KF5XsltKde ${INSTALL_TARGETS_DEFAULT_ARGS})
 install(FILES
     xslt.h xslt_kde.h
