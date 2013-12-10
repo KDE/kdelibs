@@ -22,7 +22,7 @@ target_link_libraries(kjavaappletviewer
                       KF5::WindowSystem
                       KF5::WidgetsAddons
                       KF5::XmlGui
-                      KF5::KI18n
+                      KF5::I18n
                       KF5::KIconThemes )
 
 install(TARGETS kjavaappletviewer  DESTINATION ${PLUGIN_INSTALL_DIR} )

@@ -31,7 +31,7 @@ target_link_libraries(KDeclarative
   PRIVATE
     Qt5::Quick  #QQuickImageProvider
     KF5::ConfigCore # KCoreConfigSkeleton, in ConfigPropertyMap
-    KF5::KI18n       #i18n bindings
+    KF5::I18n       #i18n bindings
     KF5::KIOWidgets     #KIO::AccessManager
     KF5::KIconThemes #KIconProvider
 )

@@ -31,8 +31,8 @@ if (Qt5Script_FOUND)
        ${KPAC_EXTRA_LIBS}
        KF5::KIOCore      # KIO::get
        KF5::DBusAddons  # KDEDModule
-       KF5::KI18n
-       KF5::KNotifications # proxyscout.cpp uses KNotifications
+       KF5::I18n
+       KF5::Notifications # proxyscout.cpp uses KNotifications
     )
 
     # this needs -lresolv e.g on Slackware, but not on FreeBSD

@@ -1,4 +1,4 @@
-set(PARTS_TEST_LIBRARY_DEPENDENCIES Qt5::Test KParts KF5::CoreAddons KF5::KI18n KF5::XmlGui KF5::KIOCore)
+set(PARTS_TEST_LIBRARY_DEPENDENCIES Qt5::Test KParts KF5::CoreAddons KF5::I18n KF5::XmlGui KF5::KIOCore)
 include(ECMMarkAsTest)
 
 set(partstest_SRCS

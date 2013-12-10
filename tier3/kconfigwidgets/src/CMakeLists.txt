@@ -22,12 +22,12 @@ target_link_libraries(KConfigWidgets
     KF5::Codecs # KCodecActions uses KCharsets, KEncodingProber
     KF5::WidgetsAddons # For K*Action, KPage*, KViewStateSerializer, KAcceleratorManager, K*GuiItem
     KF5::ConfigGui # KStandardAction uses KStandardShortcut
-    KF5::KAuth # KCModule uses KAuth::Action
+    KF5::Auth # KCModule uses KAuth::Action
   PRIVATE
     Qt5::DBus # KPasteTextAction talks to Klipper via DBus
     KF5::CoreAddons # KCModule uses KAboutData, KTip uses KRandom
     KF5::GuiAddons # KColorScheme uses KColorUtils
-    KF5::KI18n # For action and widget texts
+    KF5::I18n # For action and widget texts
 )
 
 set_target_properties(KConfigWidgets PROPERTIES VERSION   ${KCONFIGWIDGETS_VERSION_STRING}

@@ -10,7 +10,7 @@ generate_export_header(KMediaPlayer)
 target_link_libraries(KMediaPlayer PUBLIC
    Qt5::Widgets
    KF5::KParts
-   KF5::KI18n
+   KF5::I18n
 )
 target_link_libraries(KMediaPlayer PRIVATE
    KF5::XmlGui

@@ -14,7 +14,7 @@ macro(FRAMEWORKINTEGRATION_TESTS _testname)
     add_executable(${_testname} ${_testname}.cpp ${ARGN})
     add_test(frameworkintegration-${_testname} ${_testname})
     ecm_mark_as_test(${_testname})
-    target_link_libraries(${_testname} Qt5::Test Qt5::DBus KF5::KConfigWidgets KF5::ConfigCore KF5::KIconThemes KF5::KStyle KF5::KIOFileWidgets KF5::KI18n)
+    target_link_libraries(${_testname} Qt5::Test Qt5::DBus KF5::KConfigWidgets KF5::ConfigCore KF5::KIconThemes KF5::KStyle KF5::KIOFileWidgets KF5::I18n)
 endmacro()
 
 frameworkintegration_tests(

@@ -24,8 +24,8 @@ target_link_libraries(kdeinit5 ${kdeinit_LIBS} ${KINIT_SOCKET_LIBRARY}
     Qt5::Gui #QFont::initialize
     KF5::KService #KLibrary
     KF5::WindowSystem # KStartupInfo
-    KF5::KCrash # KCrash::loadedByKdeinit
-    KF5::KI18n #i18n() used on some error messages
+    KF5::Crash # KCrash::loadedByKdeinit
+    KF5::I18n #i18n() used on some error messages
 )
 
 if (X11_FOUND)

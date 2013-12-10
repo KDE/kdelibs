@@ -117,7 +117,7 @@ PRIVATE
  Qt5::Network
  Qt5::Concurrent            # QtConcurrentRun in hostinfo.cpp
  Qt5::Xml                   # davjob.cpp uses QDom
- KF5::KI18n
+ KF5::I18n
  KF5::DBusAddons           # KDBusConnectionPool
 )
 

@@ -12,7 +12,7 @@ target_link_libraries(ksendbugmail
    Qt5::Widgets
    Qt5::Network
    KF5::ConfigCore # KEmailSettings
-   KF5::KI18n
+   KF5::I18n
 )
 
 install(TARGETS ksendbugmail DESTINATION ${LIBEXEC_INSTALL_DIR} )

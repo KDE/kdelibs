@@ -12,7 +12,7 @@ target_link_libraries(kcm_ssl
    KF5::KIOWidgets
    KF5::CoreAddons
    KF5::KConfigWidgets   # KCModule
-   KF5::KI18n
+   KF5::I18n
 )
 install(TARGETS kcm_ssl DESTINATION ${PLUGIN_INSTALL_DIR})
 

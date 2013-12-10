@@ -15,7 +15,7 @@ target_link_libraries(kdeinit_kded5
     KF5::KService # Needed for ksycoca.h
     KF5::CoreAddons # Needed for KDirWatch
     KF5::DBusAddons # Needed for kdedmodule.h
-    KF5::KCrash # Sets it as autostart
+    KF5::Crash # Sets it as autostart
 )
 
 install(TARGETS kdeinit_kded5 EXPORT KDEDTargets ${INSTALL_TARGETS_DEFAULT_ARGS})

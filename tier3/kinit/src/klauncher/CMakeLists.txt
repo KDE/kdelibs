@@ -15,9 +15,9 @@ set_target_properties(kdeinit_klauncher PROPERTIES DEFINE_SYMBOL MAKE_KLAUNCHER)
 target_link_libraries(kdeinit_klauncher ${X11_LIBRARIES}
    KF5::KIOCore # KIO::ConnectionServer
    KF5::KIOWidgets # KRun
-   KF5::KCrash  # sig_handler
+   KF5::Crash  # sig_handler
    KF5::WindowSystem # KStartupInfo + fixx11
-   KF5::KI18n   # i18n()
+   KF5::I18n   # i18n()
    Qt5::DBus
 )
 

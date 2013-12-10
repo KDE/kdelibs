@@ -57,7 +57,7 @@ target_link_libraries(kio_http_cache_cleaner
    Qt5::Network # QLocalSocket
    ${ZLIB_LIBRARY}
    KF5::KIOCore # KProtocolManager
-   KF5::KI18n)
+   KF5::I18n)
 
 install(TARGETS kio_http_cache_cleaner DESTINATION ${LIBEXEC_INSTALL_DIR} )
 
@@ -83,7 +83,7 @@ target_link_libraries(kio_http
    KF5::Solid
    kntlm
    ${ZLIB_LIBRARY}
-   KF5::KI18n
+   KF5::I18n
 )
 if(GSSAPI_FOUND)
   target_link_libraries(kio_http ${GSSAPI_LIBS} )

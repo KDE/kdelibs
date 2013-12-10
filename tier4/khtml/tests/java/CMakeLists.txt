@@ -18,7 +18,7 @@ ecm_mark_as_test(testserver)
 
 target_link_libraries(testserver
     KF5::KParts
-    KF5::KI18n
+    KF5::I18n
     KF5::XmlGui
     KF5::KIconThemes
     KF5::WindowSystem

@@ -42,7 +42,7 @@ add_library(kio_help MODULE ${kio_help_PART_SRCS})
 
 target_link_libraries(kio_help
    Qt5::Gui # QTextDocument
-   KF5::KI18n
+   KF5::I18n
    KF5::Archive
    KF5::KIOCore
    KF5::XsltKde
@@ -63,7 +63,7 @@ add_library(kio_ghelp MODULE ${kio_ghelp_PART_SRCS})
 
 target_link_libraries(kio_ghelp
    Qt5::Gui # QTextDocument
-   KF5::KI18n
+   KF5::I18n
    KF5::Archive
    KF5::KIOCore
    KF5::XsltKde

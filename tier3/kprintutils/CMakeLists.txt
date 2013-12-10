@@ -15,7 +15,7 @@ include(KDECMakeSettings)
 if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
   #NOTE: here the dependencies of dependencies are displayed as well, this shouldn't be needed
   #after cmake 3.0.0 is released
-  find_package(KI18n 5.0.0 REQUIRED)
+  find_package(KF5I18n 5.0.0 REQUIRED)
   find_package(KF5GuiAddons 5.0.0 REQUIRED)
   find_package(KF5WidgetsAddons 5.0.0 REQUIRED)
   find_package(KF5DBusAddons 5.0.0 REQUIRED)
@@ -24,11 +24,11 @@ if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
   find_package(KIconThemes 5.0.0 REQUIRED)
   find_package(KF5WindowSystem 5.0.0 REQUIRED)
   find_package(KService 5.0.0 REQUIRED)
-  find_package(KCompletion 5.0.0 REQUIRED)
+  find_package(KF5Completion 5.0.0 REQUIRED)
   find_package(KTextWidgets 5.0.0 REQUIRED)
 
   find_package(KF5CoreAddons 5.0.0 REQUIRED)
-#   find_package(KI18n 5.0.0 REQUIRED)
+#   find_package(KF5I18n 5.0.0 REQUIRED)
   find_package(KParts 5.0.0 REQUIRED)
 endif()
 

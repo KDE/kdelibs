@@ -11,7 +11,7 @@ target_link_libraries(KrossUi KrossCore
    KF5::WidgetsAddons
    KF5::KIOWidgets
    KF5::KParts
-   KF5::KI18n
+   KF5::I18n
    KF5::KIconThemes
 )
 set_target_properties(KrossUi PROPERTIES VERSION ${KROSS_VERSION_STRING}

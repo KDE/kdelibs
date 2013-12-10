@@ -7,12 +7,12 @@ include(ECMAddTests)
 
 ecm_add_test(httpheadertokenizetest.cpp
    NAME_PREFIX "kioslave-"
-   LINK_LIBRARIES KF5::KI18n Qt5::Test Qt5::Widgets
+   LINK_LIBRARIES KF5::I18n Qt5::Test Qt5::Widgets
 )
 
 ecm_add_test(httpheaderdispositiontest.cpp
    NAME_PREFIX "kioslave-"
-   LINK_LIBRARIES KF5::KI18n Qt5::Test Qt5::Widgets
+   LINK_LIBRARIES KF5::I18n Qt5::Test Qt5::Widgets
 )
 
 ecm_add_test(httpauthenticationtest.cpp
@@ -21,7 +21,7 @@ ecm_add_test(httpauthenticationtest.cpp
    Qt5::Test
    Qt5::Network
    Qt5::Widgets
-   KF5::KI18n
+   KF5::I18n
    KF5::KIOCore
    kntlm
 )
@@ -45,7 +45,7 @@ ecm_add_test(${httpobjecttest_SRCS}
    Qt5::Widgets
    Qt5::Network # QLocalSocket
    Qt5::Xml # QDomElement
-   KF5::KI18n
+   KF5::I18n
    KF5::KIOCore
    kntlm
    KF5::Archive

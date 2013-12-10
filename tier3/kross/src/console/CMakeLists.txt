@@ -2,7 +2,7 @@
 add_executable(kross main.cpp)
 target_link_libraries(kross
    KrossCore
-   KF5::KI18n
+   KF5::I18n
    Qt5::Widgets
 )
 

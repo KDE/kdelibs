@@ -14,17 +14,17 @@ include(KDECMakeSettings)
 
 set(KF5_VERSION "5.0.0")
 if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
-    find_package(KI18n ${KF5_VERSION} REQUIRED) #
+    find_package(KF5I18n ${KF5_VERSION} REQUIRED) #
     find_package(KF5CoreAddons ${KF5_VERSION} REQUIRED)
     find_package(KF5DBusAddons ${KF5_VERSION} REQUIRED)
     find_package(KService ${KF5_VERSION} REQUIRED)
     find_package(KF5WindowSystem ${KF5_VERSION} REQUIRED) #
-    find_package(KCrash ${KF5_VERSION} REQUIRED)
+    find_package(KF5Crash ${KF5_VERSION} REQUIRED)
     find_package(KInit ${KF5_VERSION} REQUIRED)
-    find_package(KDocTools ${KF5_VERSION} REQUIRED)
+    find_package(KF5DocTools ${KF5_VERSION} REQUIRED)
 else()
     set(_kdeBootStrapping TRUE)
-    include(${CMAKE_SOURCE_DIR}/tier2/kdoctools/KDocToolsMacros.cmake)
+    include(${CMAKE_SOURCE_DIR}/tier2/kdoctools/KF5DocToolsMacros.cmake)
     set(KDOCTOOLS_CUSTOMIZATION_DIR "${KDocTools_BINARY_DIR}/src/customization/")
 endif()
 

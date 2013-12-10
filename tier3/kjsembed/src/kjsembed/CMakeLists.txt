@@ -35,7 +35,7 @@ target_include_directories(KJsEmbed PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SO
 generate_export_header(KJsEmbed)
 
 target_link_libraries(KJsEmbed
-    PUBLIC  KF5::KI18n KF5::JS
+    PUBLIC  KF5::I18n KF5::JS
     PRIVATE
         #all these are required for its respective bindings
         Qt5::Widgets

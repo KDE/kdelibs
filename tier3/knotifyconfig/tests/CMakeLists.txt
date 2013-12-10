@@ -17,8 +17,8 @@ target_link_libraries(knotifytest
    Qt5::Core
    Qt5::Test
    KNotifyConfig
-   KF5::KNotifications
-   KF5::KI18n
+   KF5::Notifications
+   KF5::I18n
    KF5::XmlGui
-   KF5::KCompletion
+   KF5::Completion
 )

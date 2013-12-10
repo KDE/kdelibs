@@ -53,7 +53,7 @@ target_link_libraries(KIOFileWidgets
     KF5::Solid         # KFilePlacesModel/KFilePlacesView
   PRIVATE
     KF5::KIconThemes   # KIconLoader
-    KF5::KI18n
+    KF5::I18n
     KF5::ItemViews     # kdirsortfilterproxymodel
 )
 

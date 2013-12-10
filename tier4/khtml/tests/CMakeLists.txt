@@ -41,7 +41,7 @@ if(NOT MSVC)
     add_executable(khtmltest ${khtmltest_SRCS} )
     ecm_mark_as_test(khtmltest)
     target_link_libraries( khtmltest KHtml KF5::XmlGui KF5::KTextWidgets KF5::KParts )
-    #KJS KF5::KI18n
+    #KJS KF5::I18n
 
     ########### next target ###############
 endif()
