@@ -1,0 +1,8 @@
+@PACKAGE_INIT@
+
+find_dependency(KF5JS "@KF5_VERSION@")
+
+
+include("${CMAKE_CURRENT_LIST_DIR}/KF5I18nTargets.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/KF5I18NMacros.cmake")
+

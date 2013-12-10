@@ -21,24 +21,25 @@ configure_file(
     ${CMAKE_CURRENT_BINARY_DIR}/config-strlcpy.h
 )
 
-add_library(KCrash ${kcrash_SRCS})
-generate_export_header(KCrash)
-add_library(KF5::KCrash ALIAS KCrash)
+add_library(KF5Crash ${kcrash_SRCS})
+generate_export_header(KF5Crash BASE_NAME KCrash)
+add_library(KF5::Crash ALIAS KF5Crash)
 
-target_link_libraries(KCrash PUBLIC Qt5::Core)
-target_link_libraries(KCrash PRIVATE KF5::CoreAddons KF5::WindowSystem Qt5::Gui)
+target_link_libraries(KF5Crash PUBLIC Qt5::Core)
+target_link_libraries(KF5Crash PRIVATE KF5::CoreAddons KF5::WindowSystem Qt5::Gui)
 
 
 if(${X11_FOUND})
   find_package(Qt5X11Extras 5.2.0 REQUIRED NO_MODULE)
-  target_link_libraries(KCrash PRIVATE Qt5::X11Extras ${X11_LIBRARIES})
+  target_link_libraries(KF5Crash PRIVATE Qt5::X11Extras ${X11_LIBRARIES})
 endif()
 
-set_target_properties(KCrash PROPERTIES VERSION   ${KCrash_VERSION_STRING}
-                                           SOVERSION ${KCrash_SOVERSION}
+set_target_properties(KF5Crash PROPERTIES VERSION   ${KCrash_VERSION_STRING}
+                                          SOVERSION ${KCrash_SOVERSION}
+                                          EXPORT_NAME Crash
 )
 
-install(TARGETS KCrash EXPORT KCrashTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KF5Crash EXPORT KF5CrashTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
   kcrash.h

@@ -14,12 +14,12 @@ qt5_add_dbus_interfaces(kjobwidgets_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/org.kde.Job
 qt5_add_dbus_interface(kjobwidgets_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/org.kde.JobView.xml jobviewiface )
 qt5_add_dbus_interface(kjobwidgets_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/org.kde.JobViewV2.xml jobviewifacev2 )
 
-add_library(KJobWidgets ${kjobwidgets_SRCS})
+add_library(KF5JobWidgets ${kjobwidgets_SRCS})
 
-generate_export_header(KJobWidgets)
-add_library(KF5::KJobWidgets ALIAS KJobWidgets)
+generate_export_header(KF5JobWidgets BASE_NAME KJobWidgets)
+add_library(KF5::JobWidgets ALIAS KF5JobWidgets)
 
-target_link_libraries(KJobWidgets
+target_link_libraries(KF5JobWidgets
    PUBLIC
       Qt5::Widgets
       KF5::CoreAddons    # KJob
@@ -30,15 +30,16 @@ target_link_libraries(KJobWidgets
 
 if (HAVE_X11)
   find_package(Qt5X11Extras 5.2.0 REQUIRED NO_MODULE)
-  target_link_libraries(KJobWidgets PRIVATE Qt5::X11Extras)
+  target_link_libraries(KF5JobWidgets PRIVATE Qt5::X11Extras)
 endif ()
 
-set_target_properties(KJobWidgets PROPERTIES VERSION   ${KJOBWIDGETS_VERSION_STRING}
-                                             SOVERSION ${KJOBWIDGETS_SOVERSION}
+set_target_properties(KF5JobWidgets PROPERTIES VERSION   ${KJOBWIDGETS_VERSION_STRING}
+                                               SOVERSION ${KJOBWIDGETS_SOVERSION}
+                                               EXPORT_NAME JobWidgets
 )
 
 
-install(TARGETS KJobWidgets EXPORT KJobWidgetsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KF5JobWidgets EXPORT KF5JobWidgetsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install( FILES
   org.kde.JobViewServer.xml

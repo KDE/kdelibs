@@ -20,30 +20,30 @@ include(FeatureSummary)
 include(ECMSetupVersion)
 ecm_setup_version(5.0.0 VARIABLE_PREFIX KAUTH
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kauth_version.h"
-                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KAuthConfigVersion.cmake")
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KF5AuthConfigVersion.cmake")
 
 add_subdirectory(src)
 add_subdirectory(autotests)
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
-set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KAuth")
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KF5Auth")
 
 include(CMakePackageConfigHelpers)
 
-configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/KAuthConfig.cmake.in"
-                              "${CMAKE_CURRENT_BINARY_DIR}/KAuthConfig.cmake"
+configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/KF5AuthConfig.cmake.in"
+                              "${CMAKE_CURRENT_BINARY_DIR}/KF5AuthConfig.cmake"
                               INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
                               )
 
-install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/KAuthConfig.cmake"
-               "${CMAKE_CURRENT_BINARY_DIR}/KAuthConfigVersion.cmake"
-               "${CMAKE_CURRENT_SOURCE_DIR}/cmake/KAuthMacros.cmake"
+install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/KF5AuthConfig.cmake"
+               "${CMAKE_CURRENT_BINARY_DIR}/KF5AuthConfigVersion.cmake"
+               "${CMAKE_CURRENT_SOURCE_DIR}/cmake/KF5AuthMacros.cmake"
         DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
         COMPONENT Devel )
 
 
-install(EXPORT KAuthTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
-        FILE KAuthTargets.cmake NAMESPACE KF5:: COMPONENT Devel)
+install(EXPORT KF5AuthTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
+        FILE KF5AuthTargets.cmake NAMESPACE KF5:: COMPONENT Devel)
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/kauth_version.h
         DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )

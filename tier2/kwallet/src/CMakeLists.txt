@@ -23,30 +23,31 @@ else()
     qt5_add_dbus_interface( kwallet_SRCS ${kwallet_xml} kwallet_interface )
 endif()
 
-add_library(KWallet ${kwallet_SRCS})
-generate_export_header(KWallet)
-add_library(KF5::KWallet ALIAS KWallet)
+add_library(KF5Wallet ${kwallet_SRCS})
+generate_export_header(KF5Wallet BASE_NAME KWallet)
+add_library(KF5::Wallet ALIAS KF5Wallet)
 
-target_link_libraries(KWallet PUBLIC  Qt5::Widgets
-                              PRIVATE KF5::WindowSystem # KWindowSystem::allowExternalProcessWindowActivation
-                                      KF5::ConfigCore   # used to store the wallet to be used
+target_link_libraries(KF5Wallet PUBLIC  Qt5::Widgets
+                                PRIVATE KF5::WindowSystem # KWindowSystem::allowExternalProcessWindowActivation
+                                        KF5::ConfigCore   # used to store the wallet to be used
 )
 
 if(MAC_USE_OSXKEYCHAIN)
-   target_link_libraries(KWallet PRIVATE ${CARBON_LIBRARY}
+   target_link_libraries(KF5Wallet PRIVATE ${CARBON_LIBRARY}
                                               ${SECURITY_LIBRARY})
 elseif(APPLE)
-    target_link_libraries(KWallet PRIVATE ${CARBON_LIBRARY})
+    target_link_libraries(KF5Wallet PRIVATE ${CARBON_LIBRARY})
 else()
-    target_link_libraries(KWallet PRIVATE Qt5::DBus)
+    target_link_libraries(KF5Wallet PRIVATE Qt5::DBus)
     install(FILES ${kwallet_xml} DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 endif()
 
-set_target_properties(KWallet PROPERTIES VERSION   ${KWALLET_VERSION_STRING}
+set_target_properties(KF5Wallet PROPERTIES VERSION   ${KWALLET_VERSION_STRING}
                                          SOVERSION ${KWALLET_SOVERSION}
+                                         EXPORT_NAME Wallet
 )
 
-install(TARGETS KWallet EXPORT KWalletTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KF5Wallet EXPORT KF5WalletTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 install(FILES
   kwallet.h
   ${CMAKE_CURRENT_BINARY_DIR}/kwallet_export.h

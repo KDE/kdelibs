@@ -1,11 +1,11 @@
 @PACKAGE_INIT@
 
 find_dependency(Qt5Core @REQUIRED_QT_VERSION@)
-find_dependency(KArchive "@KF5_VERSION@")
+find_dependency(KF5Archive "@KF5_VERSION@")
 
 set(KDOCTOOLS_DATA_INSTALL_DIR "${PACKAGE_PREFIX_DIR}/@DATA_INSTALL_DIR@")
 set(KDOCTOOLS_CUSTOMIZATION_DIR "${KDOCTOOLS_DATA_INSTALL_DIR}/ksgmltools2/customization")
 
-include("${CMAKE_CURRENT_LIST_DIR}/KDocToolsTargets.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/KF5DocToolsTargets.cmake")
 
-include(${CMAKE_CURRENT_LIST_DIR}/KDocToolsMacros.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/KF5DocToolsMacros.cmake)

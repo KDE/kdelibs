@@ -23,7 +23,7 @@ include(ECMSetupVersion)
 
 ecm_setup_version(${KF5_VERSION} VARIABLE_PREFIX KDNSSD
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kdnssd_version.h"
-                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KDNSSDConfigVersion.cmake")
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KF5DNSSDConfigVersion.cmake")
 
 configure_file(config-dnssd.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-dnssd.h )
 
@@ -55,14 +55,14 @@ endif()
 
 add_subdirectory(src)
 
-set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KDNSSD")
-configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/KDNSSDConfig.cmake.in"
-                              "${CMAKE_CURRENT_BINARY_DIR}/KDNSSDConfig.cmake"
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KF5DNSSD")
+configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/KF5DNSSDConfig.cmake.in"
+                              "${CMAKE_CURRENT_BINARY_DIR}/KF5DNSSDConfig.cmake"
                               INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
                               )
 
-install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/KDNSSDConfig.cmake"
-               "${CMAKE_CURRENT_BINARY_DIR}/KDNSSDConfigVersion.cmake"
+install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/KF5DNSSDConfig.cmake"
+               "${CMAKE_CURRENT_BINARY_DIR}/KF5DNSSDConfigVersion.cmake"
         DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
         COMPONENT Devel )
 
