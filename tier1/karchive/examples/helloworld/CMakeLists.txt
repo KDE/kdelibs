@@ -8,7 +8,7 @@ cmake_minimum_required(VERSION 2.8.12)
 project(HelloWorld)
 
 # Look for the KArchive module
-find_package(KArchive "5.0.0" REQUIRED)
+find_package(KF5Archive "5.0.0" REQUIRED)
 
 add_executable(helloworld main.cpp)
 
