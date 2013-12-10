@@ -10,7 +10,7 @@ target_link_libraries(FooBar
   PUBLIC
     Qt5::Core
   # PRIVATE
-  #  KF5::KCoreAddons
+  #  KF5::CoreAddons
   #  Other private libs
 )
 

@@ -38,7 +38,7 @@ if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
   # here. It is done this way to avoid chicken-and-egg problem when building
   # KF5 as a whole: one cannot depend on packages which have not been installed
   # yet. For example:
-  # find_package(KCoreAddons ${KF5_VERSION} REQUIRED)
+  # find_package(KF5CoreAddons ${KF5_VERSION} REQUIRED)
 endif()
 
 # Subdirectories

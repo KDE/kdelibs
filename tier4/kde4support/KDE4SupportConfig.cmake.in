@@ -52,19 +52,19 @@ set(KDE4_KDECORE_LIBS
   Qt5::DBus
   Qt5::Xml
   KF5::KIOCore
-  KF5::KI18n
-  KF5::KCoreAddons
-  KF5::KCodecs
-  KF5::KConfigCore
-  KF5::KWidgetsAddons
+  KF5::I18n
+  KF5::CoreAddons
+  KF5::Codecs
+  KF5::ConfigCore
+  KF5::WidgetsAddons
   KF5::ItemModels
-  KF5::KConfigWidgets
-  KF5::KCompletion
+  KF5::ConfigWidgets
+  KF5::Completion
   KF5::XmlGui
-  KF5::KIconThemes
+  KF5::IconThemes
   KF5::KIOWidgets
   KF5::ItemViews
-  KF5::KEmoticons
+  KF5::Emoticons
 )
 set(KDE4_KDEUI_LIBS  ${KDE4_KDECORE_LIBS})
 set(KDE4_KIO_LIBS ${KDE4_KDECORE_LIBS})
