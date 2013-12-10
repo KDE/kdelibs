@@ -19,7 +19,7 @@ ecm_setup_version(
   ${KF5_VERSION}
   VARIABLE_PREFIX KCOMPLETION
   VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kcompletion_version.h"
-  PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KCompletionConfigVersion.cmake"
+  PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KF5CompletionConfigVersion.cmake"
 )
 
 # Dependencies
@@ -41,24 +41,24 @@ add_subdirectory(autotests)
 
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
-set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KCompletion")
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KF5Completion")
 
 include(CMakePackageConfigHelpers)
 
 configure_package_config_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/KCompletionConfig.cmake.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/KCompletionConfig.cmake"
+  "${CMAKE_CURRENT_SOURCE_DIR}/KF5CompletionConfig.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5CompletionConfig.cmake"
   INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
 )
 
 install(FILES
-  "${CMAKE_CURRENT_BINARY_DIR}/KCompletionConfig.cmake"
-  "${CMAKE_CURRENT_BINARY_DIR}/KCompletionConfigVersion.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5CompletionConfig.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5CompletionConfigVersion.cmake"
   DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
   COMPONENT Devel
 )
 
-install(EXPORT KCompletionTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KCompletionTargets.cmake NAMESPACE KF5:: )
+install(EXPORT KF5CompletionTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KF5CompletionTargets.cmake NAMESPACE KF5:: )
 
 install(FILES
    ${CMAKE_CURRENT_BINARY_DIR}/kcompletion_version.h

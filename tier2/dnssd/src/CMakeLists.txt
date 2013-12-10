@@ -55,13 +55,14 @@ else ()
 
 endif ()
 
-add_library(KDNSSD SHARED ${kdnssd_LIB_SRCS})
-generate_export_header(KDNSSD
+add_library(KF5DNSSD SHARED ${kdnssd_LIB_SRCS})
+generate_export_header(KF5DNSSD
+  BASE_NAME KDNSSD
   EXPORT_FILE_NAME ${KDNSSD_BINARY_DIR}/dnssd/dnssd_export.h
 )
 
-target_link_libraries(KDNSSD PUBLIC Qt5::Network)
-target_link_libraries(KDNSSD PRIVATE Qt5::DBus)
+target_link_libraries(KF5DNSSD PUBLIC Qt5::Network)
+target_link_libraries(KF5DNSSD PRIVATE Qt5::DBus)
 
 if (DNSSD_FOUND)
   target_link_libraries(KDNSSD PRIVATE ${DNSSD_LIBRARIES}
@@ -69,13 +70,13 @@ if (DNSSD_FOUND)
                        )
 endif ()
 
-target_include_directories(KDNSSD PUBLIC "$<BUILD_INTERFACE:${KDNSSD_BINARY_DIR}>")
+target_include_directories(KF5DNSSD PUBLIC "$<BUILD_INTERFACE:${KDNSSD_BINARY_DIR}>")
 
-set_target_properties(KDNSSD PROPERTIES
+set_target_properties(KF5DNSSD PROPERTIES
    VERSION "${KDNSSD_VERSION_STRING}"
    SOVERSION "${KDNSSD_SOVERSION}"
 )
-install(TARGETS KDNSSD EXPORT KDNSSDTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KF5DNSSD EXPORT KF5DNSSDTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 ########### install files ###############
 install( FILES  ${KDNSSD_BINARY_DIR}/dnssd/dnssd_export.h

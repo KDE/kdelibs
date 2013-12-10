@@ -27,7 +27,7 @@ ecm_mark_as_test(kauth_tests_static)
 
 target_include_directories(kauth_tests_static
   PUBLIC
-    $<TARGET_PROPERTY:KAuth,INTERFACE_INCLUDE_DIRECTORIES>
+    $<TARGET_PROPERTY:KF5::Auth,INTERFACE_INCLUDE_DIRECTORIES>
     ${CMAKE_CURRENT_SOURCE_DIR}/../src
 )
 

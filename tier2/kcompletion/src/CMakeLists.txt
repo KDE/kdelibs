@@ -9,21 +9,22 @@ set(kcompletion_SRCS
   kzoneallocator.cpp
 )
 
-add_library(KCompletion ${kcompletion_SRCS})
-generate_export_header(KCompletion)
-add_library(KF5::KCompletion ALIAS KCompletion)
+add_library(KF5Completion ${kcompletion_SRCS})
+generate_export_header(KF5Completion BASE_NAME KCompletion)
+add_library(KF5::Completion ALIAS KF5Completion)
 
-target_link_libraries(KCompletion PUBLIC Qt5::Widgets
-                                  PRIVATE KF5::ConfigCore      # KConfigGroup, used in many places
-                                          KF5::ConfigGui       # KStandardShortcut
-                                          KF5::WidgetsAddons   # KCursor
+target_link_libraries(KF5Completion PUBLIC Qt5::Widgets
+                                    PRIVATE KF5::ConfigCore      # KConfigGroup, used in many places
+                                            KF5::ConfigGui       # KStandardShortcut
+                                            KF5::WidgetsAddons   # KCursor
 )
 
-set_target_properties(KCompletion PROPERTIES VERSION   ${KCOMPLETION_VERSION_STRING}
-                                             SOVERSION ${KCOMPLETION_SOVERSION}
+set_target_properties(KF5Completion PROPERTIES VERSION   ${KCOMPLETION_VERSION_STRING}
+                                               SOVERSION ${KCOMPLETION_SOVERSION}
+                                               EXPORT_NAME Completion
 )
 
-install(TARGETS KCompletion EXPORT KCompletionTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KF5Completion EXPORT KF5CompletionTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
   kcombobox.h

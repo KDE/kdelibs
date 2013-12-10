@@ -20,14 +20,14 @@ set(libkauth_SRCS
     backends/fakehelper/FakeHelperProxy.cpp
 )
 
-add_library(KAuth ${libkauth_SRCS})
-generate_export_header(KAuth)
-add_library(KF5::KAuth ALIAS KAuth)
+add_library(KF5Auth ${libkauth_SRCS})
+generate_export_header(KF5Auth BASE_NAME KAuth)
+add_library(KF5::Auth ALIAS KF5Auth)
 
-target_link_libraries(KAuth PUBLIC Qt5::Core KF5::CoreAddons)
-target_link_libraries(KAuth PRIVATE Qt5::Widgets Qt5::DBus)
-set_target_properties(KAuth PROPERTIES VERSION   ${KAUTH_VERSION_STRING}
-                                       SOVERSION ${KAUTH_SOVERSION}
+target_link_libraries(KF5Auth PUBLIC Qt5::Core KF5::CoreAddons)
+target_link_libraries(KF5Auth PRIVATE Qt5::Widgets Qt5::DBus)
+set_target_properties(KF5Auth PROPERTIES VERSION   ${KAUTH_VERSION_STRING}
+                                         SOVERSION ${KAUTH_SOVERSION}
 )
 
 # KAuth policy generator executable
@@ -42,7 +42,7 @@ if (NOT "${KAUTH_BACKEND_NAME}" STREQUAL "FAKE")
     # KAUTH_POLICY_GEN_LIBRARIES has been generated from ConfigureChecks.cmake
     target_link_libraries( kauth-policy-gen PRIVATE ${KAUTH_POLICY_GEN_LIBRARIES} )
 
-    install( TARGETS kauth-policy-gen EXPORT KAuthTargets DESTINATION ${LIBEXEC_INSTALL_DIR})
+    install( TARGETS kauth-policy-gen EXPORT KF5AuthTargets DESTINATION ${LIBEXEC_INSTALL_DIR})
 endif ()
 
 # KAuth backend plugin
@@ -74,7 +74,7 @@ if (NOT "${KAUTH_HELPER_BACKEND_NAME}" STREQUAL "FAKE")
     )
 endif ()
 
-install(TARGETS KAuth EXPORT KAuthTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KF5Auth EXPORT KF5AuthTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
     kauthaction.h

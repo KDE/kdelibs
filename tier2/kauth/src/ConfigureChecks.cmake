@@ -219,7 +219,7 @@ if(KAUTH_HELPER_BACKEND_NAME STREQUAL "DBUS")
         ${kauth_dbus_adaptor_SRCS}
     )
 
-    set(KAUTH_HELPER_BACKEND_LIBS Qt5::DBus KAuth)
+    set(KAUTH_HELPER_BACKEND_LIBS Qt5::DBus KF5::Auth)
 
     # Install some files as well
     install( FILES backends/dbus/org.kde.auth.conf

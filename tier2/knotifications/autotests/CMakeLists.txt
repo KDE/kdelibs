@@ -8,7 +8,7 @@ macro(KNOTIFICATIONS_TESTS)
         add_executable(${_testname} ${_testname}.cpp)
         add_test(knotifications-${_testname} ${_testname})
         ecm_mark_as_test(${_testname})
-        target_link_libraries(${_testname} Qt5::Test KNotifications)
+        target_link_libraries(${_testname} Qt5::Test KF5::Notifications)
     endforeach(_testname)
 endmacro()
 

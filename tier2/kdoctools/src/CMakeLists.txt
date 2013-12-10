@@ -17,15 +17,15 @@ else()
 endif()
 
 # needed by KIO, need to export it
-add_library(XsltKde STATIC xslt.cpp xslt_kde.cpp)
-add_library(KF5::XsltKde ALIAS XsltKde)
-target_link_libraries(XsltKde Qt5::Core KF5::Archive)
-install(TARGETS XsltKde ${INSTALL_TARGETS_DEFAULT_ARGS})
+add_library(KF5XsltKde STATIC xslt.cpp xslt_kde.cpp)
+add_library(KF5::XsltKde ALIAS KF5XsltKde)
+target_link_libraries(KF5XsltKde Qt5::Core KF5::Archive)
+install(TARGETS KF5XsltKde ${INSTALL_TARGETS_DEFAULT_ARGS})
 install(FILES
     xslt.h xslt_kde.h
     DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
-install(TARGETS XsltKde EXPORT KDocToolsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KF5XsltKde EXPORT KF5DocToolsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 ########### next target ###############
 
@@ -47,7 +47,7 @@ else ()
     add_executable(meinproc5 meinproc.cpp meinproc_common.cpp xslt.cpp ${meinproc_additional_SRCS})
     target_link_libraries(meinproc5 Qt5::Core ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} ${LIBXSLT_EXSLT_LIBRARIES} ${meinproc_additional_LIBS})
 
-    install(TARGETS meinproc5 EXPORT KDocToolsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+    install(TARGETS meinproc5 EXPORT KF5DocToolsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
     add_executable(KF5::meinproc5 ALIAS meinproc5)
 
 #    # export this binary for cross-compilation

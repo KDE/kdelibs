@@ -12,7 +12,7 @@ include(ECMSetupVersion)
 set(KF5_VERSION "5.0.0")
 ecm_setup_version(${KF5_VERSION} VARIABLE_PREFIX KDOCTOOLS
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kdoctools_version.h"
-                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KDocToolsConfigVersion.cmake")
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KF5DocToolsConfigVersion.cmake")
 
 # Dependencies
 set(REQUIRED_QT_VERSION 5.2.0)
@@ -65,22 +65,22 @@ if (WIN32)
 else ()
     set(KDOCTOOLS_MEINPROC_EXECUTABLE          ${CMAKE_CURRENT_BINARY_DIR}/src/meinproc5${CMAKE_EXECUTABLE_SUFFIX} )
 endif ()
-include(KDocToolsMacros.cmake)
+include(KF5DocToolsMacros.cmake)
 
-set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KDocTools")
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KF5DocTools")
 add_subdirectory(docs)
 add_subdirectory(src)
 
-install(EXPORT KDocToolsTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KDocToolsTargets.cmake NAMESPACE KF5:: )
+install(EXPORT KF5DocToolsTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KF5DocToolsTargets.cmake NAMESPACE KF5:: )
 configure_package_config_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/KDocToolsConfig.cmake.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/KDocToolsConfig.cmake"
+  "${CMAKE_CURRENT_SOURCE_DIR}/KF5DocToolsConfig.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5DocToolsConfig.cmake"
   INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
 )
 
 install(FILES
-  "${CMAKE_CURRENT_BINARY_DIR}/KDocToolsConfig.cmake"
-  "${CMAKE_CURRENT_BINARY_DIR}/KDocToolsConfigVersion.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5DocToolsConfig.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5DocToolsConfigVersion.cmake"
   DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
   COMPONENT Devel
 )
@@ -93,7 +93,7 @@ configure_file(config-kdoctools.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kdoct
 install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/checkXML DESTINATION ${BIN_INSTALL_DIR} )
 
 install( FILES
-    KDocToolsMacros.cmake
+    KF5DocToolsMacros.cmake
     DESTINATION ${CMAKECONFIG_INSTALL_DIR} COMPONENT Devel )
 
 if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")

@@ -1,9 +1,9 @@
 @PACKAGE_INIT@
 
 find_dependency(Qt5Widgets @REQUIRED_QT_VERSION@)
-find_dependency(KWindowSystem "@KF5_VERSION@")
+find_dependency(KF5WindowSystem "@KF5_VERSION@")
 
 
-include("${CMAKE_CURRENT_LIST_DIR}/KNotificationsTargets.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/KF5NotificationsTargets.cmake")
 
 set(KNOTIFICATIONS_DBUS_INTERFACES_DIR "${PACKAGE_PREFIX_DIR}/@DBUS_INTERFACES_INSTALL_DIR@")

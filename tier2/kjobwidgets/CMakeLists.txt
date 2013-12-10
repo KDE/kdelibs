@@ -28,7 +28,7 @@ include(ECMSetupVersion)
 
 ecm_setup_version(${KF5_VERSION} VARIABLE_PREFIX KJOBWIDGETS
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kjobwidgets_version.h"
-                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KJobWidgetsConfigVersion.cmake")
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KF5JobWidgetsConfigVersion.cmake")
 
 remove_definitions(-DQT_NO_CAST_TO_ASCII)
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
@@ -40,24 +40,24 @@ add_subdirectory(autotests)
 
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
-set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KJobWidgets")
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KF5JobWidgets")
 
 include(CMakePackageConfigHelpers)
 
 configure_package_config_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/KJobWidgetsConfig.cmake.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/KJobWidgetsConfig.cmake"
+  "${CMAKE_CURRENT_SOURCE_DIR}/KF5JobWidgetsConfig.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5JobWidgetsConfig.cmake"
   INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
 )
 
 install(FILES
-  "${CMAKE_CURRENT_BINARY_DIR}/KJobWidgetsConfig.cmake"
-  "${CMAKE_CURRENT_BINARY_DIR}/KJobWidgetsConfigVersion.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5JobWidgetsConfig.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5JobWidgetsConfigVersion.cmake"
   DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
   COMPONENT Devel
 )
 
-install(EXPORT KJobWidgetsTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KJobWidgetsTargets.cmake NAMESPACE KF5:: )
+install(EXPORT KF5JobWidgetsTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KF5JobWidgetsTargets.cmake NAMESPACE KF5:: )
 
 install(FILES
    ${CMAKE_CURRENT_BINARY_DIR}/kjobwidgets_version.h

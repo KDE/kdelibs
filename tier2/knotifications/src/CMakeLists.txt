@@ -33,35 +33,36 @@ qt5_add_dbus_interface(knotifications_SRCS ${notifications_xml} notifications_in
 
 configure_file(config-knotifications.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-knotifications.h )
 
-add_library(KNotifications ${knotifications_SRCS})
-generate_export_header(KNotifications)
-add_library(KF5::KNotifications ALIAS KNotifications)
+add_library(KF5Notifications ${knotifications_SRCS})
+generate_export_header(KF5Notifications BASE_NAME KNotifications)
+add_library(KF5::Notifications ALIAS KF5Notifications)
 
-target_link_libraries(KNotifications PUBLIC
+target_link_libraries(KF5Notifications PUBLIC
    Qt5::Widgets
 )
-target_link_libraries(KNotifications PRIVATE
+target_link_libraries(KF5Notifications PRIVATE
    KF5::WindowSystem
    Qt5::DBus
 )
 
 if(X11_FOUND)
-   target_link_libraries(KNotifications PRIVATE ${X11_X11_LIB} Qt5::X11Extras)
+   target_link_libraries(KF5Notifications PRIVATE ${X11_X11_LIB} Qt5::X11Extras)
 endif()
 
 if(X11_XTest_FOUND)
-  target_link_libraries(KNotifications PRIVATE ${X11_XTest_LIB})
+  target_link_libraries(KF5Notifications PRIVATE ${X11_XTest_LIB})
 endif()
 
 if(HAVE_DBUSMENUQT)
-  target_link_libraries(KNotifications PRIVATE ${DBusMenuQt5_LIBRARIES})
+  target_link_libraries(KF5Notifications PRIVATE ${DBusMenuQt5_LIBRARIES})
 endif()
 
-set_target_properties(KNotifications PROPERTIES VERSION   ${KNOTIFICATIONS_VERSION_STRING}
-                                             SOVERSION ${KNOTIFICATIONS_SOVERSION}
+set_target_properties(KF5Notifications PROPERTIES VERSION   ${KNOTIFICATIONS_VERSION_STRING}
+                                                  SOVERSION ${KNOTIFICATIONS_SOVERSION}
+                                                  EXPORT_NAME Notifications
 )
 
-install(TARGETS KNotifications EXPORT KNotificationsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KF5Notifications EXPORT KF5NotificationsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
   knotification.h
