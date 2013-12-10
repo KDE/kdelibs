@@ -1,7 +1,7 @@
 @PACKAGE_INIT@
 
-find_dependency(KI18n "@KF5_VERSION@")
-find_dependency(KJS "@KF5_VERSION@")
+find_dependency(KF5I18n "@KF5_VERSION@")
+find_dependency(KF5JS "@KF5_VERSION@")
 
 include("${CMAKE_CURRENT_LIST_DIR}/KF5JsEmbedTargets.cmake")
 

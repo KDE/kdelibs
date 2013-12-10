@@ -1,8 +1,8 @@
 @PACKAGE_INIT@
 
 find_dependency(Qt5Widgets @REQUIRED_QT_VERSION@)
-find_dependency(KCoreAddons "@KF5_VERSION@")
-find_dependency(KService "@KF5_VERSION@")
+find_dependency(KF5CoreAddons "@KF5_VERSION@")
+find_dependency(KF5Service "@KF5_VERSION@")
 
 
 # un-comment this once the dependencies have been cleaned:
