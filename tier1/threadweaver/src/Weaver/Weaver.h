@@ -95,7 +95,8 @@ public:
         created.
     */
     static ThreadWeaver::Weaver* instance();
-    void enqueue(const JobPointer&) Q_DECL_OVERRIDE;
+    void enqueue(const QVector<JobPointer>& jobs) Q_DECL_OVERRIDE;
+    void enqueue(const JobPointer& job);
     bool dequeue(const JobPointer&) Q_DECL_OVERRIDE;
     void dequeue() Q_DECL_OVERRIDE;
     void finish() Q_DECL_OVERRIDE;

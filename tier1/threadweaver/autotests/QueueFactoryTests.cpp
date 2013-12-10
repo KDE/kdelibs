@@ -31,8 +31,10 @@ class JobCountingWeaver : public WeaverImpl {
     Q_OBJECT
 public:
     explicit JobCountingWeaver(QObject* parent = 0) : WeaverImpl(parent) {}
-    void enqueue(const JobPointer& job) Q_DECL_OVERRIDE {
-        JobPointer decorated(new CountingJobDecorator(job));
+    void enqueue(const QVector<JobPointer>& jobs) Q_DECL_OVERRIDE {
+        QVector<JobPointer> decorated;
+        std::transform(jobs.begin(), jobs.end(), std::back_inserter(decorated),
+                       [](const JobPointer& job) { return JobPointer(new CountingJobDecorator(job)); } );
         WeaverImpl::enqueue(decorated);
     }
 };

@@ -88,8 +88,6 @@ public:
 class JobCollection::Private
 {
 public:
-    typedef QList<JobPointer> JobList;
-
     Private()
         : api ( 0 )
         , jobCounter (0)
@@ -102,7 +100,7 @@ public:
     }
 
     /* The elements of the collection. */
-    JobList elements;
+    QVector<JobPointer> elements;
 
     /* The Weaver interface this collection is queued in. */
     QueueAPI *api;
@@ -198,9 +196,7 @@ void JobCollection::enqueueElements()
 {
     Q_ASSERT(!mutex()->tryLock());
     d->jobCounter.fetchAndStoreOrdered(d->elements.count() + 1); //including self
-    Q_FOREACH(const JobPointer& child, d->elements) {
-        d->api->enqueue(child);
-    }
+    d->api->enqueue(d->elements);
 }
 
 void JobCollection::elementStarted(JobPointer job, Thread* thread)

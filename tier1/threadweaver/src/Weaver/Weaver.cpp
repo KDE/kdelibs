@@ -1,8 +1,8 @@
-#include "Weaver.h"
-
 #include <QtCore/QCoreApplication>
 #include <QtCore/QMutex>
+#include <QtCore/QVector>
 
+#include "Weaver.h"
 #include "WeaverImpl.h"
 #include "WeaverObserver.h"
 
@@ -139,9 +139,14 @@ Weaver* Weaver::instance()
     return s_instance.loadAcquire();
 }
 
-void Weaver::enqueue(const JobPointer &job)
+void Weaver::enqueue(const QVector<JobPointer>& jobs)
 {
-    d->implementation->enqueue(job);
+    d->implementation->enqueue(jobs);
+}
+
+void Weaver::enqueue(const JobPointer& job)
+{
+    enqueue(QVector<JobPointer>() << job);
 }
 
 bool Weaver::dequeue(const JobPointer& job)

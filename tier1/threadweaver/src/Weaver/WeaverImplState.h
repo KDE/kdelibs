@@ -59,7 +59,7 @@ public:
     /** Register an observer. */
     void registerObserver(WeaverObserver* obs) Q_DECL_OVERRIDE;
     /** Enqueue a job. */
-    void enqueue(const JobPointer& job) Q_DECL_OVERRIDE;
+    void enqueue(const QVector<JobPointer>& jobs) Q_DECL_OVERRIDE;
     /** Dequeue a job. */
     bool dequeue(const JobPointer& job) Q_DECL_OVERRIDE;
     /** Dequeue all jobs. */

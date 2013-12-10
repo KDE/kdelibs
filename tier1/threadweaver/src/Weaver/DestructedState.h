@@ -53,7 +53,7 @@ public:
     int maximumNumberOfThreads() const Q_DECL_OVERRIDE;
     int currentNumberOfThreads() const Q_DECL_OVERRIDE;
     void registerObserver(WeaverObserver *obs) Q_DECL_OVERRIDE;
-    void enqueue(const JobPointer& job) Q_DECL_OVERRIDE;
+    void enqueue(const QVector<JobPointer>& job) Q_DECL_OVERRIDE;
     bool dequeue(const JobPointer& job) Q_DECL_OVERRIDE;
     void dequeue() Q_DECL_OVERRIDE;
     void finish() Q_DECL_OVERRIDE;

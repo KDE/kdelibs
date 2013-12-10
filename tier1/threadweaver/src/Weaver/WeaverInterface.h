@@ -29,6 +29,7 @@
 #define WeaverInterface_H
 
 #include <QtCore/QObject>
+#include <QVector>
 
 #include "threadweaver_export.h"
 #include "JobPointer.h"
@@ -92,7 +93,7 @@ public:
     */
     virtual void registerObserver ( WeaverObserver* ) = 0;
 
-    /** Add a job to be executed.
+    /** Queue a vector of jobs.
 
     It depends on the state if execution of the job will be attempted
     immediately. In suspended state, jobs can be added to the queue,
@@ -103,7 +104,7 @@ public:
     JobPointer is a shared pointer. This means the object pointed to will be deleted if this object
     is the last remaining reference to it. Keep a JobPointer to the job to avoid automatic deletion.
     */
-    virtual void enqueue(const JobPointer& job) = 0;
+    virtual void enqueue(const QVector<JobPointer>& jobs) = 0;
 
     /** Remove a job from the queue.
      *

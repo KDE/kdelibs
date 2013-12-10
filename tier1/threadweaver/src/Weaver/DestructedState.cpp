@@ -67,7 +67,7 @@ void DestructedState::registerObserver(WeaverObserver*)
 {
 }
 
-void DestructedState::enqueue(const JobPointer &)
+void DestructedState::enqueue(const QVector<JobPointer>&)
 {
 }
 

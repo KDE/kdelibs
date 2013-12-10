@@ -221,30 +221,35 @@ void WeaverImpl::registerObserver_p(WeaverObserver *ext)
             ext,  SIGNAL (threadExited(ThreadWeaver::Thread*)));
 }
 
-void WeaverImpl::enqueue(const JobPointer& job)
+void WeaverImpl::enqueue(const QVector<JobPointer>& jobs)
 {
     QMutexLocker l(m_mutex); Q_UNUSED(l);
-    state()->enqueue(job);
+    state()->enqueue(jobs);
 }
 
-void WeaverImpl::enqueue_p(JobPointer job)
+void WeaverImpl::enqueue_p(const QVector<JobPointer>& jobs)
 {
     Q_ASSERT(!m_mutex->tryLock()); //mutex has to be held when this method is called
-    Q_ASSERT(job->status() == Job::Status_New);
-    if (job) {
-        adjustInventory(1);
-        debug(3, "WeaverImpl::enqueue: queueing job %p.\n", (void*)job.data());
-        job->aboutToBeQueued(this);
-        // find position for insertion:
-        int i = m_assignments.size();
-        if (i > 0) {
-            while(i > 0 && m_assignments.at(i - 1)->priority() < job->priority()) --i;
-            m_assignments.insert(i, job);
-        } else {
-            m_assignments.append(job);
+    if (jobs.isEmpty()) {
+        return;
+    }
+    Q_FOREACH(const JobPointer& job, jobs) {
+        if (job) {
+            Q_ASSERT(job->status() == Job::Status_New);
+            adjustInventory(1);
+            debug(3, "WeaverImpl::enqueue: queueing job %p.\n", (void*)job.data());
+            job->aboutToBeQueued(this);
+            // find position for insertion:
+            int i = m_assignments.size();
+            if (i > 0) {
+                while(i > 0 && m_assignments.at(i - 1)->priority() < job->priority()) --i;
+                m_assignments.insert(i, job);
+            } else {
+                m_assignments.append(job);
+            }
+            job->setStatus(Job::Status_Queued);
+            reschedule();
         }
-        job->setStatus(Job::Status_Queued);
-        reschedule();
     }
 }
 

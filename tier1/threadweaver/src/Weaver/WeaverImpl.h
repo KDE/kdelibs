@@ -34,6 +34,7 @@ $Id: WeaverImpl.h 32 2005-08-17 08:38:01Z mirko $
 #include <QAtomicPointer>
 #include <QAtomicInt>
 #include <QSemaphore>
+#include <QVector>
 
 #ifndef THREADWEAVER_PRIVATE_API
 #define THREADWEAVER_PRIVATE_API
@@ -77,7 +78,7 @@ public:
     /** Set the object state. */
     void setState( StateId );
     void registerObserver(WeaverObserver*) Q_DECL_OVERRIDE;
-    void enqueue(const JobPointer& job) Q_DECL_OVERRIDE;
+    void enqueue(const QVector<JobPointer>& jobs) Q_DECL_OVERRIDE;
     bool dequeue(const JobPointer& job) Q_DECL_OVERRIDE;
     void dequeue() Q_DECL_OVERRIDE;
     void finish() Q_DECL_OVERRIDE;
@@ -139,9 +140,7 @@ public:
     int maximumNumberOfThreads_p() const Q_DECL_OVERRIDE;
     int currentNumberOfThreads_p() const Q_DECL_OVERRIDE;
     void registerObserver_p(WeaverObserver*) Q_DECL_OVERRIDE;
-//    void enqueue_p(Job* job);
-    void enqueue_p(JobPointer job);
-//    bool dequeue_p(Job* job);
+    void enqueue_p(const QVector<JobPointer>& jobs);
     bool dequeue_p(JobPointer job) Q_DECL_OVERRIDE;
     void dequeue_p() Q_DECL_OVERRIDE;
     void finish_p() Q_DECL_OVERRIDE;
