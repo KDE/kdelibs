@@ -27,6 +27,7 @@ kcoreaddons_unit_tests(
     kaboutdatatest
     kautosavefiletest
     kcompositejobtest
+    kformattest
     kjobtest
     kprocesstest
     kshareddatacachetest

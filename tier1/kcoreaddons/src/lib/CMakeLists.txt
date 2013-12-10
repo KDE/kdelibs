@@ -60,6 +60,8 @@ set(libkcoreaddons_SRCS
     randomness/krandomsequence.cpp
     text/kmacroexpander.cpp
     text/kstringhandler.cpp
+    util/kformat.cpp
+    util/kformatprivate.cpp
     util/kshell.cpp
     ${kcoreaddons_OPTIONAL_SRCS}
 )
@@ -125,6 +127,7 @@ install(FILES
     randomness/krandomsequence.h
     text/kmacroexpander.h
     text/kstringhandler.h
+    util/kformat.h
     util/kuser.h
     util/kshell.h
     ${CMAKE_CURRENT_BINARY_DIR}/kcoreaddons_export.h
