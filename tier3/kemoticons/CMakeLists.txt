@@ -28,7 +28,7 @@ if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
   #after cmake 3.0.0 is released
   find_package(KF5CoreAddons ${KF5_VERSION} REQUIRED)
   find_package(KF5DBusAddons ${KF5_VERSION} REQUIRED)
-  find_package(KI18n ${KF5_VERSION} REQUIRED)
+  find_package(KF5I18n ${KF5_VERSION} REQUIRED)
 
   find_package(KF5Archive ${KF5_VERSION} REQUIRED)
   find_package(KService ${KF5_VERSION} REQUIRED)

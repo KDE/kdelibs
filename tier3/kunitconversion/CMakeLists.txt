@@ -22,8 +22,8 @@ ecm_setup_version(${KF5_VERSION} VARIABLE_PREFIX KUNITCONVERSION
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KUnitConversionConfigVersion.cmake")
 
 if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
-  find_package(KI18n ${KF5_VERSION} REQUIRED)
-  find_package(KConfig ${KF5_VERSION} REQUIRED)
+  find_package(KF5I18n ${KF5_VERSION} REQUIRED)
+  find_package(KF5Config ${KF5_VERSION} REQUIRED)
 endif()
 
 remove_definitions(-DQT_NO_CAST_TO_ASCII)

@@ -554,7 +554,7 @@ target_link_libraries(KHtml
     Qt5::Gui
     KF5::KIOCore
     KF5::JS
-    KF5::KI18n
+    KF5::I18n
     KF5::KParts
   PRIVATE
     ${PHONON_LIBRARIES}
@@ -568,9 +568,9 @@ target_link_libraries(KHtml
     KF5::SonnetCore
     KF5::WidgetsAddons
     KF5::WindowSystem
-    KF5::KWallet
+    KF5::Wallet
     KF5::KIconThemes
-    KF5::KNotifications
+    KF5::Notifications
     KF5::KBookmarks
     KF5::KIOWidgets # KUrlRequester
     KF5::GlobalAccel
@@ -701,7 +701,7 @@ set(khtmlpart_PART_SRCS khtml_factory.cpp )
 add_library(khtmlpart MODULE ${khtmlpart_PART_SRCS})
 set_target_properties(khtmlpart PROPERTIES PREFIX "${CMAKE_SHARED_LIBRARY_PREFIX}")
 
-target_link_libraries(khtmlpart KHtml KF5::XmlGui KF5::KTextWidgets KF5::KParts KF5::KI18n)
+target_link_libraries(khtmlpart KHtml KF5::XmlGui KF5::KTextWidgets KF5::KParts KF5::I18n)
 
 install(TARGETS khtmlpart  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
@@ -713,7 +713,7 @@ install(TARGETS khtmlpart  DESTINATION ${PLUGIN_INSTALL_DIR} )
 add_library(khtmlimagepart MODULE khtmlimage_init.cpp)
 
 
-target_link_libraries(khtmlimagepart KHtml KF5::WidgetsAddons KF5::XmlGui KF5::KTextWidgets KF5::KParts KF5::KI18n)
+target_link_libraries(khtmlimagepart KHtml KF5::WidgetsAddons KF5::XmlGui KF5::KTextWidgets KF5::KParts KF5::I18n)
 
 install(TARGETS khtmlimagepart  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
@@ -721,7 +721,7 @@ install(TARGETS khtmlimagepart  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 add_library(khtmladaptorpart MODULE khtmladaptorpart.cpp)
 
-target_link_libraries(khtmladaptorpart KF5::KParts KF5::JS KF5::KI18n KF5::XmlGui)
+target_link_libraries(khtmladaptorpart KF5::KParts KF5::JS KF5::I18n KF5::XmlGui)
 
 install(TARGETS khtmladaptorpart DESTINATION ${PLUGIN_INSTALL_DIR} )
 

@@ -28,7 +28,7 @@ target_link_libraries(KNotifyConfig
         PUBLIC
             Qt5::Widgets
         PRIVATE
-            KF5::KI18n
+            KF5::I18n
             KF5::KIOWidgets     # KUrlRequester
             ${PHONON_LIBS}
             Qt5::DBus)

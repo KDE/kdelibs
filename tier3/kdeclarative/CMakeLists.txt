@@ -18,7 +18,7 @@ if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
   # Required KF5 frameworks to build this framework
   # For example:
   find_package(KF5Config ${KF5_VERSION} REQUIRED)
-  find_package(KI18n ${KF5_VERSION} REQUIRED)
+  find_package(KF5I18n ${KF5_VERSION} REQUIRED)
   find_package(KIconThemes ${KF5_VERSION} REQUIRED)
   find_package(KIO ${KF5_VERSION} REQUIRED)
 endif()

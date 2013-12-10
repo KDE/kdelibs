@@ -26,7 +26,7 @@ find_package(Qt5Svg ${QT_REQUIRED_VERSION} REQUIRED NO_MODULE)
 find_package(Qt5DBus ${QT_REQUIRED_VERSION} REQUIRED NO_MODULE)
 
 if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
-  find_package(KI18n ${KF5_VERSION} REQUIRED)
+  find_package(KF5I18n ${KF5_VERSION} REQUIRED)
   find_package(KConfigWidgets ${KF5_VERSION} REQUIRED)
   find_package(KF5WidgetsAddons ${KF5_VERSION} REQUIRED)
   find_package(KF5ItemViews ${KF5_VERSION} REQUIRED)

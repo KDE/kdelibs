@@ -30,12 +30,12 @@ PUBLIC
 PRIVATE
   Qt5::DBus
   KF5::SonnetCore
-  KF5::KI18n
+  KF5::I18n
   KF5::KService
   KF5::KConfigWidgets
   KF5::WindowSystem
   KF5::KIconThemes
-  KF5::KCompletion
+  KF5::Completion
 )
 
 set_target_properties(KTextWidgets PROPERTIES VERSION ${KTEXTWIDGETS_VERSION_STRING}

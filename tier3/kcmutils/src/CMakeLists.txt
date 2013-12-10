@@ -24,7 +24,7 @@ target_link_libraries(KCMUtils
   PRIVATE
 	Qt5::DBus       # dbus usage in kcmoduleproxy.cpp
     KF5::CoreAddons
-    KF5::KI18n
+    KF5::I18n
     KF5::KIconThemes     # KIconLoader
     KF5::ItemViews       # KWidgetItemDelegate
     KF5::XmlGui          # KAboutApplicationDialog

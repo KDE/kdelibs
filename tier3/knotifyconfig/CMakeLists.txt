@@ -19,7 +19,7 @@ find_package(Phonon4Qt5 4.6.60 NO_MODULE)
 if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
   # Due to a CMake bug, we need to explicitly find private dependencies of our dependencies
   # Remove when we depend on CMake 3.0.0 (which should fix this)
-  find_package(KI18n ${KF5_VERSION} REQUIRED)
+  find_package(KF5I18n ${KF5_VERSION} REQUIRED)
   find_package(KF5CoreAddons ${KF5_VERSION} REQUIRED)
   find_package(KF5GuiAddons ${KF5_VERSION} REQUIRED)
   find_package(KF5WidgetsAddons ${KF5_VERSION} REQUIRED)
@@ -29,7 +29,7 @@ if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
   find_package(KF5ItemViews ${KF5_VERSION} REQUIRED)
   find_package(KIconThemes ${KF5_VERSION} REQUIRED)
   find_package(KF5WindowSystem ${KF5_VERSION} REQUIRED)
-  find_package(KCompletion ${KF5_VERSION} REQUIRED)
+  find_package(KF5Completion ${KF5_VERSION} REQUIRED)
   find_package(KService ${KF5_VERSION} REQUIRED)
   find_package(KTextWidgets ${KF5_VERSION} REQUIRED)
   find_package(XmlGui ${KF5_VERSION} REQUIRED)
@@ -37,10 +37,10 @@ if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
 
   #library dependencies
   find_package(KIO ${KF5_VERSION} REQUIRED)
-  find_package(KI18n ${KF5_VERSION} REQUIRED)
+  find_package(KF5I18n ${KF5_VERSION} REQUIRED)
 
   #test dependency
-  find_package(KNotifications ${KF5_VERSION} REQUIRED)
+  find_package(KF5Notifications ${KF5_VERSION} REQUIRED)
 endif()
 
 # Includes

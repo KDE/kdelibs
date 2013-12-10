@@ -16,7 +16,7 @@ target_link_libraries(kmultipart
                         KF5::Archive
                         KF5::WidgetsAddons
                         KF5::XmlGui
-                        KF5::KI18n
+                        KF5::I18n
                         KF5::KTextWidgets)
 
 install(TARGETS kmultipart  DESTINATION ${PLUGIN_INSTALL_DIR} )

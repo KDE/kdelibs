@@ -6,7 +6,7 @@ set(krossqtsplugin_LIB_SRCS plugin.cpp)
 add_library(krossqtsplugin ${krossqtsplugin_LIB_SRCS})
 target_link_libraries(krossqtsplugin
    Qt5::UiTools
-   KF5::KI18n
+   KF5::I18n
    KrossCore
    Qt5::Script
    Qt5::Widgets
@@ -27,7 +27,7 @@ target_link_libraries(krossqtstest
    krossqtsplugin
    KrossCore
    Qt5::Script
-   KF5::KI18n
+   KF5::I18n
    Qt5::Widgets
 )
 
@@ -38,7 +38,7 @@ add_test(krossqtstest-test-es krossqtstest ${CMAKE_CURRENT_SOURCE_DIR}/test.es)
 set(krossqts_PART_SRCS interpreter.cpp script.cpp)
 add_library(krossqts MODULE ${krossqts_PART_SRCS})
 target_link_libraries(krossqts
-   KF5::KI18n
+   KF5::I18n
    KrossCore
    Qt5::Script
    Qt5::Widgets

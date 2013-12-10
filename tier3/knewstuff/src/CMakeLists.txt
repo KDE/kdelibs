@@ -77,8 +77,8 @@ target_link_libraries(KNewStuff
   PRIVATE
     KF5::KIOCore               # For network fetching operations
     KF5::KIOWidgets            # For KUrlRequester
-    KF5::Archive              # For decompressing archives
-    KF5::KI18n                 # For translations
+    KF5::Archive               # For decompressing archives
+    KF5::I18n                  # For translations
     KF5::ItemViews             # For buttons on download dialog
     KF5::KIconThemes           # For KIcon
     KF5::KTextWidgets          # For KTextEdit in upload dialog

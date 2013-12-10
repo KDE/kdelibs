@@ -92,13 +92,13 @@ target_include_directories(KIOWidgets PUBLIC
 target_link_libraries(KIOWidgets
   PUBLIC
     KIOCore
-    KF5::KJobWidgets
+    KF5::JobWidgets
     Qt5::Network        # SSL
-    KF5::KCompletion    # KUrlCompletion uses KCompletion
+    KF5::Completion    # KUrlCompletion uses KCompletion
     KF5::WidgetsAddons # keditlistwidget
   PRIVATE
     Qt5::DBus
-    KF5::KI18n
+    KF5::I18n
     KF5::KIconThemes   # KIconLoader
     KF5::WindowSystem # KStartupInfo
     KF5::KConfigWidgets # KColorScheme

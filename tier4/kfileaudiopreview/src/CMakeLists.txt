@@ -10,7 +10,7 @@ add_library(kfileaudiopreview MODULE ${kfileaudiopreview_PART_SRCS})
 target_link_libraries(kfileaudiopreview
    ${PHONON_LIBRARIES}
    KF5::KIOFileWidgets    # KPreviewWidgetBase
-   KF5::KI18n
+   KF5::I18n
 )
 
 install(TARGETS kfileaudiopreview

@@ -36,7 +36,7 @@ target_link_libraries(KPrintUtils
     Qt5::PrintSupport
   PRIVATE
     KF5::KParts
-    KF5::KI18n
+    KF5::I18n
 )
 set_target_properties(KPrintUtils PROPERTIES
                       VERSION ${KPRINTUTILS_VERSION_STRING}

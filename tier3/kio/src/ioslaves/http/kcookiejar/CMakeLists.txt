@@ -14,7 +14,7 @@ ecm_mark_nongui_executable(kcookiejar5)
 
 target_link_libraries( kcookiejar5
    Qt5::DBus
-   KF5::KI18n
+   KF5::I18n
    KF5::WidgetsAddons
 )
 
@@ -37,7 +37,7 @@ target_link_libraries(kded_kcookiejar
    KF5::WindowSystem
    KF5::KService # kpluginfactory
    KF5::DBusAddons
-   KF5::KI18n
+   KF5::I18n
    KF5::WidgetsAddons
 )
 

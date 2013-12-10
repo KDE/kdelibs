@@ -23,7 +23,7 @@ ecm_setup_version(${KF5_VERSION} VARIABLE_PREFIX KDEWebKit
 
 if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
   #dependencies of dependencies, remove when depending on cmake 3.0.0
-  find_package(KI18n ${KF5_VERSION} REQUIRED)
+  find_package(KF5I18n ${KF5_VERSION} REQUIRED)
   find_package(KF5DBusAddons ${KF5_VERSION} REQUIRED)
   find_package(KF5WidgetsAddons ${KF5_VERSION} REQUIRED)
   find_package(KF5CoreAddons ${KF5_VERSION} REQUIRED)
@@ -34,16 +34,16 @@ if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
   find_package(KConfigWidgets ${KF5_VERSION} REQUIRED)
   find_package(KIconThemes ${KF5_VERSION} REQUIRED)
   find_package(KF5Solid ${KF5_VERSION} REQUIRED)
-  find_package(KCompletion ${KF5_VERSION} REQUIRED)
+  find_package(KF5Completion ${KF5_VERSION} REQUIRED)
   find_package(KTextWidgets ${KF5_VERSION} REQUIRED)
   find_package(XmlGui ${KF5_VERSION} REQUIRED)
   find_package(KBookmarks ${KF5_VERSION} REQUIRED)
 
   #actual dependencies
   find_package(KF5CoreAddons ${KF5_VERSION} REQUIRED)
-  find_package(KWallet ${KF5_VERSION} REQUIRED)
+  find_package(KF5Wallet ${KF5_VERSION} REQUIRED)
   find_package(KIO ${KF5_VERSION} REQUIRED)
-  find_package(KNotifications ${KF5_VERSION} REQUIRED)
+  find_package(KF5Notifications ${KF5_VERSION} REQUIRED)
   find_package(KParts ${KF5_VERSION} REQUIRED)
 endif()
 
