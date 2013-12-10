@@ -1,6 +1,7 @@
 /*  This file is part of the KDE Frameworks
 
-    Copyright (C) 2013 John Layt <jlayt@kde.org>,
+    Copyright (C) 2013 Alex Merry <alex.merry@kdemail.net>
+    Copyright (C) 2013 John Layt <jlayt@kde.org>
     Copyright (C) 2010 Michael Leupold <lemma@confuego.org>
     Copyright (C) 2009 Michael Pyne <mpyne@kde.org>
     Copyright (C) 2008 Albert Astals Cid <aacid@kde.org>
@@ -23,7 +24,7 @@
 
 #include "kformatprivate_p.h"
 
-#include <QtCore/QDateTime>
+#include <QDateTime>
 
 KFormatPrivate::KFormatPrivate(const QLocale &locale)
 {
@@ -71,100 +72,102 @@ QString KFormatPrivate::formatByteSize(double size, int precision,
 
     QString numString = m_locale.toString(size, 'f', precision);
 
-    // Do not remove i18n: comments below, they are used by the translators.
+    // Do not remove "//:" comments below, they are used by the translators.
+    // NB: we cannot pass pluralization arguments, as the size may be negative
     if (dialect == KFormat::MetricBinaryDialect) {
         switch (unit) {
         case KFormat::UnitByte:
             //: MetricBinaryDialect size in bytes
-            return KFormat::tr("%1 B").arg(numString);
+            return tr("%1 B", "MetricBinaryDialect").arg(numString);
         case KFormat::UnitKiloByte:
             //: MetricBinaryDialect size in 1000 bytes
-            return KFormat::tr("%1 kB").arg(numString);
+            return tr("%1 kB", "MetricBinaryDialect").arg(numString);
         case KFormat::UnitMegaByte:
             //: MetricBinaryDialect size in 10^6 bytes
-            return KFormat::tr("%1 MB").arg(numString);
+            return tr("%1 MB", "MetricBinaryDialect").arg(numString);
         case KFormat::UnitGigaByte:
             //: MetricBinaryDialect size in 10^9 bytes
-            return KFormat::tr("%1 GB").arg(numString);
+            return tr("%1 GB", "MetricBinaryDialect").arg(numString);
         case KFormat::UnitTeraByte:
             //: MetricBinaryDialect size in 10^12 bytes
-            return KFormat::tr("%1 TB").arg(numString);
+            return tr("%1 TB", "MetricBinaryDialect").arg(numString);
         case KFormat::UnitPetaByte:
             //: MetricBinaryDialect size in 10^15 bytes
-            return KFormat::tr("%1 PB").arg(numString);
+            return tr("%1 PB", "MetricBinaryDialect").arg(numString);
         case KFormat::UnitExaByte:
             //: MetricBinaryDialect size in 10^18 byte
-            return KFormat::tr("%1 EB").arg(numString);
+            return tr("%1 EB", "MetricBinaryDialect").arg(numString);
         case KFormat::UnitZettaByte:
             //: MetricBinaryDialect size in 10^21 bytes
-            return KFormat::tr("%1 ZB").arg(numString);
+            return tr("%1 ZB", "MetricBinaryDialect").arg(numString);
         case KFormat::UnitYottaByte:
             //: MetricBinaryDialect size in 10^24 bytes
-            return KFormat::tr("%1 YB").arg(numString);
+            return tr("%1 YB", "MetricBinaryDialect").arg(numString);
         }
     } else if (dialect == KFormat::JEDECBinaryDialect) {
         switch (unit) {
         case KFormat::UnitByte:
             //: JEDECBinaryDialect memory size in bytes
-            return KFormat::tr("%1 B").arg(numString);
+            return tr("%1 B", "JEDECBinaryDialect").arg(numString);
         case KFormat::UnitKiloByte:
             //: JEDECBinaryDialect memory size in 1024 bytes
-            return KFormat::tr("%1 KB").arg(numString);
+            return tr("%1 KB", "JEDECBinaryDialect").arg(numString);
         case KFormat::UnitMegaByte:
             //: JEDECBinaryDialect memory size in 10^20 bytes
-            return KFormat::tr("%1 MB").arg(numString);
+            return tr("%1 MB", "JEDECBinaryDialect").arg(numString);
         case KFormat::UnitGigaByte:
             //: JEDECBinaryDialect memory size in 10^30 bytes
-            return KFormat::tr("%1 GB").arg(numString);
+            return tr("%1 GB", "JEDECBinaryDialect").arg(numString);
         case KFormat::UnitTeraByte:
             //: JEDECBinaryDialect memory size in 10^40 bytes
-            return KFormat::tr("%1 TB").arg(numString);
+            return tr("%1 TB", "JEDECBinaryDialect").arg(numString);
         case KFormat::UnitPetaByte:
             //: JEDECBinaryDialect memory size in 10^50 bytes
-            return KFormat::tr("%1 PB").arg(numString);
+            return tr("%1 PB", "JEDECBinaryDialect").arg(numString);
         case KFormat::UnitExaByte:
             //: JEDECBinaryDialect memory size in 10^60 bytes
-            return KFormat::tr("%1 EB").arg(numString);
+            return tr("%1 EB", "JEDECBinaryDialect").arg(numString);
         case KFormat::UnitZettaByte:
             //: JEDECBinaryDialect memory size in 10^70 bytes
-            return KFormat::tr("%1 ZB").arg(numString);
+            return tr("%1 ZB", "JEDECBinaryDialect").arg(numString);
         case KFormat::UnitYottaByte:
             //: JEDECBinaryDialect memory size in 10^80 bytes
-            return KFormat::tr("%1 YB").arg(numString);
+            return tr("%1 YB", "JEDECBinaryDialect").arg(numString);
         }
     } else {  // KFormat::IECBinaryDialect, KFormat::DefaultBinaryDialect
         switch (unit) {
         case KFormat::UnitByte:
             //: IECBinaryDialect size in bytes
-            return KFormat::tr("%1 B").arg(numString);
+            return tr("%1 B", "IECBinaryDialect").arg(numString);
         case KFormat::UnitKiloByte:
             //: IECBinaryDialect size in 1024 bytes
-            return KFormat::tr("%1 KiB").arg(numString);
+            return tr("%1 KiB", "IECBinaryDialect").arg(numString);
         case KFormat::UnitMegaByte:
             //: IECBinaryDialect size in 10^20 bytes
-            return KFormat::tr("%1 MiB").arg(numString);
+            return tr("%1 MiB", "IECBinaryDialect").arg(numString);
         case KFormat::UnitGigaByte:
             //: IECBinaryDialect size in 10^30 bytes
-            return KFormat::tr("%1 GiB").arg(numString);
+            return tr("%1 GiB", "IECBinaryDialect").arg(numString);
         case KFormat::UnitTeraByte:
             //: IECBinaryDialect size in 10^40 bytes
-            return KFormat::tr("%1 TiB").arg(numString);
+            return tr("%1 TiB", "IECBinaryDialect").arg(numString);
         case KFormat::UnitPetaByte:
             //: IECBinaryDialect size in 10^50 bytes
-            return KFormat::tr("%1 PiB").arg(numString);
+            return tr("%1 PiB", "IECBinaryDialect").arg(numString);
         case KFormat::UnitExaByte:
             //: IECBinaryDialect size in 10^60 bytes
-            return KFormat::tr("%1 EiB").arg(numString);
+            return tr("%1 EiB", "IECBinaryDialect").arg(numString);
         case KFormat::UnitZettaByte:
             //: IECBinaryDialect size in 10^70 bytes
-            return KFormat::tr("%1 ZiB").arg(numString);
+            return tr("%1 ZiB", "IECBinaryDialect").arg(numString);
         case KFormat::UnitYottaByte:
             //: IECBinaryDialect size in 10^80 bytes
-            return KFormat::tr("%1 YiB").arg(numString);
+            return tr("%1 YiB", "IECBinaryDialect").arg(numString);
         }
     }
 
     // Should never reach here
+    Q_ASSERT(false);
     return numString;
 }
 
@@ -192,28 +195,28 @@ QString KFormatPrivate::formatDuration(quint64 msecs, KFormat::DurationFormatOpt
         if ((options & KFormat::FoldHours) == KFormat::FoldHours
             && (options & KFormat::ShowMilliseconds) == KFormat::ShowMilliseconds) {
             //: @item:intext Duration format minutes, seconds and milliseconds
-            return KFormat::tr("%1m%2.%3s").arg(hours * 60 + minutes, 1, 10, QLatin1Char('0'))
-                                           .arg(seconds, 2, 10, QLatin1Char('0'))
-                                           .arg(ms, 3, 10, QLatin1Char('0'));
+            return tr("%1m%2.%3s").arg(hours * 60 + minutes, 1, 10, QLatin1Char('0'))
+                                  .arg(seconds, 2, 10, QLatin1Char('0'))
+                                  .arg(ms, 3, 10, QLatin1Char('0'));
         } else if ((options & KFormat::FoldHours) == KFormat::FoldHours) {
             //: @item:intext Duration format minutes and seconds
-            return KFormat::tr("%1m%2s").arg(hours * 60 + minutes, 1, 10, QLatin1Char('0'))
-                                        .arg(roundSeconds, 2, 10, QLatin1Char('0'));
+            return tr("%1m%2s").arg(hours * 60 + minutes, 1, 10, QLatin1Char('0'))
+                               .arg(roundSeconds, 2, 10, QLatin1Char('0'));
         } else if ((options & KFormat::HideSeconds) == KFormat::HideSeconds) {
             //: @item:intext Duration format hours and minutes
-            return KFormat::tr("%1h%2m").arg(hours, 1, 10, QLatin1Char('0'))
-                                        .arg(roundMinutes, 2, 10, QLatin1Char('0'));
+            return tr("%1h%2m").arg(hours, 1, 10, QLatin1Char('0'))
+                               .arg(roundMinutes, 2, 10, QLatin1Char('0'));
         } else if ((options & KFormat::ShowMilliseconds) == KFormat::ShowMilliseconds) {
             //: @item:intext Duration format hours, minutes, seconds, milliseconds
-            return KFormat::tr("%1h%2m%3.%4s").arg(hours, 1, 10, QLatin1Char('0'))
-                                              .arg(minutes, 2, 10, QLatin1Char('0'))
-                                              .arg(seconds, 2, 10, QLatin1Char('0'))
-                                              .arg(ms, 3, 10, QLatin1Char('0'));
+            return tr("%1h%2m%3.%4s").arg(hours, 1, 10, QLatin1Char('0'))
+                                     .arg(minutes, 2, 10, QLatin1Char('0'))
+                                     .arg(seconds, 2, 10, QLatin1Char('0'))
+                                     .arg(ms, 3, 10, QLatin1Char('0'));
         } else { // Default
             //: @item:intext Duration format hours, minutes, seconds
-            return KFormat::tr("%1h%2m%3s").arg(hours, 1, 10, QLatin1Char('0'))
-                                           .arg(minutes, 2, 10, QLatin1Char('0'))
-                                           .arg(roundSeconds, 2, 10, QLatin1Char('0'));
+            return tr("%1h%2m%3s").arg(hours, 1, 10, QLatin1Char('0'))
+                                  .arg(minutes, 2, 10, QLatin1Char('0'))
+                                  .arg(roundSeconds, 2, 10, QLatin1Char('0'));
         }
 
     } else {
@@ -221,33 +224,34 @@ QString KFormatPrivate::formatDuration(quint64 msecs, KFormat::DurationFormatOpt
         if ((options & KFormat::FoldHours) == KFormat::FoldHours
             && (options & KFormat::ShowMilliseconds) == KFormat::ShowMilliseconds) {
             //: @item:intext Duration format minutes, seconds and milliseconds
-            return KFormat::tr("%1:%2.%3").arg(hours * 60 + minutes, 1, 10, QLatin1Char('0'))
-                                          .arg(seconds, 2, 10, QLatin1Char('0'))
-                                          .arg(ms, 3, 10, QLatin1Char('0'));
+            return tr("%1:%2.%3").arg(hours * 60 + minutes, 1, 10, QLatin1Char('0'))
+                                 .arg(seconds, 2, 10, QLatin1Char('0'))
+                                 .arg(ms, 3, 10, QLatin1Char('0'));
         } else if ((options & KFormat::FoldHours) == KFormat::FoldHours) {
             //: @item:intext Duration format minutes and seconds
-            return KFormat::tr("%1:%2").arg(hours * 60 + minutes, 1, 10, QLatin1Char('0'))
-                                       .arg(roundSeconds, 2, 10, QLatin1Char('0'));
+            return tr("%1:%2").arg(hours * 60 + minutes, 1, 10, QLatin1Char('0'))
+                              .arg(roundSeconds, 2, 10, QLatin1Char('0'));
         } else if ((options & KFormat::HideSeconds) == KFormat::HideSeconds) {
             //: @item:intext Duration format hours and minutes
-            return KFormat::tr("%1:%2").arg(hours, 1, 10, QLatin1Char('0'))
-                                       .arg(roundMinutes, 2, 10, QLatin1Char('0'));
+            return tr("%1:%2").arg(hours, 1, 10, QLatin1Char('0'))
+                              .arg(roundMinutes, 2, 10, QLatin1Char('0'));
         } else if ((options & KFormat::ShowMilliseconds) == KFormat::ShowMilliseconds) {
             //: @item:intext Duration format hours, minutes, seconds, milliseconds
-            return KFormat::tr("%1:%2:%3.%4").arg(hours, 1, 10, QLatin1Char('0'))
-                                             .arg(minutes, 2, 10, QLatin1Char('0'))
-                                             .arg(seconds, 2, 10, QLatin1Char('0'))
-                                             .arg(ms, 3, 10, QLatin1Char('0'));
+            return tr("%1:%2:%3.%4").arg(hours, 1, 10, QLatin1Char('0'))
+                                    .arg(minutes, 2, 10, QLatin1Char('0'))
+                                    .arg(seconds, 2, 10, QLatin1Char('0'))
+                                    .arg(ms, 3, 10, QLatin1Char('0'));
         } else { // Default
             //: @item:intext Duration format hours, minutes, seconds
-            return KFormat::tr("%1:%2:%3").arg(hours, 1, 10, QLatin1Char('0'))
-                                          .arg(minutes, 2, 10, QLatin1Char('0'))
-                                          .arg(roundSeconds, 2, 10, QLatin1Char('0'));
+            return tr("%1:%2:%3").arg(hours, 1, 10, QLatin1Char('0'))
+                                 .arg(minutes, 2, 10, QLatin1Char('0'))
+                                 .arg(roundSeconds, 2, 10, QLatin1Char('0'));
         }
 
     }
 
     // Should never reach here
+    Q_ASSERT(false);
     return QString();
 }
 
@@ -255,19 +259,19 @@ QString KFormatPrivate::formatDecimalDuration(quint64 msecs, int decimalPlaces) 
 {
     if (msecs >= MSecsInDay) {
         //: @item:intext %1 is a real number, e.g. 1.23 days
-        return KFormat::tr("%1 days").arg(m_locale.toString(msecs / (MSecsInDay * 1.0), 'f', decimalPlaces));
+        return tr("%1 days").arg(m_locale.toString(msecs / (MSecsInDay * 1.0), 'f', decimalPlaces));
     } else if (msecs >= MSecsInHour) {
         //: @item:intext %1 is a real number, e.g. 1.23 hours
-        return KFormat::tr("%1 hours").arg(m_locale.toString(msecs / (MSecsInHour * 1.0), 'f',  decimalPlaces));
+        return tr("%1 hours").arg(m_locale.toString(msecs / (MSecsInHour * 1.0), 'f',  decimalPlaces));
     } else if (msecs >= MSecsInMinute) {
         //: @item:intext %1 is a real number, e.g. 1.23 minutes
-        return KFormat::tr("%1 minutes").arg(m_locale.toString(msecs / (MSecsInMinute * 1.0), 'f',  decimalPlaces));
+        return tr("%1 minutes").arg(m_locale.toString(msecs / (MSecsInMinute * 1.0), 'f',  decimalPlaces));
     } else if (msecs >= MSecsInSecond) {
         //: @item:intext %1 is a real number, e.g. 1.23 seconds
-        return KFormat::tr("%1 seconds").arg(m_locale.toString(msecs / (MSecsInSecond * 1.0), 'f',  decimalPlaces));
+        return tr("%1 seconds").arg(m_locale.toString(msecs / (MSecsInSecond * 1.0), 'f',  decimalPlaces));
     }
-    //: @item:intext
-    return KFormat::tr("%1 millisecond(s)", "", msecs).arg(msecs);
+    //: @item:intext %1 is a whole number
+    return tr("%1 millisecond(s)", 0, msecs).arg(msecs);
 }
 
 enum DurationUnits {
@@ -279,20 +283,22 @@ enum DurationUnits {
 
 static QString formatSingleDuration(DurationUnits units, int n)
 {
+    // NB: n is guaranteed to be non-negative
     switch (units) {
     case Days:
-        //: @item:intext
-        return KFormat::tr("%1 day(s)", "", n).arg(n);
+        //: @item:intext %n is a whole number
+        return KFormatPrivate::tr("%n day(s)", 0, n);
     case Hours:
-        //: @item:intext
-        return KFormat::tr("%1 hour(s)", "", n).arg(n);
+        //: @item:intext %n is a whole number
+        return KFormatPrivate::tr("%n hour(s)", 0, n);
     case Minutes:
-        //: @item:intext
-        return KFormat::tr("%1 minute(s)", "", n).arg(n);
+        //: @item:intext %n is a whole number
+        return KFormatPrivate::tr("%n minute(s)", 0, n);
     case Seconds:
-        //: @item:intext
-        return KFormat::tr("%1 second(s)", "", n).arg(n);
+        //: @item:intext %n is a whole number
+        return KFormatPrivate::tr("%n second(s)", 0, n);
     }
+    Q_ASSERT(false);
     return QString();
 }
 
@@ -314,29 +320,28 @@ QString KFormatPrivate::formatSpelloutDuration(quint64 msecs) const
     if (days && hours) {
         /*: @item:intext days and hours. This uses the previous item:intext messages.
             If this does not fit the grammar of your language please contact the i18n team to solve the problem */
-        return KFormat::tr("%1 and %2").arg(formatSingleDuration(Days, days))
-                                       .arg(formatSingleDuration(Hours, hours));
+        return tr("%1 and %2").arg(formatSingleDuration(Days, days))
+                              .arg(formatSingleDuration(Hours, hours));
     } else if (days) {
         return formatSingleDuration(Days, days);
     } else if (hours && minutes) {
         /*: @item:intext hours and minutes. This uses the previous item:intext messages.
             If this does not fit the grammar of your language please contact the i18n team to solve the problem */
-        return KFormat::tr("%1 and %2").arg(formatSingleDuration(Hours, hours))
-                                       .arg(formatSingleDuration(Minutes, minutes));
+        return tr("%1 and %2").arg(formatSingleDuration(Hours, hours))
+                              .arg(formatSingleDuration(Minutes, minutes));
     } else if (hours) {
         return formatSingleDuration(Hours, hours);
     } else if (minutes && seconds) {
         /*: @item:intext minutes and seconds. This uses the previous item:intext messages.
             If this does not fit the grammar of your language please contact the i18n team to solve the problem */
-        return KFormat::tr("%1 and %2").arg(formatSingleDuration(Minutes, minutes))
-                                       .arg(formatSingleDuration(Seconds, seconds));
+        return tr("%1 and %2").arg(formatSingleDuration(Minutes, minutes))
+                              .arg(formatSingleDuration(Seconds, seconds));
     } else if (minutes) {
         return formatSingleDuration(Minutes, minutes);
     } else {
         return formatSingleDuration(Seconds, seconds);
     }
 }
-
 
 QString KFormatPrivate::formatRelativeDate(const QDate &date, QLocale::FormatType format) const
 {
@@ -346,17 +351,21 @@ QString KFormatPrivate::formatRelativeDate(const QDate &date, QLocale::FormatTyp
 
     switch (daysTo) {
     case 1:
-        return KFormat::tr("Tomorrow");
+        return tr("Tomorrow");
     case 0:
-        return KFormat::tr("Today");
+        return tr("Today");
     case -1:
-        return KFormat::tr("Yesterday");
+        return tr("Yesterday");
     }
 
     if (daysTo < -1)
-        return KFormat::tr("Last %1").arg(m_locale.dayName(date.dayOfWeek(), format));
+        /*: a day of the week, eg "Monday" (but translated). Refers to the most recent such day that
+            has already happened. */
+        return tr("Last %1").arg(m_locale.dayName(date.dayOfWeek(), format));
     else if (daysTo > 1)
-        return KFormat::tr("Next %1").arg(m_locale.dayName(date.dayOfWeek(), format));
+        /*: a day of the week, eg "Monday" (but translated). Refers to the soonest such day that
+            has not already happened. */
+        return tr("Next %1").arg(m_locale.dayName(date.dayOfWeek(), format));
 
     return m_locale.toString(date, format);
 }
@@ -367,7 +376,8 @@ QString KFormatPrivate::formatRelativeDateTime(const QDateTime &dateTime, QLocal
     if (daysTo > 7 || daysTo < -7)
         return m_locale.toString(dateTime, format);
 
-    //: relative datetime with %1 result of formatReleativeDate() and %2 the formatted time
-    return KFormat::tr("%1, %2").arg(formatRelativeDate(dateTime.date(), format))
-                                .arg(m_locale.toString(dateTime.time(), format));
+    /*: relative datetime with %1 result of formatReleativeDate() and %2 the formatted time
+        If this does not fit the grammar of your language please contact the i18n team to solve the problem */
+    return tr("%1, %2").arg(formatRelativeDate(dateTime.date(), format))
+                       .arg(m_locale.toString(dateTime.time(), format));
 }

@@ -1,6 +1,7 @@
 /*  This file is part of the KDE Frameworks
 
-    Copyright (C) 2013 John Layt <jlayt@kde.org>,
+    Copyright (C) 2013 Alex Merry <alex.merry@kdemail.net>
+    Copyright (C) 2013 John Layt <jlayt@kde.org>
     Copyright (C) 2010 Michael Leupold <lemma@confuego.org>
     Copyright (C) 2009 Michael Pyne <mpyne@kde.org>
     Copyright (C) 2008 Albert Astals Cid <aacid@kde.org>
@@ -26,9 +27,9 @@
 
 #include <kcoreaddons_export.h>
 
-#include <QtCore/QString>
-#include <QtCore/QLocale>
-#include <QtCore/QSharedPointer>
+#include <QString>
+#include <QLocale>
+#include <QSharedPointer>
 
 class QDate;
 class QDateTime;
@@ -41,7 +42,8 @@ class KFormatPrivate;
 
 /*
    The code in this class was copied from the old KLocale and modified
-   by John Layt in the KDELIBS 4 to KDE Frameworks 5 transition in 2013.
+   by John Layt (and also Alex Merry) in the KDELIBS 4 to KDE
+   Frameworks 5 transition in 2013.
 
    Albert Astals Cid is the original author of formatSpelloutDuration()
    originally named KLocale::prettyFormatDuration().
@@ -63,10 +65,8 @@ class KFormatPrivate;
   * @short Class for formatting numbers and datetimes.
   * @since 5.0
   */
-class KCOREADDONS_EXPORT KFormat : QObject
+class KCOREADDONS_EXPORT KFormat Q_DECL_FINAL
 {
-    Q_OBJECT
-
 public:
     /**
      * These binary units are used in KDE by the formatByteSize()
@@ -151,9 +151,14 @@ public:
     explicit KFormat(const QLocale &locale = QLocale());
 
     /**
+     * Copy constructor
+     */
+    KFormat(const KFormat &other);
+
+    /**
      * Destructor
      */
-    virtual ~KFormat();
+    ~KFormat();
 
     /**
      * Converts @p size from bytes to the appropriate string representation
@@ -180,7 +185,8 @@ public:
      * @see BinaryUnitDialect
      */
 
-    QString formatByteSize(double size, int precision = 1,
+    QString formatByteSize(double size,
+                           int precision = 1,
                            KFormat::BinaryUnitDialect dialect = KFormat::DefaultBinaryDialect,
                            KFormat::BinarySizeUnits units = KFormat::DefaultBinaryUnits) const;
 
@@ -193,7 +199,8 @@ public:
      * @return converted duration as a string - e.g. "1:23:45" "1h23m"
      */
 
-    QString formatDuration(quint64 msecs, KFormat::DurationFormatOptions options = KFormat::DefaultDuration) const;
+    QString formatDuration(quint64 msecs,
+                           KFormat::DurationFormatOptions options = KFormat::DefaultDuration) const;
 
     /**
      * Given a number of milliseconds, converts that to a string containing
@@ -206,7 +213,8 @@ public:
      * @return converted duration as a string - e.g. "5.5 seconds" "23.0 minutes"
      */
 
-    QString formatDecimalDuration(quint64 msecs, int decimalPlaces = 2) const;
+    QString formatDecimalDuration(quint64 msecs,
+                                  int decimalPlaces = 2) const;
 
     /**
      * Given a number of milliseconds, converts that to a spell-out string containing
@@ -242,7 +250,8 @@ public:
      *
      * @return the date as a string
      */
-    QString formatRelativeDate(const QDate &date, QLocale::FormatType format) const;
+    QString formatRelativeDate(const QDate &date,
+                               QLocale::FormatType format) const;
 
     /**
      * Returns a string formatted to a relative datetime style.
@@ -262,7 +271,8 @@ public:
      *
      * @return the date as a string
      */
-    QString formatRelativeDateTime(const QDateTime &dateTime, QLocale::FormatType format) const;
+    QString formatRelativeDateTime(const QDateTime &dateTime,
+                                   QLocale::FormatType format) const;
 
 private:
     QSharedDataPointer<KFormatPrivate> d;
