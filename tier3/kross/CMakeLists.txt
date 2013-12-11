@@ -17,7 +17,7 @@ include(KDECMakeSettings)
 set(KF5_VERSION "5.0.0")
 ecm_setup_version(${KF5_VERSION} VARIABLE_PREFIX KROSS
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kross_version.h"
-                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KrossConfigVersion.cmake")
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KF5KrossConfigVersion.cmake")
 
 set(REQUIRED_QT_VERSION "5.2")
 find_package(Qt5 ${REQUIRED_QT_VERSION} CONFIG REQUIRED Core Test Script Xml Widgets UiTools)
@@ -57,11 +57,11 @@ add_subdirectory(src)
 #add_subdirectory(autotests)
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
-set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/Kross")
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KF5Kross")
 
 configure_package_config_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/KrossConfig.cmake.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/KrossConfig.cmake"
+  "${CMAKE_CURRENT_SOURCE_DIR}/KF5KrossConfig.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5KrossConfig.cmake"
   INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
 )
 
@@ -69,13 +69,13 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/kross_version.h
         DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
 
 install(FILES
-  "${CMAKE_CURRENT_BINARY_DIR}/KrossConfig.cmake"
-  "${CMAKE_CURRENT_BINARY_DIR}/KrossConfigVersion.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5KrossConfig.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5KrossConfigVersion.cmake"
   DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
   COMPONENT Devel
 )
 
-install(EXPORT KrossTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KrossTargets.cmake NAMESPACE KF5::)
+install(EXPORT KF5KrossTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KF5KrossTargets.cmake NAMESPACE KF5::)
 
 if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
     feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)

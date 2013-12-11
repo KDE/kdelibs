@@ -6,24 +6,26 @@ set(krossui_LIB_SRCS
 #   guiclient.cpp
    )
 
-add_library(KrossUi ${krossui_LIB_SRCS})
-target_link_libraries(KrossUi KrossCore
+add_library(KF5KrossUi ${krossui_LIB_SRCS})
+target_link_libraries(KF5KrossUi
+   KF5::KrossCore
    KF5::WidgetsAddons
    KF5::KIOWidgets
    KF5::Parts
    KF5::I18n
    KF5::IconThemes
 )
-set_target_properties(KrossUi PROPERTIES VERSION ${KROSS_VERSION_STRING}
-                                         SOVERSION ${KROSS_SOVERSION}
+set_target_properties(KF5KrossUi PROPERTIES VERSION ${KROSS_VERSION_STRING}
+                                            SOVERSION ${KROSS_SOVERSION}
+                                            EXPORT_NAME KrossUi
                      )
 
-target_include_directories(KrossUi PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/../include>")
+target_include_directories(KF5KrossUi PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/../include>")
 
-generate_export_header(KrossUi)
-add_library(KF5::KrossUi ALIAS KrossUi)
+generate_export_header(KF5KrossUi BASE_NAME KrossUi)
+add_library(KF5::KrossUi ALIAS KF5KrossUi)
 
-install(TARGETS KrossUi EXPORT KrossTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KF5KrossUi EXPORT KF5KrossTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 ########### install files ###############
 

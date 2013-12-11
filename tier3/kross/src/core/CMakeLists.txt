@@ -9,21 +9,22 @@ set(krosscore_LIB_SRCS
    object.cpp
 )
 
-add_library(KrossCore ${krosscore_LIB_SRCS})
-target_link_libraries(KrossCore PRIVATE Qt5::Script Qt5::Xml Qt5::Widgets KF5::ConfigCore KF5::I18n)
-target_link_libraries(KrossCore PUBLIC Qt5::Script Qt5::Xml)
+add_library(KF5KrossCore ${krosscore_LIB_SRCS})
+target_link_libraries(KF5KrossCore PRIVATE Qt5::Script Qt5::Xml Qt5::Widgets KF5::ConfigCore KF5::I18n)
+target_link_libraries(KF5KrossCore PUBLIC Qt5::Script Qt5::Xml)
 
-target_include_directories(KrossCore PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/../include>")
+target_include_directories(KF5KrossCore PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/../include>")
 
-set_target_properties(KrossCore PROPERTIES VERSION ${KROSS_VERSION_STRING}
-                                SOVERSION ${KROSS_SOVERSION}
+set_target_properties(KF5KrossCore PROPERTIES VERSION ${KROSS_VERSION_STRING}
+                                   SOVERSION ${KROSS_SOVERSION}
+                                   EXPORT_NAME KrossCore
                      )
 
 
-install(TARGETS KrossCore EXPORT KrossLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KF5KrossCore EXPORT KF5KrossLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
-generate_export_header(KrossCore)
-add_library(KF5::KrossCore ALIAS KrossCore)
+generate_export_header(KF5KrossCore BASE_NAME KrossCore)
+add_library(KF5::KrossCore ALIAS KF5KrossCore)
 
 install(FILES
     ${CMAKE_CURRENT_BINARY_DIR}/krosscore_export.h
@@ -41,4 +42,4 @@ install(FILES
     object.h
     DESTINATION ${INCLUDE_INSTALL_DIR}/kross/core COMPONENT Devel)
 
-install(TARGETS KrossCore EXPORT KrossTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KF5KrossCore EXPORT KF5KrossTargets ${INSTALL_TARGETS_DEFAULT_ARGS})

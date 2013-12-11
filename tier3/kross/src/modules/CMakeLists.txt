@@ -9,8 +9,8 @@ if( Qt5UiTools_FOUND )
        Qt5::UiTools
        KF5::Parts
        KF5::KIOFileWidgets
-       KrossCore
-       KrossUi
+       KF5::KrossCore
+       KF5::KrossUi
        KF5::I18n
     )
     install(TARGETS KrossModuleForms DESTINATION ${PLUGIN_INSTALL_DIR})
@@ -24,7 +24,7 @@ add_library(KrossModuleKdeTranslation MODULE ${krossmodulekdetranslation_SRCS})
 
 target_link_libraries(KrossModuleKdeTranslation
    KF5::Parts
-   KrossCore
+   KF5::KrossCore
    KF5::I18n
 )
 install(TARGETS KrossModuleKdeTranslation DESTINATION ${PLUGIN_INSTALL_DIR})

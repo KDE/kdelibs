@@ -4,6 +4,6 @@ find_dependency(Qt5Widgets @REQUIRED_QT_VERSION@)
 find_dependency(Qt5Xml @REQUIRED_QT_VERSION@)
 find_dependency(Qt5Script @REQUIRED_QT_VERSION@)
 
-include("${CMAKE_CURRENT_LIST_DIR}/KrossTargets.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/KF5KrossTargets.cmake")
 
 # Fixme: Add all the necessary variables over here?

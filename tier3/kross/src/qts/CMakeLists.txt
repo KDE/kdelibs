@@ -7,7 +7,7 @@ add_library(krossqtsplugin ${krossqtsplugin_LIB_SRCS})
 target_link_libraries(krossqtsplugin
    Qt5::UiTools
    KF5::I18n
-   KrossCore
+   KF5::KrossCore
    Qt5::Script
    Qt5::Widgets
    Qt5::Gui
@@ -25,7 +25,7 @@ add_executable(krossqtstest ${krossqtstest_SRCS})
 ecm_mark_as_test(krossqtstest)
 target_link_libraries(krossqtstest
    krossqtsplugin
-   KrossCore
+   KF5::KrossCore
    Qt5::Script
    KF5::I18n
    Qt5::Widgets
@@ -39,7 +39,7 @@ set(krossqts_PART_SRCS interpreter.cpp script.cpp)
 add_library(krossqts MODULE ${krossqts_PART_SRCS})
 target_link_libraries(krossqts
    KF5::I18n
-   KrossCore
+   KF5::KrossCore
    Qt5::Script
    Qt5::Widgets
    Qt5::Gui
