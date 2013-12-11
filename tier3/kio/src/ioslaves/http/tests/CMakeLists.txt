@@ -23,7 +23,7 @@ ecm_add_test(httpauthenticationtest.cpp
    Qt5::Widgets
    KF5::I18n
    KF5::KIOCore
-   kntlm
+   KF5::KIONTLM
 )
 
 if(GSSAPI_FOUND)
@@ -47,7 +47,7 @@ ecm_add_test(${httpobjecttest_SRCS}
    Qt5::Xml # QDomElement
    KF5::I18n
    KF5::KIOCore
-   kntlm
+   KF5::KIONTLM
    KF5::Archive
    KF5::Solid)
 if(GSSAPI_FOUND)
