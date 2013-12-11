@@ -20,7 +20,7 @@ include(CMakePackageConfigHelpers)
 set(KF5_VERSION "5.0.0")
 ecm_setup_version(${KF5_VERSION} VARIABLE_PREFIX KCMUTILS
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kcmutils_version.h"
-                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KCMUtilsConfigVersion.cmake")
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KF5KCMUtilsConfigVersion.cmake")
 
 if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
     find_package(KF5ItemViews ${KF5_VERSION} REQUIRED)
@@ -36,22 +36,22 @@ add_subdirectory(src)
 
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
-set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KCMUtils")
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KF5KCMUtils")
 
 configure_package_config_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/KCMUtilsConfig.cmake.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/KCMUtilsConfig.cmake"
+  "${CMAKE_CURRENT_SOURCE_DIR}/KF5KCMUtilsConfig.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5KCMUtilsConfig.cmake"
   INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
 )
 
 install(FILES
-  "${CMAKE_CURRENT_BINARY_DIR}/KCMUtilsConfig.cmake"
-  "${CMAKE_CURRENT_BINARY_DIR}/KCMUtilsConfigVersion.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5KCMUtilsConfig.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5KCMUtilsConfigVersion.cmake"
   DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
   COMPONENT Devel
 )
 
-install(EXPORT KCMUtilsTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KCMUtilsTargets.cmake NAMESPACE KF5:: )
+install(EXPORT KF5KCMUtilsTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KF5KCMUtilsTargets.cmake NAMESPACE KF5:: )
 
 install(FILES
    ${CMAKE_CURRENT_BINARY_DIR}/kcmutils_version.h

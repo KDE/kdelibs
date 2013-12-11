@@ -4,6 +4,6 @@ find_dependency(KF5ConfigWidgets  "@KF5_VERSION@")
 find_dependency(KF5Service        "@KF5_VERSION@")
 
 
-include("${CMAKE_CURRENT_LIST_DIR}/KCMUtilsTargets.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/KF5KCMUtilsTargets.cmake")
 
 

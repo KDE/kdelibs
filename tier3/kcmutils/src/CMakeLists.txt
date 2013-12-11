@@ -13,10 +13,10 @@ set(kcmutils_LIB_SRCS
     ksettings/componentsdialog.cpp
 )
 
-add_library(KCMUtils ${kcmutils_LIB_SRCS})
-generate_export_header(KCMUtils)
+add_library(KF5KCMUtils ${kcmutils_LIB_SRCS})
+generate_export_header(KF5KCMUtils BASE_NAME KCMUtils)
 
-target_link_libraries(KCMUtils
+target_link_libraries(KF5KCMUtils
   PUBLIC
     Qt5::Widgets
     KF5::ConfigWidgets  # KCModule
@@ -29,9 +29,10 @@ target_link_libraries(KCMUtils
     KF5::ItemViews       # KWidgetItemDelegate
     KF5::XmlGui          # KAboutApplicationDialog
 )
-set_target_properties(KCMUtils PROPERTIES
+set_target_properties(KF5KCMUtils PROPERTIES
                       VERSION ${KCMUTILS_VERSION_STRING}
-                      SOVERSION ${KCMUTILS_SOVERSION})
+                      SOVERSION ${KCMUTILS_SOVERSION}
+                      EXPORT_NAME KCMUtils)
 
 install( FILES
  ${CMAKE_CURRENT_BINARY_DIR}/kcmutils_export.h
@@ -50,7 +51,7 @@ install(FILES
         DESTINATION ${INCLUDE_INSTALL_DIR}/ksettings
         COMPONENT Devel)
 
-install(TARGETS KCMUtils EXPORT KCMUtilsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KF5KCMUtils EXPORT KF5KCMUtilsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install( FILES
  kcmodule.desktop
