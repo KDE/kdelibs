@@ -329,12 +329,5 @@ QList<QEvent::Type> KWidgetItemDelegate::blockedEventTypes(QWidget *widget) cons
     return widget->property("goya:blockedEventTypes").value<QList<QEvent::Type> >();
 }
 
-QList< QWidget* > KWidgetItemDelegate::widgetsForIndex(const QModelIndex& index) const
-{
-    QList<QWidget*> widgetList = d->widgetPool->findWidgets(index, d->optionView(index), KWidgetItemDelegatePool::NotUpdateWidgets);
-    return widgetList;
-}
-
-
-#include "moc_kwidgetitemdelegate.cpp"
-#include "moc_kwidgetitemdelegate_p.cpp"
+#include "kwidgetitemdelegate.moc"
+#include "kwidgetitemdelegate_p.moc"
