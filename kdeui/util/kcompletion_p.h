@@ -94,10 +94,12 @@ public:
     ~KCompTreeNode();
 
     void * operator new( size_t s ) {
-      return alloc.allocate( s );
+      Q_ASSERT(alloc);
+      return alloc->allocate( s );
     }
     void operator delete( void * s ) {
-      alloc.deallocate( s );
+      Q_ASSERT(alloc);
+      alloc->deallocate( s );
     }
 
     // Returns a child of this node matching ch, if available.
@@ -135,10 +137,16 @@ public:
        need to use QValueList<>.  And to make it even more fast we don't
        use an accessor, but just a public member.  */
     KCompTreeNode *next;
+
+    /**
+     * Custom allocator used for all KCompTreeNode instances
+     */
+    static QSharedPointer<KZoneAllocator> allocator() { return alloc; }
+
 private:
     uint myWeight;
     KCompTreeNodeList	myChildren;
-    static KZoneAllocator alloc;
+    static QSharedPointer<KZoneAllocator> alloc;
 };
 
 

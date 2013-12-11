@@ -33,6 +33,7 @@ class KCompletionPrivate
 public:
     KCompletionPrivate()
         : myCompletionMode( KGlobalSettings::completionMode() )
+        , myTreeNodeAllocator( KCompTreeNode::allocator() ) // keep strong-ref to allocator instance
         , myTreeRoot( new KCompTreeNode )
         , myBeep( true )
         , myIgnoreCase( false )
@@ -48,6 +49,8 @@ public:
     KCompletionMatchesWrapper matches;
 
     KGlobalSettings::Completion myCompletionMode;
+
+    QSharedPointer<KZoneAllocator> myTreeNodeAllocator;
 
     KCompletion::CompOrder myOrder;
     QString                myLastString;
@@ -983,6 +986,6 @@ KCompTreeNode *KCompTreeNodeList::at(uint index) const
     return cur;
 }
 
-KZoneAllocator KCompTreeNode::alloc(8192);
+QSharedPointer<KZoneAllocator> KCompTreeNode::alloc(new KZoneAllocator(8*1024));
 
 #include "kcompletion.moc"
