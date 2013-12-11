@@ -44,7 +44,7 @@ target_link_libraries(KF5Style
 
 set_target_properties(KF5Style PROPERTIES VERSION   ${KSTYLE_VERSION_STRING}
                                           SOVERSION ${KSTYLE_SOVERSION}
-                                          EXPORT_NAME KStyle
+                                          EXPORT_NAME Style
 )
 
 install(TARGETS KF5Style EXPORT KF5StyleTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
