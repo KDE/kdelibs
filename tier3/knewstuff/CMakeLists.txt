@@ -34,7 +34,7 @@ find_package(KF5TextWidgets ${KF5_VERSION} REQUIRED)
 find_package(KF5XmlGui ${KF5_VERSION} REQUIRED)
 find_package(KF5Solid ${KF5_VERSION} REQUIRED)
 find_package(KF5Bookmarks ${KF5_VERSION} REQUIRED)
-find_package(KIO ${KF5_VERSION} REQUIRED)
+find_package(KF5KIO ${KF5_VERSION} REQUIRED)
 
 endif()
 

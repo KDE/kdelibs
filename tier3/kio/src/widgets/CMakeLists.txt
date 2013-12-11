@@ -79,19 +79,19 @@ qt5_wrap_ui(kiowidgets_SRCS
 
 qt5_add_resources(kiowidgets_SRCS kacleditwidget.qrc)
 
-add_library(KIOWidgets ${kiowidgets_SRCS})
-generate_export_header(KIOWidgets)
-add_library(KF5::KIOWidgets ALIAS KIOWidgets)
+add_library(KF5KIOWidgets ${kiowidgets_SRCS})
+generate_export_header(KF5KIOWidgets BASE_NAME KIOWidgets)
+add_library(KF5::KIOWidgets ALIAS KF5KIOWidgets)
 
-target_include_directories(KIOWidgets PUBLIC
+target_include_directories(KF5KIOWidgets PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/..>" # kio_version.h
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/../include>" # kio/global.h
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/../include/kio>" # krun.h
 )
 
-target_link_libraries(KIOWidgets
+target_link_libraries(KF5KIOWidgets
   PUBLIC
-    KIOCore
+    KF5::KIOCore
     KF5::JobWidgets
     Qt5::Network        # SSL
     KF5::Completion    # KUrlCompletion uses KCompletion
@@ -105,14 +105,15 @@ target_link_libraries(KIOWidgets
 )
 
 if(ACL_FOUND)
-   target_link_libraries(KIOWidgets PRIVATE ${ACL_LIBS})
+   target_link_libraries(KF5KIOWidgets PRIVATE ${ACL_LIBS})
 endif()
 
-set_target_properties(KIOWidgets PROPERTIES VERSION ${KIO_VERSION_STRING}
-                                          SOVERSION ${KIO_SOVERSION}
+set_target_properties(KF5KIOWidgets PROPERTIES VERSION ${KIO_VERSION_STRING}
+                                               SOVERSION ${KIO_SOVERSION}
+                                               EXPORT_NAME KIOWidgets
 )
 
-install(TARGETS KIOWidgets EXPORT KIOTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KF5KIOWidgets EXPORT KF5KIOTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
    org.kde.kio.FileUndoManager.xml

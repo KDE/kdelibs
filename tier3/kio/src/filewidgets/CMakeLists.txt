@@ -36,18 +36,18 @@ set(kiofilewidgets_SRCS
 
 )
 
-add_library(KIOFileWidgets ${kiofilewidgets_SRCS})
-generate_export_header(KIOFileWidgets)
-add_library(KF5::KIOFileWidgets ALIAS KIOFileWidgets)
+add_library(KF5KIOFileWidgets ${kiofilewidgets_SRCS})
+generate_export_header(KF5KIOFileWidgets BASE_NAME KIOFileWidgets)
+add_library(KF5::KIOFileWidgets ALIAS KF5KIOFileWidgets)
 
-target_include_directories(KIOFileWidgets PUBLIC
+target_include_directories(KF5KIOFileWidgets PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/..>" # kio_version.h
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/../include>" # kio/global.h
 )
 
-target_link_libraries(KIOFileWidgets
+target_link_libraries(KF5KIOFileWidgets
   PUBLIC
-    KIOWidgets
+    KF5::KIOWidgets
     KF5::Bookmarks    # in KFilePlacesModel's API
     KF5::XmlGui        # for KActionCollection, used by KFileWidget/KDirOperator
     KF5::Solid         # KFilePlacesModel/KFilePlacesView
@@ -57,11 +57,12 @@ target_link_libraries(KIOFileWidgets
     KF5::ItemViews     # kdirsortfilterproxymodel
 )
 
-set_target_properties(KIOFileWidgets PROPERTIES VERSION ${KIO_VERSION_STRING}
-                                                SOVERSION ${KIO_SOVERSION}
+set_target_properties(KF5KIOFileWidgets PROPERTIES VERSION ${KIO_VERSION_STRING}
+                                                   SOVERSION ${KIO_SOVERSION}
+                                                   EXPORT_NAME KIOFileWidgets
 )
 
-install(TARGETS KIOFileWidgets EXPORT KIOTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KF5KIOFileWidgets EXPORT KF5KIOTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install( FILES
   kimagefilepreview.h

@@ -11,7 +11,7 @@ macro(KIOCORE_UNIT_TESTS)
     add_executable(${_testname} ${_testname}.cpp)
     add_test(kiocore-${_testname} ${_testname})
     target_link_libraries(${_testname}
-       KIOCore
+       KF5::KIOCore
        KF5::I18n
        Qt5::Test
        Qt5::Network
@@ -47,8 +47,8 @@ macro(KIOWIDGETS_UNIT_TESTS)
     add_executable(${_testname} ${_testname}.cpp)
     add_test(kiowidgets-${_testname} ${_testname})
     target_link_libraries(${_testname}
-       KIOCore
-       KIOWidgets
+       KF5::KIOCore
+       KF5::KIOWidgets
        Qt5::Test
     )
     ecm_mark_as_test(${_testname})
@@ -73,7 +73,7 @@ macro(KIOFILEWIDGETS_UNIT_TESTS)
     add_executable(${_testname} ${_testname}.cpp)
     add_test(kiofilewidgets-${_testname} ${_testname})
     target_link_libraries(${_testname}
-       KIOFileWidgets
+       KF5::KIOFileWidgets
        Qt5::Test
     )
     ecm_mark_as_test(${_testname})

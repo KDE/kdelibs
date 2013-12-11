@@ -36,7 +36,7 @@ if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
   find_package(KF5Bookmarks ${KF5_VERSION} REQUIRED)
 
   #library dependencies
-  find_package(KIO ${KF5_VERSION} REQUIRED)
+  find_package(KF5KIO ${KF5_VERSION} REQUIRED)
   find_package(KF5I18n ${KF5_VERSION} REQUIRED)
 
   #test dependency

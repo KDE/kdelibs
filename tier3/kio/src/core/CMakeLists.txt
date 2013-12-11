@@ -99,17 +99,17 @@ install(FILES
    org.kde.KPasswdServer.xml
    DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 
-add_library(KIOCore ${kiocore_SRCS})
-generate_export_header(KIOCore)
-add_library(KF5::KIOCore ALIAS KIOCore)
+add_library(KF5KIOCore ${kiocore_SRCS})
+generate_export_header(KF5KIOCore BASE_NAME KIOCore)
+add_library(KF5::KIOCore ALIAS KF5KIOCore)
 
-target_include_directories(KIOCore PUBLIC
+target_include_directories(KF5KIOCore PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/..>" # kio_version.h
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kssl>"
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/../include>" # kio/global.h
 )
 
-target_link_libraries(KIOCore
+target_link_libraries(KF5KIOCore
 PUBLIC
  KF5::CoreAddons   # KJob
  KF5::Service
@@ -122,14 +122,15 @@ PRIVATE
 )
 
 if(ACL_FOUND)
-  target_link_libraries(KIOCore PRIVATE ${ACL_LIBS})
+  target_link_libraries(KF5KIOCore PRIVATE ${ACL_LIBS})
 endif()
 
-set_target_properties(KIOCore PROPERTIES VERSION ${KIO_VERSION_STRING}
-                                       SOVERSION ${KIO_SOVERSION}
+set_target_properties(KF5KIOCore PROPERTIES VERSION ${KIO_VERSION_STRING}
+                                            SOVERSION ${KIO_SOVERSION}
+                                            EXPORT_NAME KIOCore
 )
 
-install(TARGETS KIOCore EXPORT KIOTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KF5KIOCore EXPORT KF5KIOTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install( FILES
   idleslave.h # installed for klauncher

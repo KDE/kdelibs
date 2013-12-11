@@ -32,7 +32,7 @@ if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
     find_package(KF5Bookmarks ${KF5_VERSION} REQUIRED)
 
     find_package(KF5DocTools ${KF5_VERSION} REQUIRED)
-    find_package(KIO ${KF5_VERSION} REQUIRED)
+    find_package(KF5KIO ${KF5_VERSION} REQUIRED)
 else()
     set(_kdeBootStrapping TRUE)
     set(KDOCTOOLS_CUSTOMIZATION_DIR "${KDocTools_BINARY_DIR}/src/customization/")

@@ -52,7 +52,7 @@ if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
    find_package(KF5Solid ${KF5_VERSION} REQUIRED)
    find_package(KF5Bookmarks ${KF5_VERSION} REQUIRED)
    find_package(KF5Notifications ${KF5_VERSION} REQUIRED)
-   find_package(KIO ${KF5_VERSION} REQUIRED)
+   find_package(KF5KIO ${KF5_VERSION} REQUIRED)
 
    find_package(KF5I18n ${KF5_VERSION} REQUIRED)
    find_package(KF5Parts ${KF5_VERSION} REQUIRED)

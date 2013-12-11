@@ -23,7 +23,7 @@
 #include <QtCore/QString>
 #include <QtCore/QByteArray>
 
-#include "kntlm_export.h"
+#include <kio/kntlm_export.h>
 
 /**
  * @short KNTLM class implements the NTLM authentication protocol.

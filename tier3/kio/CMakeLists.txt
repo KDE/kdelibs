@@ -16,7 +16,7 @@ include(ECMSetupVersion)
 
 ecm_setup_version(5.0.0 VARIABLE_PREFIX KIO
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/src/kio_version.h"
-                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KIOConfigVersion.cmake")
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KF5KIOConfigVersion.cmake")
 
 if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
   # Due to a CMake bug, we need to explicitly find private dependencies of our dependencies
@@ -66,24 +66,24 @@ add_subdirectory(autotests)
 add_subdirectory(tests)
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
-set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KIO")
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KF5KIO")
 
 include(CMakePackageConfigHelpers)
 
 configure_package_config_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/KIOConfig.cmake.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/KIOConfig.cmake"
+  "${CMAKE_CURRENT_SOURCE_DIR}/KF5KIOConfig.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5KIOConfig.cmake"
   INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
 )
 
 install(FILES
-  "${CMAKE_CURRENT_BINARY_DIR}/KIOConfig.cmake"
-  "${CMAKE_CURRENT_BINARY_DIR}/KIOConfigVersion.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5KIOConfig.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5KIOConfigVersion.cmake"
   DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
   COMPONENT Devel
 )
 
-install(EXPORT KIOTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KIOTargets.cmake NAMESPACE KF5:: )
+install(EXPORT KF5KIOTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KF5KIOTargets.cmake NAMESPACE KF5:: )
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/src/kio_version.h
         DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
