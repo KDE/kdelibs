@@ -547,9 +547,10 @@ qt5_wrap_ui(khtml_LIB_SRCS
    html/keygenwizard2.ui
 )
 
-add_library(KHtml ${khtml_LIB_SRCS})
+add_library(KF5KHtml ${khtml_LIB_SRCS})
+add_library(KF5::KHtml ALIAS KF5KHtml)
 
-target_link_libraries(KHtml
+target_link_libraries(KF5KHtml
   PUBLIC
     Qt5::Gui
     KF5::KIOCore
@@ -576,14 +577,15 @@ target_link_libraries(KHtml
     KF5::GlobalAccel
 )
 if (KJS_DEBUGGER)
-  target_link_libraries(KHtml PRIVATE KF5::KTextEditor)
+  target_link_libraries(KF5KHtml PRIVATE KF5::KTextEditor)
 endif()
 
-set_target_properties(KHtml PROPERTIES VERSION ${KHTML_VERSION_STRING}
-                                       SOVERSION ${KHTML_SOVERSION}
+set_target_properties(KF5KHtml PROPERTIES VERSION ${KHTML_VERSION_STRING}
+                                          SOVERSION ${KHTML_SOVERSION}
+                                          EXPORT_NAME KHtml
                      )
 
-generate_export_header(KHtml)
+generate_export_header(KF5KHtml BASE_NAME KHtml)
 
 
 macro(CREATE_LUT _in_FILE _out_FILE)
@@ -701,7 +703,7 @@ set(khtmlpart_PART_SRCS khtml_factory.cpp )
 add_library(khtmlpart MODULE ${khtmlpart_PART_SRCS})
 set_target_properties(khtmlpart PROPERTIES PREFIX "${CMAKE_SHARED_LIBRARY_PREFIX}")
 
-target_link_libraries(khtmlpart KHtml KF5::XmlGui KF5::TextWidgets KF5::Parts KF5::I18n)
+target_link_libraries(khtmlpart KF5::KHtml KF5::XmlGui KF5::TextWidgets KF5::Parts KF5::I18n)
 
 install(TARGETS khtmlpart  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
@@ -713,7 +715,7 @@ install(TARGETS khtmlpart  DESTINATION ${PLUGIN_INSTALL_DIR} )
 add_library(khtmlimagepart MODULE khtmlimage_init.cpp)
 
 
-target_link_libraries(khtmlimagepart KHtml KF5::WidgetsAddons KF5::XmlGui KF5::TextWidgets KF5::Parts KF5::I18n)
+target_link_libraries(khtmlimagepart KF5::KHtml KF5::WidgetsAddons KF5::XmlGui KF5::TextWidgets KF5::Parts KF5::I18n)
 
 install(TARGETS khtmlimagepart  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
@@ -728,7 +730,7 @@ install(TARGETS khtmladaptorpart DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 ########### install files ###############
 
-install(TARGETS KHtml EXPORT KHtmlTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KF5KHtml EXPORT KF5KHtmlTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/khtml_export.h khtmlview.h khtml_part.h khtml_events.h khtml_settings.h khtmldefaults.h misc/kencodingdetector.h
          DESTINATION  ${INCLUDE_INSTALL_DIR} COMPONENT Devel)

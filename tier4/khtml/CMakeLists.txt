@@ -43,7 +43,7 @@ endif()
 
 ecm_setup_version(${KF5_VERSION} VARIABLE_PREFIX KHTML
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/khtml_version.h"
-                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KHtmlConfigVersion.cmake")
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KF5KHtmlConfigVersion.cmake")
 
 find_package(Perl)
 set_package_properties(Perl PROPERTIES URL "http://www.perl.org" TYPE REQUIRED PURPOSE "Needed for building kdelibs")
@@ -97,24 +97,24 @@ add_subdirectory(tests)
 add_subdirectory(autotests)
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
-set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KHtml")
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KF5KHtml")
 
 include(CMakePackageConfigHelpers)
 
 configure_package_config_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/KHtmlConfig.cmake.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/KHtmlConfig.cmake"
+  "${CMAKE_CURRENT_SOURCE_DIR}/KF5KHtmlConfig.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5KHtmlConfig.cmake"
   INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
 )
 
 install(FILES
-  "${CMAKE_CURRENT_BINARY_DIR}/KHtmlConfig.cmake"
-  "${CMAKE_CURRENT_BINARY_DIR}/KHtmlConfigVersion.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5KHtmlConfig.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF5KHtmlConfigVersion.cmake"
   DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
   COMPONENT Devel
 )
 
-install(EXPORT KHtmlTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KHtmlTargets.cmake NAMESPACE KF5:: )
+install(EXPORT KF5KHtmlTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KF5KHtmlTargets.cmake NAMESPACE KF5:: )
 
 install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/khtml_version.h
