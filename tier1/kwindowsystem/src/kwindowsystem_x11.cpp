@@ -433,22 +433,21 @@ KWindowSystemPrivate* KWindowSystem::s_d_func()
 // optimalization - create KWindowSystemPrivate only when needed and only for what is needed
 void KWindowSystem::connectNotify(const QMetaMethod& signal)
 {
-    QByteArray methodSig = signal.methodSignature();
     int what = INFO_BASIC;
-    if( methodSig == SIGNAL(workAreaChanged()))
+    if (signal == QMetaMethod::fromSignal(&KWindowSystem::workAreaChanged))
         what = INFO_WINDOWS;
-    else if( methodSig == SIGNAL(strutChanged()))
+    else if (signal == QMetaMethod::fromSignal(&KWindowSystem::strutChanged))
         what = INFO_WINDOWS;
-    else if( methodSig == QMetaObject::normalizedSignature(SIGNAL(windowChanged(WId,const ulong*))).constData())
+    else if (signal == QMetaMethod::fromSignal(static_cast<void (KWindowSystem::*)(WId, const unsigned long*)>(&KWindowSystem::windowChanged)))
         what = INFO_WINDOWS;
-    else if( methodSig == QMetaObject::normalizedSignature(SIGNAL(windowChanged(WId,uint))).constData())
+    else if (signal == QMetaMethod::fromSignal(static_cast<void (KWindowSystem::*)(WId, uint)>(&KWindowSystem::windowChanged)))
         what = INFO_WINDOWS;
-    else if( methodSig == QMetaObject::normalizedSignature(SIGNAL(windowChanged(WId))).constData())
+    else if (signal == QMetaMethod::fromSignal(static_cast<void (KWindowSystem::*)(WId)>(&KWindowSystem::windowChanged)))
         what = INFO_WINDOWS;
 
     init( what );
     KWindowSystemPrivate* const s_d = s_d_func();
-    if (!s_d->strutSignalConnected && methodSig == SIGNAL(strutChanged()))
+    if (!s_d->strutSignalConnected && signal == QMetaMethod::fromSignal(&KWindowSystem::strutChanged))
         s_d->strutSignalConnected = true;
 
     QObject::connectNotify( signal );
