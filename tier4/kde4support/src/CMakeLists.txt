@@ -252,11 +252,11 @@ if (__KDE_HAVE_GCC_VISIBILITY)
 endif()
 configure_file(kdemacros.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h )
 
-add_library(KDE4Support ${libkde4support_SRCS})
-generate_export_header(KDE4Support EXPORT_FILE_NAME kde4support_export_internal.h)
-add_library(KF5::KDE4Support ALIAS KDE4Support)
+add_library(KF5KDE4Support ${libkde4support_SRCS})
+generate_export_header(KF5KDE4Support BASE_NAME KDE4Support EXPORT_FILE_NAME kde4support_export_internal.h)
+add_library(KF5::KDE4Support ALIAS KF5KDE4Support)
 
-target_include_directories(KDE4Support PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/../../..")
+target_include_directories(KF5KDE4Support PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/../../..")
 
 set(kde4support_INCLUDES
   "${CMAKE_CURRENT_SOURCE_DIR}/kdecore"
@@ -268,11 +268,11 @@ set(kde4support_INCLUDES
   "${CMAKE_CURRENT_BINARY_DIR}/.." # kde4support_version.h
   "${CMAKE_SOURCE_DIR}"
 )
-target_include_directories(KDE4Support PUBLIC "$<BUILD_INTERFACE:${kde4support_INCLUDES}>")
+target_include_directories(KF5KDE4Support PUBLIC "$<BUILD_INTERFACE:${kde4support_INCLUDES}>")
 
-target_include_directories(KDE4Support INTERFACE "$<INSTALL_INTERFACE:${INCLUDE_INSTALL_DIR}/KDE>")
+target_include_directories(KF5KDE4Support INTERFACE "$<INSTALL_INTERFACE:${INCLUDE_INSTALL_DIR}/KDE>")
 
-target_link_libraries(KDE4Support
+target_link_libraries(KF5KDE4Support
 PUBLIC
    Qt5::Widgets
    Qt5::DBus
@@ -319,22 +319,24 @@ int main() { return 0; }
 " _OFFT_IS_64BIT)
 
 if (NOT _OFFT_IS_64BIT)
-  target_compile_definitions(KDE4Support PUBLIC -D_FILE_OFFSET_BITS=64)
+  target_compile_definitions(KF5::KDE4Support PUBLIC -D_FILE_OFFSET_BITS=64)
 endif ()
 
 
 if(NOT KIO_NO_NEPOMUK)
-  target_link_libraries(KDE4Support ${KDE4_NEPOMUK_LIBRARY} nepomukquery nepomukutils)
+  target_link_libraries(KF5::KDE4Support ${KDE4_NEPOMUK_LIBRARY} nepomukquery nepomukutils)
 endif()
 
 if(NOT KIO_NO_NEPOMUK)
     add_executable(kfilemetadatareader kio/kfilemetadatareaderprocess.cpp)
-    target_link_libraries(kfilemetadatareader ${KDE4_NEPOMUK_LIBRARY} nepomukutils KF5::CoreAddons KF5::I18n KDE4Support)
+    target_link_libraries(kfilemetadatareader ${KDE4_NEPOMUK_LIBRARY} nepomukutils KF5::CoreAddons KF5::I18n KF5::KDE4Support)
     install(TARGETS kfilemetadatareader ${INSTALL_TARGETS_DEFAULT_ARGS})
 endif()
 
-set_target_properties(KDE4Support PROPERTIES VERSION ${KDE4SUPPORT_VERSION_STRING}
-                                  SOVERSION ${KDE4SUPPORT_SOVERSION} )
+set_target_properties(KF5KDE4Support PROPERTIES VERSION ${KDE4SUPPORT_VERSION_STRING}
+                                                SOVERSION ${KDE4SUPPORT_SOVERSION}
+                                                EXPORT_NAME KDE4Support
+)
 
 
 ########## Designer plugin
@@ -357,7 +359,7 @@ qt5_add_resources(kdedeprecated_PART_SRCS kdedeprecated.qrc)
 
 add_library(kdedeprecated MODULE ${kdedeprecated_PART_SRCS})
 
-target_link_libraries(kdedeprecated KDE4Support
+target_link_libraries(kdedeprecated KF5::KDE4Support
                                     Qt5::Widgets
                                     Qt5::Designer
                                     KF5::ConfigCore
@@ -380,8 +382,8 @@ install(TARGETS kdedeprecated  DESTINATION ${QT_PLUGIN_INSTALL_DIR}/designer )
 
 add_subdirectory(pics)
 
-install(TARGETS KDE4Support
-        EXPORT KDE4SupportTargets
+install(TARGETS KF5KDE4Support
+        EXPORT KF5KDE4SupportTargets
         ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
@@ -569,6 +571,6 @@ if (UNIX)
    # write a cmake script file which creates the symlink
    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/make_fileshare_symlink.cmake "exec_program(${CMAKE_COMMAND} ARGS -E create_symlink fileshareset \"\$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/${LIBEXEC_INSTALL_DIR}/filesharelist\")\n")
    # and add it as post-install script to any of the installed targets, so it will be executed during "make install"
-   set_target_properties(KDE4Support PROPERTIES POST_INSTALL_SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/make_fileshare_symlink.cmake)
+   set_target_properties(KF5KDE4Support PROPERTIES POST_INSTALL_SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/make_fileshare_symlink.cmake)
 endif ()
 

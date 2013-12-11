@@ -6,7 +6,7 @@ include_directories("${CMAKE_CURRENT_BINARY_DIR}/../../..")
 macro(KDE4SUPPORT_EXECUTABLE_TESTS)
     foreach(_testname ${ARGN})
         add_executable(${_testname} ${_testname}.cpp)
-        target_link_libraries(${_testname} KDE4Support Qt5::Core Qt5::Widgets KF5::ConfigCore)
+        target_link_libraries(${_testname} KF5::KDE4Support Qt5::Core Qt5::Widgets KF5::ConfigCore)
         ecm_mark_as_test(${_testname})
     endforeach()
 endmacro()
@@ -16,7 +16,7 @@ macro(KDE4SUPPORT_UNIT_TESTS)
     add_executable(${_testname} ${_testname}.cpp)
     add_test(kde4support-${_testname} ${_testname})
     target_link_libraries(${_testname}
-       KDE4Support
+       KF5::KDE4Support
        Qt5::DBus
        Qt5::Widgets
        Qt5::Test
@@ -84,7 +84,7 @@ if(NOT KDE_NO_DEPRECATED)
   add_library(klibloadertestmodule MODULE ${klibloadertestmodule_PART_SRCS})
   set_target_properties(klibloadertestmodule PROPERTIES PREFIX "") # remove lib prefix - missing from cmake
 
-  target_link_libraries(klibloadertestmodule KDE4Support Qt5::Test KF5::I18n KF5::Service KF5::CoreAddons)
+  target_link_libraries(klibloadertestmodule KF5::KDE4Support Qt5::Test KF5::I18n KF5::Service KF5::CoreAddons)
 
   set_target_properties(klibloadertestmodule PROPERTIES SKIP_BUILD_RPATH FALSE BUILD_WITH_INSTALL_RPATH FALSE)
 endif()
@@ -97,7 +97,7 @@ add_library(klibloadertestmodule4 MODULE ${klibloadertestmodule4_PART_SRCS})
 ecm_mark_as_test(klibloadertestmodule4)
 set_target_properties(klibloadertestmodule4 PROPERTIES PREFIX "") # remove lib prefix - missing from cmake
 
-target_link_libraries(klibloadertestmodule4 KDE4Support Qt5::Test KF5::I18n KF5::Service KF5::CoreAddons)
+target_link_libraries(klibloadertestmodule4 KF5::KDE4Support Qt5::Test KF5::I18n KF5::Service KF5::CoreAddons)
 
 set_target_properties(klibloadertestmodule4 PROPERTIES SKIP_BUILD_RPATH FALSE BUILD_WITH_INSTALL_RPATH FALSE)
 
@@ -108,7 +108,7 @@ set(klocaletest_SRCS klocaletest.cpp ../src/kdecore/kdayperiod.cpp)
 add_executable(klocaletest ${klocaletest_SRCS})
 add_test(kde4support-klocaletest klocaletest)
 ecm_mark_as_test(klocaletest)
-target_link_libraries(klocaletest Qt5::Test Qt5::DBus KF5::I18n KDE4Support KF5::ConfigCore)
+target_link_libraries(klocaletest Qt5::Test Qt5::DBus KF5::I18n KF5::KDE4Support KF5::ConfigCore)
 
 ########### kdatetimeformattertest ###############
 
@@ -117,6 +117,6 @@ set(kdatetimeformattertest_SRCS kdatetimeformattertest.cpp ../src/kdecore/kdatet
 add_executable(kdatetimeformattertest ${kdatetimeformattertest_SRCS})
 add_test(kde4support-kdatetimeformattertest kdatetimeformattertest)
 ecm_mark_as_test(kdatetimeformattertest)
-target_link_libraries(kdatetimeformattertest Qt5::Test KF5::I18n KDE4Support KF5::ConfigCore)
+target_link_libraries(kdatetimeformattertest Qt5::Test KF5::I18n KF5::KDE4Support KF5::ConfigCore)
 
 
