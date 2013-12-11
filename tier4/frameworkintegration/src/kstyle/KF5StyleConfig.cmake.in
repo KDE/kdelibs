@@ -3,5 +3,5 @@
 # Any changes in this file will be overwritten by CMake.
 
 
-include("${CMAKE_CURRENT_LIST_DIR}/KStyleTargets.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/KF5StyleTargets.cmake")
 
