@@ -311,8 +311,17 @@ void KWindowSystemPrivate::addClient(xcb_window_t w)
 {
     KWindowSystem* s_q = KWindowSystem::self();
 
-    if ( (what >= KWindowSystem::INFO_WINDOWS) && !QWidget::find( w ) )
-        XSelectInput( QX11Info::display(), w, PropertyChangeMask | StructureNotifyMask );
+    if ((what >= KWindowSystem::INFO_WINDOWS)) {
+        xcb_connection_t *c = QX11Info::connection();
+        QScopedPointer<xcb_get_window_attributes_reply_t, QScopedPointerPodDeleter> attr(xcb_get_window_attributes_reply(c,
+            xcb_get_window_attributes_unchecked(c, w), Q_NULLPTR));
+
+        uint32_t events = XCB_EVENT_MASK_PROPERTY_CHANGE | XCB_EVENT_MASK_STRUCTURE_NOTIFY;
+        if (!attr.isNull()) {
+            events = events | attr->your_event_mask;
+        }
+        xcb_change_window_attributes(c, w, XCB_CW_EVENT_MASK, &events);
+    }
 
     bool emit_strutChanged = false;
 
