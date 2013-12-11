@@ -60,10 +60,7 @@ KWidgetItemDelegatePrivate::KWidgetItemDelegatePrivate(KWidgetItemDelegate *q, Q
     , selectionModel(0)
     , viewDestroyed(false)
     , q(q)
-    , initializeTimer(new QTimer(this))
 {
-    initializeTimer->setInterval(50);
-    connect(initializeTimer, SIGNAL(timeout()), this, SLOT(initializeModel()));
 }
 
 KWidgetItemDelegatePrivate::~KWidgetItemDelegatePrivate()
@@ -110,13 +107,13 @@ void KWidgetItemDelegatePrivate::_k_slotLayoutChanged()
     foreach (QWidget *widget, widgetPool->invalidIndexesWidgets()) {
         widget->setVisible(false);
     }
-    initializeModelRequested();
+    QTimer::singleShot(0, this, SLOT(initializeModel()));
 }
 
 void KWidgetItemDelegatePrivate::_k_slotModelReset()
 {
     widgetPool->fullClear();
-    initializeModelRequested();
+    QTimer::singleShot(0, this, SLOT(initializeModel()));
 }
 
 void KWidgetItemDelegatePrivate::_k_slotSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
@@ -129,13 +126,6 @@ void KWidgetItemDelegatePrivate::_k_slotSelectionChanged(const QItemSelection &s
     }
 }
 
-
-void KWidgetItemDelegatePrivate::_k_sizeHintChanged(const QModelIndex &idx)
-{
-    //we need to call the initializeModel() directly, or some widgets will not be created/updated
-    QTimer::singleShot(0, this, SLOT(initializeModel()));
-}
-
 void KWidgetItemDelegatePrivate::updateRowRange(const QModelIndex &parent, int start, int end, bool isRemoving)
 {
     int i = start;
@@ -143,9 +133,7 @@ void KWidgetItemDelegatePrivate::updateRowRange(const QModelIndex &parent, int s
         for (int j = 0; j < model->columnCount(parent); ++j) {
             const QModelIndex index = model->index(i, j, parent);
             QList<QWidget*> widgetList = widgetPool->findWidgets(index, optionView(index), isRemoving ? KWidgetItemDelegatePool::NotUpdateWidgets
-                                                                                                      : KWidgetItemDelegatePool::UpdateWidgets,
-                                                                                           true           
-                                                                );
+                                                                                                      : KWidgetItemDelegatePool::UpdateWidgets);
             if (isRemoving) {
                 widgetPool->d->allocatedWidgets.removeAll(widgetList);
                 foreach (QWidget *widget, widgetList) {
@@ -169,11 +157,6 @@ inline QStyleOptionViewItemV4 KWidgetItemDelegatePrivate::optionView(const QMode
     return optionView;
 }
 
-void KWidgetItemDelegatePrivate::initializeModelRequested()
-{
-   initializeTimer->start();
-}
-
 void KWidgetItemDelegatePrivate::initializeModel(const QModelIndex &parent)
 {
     if (!model) {
@@ -190,7 +173,7 @@ void KWidgetItemDelegatePrivate::initializeModel(const QModelIndex &parent)
         // all possible indexes that are shown.
         const QModelIndex index = model->index(i, 0, parent);
         if (index.isValid() && model->hasChildren(index)) {
-            initializeModel(parent);
+            initializeModel(index);
         }
     }
 }
@@ -212,12 +195,10 @@ KWidgetItemDelegate::KWidgetItemDelegate(QAbstractItemView *itemView, QObject *p
 
     if(qobject_cast<QTreeView*>(itemView)) {
         connect(itemView,  SIGNAL(collapsed(QModelIndex)),
-                d, SLOT(initializeModelRequested()));
+                d, SLOT(initializeModel()));
         connect(itemView,  SIGNAL(expanded(QModelIndex)),
-                d, SLOT(initializeModelRequested()));
+                d, SLOT(initializeModel()));
     }
-
-    connect(this, SIGNAL(sizeHintChanged(QModelIndex)), this, SLOT(_k_sizeHintChanged(QModelIndex)));
 }
 
 KWidgetItemDelegate::~KWidgetItemDelegate()
@@ -283,7 +264,7 @@ bool KWidgetItemDelegatePrivate::eventFilter(QObject *watched, QEvent *event)
         connect(model, SIGNAL(dataChanged(QModelIndex,QModelIndex)), q, SLOT(_k_slotDataChanged(QModelIndex,QModelIndex)));
         connect(model, SIGNAL(layoutChanged()), q, SLOT(_k_slotLayoutChanged()));
         connect(model, SIGNAL(modelReset()), q, SLOT(_k_slotModelReset()));
-        initializeModelRequested();
+        QTimer::singleShot(0, this, SLOT(initializeModel()));
     }
 
     if (selectionModel != itemView->selectionModel()) {
@@ -292,14 +273,14 @@ bool KWidgetItemDelegatePrivate::eventFilter(QObject *watched, QEvent *event)
         }
         selectionModel = itemView->selectionModel();
         connect(selectionModel, SIGNAL(selectionChanged(QItemSelection,QItemSelection)), q, SLOT(_k_slotSelectionChanged(QItemSelection,QItemSelection)));
-        initializeModelRequested();
+        QTimer::singleShot(0, this, SLOT(initializeModel()));
     }
 
     switch (event->type()) {
         case QEvent::Polish:
         case QEvent::Resize:
             if (!qobject_cast<QAbstractItemView*>(watched)) {
-                initializeModelRequested();
+                QTimer::singleShot(0, this, SLOT(initializeModel()));
             }
             break;
         case QEvent::FocusIn:
