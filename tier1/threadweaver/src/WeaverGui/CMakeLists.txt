@@ -15,7 +15,7 @@ target_include_directories(KF5ThreadWeaverGui
 target_link_libraries(KF5ThreadWeaverGui PUBLIC KF5::ThreadWeaver Qt5::Widgets)
 set_target_properties(KF5ThreadWeaverGui PROPERTIES VERSION   ${THREADWEAVER_VERSION_STRING}
                                                     SOVERSION ${THREADWEAVER_SOVERSION}
-                                                    EXPORT_NAME ThreadWeaver
+                                                    EXPORT_NAME ThreadWeaverGui
 )
 
 install(TARGETS KF5ThreadWeaverGui EXPORT KF5ThreadWeaverTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
