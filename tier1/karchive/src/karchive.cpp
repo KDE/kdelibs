@@ -795,6 +795,27 @@ void KArchiveDirectory::addEntry( KArchiveEntry* entry )
   d->entries.insert( entry->name(), entry );
 }
 
+void KArchiveDirectory::removeEntry( KArchiveEntry* entry )
+{
+    if (!entry) {
+        return;
+    }
+
+    QHash<QString, KArchiveEntry*>::Iterator it = d->entries.find(entry->name());
+    // nothing removed?
+    if (it == d->entries.end()) {
+        kWarning() << "directory " << name()
+                    << "has no entry with name " << entry->name();
+        return;
+    }
+    if (it.value() != entry) {
+        kWarning() << "directory " << name()
+                    << "has another entry for name " << entry->name();
+        return;
+    }
+    d->entries.erase(it);
+}
+
 bool KArchiveDirectory::isDirectory() const
 {
     return true;

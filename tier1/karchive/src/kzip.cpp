@@ -972,6 +972,17 @@ bool KZip::doPrepareWriting(const QString &name, const QString &user,
     uint mtime = modificationTime.toTime_t();
     uint ctime = creationTime.toTime_t();
 
+    // Find or create parent dir
+    KArchiveDirectory* parentDir = rootDir();
+    QString fileName(name);
+    int i = name.lastIndexOf(QLatin1Char('/'));
+    if (i != -1) {
+        QString dir = name.left(i);
+        fileName = name.mid(i + 1);
+        //qDebug() << "ensuring" << dir << "exists. fileName=" << fileName;
+        parentDir = findOrCreate(dir);
+    }
+
     // delete entries in the filelist with the same fileName as the one we want
     // to save, so that we don't have duplicate file entries when viewing the zip
     // with konqi...
@@ -982,21 +993,13 @@ bool KZip::doPrepareWriting(const QString &name, const QString &user,
         it.next();
         //qDebug() << "prepfileName: " << it.current()->path();
         if (name == it.value()->path()) {
+            // also remove from the parentDir
+            parentDir->removeEntry(it.value());
             //qDebug() << "removing following entry: " << it.current()->path();
             delete it.value();
             it.remove();
         }
 
-    }
-    // Find or create parent dir
-    KArchiveDirectory* parentDir = rootDir();
-    QString fileName(name);
-    int i = name.lastIndexOf(QLatin1Char('/'));
-    if (i != -1) {
-        QString dir = name.left(i);
-        fileName = name.mid(i + 1);
-        //qDebug() << "ensuring" << dir << "exists. fileName=" << fileName;
-        parentDir = findOrCreate(dir);
     }
 
     // construct a KZipFileEntry and add it to list

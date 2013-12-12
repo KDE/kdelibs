@@ -33,6 +33,12 @@
 #include <QDir>
 #endif
 
+#ifdef Q_OS_WIN
+static Qt::CaseSensitivity cs = Qt::CaseInsensitive;
+#else
+static Qt::CaseSensitivity cs = Qt::CaseSensitive;
+#endif
+
 #if HAVE_VOLMGT
 #include <volmgt.h>
 #endif
@@ -475,8 +481,7 @@ KMountPoint::List::List()
 static bool pathsAreParentAndChildOrEqual(const QString& parent, const QString& child)
 {
     const QLatin1Char slash('/');
-
-    if (child.startsWith(parent)) {
+    if (child.startsWith(parent, cs)) {
         // Check if either
         // (a) both paths are equal, or
         // (b) parent ends with '/', or
@@ -484,10 +489,10 @@ static bool pathsAreParentAndChildOrEqual(const QString& parent, const QString& 
         //     Note that child is guaranteed to be longer than parent if (a) is false.
         //
         // This prevents that we incorrectly consider "/books" a child of "/book".
-        return parent == child || parent.endsWith(slash) || child.at(parent.length()) == slash;
+        return parent.compare(child, cs) == 0 || parent.endsWith(slash) || child.at(parent.length()) == slash;
     } else {
         // Note that "/books" is a child of "/books/".
-        return parent.endsWith(slash) && (parent.length() == child.length() + 1) && parent.startsWith(child);
+        return parent.endsWith(slash) && (parent.length() == child.length() + 1) && parent.startsWith(child, cs);
     }
 }
 
@@ -523,8 +528,8 @@ KMountPoint::Ptr KMountPoint::List::findByDevice(const QString& device) const
     if (realDevice.isEmpty()) // d->device can be empty in the loop below, don't match empty with it
         return Ptr();
     for (const_iterator it = begin(); it != end(); ++it) {
-        if ((*it)->d->device == realDevice ||
-            (*it)->d->mountedFrom == realDevice)
+        if (realDevice.compare((*it)->d->device, cs) == 0 ||
+            realDevice.compare((*it)->d->mountedFrom, cs) == 0)
             return *it;
     }
     return Ptr();
@@ -533,13 +538,14 @@ KMountPoint::Ptr KMountPoint::List::findByDevice(const QString& device) const
 bool KMountPoint::probablySlow() const
 {
     bool nfs = d->mountType == QLatin1String("nfs");
+    bool cifs = d->mountType == QLatin1String("cifs");
     bool autofs = d->mountType == QLatin1String("autofs") || d->mountType == QLatin1String("subfs");
     //bool pid = d->mountPoint.contains(":(pid");
     // The "pid" thing was in kde3's KIO::probably_slow_mounted, with obscure logic
     // (looks like it used state from the previous line or something...)
     // This needs to be revised once we have a testcase or explanation about it.
     // But autofs works already, it shows nfs as mountType in mtab.
-    if (nfs || autofs) {
+    if (nfs || autofs || cifs) {
         return true;
     }
     return false;

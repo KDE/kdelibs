@@ -48,7 +48,7 @@ private Q_SLOTS:
     void powerChanged();
 
 private:
-    int m_pluggedIn;
+    bool m_pluggedIn;
 
 };
 

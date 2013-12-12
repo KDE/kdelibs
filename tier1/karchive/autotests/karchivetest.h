@@ -67,6 +67,7 @@ private Q_SLOTS:
     void testZipCopyTo();
     void testZipMaxLength();
     void testZipWithNonLatinFileNames();
+    void testZipWithOverwrittenFileName();
     void testZipAddLocalDirectory();
 
 #if HAVE_XZ_SUPPORT

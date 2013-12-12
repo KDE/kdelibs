@@ -90,6 +90,11 @@ protected:
      *
      * @arg index the index to create widgets for.
      *
+     * @note If you want to know the index for which you are creating widgets, it is
+     *       available as a QModelIndex Q_PROPERTY called "goya:creatingWidgetsForIndex".
+     *       Ensure to add Q_DECLARE_METATYPE(QModelIndex) before your method definition
+     *       to tell QVariant about QModelIndex.
+     *
      * @return the list of newly created widgets which will be used to interact with an item.
      * @see updateItemWidgets()
      */
@@ -150,8 +155,6 @@ protected:
      */
     QList<QEvent::Type> blockedEventTypes(QWidget *widget) const;
 
-    QList<QWidget*> widgetsForIndex(const QModelIndex& index) const;
-
 private:
     //@cond PRIVATE
     friend class KWidgetItemDelegatePool;
@@ -164,7 +167,6 @@ private:
     Q_PRIVATE_SLOT(d, void _k_slotLayoutChanged())
     Q_PRIVATE_SLOT(d, void _k_slotModelReset())
     Q_PRIVATE_SLOT(d, void _k_slotSelectionChanged(const QItemSelection&,const QItemSelection&))
-    Q_PRIVATE_SLOT(d, void _k_sizeHintChanged(const QModelIndex&))
     //@endcond
 };
 

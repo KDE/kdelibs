@@ -30,7 +30,7 @@ WinAcadapter::WinAcadapter(WinDevice *device) :
 
 bool WinAcadapter::isPlugged() const
 {
-    return m_pluggedIn == 1;
+    return m_pluggedIn;
 }
 
 QSet<QString> WinAcadapter::getUdis()

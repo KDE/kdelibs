@@ -119,17 +119,23 @@ bool KDesktopFile::isAuthorizedDesktopFile(const QString& path)
   if (realPath.isEmpty())
       return false; // File doesn't exist.
 
+#ifndef Q_OS_WIN
+  const Qt::CaseSensitivity sensitivity = Qt::CaseSensitive;
+#else
+  const Qt::CaseSensitivity sensitivity = Qt::CaseInsensitive;
+#endif
+
   // Check if the .desktop file is installed as part of KDE or XDG.
   const QStringList appsDirs = QStandardPaths::standardLocations(QStandardPaths::ApplicationsLocation);
   Q_FOREACH (const QString &prefix, appsDirs) {
-      if (QDir(prefix).exists() && realPath.startsWith(QFileInfo(prefix).canonicalFilePath()))
+      if (QDir(prefix).exists() && realPath.startsWith(QFileInfo(prefix).canonicalFilePath(), sensitivity))
           return true;
   }
   const QString servicesDir = QLatin1String("kde5/services/"); // KGlobal::dirs()->xdgDataRelativePath("services")
   Q_FOREACH (const QString &xdgDataPrefix, QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation)) {
       if (QDir(xdgDataPrefix).exists()) {
           const QString prefix = QFileInfo(xdgDataPrefix).canonicalFilePath();
-          if (realPath.startsWith(prefix + QLatin1Char('/') + servicesDir))
+          if (realPath.startsWith(prefix + QLatin1Char('/') + servicesDir, sensitivity))
               return true;
       }
   }
@@ -137,7 +143,7 @@ bool KDesktopFile::isAuthorizedDesktopFile(const QString& path)
   Q_FOREACH (const QString &xdgDataPrefix, QStandardPaths::standardLocations(QStandardPaths::GenericConfigLocation)) {
       if (QDir(xdgDataPrefix).exists()) {
           const QString prefix = QFileInfo(xdgDataPrefix).canonicalFilePath();
-          if (realPath.startsWith(prefix + QLatin1Char('/') + autostartDir))
+          if (realPath.startsWith(prefix + QLatin1Char('/') + autostartDir, sensitivity))
               return true;
       }
   }

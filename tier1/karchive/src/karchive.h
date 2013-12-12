@@ -610,6 +610,12 @@ public:
     void addEntry( KArchiveEntry* );
 
     /**
+     * @internal
+     * Adds a new entry to the directory.
+     */
+    void removeEntry( KArchiveEntry* );
+
+    /**
      * Checks whether this entry is a directory.
      * @return true, since this entry is a directory
      */

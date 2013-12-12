@@ -81,9 +81,7 @@ KWidgetItemDelegatePool::~KWidgetItemDelegatePool()
 
 QList<QWidget*> KWidgetItemDelegatePool::findWidgets(const QPersistentModelIndex &idx,
                                                      const QStyleOptionViewItem &option,
-                                                     UpdateWidgetsEnum updateWidgets,
-                                                     bool includeNotVisible
-                                                    ) const
+                                                     UpdateWidgetsEnum updateWidgets) const
 {
     QList<QWidget*> result;
 
@@ -91,12 +89,12 @@ QList<QWidget*> KWidgetItemDelegatePool::findWidgets(const QPersistentModelIndex
         return result;
     }
 
-    if (!includeNotVisible && option.rect.isEmpty()) {
-         return result;
+    QModelIndex index;
+    if (const QAbstractProxyModel *proxyModel = qobject_cast<const QAbstractProxyModel*>(idx.model())) {
+        index = proxyModel->mapToSource(idx);
+    } else {
+        index = idx;
     }
-
-    QModelIndex index = idx;
-
 
     if (!index.isValid()) {
         return result;
@@ -105,9 +103,6 @@ QList<QWidget*> KWidgetItemDelegatePool::findWidgets(const QPersistentModelIndex
     if (d->usedWidgets.contains(index)) {
         result = d->usedWidgets[index];
     } else {
-        if (!d->delegate->itemView()->rect().contains(option.rect))
-             return result;
-
         result = d->delegate->createItemWidgets(index);
         d->allocatedWidgets << result;
         d->usedWidgets[index] = result;
@@ -138,7 +133,13 @@ QList<QWidget*> KWidgetItemDelegatePool::invalidIndexesWidgets() const
 {
     QList<QWidget*> result;
     foreach (QWidget *widget, d->widgetInIndex.keys()) {
-        QModelIndex index = d->widgetInIndex[widget];
+        const QAbstractProxyModel *proxyModel = qobject_cast<const QAbstractProxyModel*>(d->delegate->d->model);
+        QModelIndex index;
+        if (proxyModel) {
+            index = proxyModel->mapFromSource(d->widgetInIndex[widget]);
+        } else {
+            index = d->widgetInIndex[widget];
+        }
         if (!index.isValid()) {
             result << widget;
         }

@@ -173,7 +173,7 @@ void KRecentFilesAction::addUrl(const QUrl& _url, const QString& name)
       const QString urlStr = d->m_urls[action].toDisplayString(QUrl::PreferLocalFile);
 #ifdef Q_OS_WIN
       const QString tmpFileName = url.isLocalFile() ? QDir::toNativeSeparators(urlStr) : urlStr;
-      if (tmpFileName.endsWith(file))
+      if (tmpFileName.endsWith(file, Qt::CaseInsensitive))
 #else
       if (urlStr.endsWith(file))
 #endif

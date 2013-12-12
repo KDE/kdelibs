@@ -152,13 +152,7 @@ QPair<QModelIndex, QModelIndex> KCategorizedView::Private::intersectingIndexesWi
     while (bottom <= top) {
         const int middle = (bottom + top) / 2;
         const QModelIndex index = proxyModel->index(middle, q->modelColumn(), q->rootIndex());
-        QRect itemRect = q->visualRect(index);
-        const int verticalOff = q->verticalOffset();
-        const int horizontalOff = q->horizontalOffset();
-        itemRect.topLeft().ry() += verticalOff;
-        itemRect.topLeft().rx() += horizontalOff;
-        itemRect.bottomRight().ry() += verticalOff;
-        itemRect.bottomRight().rx() += horizontalOff;
+        const QRect itemRect = q->visualRect(index);
         if (itemRect.bottomRight().y() <= rect.topLeft().y()) {
             bottom = middle + 1;
         } else {
@@ -174,13 +168,7 @@ QPair<QModelIndex, QModelIndex> KCategorizedView::Private::intersectingIndexesWi
     while (bottom <= top) {
         const int middle = (bottom + top) / 2;
         const QModelIndex index = proxyModel->index(middle, q->modelColumn(), q->rootIndex());
-        QRect itemRect = q->visualRect(index);
-        const int verticalOff = q->verticalOffset();
-        const int horizontalOff = q->horizontalOffset();
-        itemRect.topLeft().ry() += verticalOff;
-        itemRect.topLeft().rx() += horizontalOff;
-        itemRect.bottomRight().ry() += verticalOff;
-        itemRect.bottomRight().rx() += horizontalOff;
+        const QRect itemRect = q->visualRect(index);
         if (itemRect.topLeft().y() <= rect.bottomRight().y()) {
             bottom = middle + 1;
         } else {

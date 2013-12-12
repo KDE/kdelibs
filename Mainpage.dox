@@ -11,7 +11,7 @@ This is the online reference for developing with the KDE Frameworks libraries
 (kdelibs).
 
 The KDE libraries build on the
-<a href="http://www.trolltech.com/products/qt/">Qt</a> framework to
+<a href="http://qt-project.org/">Qt</a> framework to
 provide a powerful framework to make writing applications easier,
 and provide consistency across the KDE desktop environment.
 

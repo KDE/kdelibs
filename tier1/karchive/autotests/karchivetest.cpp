@@ -948,6 +948,35 @@ void KArchiveTest::testZipWithNonLatinFileNames()
     QCOMPARE( fileEntry->data(), fileData );
 }
 
+void KArchiveTest::testZipWithOverwrittenFileName()
+{
+    KZip zip( s_zipFileName );
+
+    QVERIFY( zip.open( QIODevice::WriteOnly ) );
+
+    const QByteArray fileData1("There could be a fire, if there is smoke.");
+    const QString fileName = QLatin1String("wisdom");
+    QVERIFY( zip.writeFile( fileName, "konqi", "dragons", fileData1.constData(), fileData1.size() ) );
+
+    // now overwrite it
+    const QByteArray fileData2("If there is smoke, there could be a fire.");
+    QVERIFY( zip.writeFile( fileName, "konqi", "dragons", fileData2.constData(), fileData2.size() ) );
+
+    QVERIFY( zip.close() );
+
+    QVERIFY( zip.open( QIODevice::ReadOnly ) );
+
+    const KArchiveDirectory* dir = zip.directory();
+    QVERIFY( dir != 0 );
+    const QStringList listing = recursiveListEntries( dir, "", 0 );
+
+    QCOMPARE( listing.count(), 1 );
+    QCOMPARE( listing[0], QString::fromUtf8("mode=100644 path=%1 type=file size=%2").arg(fileName).arg(fileData2.size()) );
+
+    const KArchiveFile* fileEntry = static_cast< const KArchiveFile* >( dir->entry( dir->entries()[0] ) );
+    QCOMPARE( fileEntry->data(), fileData2 );
+}
+
 static bool writeFile(const QString& dirName, const QString& fileName, const QByteArray& data)
 {
     Q_ASSERT(dirName.endsWith('/'));

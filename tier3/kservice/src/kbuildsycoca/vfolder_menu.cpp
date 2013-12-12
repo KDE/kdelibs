@@ -87,7 +87,11 @@ QStringList VFolderMenu::allDirectories()
    QString previous = *it++;
    for(;it != m_allDirectories.end();)
    {
+#ifndef Q_OS_WIN
      if ((*it).startsWith(previous))
+#else
+     if ((*it).startsWith(previous, Qt::CaseInsensitive))
+#endif
      {
         it = m_allDirectories.erase(it);
      }
