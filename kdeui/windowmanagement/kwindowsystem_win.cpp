@@ -21,6 +21,7 @@
 
 #include "kwindowsystem.h"
 
+#include <QtGui/QApplication>
 #include <QtGui/QDesktopWidget>
 #include <QtGui/QIcon>
 #include <QtGui/QBitmap>
@@ -56,8 +57,6 @@ public:
 };
 
 K_GLOBAL_STATIC(KWindowSystemStaticContainer, g_kwmInstanceContainer)
-
-K_GLOBAL_STATIC(QDesktopWidget, s_deskWidget)
 
 
 struct InternalWindowInfo
@@ -585,7 +584,7 @@ bool KWindowSystem::compositingActive()
 
 QRect KWindowSystem::workArea( int desktop )
 {
-    return s_deskWidget->availableGeometry( desktop );
+    return qApp->desktop()->availableGeometry( desktop );
 }
 
 QRect KWindowSystem::workArea( const QList<WId>& exclude, int desktop )
