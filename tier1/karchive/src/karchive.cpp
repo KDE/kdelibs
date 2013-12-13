@@ -804,12 +804,12 @@ void KArchiveDirectory::removeEntry( KArchiveEntry* entry )
     QHash<QString, KArchiveEntry*>::Iterator it = d->entries.find(entry->name());
     // nothing removed?
     if (it == d->entries.end()) {
-        kWarning() << "directory " << name()
+        qWarning() << "directory " << name()
                     << "has no entry with name " << entry->name();
         return;
     }
     if (it.value() != entry) {
-        kWarning() << "directory " << name()
+        qWarning() << "directory " << name()
                     << "has another entry for name " << entry->name();
         return;
     }
