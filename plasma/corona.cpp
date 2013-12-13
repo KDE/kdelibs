@@ -35,6 +35,7 @@
 #include <cmath>
 
 #include <kaction.h>
+#include <kauthorized.h>
 #include <kdebug.h>
 #include <kglobal.h>
 #include <klocale.h>
@@ -187,7 +188,9 @@ void Corona::initializeLayout(const QString &configName)
         }
     }
 
-    if (config()->isImmutable()) {
+    if (config()->isImmutable() ||
+        !KAuthorized::authorize("plasma/" + KGlobal::mainComponent().aboutData()->appName() +
+                                "/unlockedDesktop")) {
         setImmutability(SystemImmutable);
     } else {
         KConfigGroup coronaConfig(config(), "General");
