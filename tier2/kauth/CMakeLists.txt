@@ -7,7 +7,7 @@ set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR})
 
 find_package(Qt5 5.2.0 CONFIG REQUIRED Widgets DBus)
 include(KDEInstallDirs)
-include(KDECompilerSettings)
+include(KDEFrameworkCompilerSettings)
 include(KDECMakeSettings)
 
 if(NOT kdelibs_SOURCE_DIR)

@@ -11,7 +11,7 @@ include(CMakePackageConfigHelpers)
 include(ECMSetupVersion)
 
 include(KDEInstallDirs)
-include(KDECompilerSettings)
+include(KDEFrameworkCompilerSettings)
 include(KDECMakeSettings)
 find_package(Qt5 5.2.0 CONFIG REQUIRED Test Concurrent)
 

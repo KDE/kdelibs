@@ -9,7 +9,7 @@ set(REQUIRED_QT_VERSION "5.2.0")
 find_package(Qt5Widgets ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE)
 find_package(Qt5PrintSupport ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE)
 include(KDEInstallDirs)
-include(KDECompilerSettings)
+include(KDEFrameworkCompilerSettings)
 include(KDECMakeSettings)
 
 if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")

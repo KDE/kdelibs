@@ -11,7 +11,7 @@ include(CMakePackageConfigHelpers)
 include(ECMSetupVersion)
 
 include(KDEInstallDirs)
-include(KDECompilerSettings)
+include(KDEFrameworkCompilerSettings)
 include(KDECMakeSettings)
 
 set(REQUIRED_QT_VERSION 5.2.0)

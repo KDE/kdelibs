@@ -25,7 +25,7 @@ set(REQUIRED_QT_VERSION "5.2.0")
 find_package(Qt5 ${REQUIRED_QT_VERSION} CONFIG REQUIRED Core)
 
 include(KDEInstallDirs)
-include(KDECompilerSettings)
+include(KDEFrameworkCompilerSettings)
 include(KDECMakeSettings)
 
 find_package(Perl)

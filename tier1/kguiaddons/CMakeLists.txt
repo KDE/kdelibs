@@ -7,7 +7,7 @@ find_package(ECM 0.0.9 REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR})
 
 include(KDEInstallDirs)
-include(KDECompilerSettings)
+include(KDEFrameworkCompilerSettings)
 include(KDECMakeSettings)
 set(REQUIRED_QT_VERSION 5.2.0)
 find_package(Qt5Gui ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE)

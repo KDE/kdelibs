@@ -10,7 +10,7 @@ set(REQUIRED_QT_VERSION 5.2.0)
 set(KF5_VERSION 5.0)
 find_package(Qt5 ${REQUIRED_QT_VERSION} CONFIG REQUIRED Widgets DBus)
 include(KDEInstallDirs)
-include(KDECompilerSettings)
+include(KDEFrameworkCompilerSettings)
 include(KDECMakeSettings)
 
 if(NOT kdelibs_SOURCE_DIR)

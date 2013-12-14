@@ -16,7 +16,7 @@ ecm_setup_version(5.0.0 VARIABLE_PREFIX KIDLETIME
 
 # Dependencies
 include(KDEInstallDirs)
-include(KDECompilerSettings)
+include(KDEFrameworkCompilerSettings)
 include(KDECMakeSettings)
 
 set(REQUIRED_QT_VERSION 5.2.0)

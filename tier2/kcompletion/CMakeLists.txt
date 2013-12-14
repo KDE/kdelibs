@@ -10,7 +10,7 @@ include(FeatureSummary)
 include(ECMSetupVersion)
 include(CMakePackageConfigHelpers)
 include(KDEInstallDirs)
-include(KDECompilerSettings)
+include(KDEFrameworkCompilerSettings)
 include(KDECMakeSettings)
 
 set(KF5_VERSION "5.0.0")
