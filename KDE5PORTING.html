@@ -110,6 +110,7 @@ Remember to update your connect statements and your slots!
 (to support .directory files in directories), port the code to KFileItem::mimeComment and KFileItem::iconName.</li>
 <li>KSaveFile has been deprecated in favour of the new QSaveFile:
 <pre>
+     backupFile -&gt; KBackup::backupFile
      open() -&gt; open(QIODevice::WriteOnly)
      finalize() -&gt; commit()
      abort() -&gt; cancelWriting()
