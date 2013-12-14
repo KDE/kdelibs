@@ -374,6 +374,7 @@ have to find an alternative</li>
 <li>KUndoStack: Use QUndoStack with KUndoActions::createUndoAction() and KUndoActions::createRedoAction() instead</li>
 <li>KRichTextWidget: createActions() does not take any KActionCollection and returns a list of QAction instead. You could use KActionCollection.addActions(KRichTextWidget.createActions()) instead.</li>
 <li>KTextBrowser: Use QTextBrowser instead. The only difference is QTextBrowser does not support "whatsthis:" urls.</li>
+<li>KTextEditInterface: This was a hack to preserve the ABI. Please use the methods in KTextEdit instead.</li>
 <li>KTimeZoneWidget: Was copied as K4TimeZoneWidget in KDE4Support framework. A new KTimeZoneWidget replacement might appear so we freed the name.</li>
 <li>KSystemEventFilter was removed as Qt 5 uses XCB instead of XLib. To get the same functionality derive from QAbstractNativeEventFilter, filter XCB events and register the filter in the QCoreApplication:
 <pre>
