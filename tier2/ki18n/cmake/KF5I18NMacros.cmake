@@ -15,7 +15,7 @@ macro (KI18N_WRAP_UI _sources )
 
       get_target_property(QT_UIC_EXECUTABLE Qt5::uic LOCATION)
       # we need to run uic and replace some things in the generated file
-      # this is done by executing the cmake script ki18nuic.cmake
+      # this is done by executing the cmake script kf5i18nuic.cmake
       add_custom_command(OUTPUT ${_header}
          COMMAND ${CMAKE_COMMAND}
          ARGS
@@ -24,7 +24,7 @@ macro (KI18N_WRAP_UI _sources )
          -DKDE_UIC_FILE:FILEPATH=${_tmp_FILE}
          -DKDE_UIC_H_FILE:FILEPATH=${_header}
          -DKDE_UIC_BASENAME:STRING=${_basename}
-         -P ${KI18N_MODULE_DIR}/ki18nuic.cmake
+         -P ${KI18N_MODULE_DIR}/kf5i18nuic.cmake
          MAIN_DEPENDENCY ${_tmp_FILE}
       )
       list(APPEND ${_sources} ${_header})
