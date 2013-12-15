@@ -1053,7 +1053,7 @@
  * in static C++ files.
  *
  * If CMake is used as the build system, a macro that performs
- * all of the above is provided (\c kf5_add_ui_files).
+ * all of the above is provided (\c ki18n_wrap_ui).
  * Otherwise, one could use a shell snippet such as this:
  * \code
  * domain=fooapp
