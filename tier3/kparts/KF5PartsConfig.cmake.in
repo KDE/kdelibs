@@ -1,9 +1,8 @@
 @PACKAGE_INIT@
 
-find_dependency(KF5XmlGui "@KF5_VERSION@")
 find_dependency(KF5KIO "@KF5_VERSION@")
+find_dependency(KF5Notifications "@KF5_VERSION@")
 find_dependency(KF5TextWidgets "@KF5_VERSION@")
-
+find_dependency(KF5XmlGui "@KF5_VERSION@")
 
 include("${CMAKE_CURRENT_LIST_DIR}/KF5PartsTargets.cmake")
-

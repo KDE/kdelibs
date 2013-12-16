@@ -1,5 +1,9 @@
 @PACKAGE_INIT@
 
+find_dependency(KF5ConfigWidgets "@KF5_VERSION@")
+find_dependency(KF5IconThemes "@KF5_VERSION@")
+find_dependency(KF5XmlGui "@KF5_VERSION@")
+
 find_dependency(Qt5Widgets @QT_REQUIRED_VERSION@)
 find_dependency(Qt5Xml @QT_REQUIRED_VERSION@)
 

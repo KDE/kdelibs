@@ -1,5 +1,10 @@
 @PACKAGE_INIT@
 
+find_dependency(KF5ConfigWidgets "@KF5_VERSION@")
+find_dependency(KF5I18n "@KF5_VERSION@")
+find_dependency(KF5ItemViews "@KF5_VERSION@")
+find_dependency(KF5WidgetsAddons "@KF5_VERSION@")
+
 find_dependency(Qt5Widgets "@QT_REQUIRED_VERSION@")
 
 

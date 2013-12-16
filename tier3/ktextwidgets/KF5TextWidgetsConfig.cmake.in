@@ -1,6 +1,10 @@
 @PACKAGE_INIT@
 
-# Any changes in this file will be overwritten by CMake.
+find_dependency(KF5Completion "@KF5_VERSION@")
+find_dependency(KF5ConfigWidgets "@KF5_VERSION@")
+find_dependency(KF5IconThemes "@KF5_VERSION@")
+find_dependency(KF5Service "@KF5_VERSION@")
+find_dependency(KF5WindowSystem "@KF5_VERSION@")
 
 find_dependency(Qt5Widgets @REQUIRED_QT_VERSION@)
 find_dependency(KF5Sonnet "@KF5_VERSION@")
