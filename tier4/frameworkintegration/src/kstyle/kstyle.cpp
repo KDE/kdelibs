@@ -334,6 +334,7 @@ QIcon KStyle::standardIcon(StandardPixmap standardIcon, const QStyleOption */*op
 
 int KStyle::styleHint (StyleHint hint, const QStyleOption* option, const QWidget* widget, QStyleHintReturn* returnData) const
 {
+    KSharedConfig::openConfig()->reparseConfiguration();
     switch (hint)
     {
         case SH_ItemView_ActivateItemOnSingleClick:
