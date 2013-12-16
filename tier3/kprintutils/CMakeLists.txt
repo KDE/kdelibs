@@ -38,7 +38,7 @@ if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
   find_package(KF5Completion ${KF5_VERSION} REQUIRED)
   find_package(KF5TextWidgets ${KF5_VERSION} REQUIRED)
   find_package(KF5CoreAddons ${KF5_VERSION} REQUIRED)
-  find_package(KF5Parts${KF5_VERSION} REQUIRED)
+  find_package(KF5Parts ${KF5_VERSION} REQUIRED)
 endif()
 
 add_subdirectory(src)
