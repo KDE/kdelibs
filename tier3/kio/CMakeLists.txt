@@ -14,9 +14,14 @@ include(FeatureSummary)
 
 include(ECMSetupVersion)
 
-ecm_setup_version(5.0.0 VARIABLE_PREFIX KIO
-                        VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/src/kio_version.h"
-                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KF5KIOConfigVersion.cmake")
+set(KF5_VERSION "5.0.0")
+
+ecm_setup_version(
+  ${KF5_VERSION}
+  VARIABLE_PREFIX KIO
+  VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/src/kio_version.h"
+  PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KF5KIOConfigVersion.cmake"
+)
 
 if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
   # Due to a CMake bug, we need to explicitly find private dependencies of our dependencies
