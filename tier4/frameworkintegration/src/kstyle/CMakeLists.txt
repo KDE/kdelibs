@@ -15,7 +15,9 @@ include(KDEFrameworkCompilerSettings)
 include(KDECMakeSettings)
 find_package(Qt5 5.2.0 CONFIG REQUIRED Test Concurrent)
 
-ecm_setup_version(5.0.0 VARIABLE_PREFIX KSTYLE
+set(KF5_VERSION "5.0.0")
+
+ecm_setup_version(${KF5_VERSION} VARIABLE_PREFIX KSTYLE
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kstyle_version.h"
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KF5StyleConfigVersion.cmake")
 
