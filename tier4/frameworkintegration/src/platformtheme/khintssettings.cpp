@@ -52,7 +52,8 @@ KHintsSettings::KHintsSettings() : QObject(0)
     m_hints[QPlatformTheme::StartDragDistance] = cg.readEntry("StartDragDist", 10);
     m_hints[QPlatformTheme::StartDragTime] = cg.readEntry("StartDragTime", 500);
 
-    m_hints[QPlatformTheme::ToolButtonStyle] = toolButtonStyle(cg);
+    KConfigGroup cgToolbar(ptr, "Toolbar style");
+    m_hints[QPlatformTheme::ToolButtonStyle] = toolButtonStyle(cgToolbar);
 
     KConfigGroup cgToolbarIcon(ptr, "MainToolbarIcons");
     m_hints[QPlatformTheme::ToolBarIconSize] = cgToolbarIcon.readEntry("Size", 22);
@@ -114,6 +115,8 @@ QStringList KHintsSettings::xdgIconThemePaths() const
 
 void KHintsSettings::delayedDBusConnects()
 {
+    QDBusConnection::sessionBus().connect(QString(), QStringLiteral("/KToolBar"), QStringLiteral("org.kde.KToolBar"),
+                                                   QStringLiteral("styleChanged"), this, SLOT(toolbarStyleChanged()));
     QDBusConnection::sessionBus().connect(QString(), QStringLiteral("/KGlobalSettings"), QStringLiteral("org.kde.KGlobalSettings"),
                                                    QStringLiteral("notifyChange"), this, SLOT(slotNotifyChange(int, int)));
 }
@@ -121,6 +124,24 @@ void KHintsSettings::delayedDBusConnects()
 void KHintsSettings::setupIconLoader()
 {
     connect(KIconLoader::global(), &KIconLoader::iconChanged, this, &KHintsSettings::iconChanged);
+}
+
+void KHintsSettings::toolbarStyleChanged()
+{
+    KSharedConfig::Ptr ptr = KSharedConfig::openConfig("kdeglobals");
+    ptr->reparseConfiguration();
+    KConfigGroup cg(ptr, "Toolbar style");
+
+    m_hints[QPlatformTheme::ToolButtonStyle] = toolButtonStyle(cg);
+    //from gtksymbol.cpp
+    QWidgetList widgets = QApplication::allWidgets();
+    for (int i = 0; i < widgets.size(); ++i) {
+        QWidget *widget = widgets.at(i);
+        if (qobject_cast<QToolButton*>(widget)) {
+            QEvent event(QEvent::StyleChange);
+            QApplication::sendEvent(widget, &event);
+        }
+    }
 }
 
 void KHintsSettings::slotNotifyChange(int type, int arg)
@@ -147,16 +168,7 @@ void KHintsSettings::slotNotifyChange(int type, int arg)
         break;
     }
     case ToolbarStyleChanged: {
-        m_hints[QPlatformTheme::ToolButtonStyle] = toolButtonStyle(cg);
-        //from gtksymbol.cpp
-        QWidgetList widgets = QApplication::allWidgets();
-        for (int i = 0; i < widgets.size(); ++i) {
-            QWidget *widget = widgets.at(i);
-            if (qobject_cast<QToolButton*>(widget)) {
-                QEvent event(QEvent::StyleChange);
-                QApplication::sendEvent(widget, &event);
-            }
-        }
+        toolbarStyleChanged();
         break;
     }
     case IconChanged:

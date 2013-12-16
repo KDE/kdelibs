@@ -66,6 +66,7 @@ class KHintsSettings : public QObject
     private Q_SLOTS:
         void delayedDBusConnects();
         void setupIconLoader();
+        void toolbarStyleChanged();
         void slotNotifyChange(int type, int arg);
 
     private:

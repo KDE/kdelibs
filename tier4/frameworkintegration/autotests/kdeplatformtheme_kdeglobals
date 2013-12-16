@@ -3,8 +3,6 @@ CursorBlinkRate=1042
 DoubleClickInterval=4343
 StartDragDist=15
 StartDragTime=555
-ToolButtonStyle=textonly
-ToolButtonStyleOtherToolbars=textundericon
 SingleClick=false
 widgetStyle=non-existent-widget-style
 ShowIconsInMenuItems=false
@@ -12,6 +10,10 @@ ShowIconsOnPushButtons=false
 GraphicEffectsLevel=0
 WheelScrollLines=1234
 ShowIconsInMenuItems=true
+
+[Toolbar style]
+ToolButtonStyle=textonly
+ToolButtonStyleOtherToolbars=textundericon
 
 [Icons]
 Theme=non-existent-icon-theme
