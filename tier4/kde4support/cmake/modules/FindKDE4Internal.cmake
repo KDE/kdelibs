@@ -367,6 +367,9 @@ macro(_KDE4_SET_LIB_VARIABLES _var _lib _prefix)
    set(KDE4_${_var}_LIBS    ${_prefix}${_lib} )
 endmacro(_KDE4_SET_LIB_VARIABLES _var _lib _prefix)
 
+# KDE_ENABLE_EXCEPTIONS is defined in ECM
+set(KDE4_ENABLE_EXCEPTIONS "${KDE_ENABLE_EXCEPTIONS}")
+
 #######################  #now try to find some kde stuff  ################################
 
 set(KDE4_INCLUDE_DIR ${kdelibs_SOURCE_DIR})
@@ -600,8 +603,6 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
    _DETERMINE_GCC_SYSTEM_INCLUDE_DIRS(c++ _dirs)
    set(CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES
        ${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES} ${_dirs})
-
-   set(KDE4_ENABLE_EXCEPTIONS "-fexceptions -UQT_NO_EXCEPTIONS")
    # Select flags.
    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g -DNDEBUG -DQT_NO_DEBUG")
    set(CMAKE_CXX_FLAGS_RELEASE        "-O2 -DNDEBUG -DQT_NO_DEBUG")

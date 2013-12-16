@@ -7,7 +7,7 @@ if(NOT KPAC_NO_SOLID)
    set(KPAC_EXTRA_LIBS KF5::Solid)
 endif()
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${KDE4_ENABLE_EXCEPTIONS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${KDE_ENABLE_EXCEPTIONS}")
 
 include(ConfigureChecks.cmake)
 configure_file(config-kpac.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kpac.h)

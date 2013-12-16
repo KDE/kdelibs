@@ -11,7 +11,7 @@ set_package_properties(OpenEXR PROPERTIES
    PURPOSE "QImage plugin for OpenEXR images"
 )
 
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${KDE4_ENABLE_EXCEPTIONS}")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${KDE_ENABLE_EXCEPTIONS}")
 
 configure_file(config-kimgio.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kimgio.h )
 check_include_files(sys/types.h   HAVE_SYS_TYPES_H)

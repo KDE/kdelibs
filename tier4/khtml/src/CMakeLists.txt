@@ -1,4 +1,4 @@
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  ${KDE4_ENABLE_EXCEPTIONS}")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  ${KDE_ENABLE_EXCEPTIONS}")
 
 
 find_package(OpenSSL)
@@ -185,7 +185,7 @@ set(khtmldom_STAT_SRCS
   dom/dom3_xpath.cpp
 )
 
-#set_source_files_properties(${khtmldom_STAT_SRCS} PROPERTIES COMPILE_FLAGS ${KDE4_ENABLE_EXCEPTIONS})
+#set_source_files_properties(${khtmldom_STAT_SRCS} PROPERTIES COMPILE_FLAGS ${KDE_ENABLE_EXCEPTIONS})
 
 # khtml/misc/Makefile.am: khtmlmisc
 
