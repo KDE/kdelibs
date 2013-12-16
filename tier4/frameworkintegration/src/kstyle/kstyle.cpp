@@ -361,7 +361,7 @@ int KStyle::styleHint (StyleHint hint, const QStyleOption* option, const QWidget
 
         case SH_ToolButtonStyle:
         {
-            KConfigGroup g(KSharedConfig::openConfig(), "KDE");
+            KConfigGroup g(KSharedConfig::openConfig(), "Toolbar style");
 
             bool useOthertoolbars = false;
             const QWidget *parent = widget->parentWidget();
