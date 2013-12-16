@@ -44,6 +44,8 @@ class KRestrictedLinePrivate;
  * \image html krestrictedline.png "KDE Restricted Line Edit allowing all characters but 'o'"
  *
  * @author Michael Wiedmann <mw@miwie.in-berlin.de>
+ *
+ * @deprecated from KF 5.0. Use QLineEdit instead, with a QValidator
  */
 class KDE4SUPPORT_DEPRECATED_EXPORT KRestrictedLine : public KLineEdit
 {
