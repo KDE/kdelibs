@@ -11,20 +11,21 @@ include(KDEInstallDirs)
 include(KDEFrameworkCompilerSettings)
 include(KDECMakeSettings)
 
-if(NOT kdelibs_SOURCE_DIR)
-  find_package(KF5CoreAddons 5.0.0 REQUIRED)
-  find_package(KF5WindowSystem 5.0.0 REQUIRED)
-endif()
-
 find_package(X11)
 set(HAVE_X11 ${X11_FOUND})
 
 include(FeatureSummary)
 include(ECMSetupVersion)
 
-ecm_setup_version(5.0.0 VARIABLE_PREFIX KCrash
+set(KF5_VERSION "5.0.0")
+ecm_setup_version(${KF5_VERSION} VARIABLE_PREFIX KCrash
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kcrash_version.h"
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KF5CrashConfigVersion.cmake")
+
+if(NOT kdelibs_SOURCE_DIR)
+  find_package(KF5CoreAddons ${KF5_VERSION} REQUIRED)
+  find_package(KF5WindowSystem ${KF5_VERSION} REQUIRED)
+endif()
 
 add_subdirectory(src)
 

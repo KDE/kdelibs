@@ -10,27 +10,29 @@ find_package(Qt5 "${REQUIRED_QT_VERSION}" CONFIG REQUIRED Widgets DBus)
 include(KDEInstallDirs)
 include(KDEFrameworkCompilerSettings)
 include(KDECMakeSettings)
+include(FeatureSummary)
+include(ECMSetupVersion)
+
+set(KF5_VERSION "5.0.0")
+
+ecm_setup_version(${KF5_VERSION} VARIABLE_PREFIX KCONFIGWIDGETS
+                        VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kconfigwidgets_version.h"
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KF5ConfigWidgetsConfigVersion.cmake")
+
 if(NOT kdelibs_SOURCE_DIR)
-  find_package(KF5Auth 5.0.0 REQUIRED)
-  find_package(KF5CoreAddons 5.0.0 REQUIRED)
-  find_package(KF5Codecs 5.0.0 REQUIRED)
-  find_package(KF5Config 5.0.0 REQUIRED)
-  find_package(KF5DocTools 5.0.0 REQUIRED)
-  find_package(KF5GuiAddons 5.0.0 REQUIRED)
-  find_package(KF5I18n 5.0.0 REQUIRED)
-  find_package(KF5WidgetsAddons 5.0.0 REQUIRED)
+  find_package(KF5Auth ${KF5_VERSION} REQUIRED)
+  find_package(KF5CoreAddons ${KF5_VERSION} REQUIRED)
+  find_package(KF5Codecs ${KF5_VERSION} REQUIRED)
+  find_package(KF5Config ${KF5_VERSION} REQUIRED)
+  find_package(KF5DocTools ${KF5_VERSION} REQUIRED)
+  find_package(KF5GuiAddons ${KF5_VERSION} REQUIRED)
+  find_package(KF5I18n ${KF5_VERSION} REQUIRED)
+  find_package(KF5WidgetsAddons ${KF5_VERSION} REQUIRED)
 else()
     set(_kdeBootStrapping TRUE)
     include(${CMAKE_SOURCE_DIR}/tier2/kdoctools/KF5DocToolsMacros.cmake)
     set(KDOCTOOLS_CUSTOMIZATION_DIR "${KDocTools_BINARY_DIR}/src/customization/")
 endif()
-
-include(FeatureSummary)
-include(ECMSetupVersion)
-
-ecm_setup_version(5.0.0 VARIABLE_PREFIX KCONFIGWIDGETS
-                        VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kconfigwidgets_version.h"
-                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KF5ConfigWidgetsConfigVersion.cmake")
 
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 remove_definitions(-DQT_NO_CAST_FROM_BYTEARRAY)

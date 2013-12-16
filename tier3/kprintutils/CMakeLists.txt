@@ -12,35 +12,34 @@ include(KDEInstallDirs)
 include(KDEFrameworkCompilerSettings)
 include(KDECMakeSettings)
 
-if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
-  #NOTE: here the dependencies of dependencies are displayed as well, this shouldn't be needed
-  #after cmake 3.0.0 is released
-  find_package(KF5I18n 5.0.0 REQUIRED)
-  find_package(KF5GuiAddons 5.0.0 REQUIRED)
-  find_package(KF5WidgetsAddons 5.0.0 REQUIRED)
-  find_package(KF5DBusAddons 5.0.0 REQUIRED)
-  find_package(KF5ConfigWidgets 5.0.0 REQUIRED)
-  find_package(KF5ItemViews 5.0.0 REQUIRED)
-  find_package(KF5IconThemes 5.0.0 REQUIRED)
-  find_package(KF5WindowSystem 5.0.0 REQUIRED)
-  find_package(KF5Service 5.0.0 REQUIRED)
-  find_package(KF5Completion 5.0.0 REQUIRED)
-  find_package(KF5TextWidgets 5.0.0 REQUIRED)
-
-  find_package(KF5CoreAddons 5.0.0 REQUIRED)
-#   find_package(KF5I18n 5.0.0 REQUIRED)
-  find_package(KF5Parts 5.0.0 REQUIRED)
-endif()
-
 find_package(X11)
 set(HAVE_X11 ${X11_FOUND})
 
 include(FeatureSummary)
 include(ECMSetupVersion)
 
-ecm_setup_version(5.0.0 VARIABLE_PREFIX KPRINTUTILS
+set(KF5_VERSION "5.0.0")
+ecm_setup_version(${KF5_VERSION} VARIABLE_PREFIX KPRINTUTILS
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kprintutils_version.h"
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KF5PrintUtilsConfigVersion.cmake")
+
+if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
+  #NOTE: here the dependencies of dependencies are displayed as well, this shouldn't be needed
+  #after cmake 3.0.0 is released
+  find_package(KF5I18n ${KF5_VERSION} REQUIRED)
+  find_package(KF5GuiAddons ${KF5_VERSION} REQUIRED)
+  find_package(KF5WidgetsAddons ${KF5_VERSION} REQUIRED)
+  find_package(KF5DBusAddons ${KF5_VERSION} REQUIRED)
+  find_package(KF5ConfigWidgets ${KF5_VERSION} REQUIRED)
+  find_package(KF5ItemViews ${KF5_VERSION} REQUIRED)
+  find_package(KF5IconThemes ${KF5_VERSION} REQUIRED)
+  find_package(KF5WindowSystem ${KF5_VERSION} REQUIRED)
+  find_package(KF5Service ${KF5_VERSION} REQUIRED)
+  find_package(KF5Completion ${KF5_VERSION} REQUIRED)
+  find_package(KF5TextWidgets ${KF5_VERSION} REQUIRED)
+  find_package(KF5CoreAddons ${KF5_VERSION} REQUIRED)
+  find_package(KF5Parts${KF5_VERSION} REQUIRED)
+endif()
 
 add_subdirectory(src)
 add_subdirectory(tests)
