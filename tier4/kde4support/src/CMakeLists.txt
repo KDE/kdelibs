@@ -319,7 +319,7 @@ int main() { return 0; }
 " _OFFT_IS_64BIT)
 
 if (NOT _OFFT_IS_64BIT)
-  target_compile_definitions(KF5::KDE4Support PUBLIC -D_FILE_OFFSET_BITS=64)
+  target_compile_definitions(KF5KDE4Support PUBLIC -D_FILE_OFFSET_BITS=64)
 endif ()
 
 
