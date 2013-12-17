@@ -1,6 +1,6 @@
 <!-- These entities should be translated, but NOT CHANGED, NOR EXTENDED.
      For language-specific extensions, use user.entities.
-     Translate everything between quotes, except names of general 
+     Translate everything between quotes, except names of general
      entities (&...;). -->
 
 <!ENTITY kappname "יישום זה">

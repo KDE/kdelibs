@@ -130,7 +130,7 @@ test("1 instanceof 1", "exception");
 test("1 instanceof Number.prototype", "exception");
 
 /* Only function objects should support HasInstance: */
-test("new Number(1) instanceof Number.prototype", "exception");	
+test("new Number(1) instanceof Number.prototype", "exception");
 
 
 /* Test the instanceof keyword and the new operator applied to functions. */
@@ -206,7 +206,7 @@ test("String(/(a*)*/.exec('b'))",",");
 test("String(/(a*)b\\1+/.exec('baaaac'))","b,");
 test("String(/(?=(a+))/.exec('baaabac'))",",aaa");
 test("String(/(?=(a+))a*b\\1/.exec('baaabac'))", "aba,a");
-test("String(/(.*?)a(?!(a+)b\\2c)\\2(.*)/.exec('baaabaac'))", 
+test("String(/(.*?)a(?!(a+)b\\2c)\\2(.*)/.exec('baaabaac'))",
 	"baaabaac,ba,,abaac");
 
 test("'$1,$2'.replace(/(\\$(\\d))/g, '$$1-$1$2')", "$1-$11,$1-$22");
