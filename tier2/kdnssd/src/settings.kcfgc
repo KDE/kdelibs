@@ -1,0 +1,12 @@
+ClassName=Configuration
+File=kcm_kdnssd.kcfg
+GlobalEnums=false
+Inherits=KCoreConfigSkeleton
+ItemAccessors=false
+MemberVariables=private
+Mutators=true
+NameSpace=KDNSSD
+SetUserTexts=false
+Singleton=true
+Visibility=KDNSSD_EXPORT
+IncludeFiles=kdnssd/kdnssd_export.h

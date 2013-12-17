@@ -538,16 +538,16 @@ DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/ConversionCheck COMPONENT Devel)
 
 
 install( FILES
-  DNSSD/Configuration
-  DNSSD/DomainBrowser
-  DNSSD/DomainModel
-  DNSSD/PublicService
-  DNSSD/RemoteService
-  DNSSD/ServiceBase
-  DNSSD/ServiceBrowser
-  DNSSD/ServiceModel
-  DNSSD/ServiceTypeBrowser
-DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/DNSSD COMPONENT Devel)
+  KDNSSD/Configuration
+  KDNSSD/DomainBrowser
+  KDNSSD/DomainModel
+  KDNSSD/PublicService
+  KDNSSD/RemoteService
+  KDNSSD/ServiceBase
+  KDNSSD/ServiceBrowser
+  KDNSSD/ServiceModel
+  KDNSSD/ServiceTypeBrowser
+DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/KDNSSD COMPONENT Devel)
 
 
 install( FILES

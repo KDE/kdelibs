@@ -32,7 +32,7 @@ sb_add_project(tier2/kcrash)
 sb_add_project(tier2/kdoctools)
 sb_add_project(tier2/ki18n)
 sb_add_project(tier2/knotifications)
-sb_add_project(tier2/dnssd)
+sb_add_project(tier2/kdnssd)
 sb_add_project(tier2/kjobwidgets)
 sb_add_project(tier2/kwallet)
 

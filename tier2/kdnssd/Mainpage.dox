@@ -1,0 +1,39 @@
+/** @mainpage KDNSSD
+
+<p>KDNSSD is a library for handling the DNS-based Service Discovery Protocol (DNS-SD),
+the layer of <a href="http://www.zeroconf.org">Zeroconf</a> that allows network
+services, such as printers, to be discovered without any user intervention or
+centralized infrastructure.</p>
+
+Apple's implementation of Zeroconf is
+<a href="http://www.apple.com/macosx/technology/bonjour.html">Bonjour</a>.
+Apple's developer documentation provides lots of information about Bonjour
+in its <a href="http://developer.apple.com/documentation/Cocoa/Conceptual/NetServices/Articles/about.html#//apple_ref/doc/uid/TP40002458-SW1">Bonjour overview</a>.
+
+If you are writing an application that wants to discover services on the network,
+use DNSSD::ServiceBrowser.  You can also find available service types using ServiceTypeBrowser.
+
+If you want to announce the availability of a service provided by your application,
+use DNSSD::PublicService.
+
+DNSSD::DomainBrowser allows you to find domains (other than the local one) recommended
+for browsing or publishing to.
+
+Note that DNSSD::ServiceBrowser::isAvailable() provides information about the availability
+of the services provided by this library generally, not just for browsing services.
+
+@authors
+Jakub Stachowski
+
+@maintainers
+Jakub Stachowski
+
+@licenses
+@lgpl
+
+*/
+
+// DOXYGEN_REFERENCES = kdecore
+// DOXYGEN_SET_PROJECT_NAME = KDNSSD
+// DOXYGEN_SET_EXCLUDE_PATTERNS += */kdnssd/src/avahi* */kdnssd/src/mdnsd*
+// vim:ts=4:sw=4:expandtab:filetype=doxygen
