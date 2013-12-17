@@ -49,7 +49,7 @@ class KLocalSocketPrivate;
  * @author Thiago Macieira <thiago@kde.org>
  * @internal DO NOT USE. Only for KIO.
  */
-class KIOCORE_EXPORT KLocalSocket : public QTcpSocket // TODO 5.0: remove export macro
+class KIOCORE_EXPORT KLocalSocket : public QTcpSocket // Only exported for the unittest. Header not installed
 {
     Q_OBJECT
 public:
