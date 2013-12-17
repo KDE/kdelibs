@@ -4,6 +4,7 @@ set(kconfig_compiler_SRCS kconfig_compiler.cpp)
 
 
 add_executable(kconfig_compiler ${kconfig_compiler_SRCS})
+add_executable(KF5::kconfig_compiler ALIAS kconfig_compiler)
 
 find_package(Qt5Xml 5.2.0 REQUIRED NO_MODULE)
 
