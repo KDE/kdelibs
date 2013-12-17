@@ -1,5 +1,5 @@
 [Global]
-PluginName=KDE3SupportWidgets
+PluginName=KDE4SupportWidgets
 Includes=classpreviews.h,ktimezone.h
 Init=
 

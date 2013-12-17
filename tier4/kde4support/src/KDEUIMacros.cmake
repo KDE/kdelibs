@@ -163,6 +163,8 @@ macro (KDE4_INSTALL_ICONS _defaultpath )
 endmacro (KDE4_INSTALL_ICONS)
 
 
+set(KDEWIDGETS_MAKEKDEWIDGETS_EXECUTABLE ${KF5DESIGNERPLUGIN_GENERATOR_EXECUTABLE})
+set(_KDE4_MAKEKDEWIDGETS_DEP ${_KF5DESIGNERPLUGIN_GENERATOR_EXECUTABLE_DEP})
 macro (KDE4_ADD_WIDGET_FILES _sources)
    foreach (_current_FILE ${ARGN})
 
@@ -173,7 +175,7 @@ macro (KDE4_ADD_WIDGET_FILES _sources)
 
       # create source file from the .widgets file
       add_custom_command(OUTPUT ${_source}
-        COMMAND ${KDE4_MAKEKDEWIDGETS_EXECUTABLE}
+        COMMAND ${KDEWIDGETS_MAKEKDEWIDGETS_EXECUTABLE}
         ARGS -o ${_source} ${_input}
         MAIN_DEPENDENCY ${_input} DEPENDS ${_KDE4_MAKEKDEWIDGETS_DEP})
 

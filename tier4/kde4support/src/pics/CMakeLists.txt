@@ -12,4 +12,4 @@ install( FILES
  keditlistbox.png
  kintnuminput.png
  krestrictedline.png
- DESTINATION  ${DATA_INSTALL_DIR}/kdewidgets/pics )
+ DESTINATION  ${DATA_INSTALL_DIR}/kf5widgets/pics )
