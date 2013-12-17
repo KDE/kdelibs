@@ -51,7 +51,7 @@
 #include <sys/utsname.h>
 
 #include "kdepackages.h"
-#include "../xmlgui_version.h"
+#include "../kxmlgui_version.h"
 #include "config-xmlgui.h"
 
 class KBugReportPrivate {
@@ -200,7 +200,7 @@ KBugReport::KBugReport(const KAboutData &aboutData, QWidget * _parent)
   d->m_strVersion = d->m_aboutData.version();
   if (d->m_strVersion.isEmpty())
       d->m_strVersion = i18n("no version set (programmer error)");
-  d->kde_version = QString::fromLatin1( XMLGUI_VERSION_STRING );
+  d->kde_version = QString::fromLatin1( KXMLGUI_VERSION_STRING );
   d->kde_version += QStringLiteral(", ") + QString::fromLatin1( XMLGUI_DISTRIBUTION_TEXT );
   if ( !d->submitBugWeb )
       d->m_strVersion += QLatin1Char(' ') + d->kde_version;

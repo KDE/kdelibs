@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.12)
 
-project(XmlGui)
+project(KXmlGui)
 
 # ECM setup
 find_package(ECM 0.0.9 REQUIRED NO_MODULE)
@@ -17,8 +17,8 @@ include(KDECMakeSettings)
 set(KF5_VERSION "5.0.0")
 
 ecm_setup_version(${KF5_VERSION}
-                  VARIABLE_PREFIX XMLGUI
-                  VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/xmlgui_version.h"
+                  VARIABLE_PREFIX KXMLGUI
+                  VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kxmlgui_version.h"
                   PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KF5XmlGuiConfigVersion.cmake")
 
 # Dependencies
@@ -48,7 +48,7 @@ endif()
 set(LibAttica_MIN_VERSION "1.0.0")
 find_package(LibAttica ${LibAttica_MIN_VERSION} CONFIG)
 set_package_properties(LibAttica PROPERTIES DESCRIPTION "A Qt library that implements the Open Collaboration Services API"
-                       PURPOSE "Support for Get Hot New Stuff in XMLGUI"
+                       PURPOSE "Support for Get Hot New Stuff in KXMLGUI"
                        URL "https://projects.kde.org/attica"
                        TYPE OPTIONAL
                       )
@@ -81,7 +81,7 @@ install(FILES
 install(EXPORT KF5XmlGuiTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KF5XmlGuiTargets.cmake NAMESPACE KF5:: )
 
 install(FILES
-   ${CMAKE_CURRENT_BINARY_DIR}/xmlgui_version.h
+   ${CMAKE_CURRENT_BINARY_DIR}/kxmlgui_version.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
 

@@ -26,7 +26,7 @@
 #include "kaboutapplicationpersonmodel_p.h"
 #include "kaboutapplicationpersonlistview_p.h"
 #include "kaboutapplicationpersonlistdelegate_p.h"
-#include "../xmlgui_version.h"
+#include "../kxmlgui_version.h"
 
 #include <kaboutdata.h>
 #include <klocalizedstring.h>
@@ -102,7 +102,7 @@ void KAboutApplicationDialog::Private::init( const KAboutData &ad, Options opt )
     else
         titleWidget->setText(i18nc("Program name, version and KDE platform version; do not translate 'Development Platform'",
                                    "<html><font size=\"5\">%1</font><br /><b>Version %2</b><br />Using KDE Development Platform %3</html>",
-                                   aboutData.displayName(), aboutData.version(), QStringLiteral(XMLGUI_VERSION_STRING)));
+                                   aboutData.displayName(), aboutData.version(), QStringLiteral(KXMLGUI_VERSION_STRING)));
 
     //Then the tab bar...
     QTabWidget *tabWidget = new QTabWidget;

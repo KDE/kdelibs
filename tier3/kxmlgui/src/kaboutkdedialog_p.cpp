@@ -31,7 +31,7 @@
 #include <klocalizedstring.h>
 #include <ktitlewidget.h>
 
-#include "../xmlgui_version.h"
+#include "../kxmlgui_version.h"
 
 namespace KDEPrivate {
 
@@ -44,7 +44,7 @@ KAboutKdeDialog::KAboutKdeDialog(QWidget *parent)
 
     KTitleWidget *titleWidget = new KTitleWidget(this);
     titleWidget->setText(i18n("<html><font size=\"5\">KDE - Be Free!</font><br /><b>Platform Version %1</b></html>",
-                         QStringLiteral(XMLGUI_VERSION_STRING)));
+                         QStringLiteral(KXMLGUI_VERSION_STRING)));
     titleWidget->setPixmap(QIcon::fromTheme(QStringLiteral("kde")).pixmap(48), KTitleWidget::ImageLeft);
 
     QLabel *about = new QLabel;
@@ -137,7 +137,7 @@ KAboutKdeDialog::KAboutKdeDialog(QWidget *parent)
     tabWidget->addTab(support, i18n("&Support KDE"));
 
     QLabel *image = new QLabel;
-    image->setPixmap(QStandardPaths::locate(QStandardPaths::GenericDataLocation, QStringLiteral("xmlgui/pics/aboutkde.png")));
+    image->setPixmap(QStandardPaths::locate(QStandardPaths::GenericDataLocation, QStringLiteral("kxmlgui/pics/aboutkde.png")));
 
     QHBoxLayout *midLayout = new QHBoxLayout;
     midLayout->addWidget(image);

@@ -51,7 +51,7 @@
 #include "kxmlguifactory.h"
 #include "ktoolbar.h"
 
-#include "../xmlgui_version.h"
+#include "../kxmlgui_version.h"
 
 static const char * const separatorstring = I18N_NOOP("--- separator ---");
 

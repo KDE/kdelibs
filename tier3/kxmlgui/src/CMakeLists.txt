@@ -88,8 +88,8 @@ PRIVATE
     ${XMLGUI_EXTRA_LIBS}
 )
 
-set_target_properties(KF5XmlGui PROPERTIES VERSION   ${XMLGUI_VERSION_STRING}
-                                           SOVERSION ${XMLGUI_SOVERSION}
+set_target_properties(KF5XmlGui PROPERTIES VERSION   ${KXMLGUI_VERSION_STRING}
+                                           SOVERSION ${KXMLGUI_SOVERSION}
                                            EXPORT_NAME XmlGui
 )
 
@@ -126,4 +126,4 @@ install( FILES ui_standards.rc  DESTINATION  ${CONFIG_INSTALL_DIR}/ui )
 install( FILES
  aboutkde.png
  thumb_frame.png
- DESTINATION  ${DATA_INSTALL_DIR}/xmlgui/pics )
+ DESTINATION  ${DATA_INSTALL_DIR}/kxmlgui/pics )
