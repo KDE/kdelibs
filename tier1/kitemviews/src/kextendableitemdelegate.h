@@ -24,7 +24,7 @@
 
 #include <QStyledItemDelegate>
 
-#include <itemviews_export.h>
+#include <kitemviews_export.h>
 
 /**
   * This delegate makes it possible to display an arbitrary QWidget ("extender") that spans all columns below a line of items.
@@ -48,7 +48,7 @@
 
 class QAbstractItemView;
 
-class ITEMVIEWS_EXPORT KExtendableItemDelegate : public QStyledItemDelegate {
+class KITEMVIEWS_EXPORT KExtendableItemDelegate : public QStyledItemDelegate {
     Q_OBJECT
 
 public:

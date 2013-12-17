@@ -8,7 +8,7 @@ include(SuperBuild.cmake)
 
 sb_add_project(tier1/kf5umbrella )
 sb_add_project(tier1/kitemmodels )
-sb_add_project(tier1/itemviews )
+sb_add_project(tier1/kitemviews )
 sb_add_project(tier1/karchive )
 sb_add_project(tier1/kcodecs )
 sb_add_project(tier1/kconfig)

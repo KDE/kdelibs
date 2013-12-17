@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.12)
 
-project(ItemViews)
+project(KItemViews)
 
 find_package(ECM 0.0.9 REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR})
@@ -14,8 +14,8 @@ include(KDECMakeSettings)
 include(FeatureSummary)
 include(ECMSetupVersion)
 
-ecm_setup_version(5.0.0 VARIABLE_PREFIX ITEMVIEWS
-                        VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/itemviews_version.h"
+ecm_setup_version(5.0.0 VARIABLE_PREFIX KITEMVIEWS
+                        VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kitemviews_version.h"
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KF5ItemViewsConfigVersion.cmake")
 
 
@@ -45,7 +45,7 @@ install(FILES
 install(EXPORT KF5ItemViewsTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KF5ItemViewsTargets.cmake NAMESPACE KF5:: )
 
 install(FILES
-   ${CMAKE_CURRENT_BINARY_DIR}/itemviews_version.h
+   ${CMAKE_CURRENT_BINARY_DIR}/kitemviews_version.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
 

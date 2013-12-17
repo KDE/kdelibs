@@ -23,7 +23,7 @@
 
 #include <QListView>
 
-#include <itemviews_export.h>
+#include <kitemviews_export.h>
 
 class KCategoryDrawer;
 
@@ -75,7 +75,7 @@ class KCategoryDrawer;
   *
   * @author Rafael Fernández López <ereslibre@kde.org>
   */
-class ITEMVIEWS_EXPORT KCategorizedView
+class KITEMVIEWS_EXPORT KCategorizedView
     : public QListView
 {
     Q_OBJECT
@@ -313,7 +313,7 @@ protected Q_SLOTS:
       * @warning Deprecated since 4.4.
       */
 #ifndef KDE_NO_DEPRECATED
-    virtual ITEMVIEWS_DEPRECATED void rowsInsertedArtifficial(const QModelIndex &parent,
+    virtual KITEMVIEWS_DEPRECATED void rowsInsertedArtifficial(const QModelIndex &parent,
                                                         int start,
                                                         int end);
 #endif
@@ -323,7 +323,7 @@ protected Q_SLOTS:
       * @warning Deprecated since 4.4.
       */
 #ifndef KDE_NO_DEPRECATED
-    virtual ITEMVIEWS_DEPRECATED void rowsRemoved(const QModelIndex &parent,
+    virtual KITEMVIEWS_DEPRECATED void rowsRemoved(const QModelIndex &parent,
                                             int start,
                                             int end);
 #endif

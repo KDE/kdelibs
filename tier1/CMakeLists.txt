@@ -4,7 +4,7 @@ project(tier1)
 
 add_subdirectory(kf5umbrella)
 add_subdirectory(kitemmodels)
-add_subdirectory(itemviews)
+add_subdirectory(kitemviews)
 add_subdirectory(kplotting)
 add_subdirectory(threadweaver)
 add_subdirectory(kcodecs)

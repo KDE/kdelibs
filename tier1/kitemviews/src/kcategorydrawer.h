@@ -21,7 +21,7 @@
 #ifndef KCATEGORYDRAWER_H
 #define KCATEGORYDRAWER_H
 
-#include <itemviews_export.h>
+#include <kitemviews_export.h>
 
 #include <QtCore/QObject>
 #include <QMouseEvent>
@@ -37,7 +37,7 @@ class KCategorizedView;
   * height and margins.
   *
   */
-class ITEMVIEWS_EXPORT KCategoryDrawer
+class KITEMVIEWS_EXPORT KCategoryDrawer
     : public QObject
 {
     Q_OBJECT
@@ -173,7 +173,7 @@ private:
 
 class KCategoryDrawerV3 : public KCategoryDrawer {
 public:
-      ITEMVIEWS_DEPRECATED KCategoryDrawerV3(KCategorizedView *view) : KCategoryDrawer(view) {}
+      KITEMVIEWS_DEPRECATED KCategoryDrawerV3(KCategorizedView *view) : KCategoryDrawer(view) {}
 };
 #endif
 

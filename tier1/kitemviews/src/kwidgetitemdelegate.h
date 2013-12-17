@@ -27,7 +27,7 @@
 #include <QtCore/QPersistentModelIndex>
 #include <QAbstractItemDelegate>
 
-#include <itemviews_export.h>
+#include <kitemviews_export.h>
 
 class QObject;
 class QPainter;
@@ -46,7 +46,7 @@ class KWidgetItemDelegatePool;
  *
  * @since 4.1
  */
-class ITEMVIEWS_EXPORT KWidgetItemDelegate : public QAbstractItemDelegate
+class KITEMVIEWS_EXPORT KWidgetItemDelegate : public QAbstractItemDelegate
 {
     Q_OBJECT
 
@@ -131,7 +131,7 @@ protected:
      *          indexes that want to be updated.
      */
 #ifndef KDE_NO_DEPRECATED
-    ITEMVIEWS_DEPRECATED void paintWidgets(QPainter *painter, const QStyleOptionViewItem &option,
+    KITEMVIEWS_DEPRECATED void paintWidgets(QPainter *painter, const QStyleOptionViewItem &option,
                                      const QPersistentModelIndex &index) const;
 #endif
 

@@ -5,7 +5,7 @@ include(ECMMarkAsTest)
 
 find_package(Qt5 5.2.0 CONFIG REQUIRED Test)
 
-macro(itemviews_executable_tests)
+macro(kitemviews_executable_tests)
   foreach(_testname ${ARGN})
     add_executable(${_testname} ${_testname}.cpp)
     target_link_libraries(${_testname} Qt5::Test KF5::ItemViews)
@@ -13,7 +13,7 @@ macro(itemviews_executable_tests)
   endforeach(_testname)
 endmacro()
 
-itemviews_executable_tests(
+kitemviews_executable_tests(
   kcategorizedviewtest
   kwidgetitemdelegatetest
   ktreewidgetsearchlinetest

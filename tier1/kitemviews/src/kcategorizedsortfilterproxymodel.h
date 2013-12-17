@@ -24,7 +24,7 @@
 
 #include <QSortFilterProxyModel>
 
-#include <itemviews_export.h>
+#include <kitemviews_export.h>
 
 class QItemSelection;
 
@@ -42,7 +42,7 @@ class QItemSelection;
   *
   * @author Rafael Fernández López <ereslibre@kde.org>
   */
-class ITEMVIEWS_EXPORT KCategorizedSortFilterProxyModel
+class KITEMVIEWS_EXPORT KCategorizedSortFilterProxyModel
     : public QSortFilterProxyModel
 {
 public:
@@ -112,7 +112,7 @@ public:
       * Use QCollator instead.
       */
 #ifndef KDE_NO_DEPRECATED
-    ITEMVIEWS_DEPRECATED static int naturalCompare(const QString &a, const QString &b);
+    KITEMVIEWS_DEPRECATED static int naturalCompare(const QString &a, const QString &b);
 #endif
 
 protected:
