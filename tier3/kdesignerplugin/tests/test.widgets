@@ -1,0 +1,261 @@
+[Global]
+PluginName=KDEWidgets
+Includes=classpreviews.h
+Init=
+
+[KActiveLabel]
+ToolTip=Active Label (KDE)
+WhatsThis=A label with support for selection and clickable links
+Group=Display (KDE)
+
+[KCharSelect]
+ToolTip=Character Selection Widget (KDE)
+WhatsThis=A widget that allows selection a character out ot a table
+Group=Graphics (KDE)
+
+[KColorButton]
+ToolTip=Color Chooser Button (KDE)
+WhatsThis=A button that allows selecting a color
+Group=Graphics (KDE)
+
+[KColorCombo]
+ToolTip=Color Combo Box (KDE)
+Group=Graphics (KDE)
+
+[KComboBox]
+ToolTip=Combo Box (KDE)
+Group=Input (KDE)
+
+[KCModule]
+ToolTip=KControl Center Module (KDE)
+IsContainer=true
+Group=Container (KDE)
+
+[KDateWidget]
+ToolTip=Date preview (KDE)
+Group=Input (KDE)
+
+[KDatePicker]
+ToolTip=A date selection widget (KDE)
+WhatsThis=Provides a widget for calendar date input
+ConstructorArgs=(parent, QDate::currentDate(), name)
+Group=Input (KDE)
+
+[KDialog]
+IsContainer=true
+ImplClass=KDialogPreview
+ToolTip=Class for simple Dialogs (KDE)
+Group=Container (KDE)
+
+[KDualColorButton]
+ToolTip=A widget for selecting two related colors (KDE)
+Group=Graphics (KDE)
+
+[KEditListBox]
+ToolTip=Fullfeatured edit box with buttons (KDE)
+Group=Views (KDE)
+
+[KFontCombo]
+ToolTip=Font Combo Box (KDE)
+WhatsThis=A QCombo Box showing the installed system fonts (with preview)
+Group=Input (KDE)
+
+[KFontChooser]
+IncludeFile=kfontdialog.h
+IconSet=kfontcombo.png
+ToolTip=Font Chooser (KDE)
+WhatsThis=A font type, size and style selection widget complete with preview
+Group=Input (KDE)
+
+[KFontRequester]
+IncludeFile=kfontrequester.h
+ToolTip=Font Requester (KDE)
+WhatsThis=A compact font selection and preview widget
+Group=Input (KDE)
+
+[KGradientSelector]
+IncludeFile=kselect.h
+WhatsThis=A widget that allows the user to select two colors to form a gradient
+Group=Graphics (KDE)
+
+[KHistoryCombo]
+IncludeFile=kcombobox.h
+ToolTip=A combobox for offering a history and completion (KDE)
+WhatsThis=A combobox which implements a history like a unix shell
+Group=Input (KDE)
+
+[KHSSelector]
+IncludeFile=kcolordialog.h
+ToolTip=Widget for Hue/Saturation selection (KDE)
+Group=Graphics (KDE)
+
+[KLed]
+ToolTip=LED Widget (KDE)
+WhatsThis=A widget showing a light emitter diode
+Group=Display (KDE)
+
+[KListBox]
+ToolTip=Extended List Box (KDE)
+WhatsThis=An improved version of the QListBox that follows KDE settings
+Group=Views (KDE)
+
+[K3ListView]
+ToolTip=Extended List View (KDE)
+WhatsThis=An improved version of the QListView that allows certain KDE extensions
+Group=Views (KDE)
+
+[KLineEdit]
+ToolTip=Line Edit (KDE)
+Group=Input (KDE)
+
+[KPasswordEdit]
+IncludeFile=kpassworddialog.h
+ToolTip=Safe Password LineEdit (KDE)
+WhatsThis=A KLineEdit that is safe for prompting the user for passwords
+Group=Input (KDE)
+
+[KProgress]
+ToolTip=Progress Bar (KDE)
+WhatsThis=An improved progress bar for KDE that uses QFrame and QRangeControl
+Group=Display (KDE)
+
+[KPushButton]
+ToolTip=Improved QPushButton (KDE)
+WhatsThis=An improved QPushButton to follow KDE settings
+Group=Buttons (KDE)
+
+[KKeyButton]
+ToolTip=Keyboard Key Button. (KDE)
+WhatsThis=A push button that looks like a keyboard key.
+IncludeFile=kkeybutton.h
+Group=Buttons (KDE)
+
+[KRestrictedLine]
+ToolTip=Line Edit for restricted input (KDE)
+Group=Input (KDE)
+
+[KIconButton]
+IncludeFile=kicondialog.h
+ToolTip=Button for selecting an icon (KDE)
+Group=Buttons (KDE)
+
+[K3IconView]
+IncludeFile=k3iconview.h
+ToolTip=Extended Icon View (KDE)
+WhatsThis=An improved version of the QIconView that allows certain KDE extensions
+Group=Views (KDE)
+
+[KIntSpinBox]
+IncludeFile=knuminput.h
+ToolTip=Enhanced Spinbox for Integer Values (KDE)
+Group=Input (KDE)
+
+[KRuler]
+ToolTip=Measuring Ruler Widget (KDE)
+WhatsThis=A measuring ruler widget as seen in KWord for page widths and heights
+Group=Display (KDE)
+
+[KSqueezedTextLabel]
+ToolTip=A QLabel that squeezes its text (KDE)
+WhatsThis=If the text is too long to fit into the label it is divided into remaining left and right parts which are separated by three dots
+ConstructorArgs=("KSqueezedTextLabel", parent, name)
+Group=Display (KDE)
+
+[KTextBrowser]
+ToolTip=Improved QTextBrowser (KDE)
+WhatsThis=An improved version of the QTextBrowser with mail or system browser invocation support
+Group=Display (KDE)
+
+[KTextEdit]
+ToolTip=Improved QTextEdit (KDE)
+WhatsThis=An improved version of the QTextEdit with mail or system browser invocation support
+Group=Input (KDE)
+
+[KUrlLabel]
+ToolTip=URL Label (KDE)
+ConstructorArgs=("KUrlLabel", QString(), parent, name)
+Group=Display (KDE)
+
+[KUrlComboRequester]
+ToolTip=URL Requester (KDE)
+WhatsThis=A widget holding a combobox and a pushbutton. A "file open" dialog opened when clicking on the pushbutton
+IncludeFile=kurlrequester.h
+Group=Input (KDE)
+
+[KUrlRequester]
+ToolTip=URL Requester (KDE)
+WhatsThis=A widget holding a lineedit and a pushbutton. A "file open" dialog opened when clicking on the pushbutton
+Group=Input (KDE)
+
+[KIntNumInput]
+ToolTip=Integer Input Widget (KDE)
+WhatsThis=An input widget for integer numbers, consisting of a spinbox and a slider.
+IncludeFile=knuminput.h
+Group=Input (KDE)
+
+[KDoubleNumInput]
+ToolTip=Floating Point Number Input Widget (KDE)
+WhatsThis=An input widget for floating point numbers, consisting of a spinbox and a slider.
+IncludeFile=knuminput.h
+Group=Input (KDE)
+
+[KTimeWidget]
+ToolTip=This widget can be used to display or allow user selection of time. (KDE)
+IncludeFile=ktimewidget.h
+Group=Input (KDE)
+
+[KDateTimeWidget]
+ToolTip=This widget can be used to display or allow user selection of date and time. (KDE)
+IncludeFile=kdatetimewidget.h
+Group=Input (KDE)
+
+[KDateTable]
+IncludeFile=kdatetbl.h
+Group=Input (KDE)
+ConstructorArgs=(parent, QDate::currentDate(), name)
+
+[KLanguageButton]
+IncludeFile=klanguagebutton.h
+ToolTip=A widget for selecting a language
+WhatsThis=A combobox suitable for selecting a language
+Group=Input (KDE)
+
+[KImageFilePreview]
+IncludeFile=kimagefilepreview.h
+ToolTip=A widget that provides a image preview of a URL
+Group=Display (KDE)
+ConstructorArgs=(parent)
+
+[KActionSelector]
+IncludeFile=kactionselector.h
+ToolTip=A widget for selecting and arranging actions/objects
+Group=Views (KDE)
+
+[KWritePermsIcon]
+IncludeFile=kauthicon.h
+ToolTip=Auth icon for write permission display.
+ConstructorArgs=("", parent, name)
+Group=Display (KDE)
+
+[KRootPermsIcon]
+IncludeFile=kauthicon.h
+ToolTip=Icon to show whether or not a user has root permissions.
+Group=Display (KDE)
+
+[KColorPatch]
+IncludeFile=kcolordialog.h
+ToolTip=The KColorPatch widget is a (usually small) widget showing a selected color.
+Group=Display (KDE)
+ConstructorArgs=(parent)
+
+[KPaletteTable]
+IncludeFile=kcolordialog.h
+ToolTip=A color palette in table form.
+Group=Display (KDE)
+ConstructorArgs=(parent, 210, 16)
+
+#[KABC::AddressLineEdit]
+#IncludeFile=kabc/addresslineedit.h
+#ToolTip=A lineedit with LDAP and kabc completion.
+#Group=Input (KDE)
+#ConstructorArgs=(parent, true, name)

@@ -1,0 +1,10 @@
+[Global]
+PluginName=KDEWebKitWidgets
+Includes=classpreviews.h
+Init=
+
+[KWebView]
+IncludeFile=kwebview.h
+ToolTip=KDE WebKit View
+WhatsThis=A WebKit view with KDE integration.
+Group=Views (KDE)

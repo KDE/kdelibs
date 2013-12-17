@@ -1,0 +1,6 @@
+These are the tests for the current kgendesignerplugin.
+
+Currently there are two modes generated, and the checksums checked.
+These files are correct and build plugins that are functionally
+just as the Qt Project wants them for designer.  If at any time the
+code is changed then these md5 sums should be updated.
