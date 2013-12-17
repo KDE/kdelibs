@@ -20,7 +20,7 @@ target_link_libraries(KF5ItemViews PUBLIC Qt5::Widgets)
 
 set_target_properties(KF5ItemViews PROPERTIES VERSION   ${KITEMVIEWS_VERSION_STRING}
                                               SOVERSION ${KITEMVIEWS_SOVERSION}
-                                              EXPORT_NAME KItemViews
+                                              EXPORT_NAME ItemViews
 )
 
 install(TARGETS KF5ItemViews EXPORT KF5ItemViewsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
