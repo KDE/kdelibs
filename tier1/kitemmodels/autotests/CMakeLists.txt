@@ -14,17 +14,17 @@ add_subdirectory(proxymodeltestsuite)
 
 include(ECMMarkAsTest)
 
-macro(ITEMMODELS_PROXYMODEL_TESTS)
+macro(kitemmodels_proxymodel_tests)
     foreach(_testname ${ARGN})
         add_executable(${_testname} ${_testname}.cpp ${proxyModelTestSources} )
-        add_test(itemmodels-${_testname} ${_testname})
+        add_test(kitemmodels-${_testname} ${_testname})
         ecm_mark_as_test(${_testname})
         target_link_libraries(${_testname} KF5::ItemModels Qt5::Test Qt5::Widgets proxymodeltestsuite )
     endforeach(_testname)
 endmacro()
 
 
-itemmodels_proxymodel_tests(
+kitemmodels_proxymodel_tests(
   kdescendantsproxymodeltest
   klinkitemselectionmodeltest
   kselectionproxymodeltest

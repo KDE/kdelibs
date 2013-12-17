@@ -25,7 +25,7 @@
 #include <QItemSelectionModel>
 #include <QAbstractProxyModel>
 
-#include "itemmodels_export.h"
+#include "kitemmodels_export.h"
 
 class KLinkItemSelectionModelPrivate;
 
@@ -92,7 +92,7 @@ class KLinkItemSelectionModelPrivate;
   @author Stephen Kelly <steveire@gmail.com>
 
 */
-class ITEMMODELS_EXPORT KLinkItemSelectionModel : public QItemSelectionModel
+class KITEMMODELS_EXPORT KLinkItemSelectionModel : public QItemSelectionModel
 {
     Q_OBJECT
 public:

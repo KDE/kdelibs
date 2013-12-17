@@ -24,7 +24,7 @@
 
 #include <QObject>
 
-#include "itemmodels_export.h"
+#include "kitemmodels_export.h"
 
 class QAbstractItemModel;
 class QModelIndex;
@@ -76,7 +76,7 @@ class KModelIndexProxyMapperPrivate;
  * @author Stephen Kelly <steveire@gmail.com>
  *
  */
-class ITEMMODELS_EXPORT KModelIndexProxyMapper : public QObject
+class KITEMMODELS_EXPORT KModelIndexProxyMapper : public QObject
 {
   Q_OBJECT
 public:

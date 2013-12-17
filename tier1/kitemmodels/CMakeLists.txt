@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.12)
 
-project(ItemModels)
+project(KItemModels)
 
 find_package(ECM 0.0.9 REQUIRED NO_MODULE)
 
@@ -17,8 +17,8 @@ include(FeatureSummary)
 
 include(ECMSetupVersion)
 
-ecm_setup_version(5.0.0 VARIABLE_PREFIX ITEMMODELS
-                        VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/itemmodels_version.h"
+ecm_setup_version(5.0.0 VARIABLE_PREFIX KITEMMODELS
+                        VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kitemmodels_version.h"
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KF5ItemModelsConfigVersion.cmake")
 
 
@@ -48,7 +48,7 @@ install(FILES
 install(EXPORT KF5ItemModelsTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KF5ItemModelsTargets.cmake NAMESPACE KF5:: )
 
 install(FILES
-   ${CMAKE_CURRENT_BINARY_DIR}/itemmodels_version.h
+   ${CMAKE_CURRENT_BINARY_DIR}/kitemmodels_version.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
 

@@ -7,7 +7,7 @@ cmake_minimum_required(VERSION 2.8.12)
 include(SuperBuild.cmake)
 
 sb_add_project(tier1/kf5umbrella )
-sb_add_project(tier1/itemmodels )
+sb_add_project(tier1/kitemmodels )
 sb_add_project(tier1/itemviews )
 sb_add_project(tier1/karchive )
 sb_add_project(tier1/kcodecs )

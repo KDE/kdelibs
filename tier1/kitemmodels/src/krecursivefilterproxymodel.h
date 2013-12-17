@@ -23,7 +23,7 @@
 
 #include <QSortFilterProxyModel>
 
-#include "itemmodels_export.h"
+#include "kitemmodels_export.h"
 
 class KRecursiveFilterProxyModelPrivate;
 
@@ -84,7 +84,7 @@ class KRecursiveFilterProxyModelPrivate;
   @since 4.5
 
 */
-class ITEMMODELS_EXPORT KRecursiveFilterProxyModel : public QSortFilterProxyModel
+class KITEMMODELS_EXPORT KRecursiveFilterProxyModel : public QSortFilterProxyModel
 {
   Q_OBJECT
 public:

@@ -329,7 +329,7 @@ is no longer available. To simply make the code build, for the sake of porting o
 <li>KSvgRenderer: Use QSvgRenderer instead (drop-in replacement)</li>
 <li>KCursor: Use QCursor instead</li>
 <li>KIdentityProxyModel: Removed, used QIdentityProxyModel instead (trivial search/replace)</li>
-<li>Other proxy models: Moved to libitemmodels</li>
+<li>Other proxy models: Moved to the KItemModels framework</li>
 <li>KPassivePopup: standardView() now returns a QWidget* instead of a KVBox*. The QWidget has a QVBoxLayout, i.e., additional widgets can be appended by calling widget-&gt;layout()-&gt;addWidget().</li>
 <li>KCodecAction: use enum KEncodingProber::ProberType instead of enum KEncodingDetector::AutoDetectScript</li>
 <li>KXMessages: the "obsolete = false" argument has been removed from all methods, and int screen has a default value of -1 now. Remove the "-1, false" in all calls. The sendMessage and sendMessageX methods were apparently unused, and have been commented out. Email kde-frameworks-devel at kde.org if you need them back.</li>
