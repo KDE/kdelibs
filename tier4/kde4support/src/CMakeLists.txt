@@ -33,6 +33,7 @@ endif()
 add_subdirectory( kioslave )
 add_subdirectory( kssl/kssl )
 add_subdirectory( kssl/kcm )
+add_subdirectory( kio/imageformats )
 
 set(libkde4support_SRCS
     kdecore/k4aboutdata.cpp

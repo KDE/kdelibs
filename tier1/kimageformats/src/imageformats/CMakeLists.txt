@@ -1,3 +1,4 @@
+# NB: the desktop files are installed for the benefit of KImageIO in KDE4Support.
 
 find_package(Jasper)
 set_package_properties(Jasper PROPERTIES DESCRIPTION "Support for JPEG-2000 images"
@@ -157,28 +158,4 @@ target_link_libraries(kimg_pic Qt5::Gui)
 
 install(TARGETS kimg_pic  DESTINATION ${QT_PLUGIN_INSTALL_DIR}/imageformats/ )
 install(FILES pic.desktop DESTINATION  ${SERVICES_INSTALL_DIR}/qimageioplugins/ )
-
-########### install files ###############
-
-# For plugins supplied with Qt
-install( FILES
-  png.desktop
-  xpm.desktop
-  bmp.desktop
-  pbm.desktop
-  pgm.desktop
-  ppm.desktop
-  xbm.desktop
-  jpeg.desktop
-  ico.desktop
-  gif.desktop
-  mng.desktop
-  tiff.desktop
-  svg+xml.desktop
-  svg+xml-compressed.desktop
-  wbmp.desktop
-  DESTINATION ${SERVICES_INSTALL_DIR}/qimageioplugins/ )
-
-install( FILES qimageio_plugin.desktop DESTINATION  ${SERVICETYPES_INSTALL_DIR}/ )
-
 
