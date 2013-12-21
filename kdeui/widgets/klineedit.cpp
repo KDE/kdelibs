@@ -587,6 +587,7 @@ void KLineEdit::setSqueezedText()
     d->squeezedStart = 0;
     d->squeezedEnd = 0;
     const QString fullText = d->squeezedText;
+    const int fullLength = fullText.length();
     const QFontMetrics fm(fontMetrics());
     const int labelWidth = size().width() - 2*style()->pixelMetric(QStyle::PM_DefaultFrameWidth) - 2;
     const int textWidth = fm.width(fullText);
@@ -611,7 +612,7 @@ void KLineEdit::setSqueezedText()
                 letters++;
                 squeezedText = fullText.left(letters) + "..." + fullText.right(letters);
                 squeezedWidth = fm.width(squeezedText);
-             } while (squeezedWidth < labelWidth);
+             } while (squeezedWidth < labelWidth && letters <= fullLength / 2);
              letters--;
              squeezedText = fullText.left(letters) + "..." + fullText.right(letters);
       }
@@ -624,7 +625,7 @@ void KLineEdit::setSqueezedText()
                letters--;
                 squeezedText = fullText.left(letters) + "..." + fullText.right(letters);
                 squeezedWidth = fm.width(squeezedText);
-             } while (squeezedWidth > labelWidth);
+             } while (squeezedWidth > labelWidth && letters >= 5);
           }
 
       if (letters < 5)
