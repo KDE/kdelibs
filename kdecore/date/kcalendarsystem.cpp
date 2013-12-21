@@ -853,8 +853,8 @@ QString KCalendarSystemPrivate::simpleDateString(const QString &str) const
             newStr.append(QLatin1Char(' '));
         }
     }
-    newStr.simplified();
-    return newStr;
+
+    return newStr.simplified();
 }
 
 int KCalendarSystemPrivate::dayOfYear(const QDate &date) const
