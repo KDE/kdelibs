@@ -1847,7 +1847,13 @@ JSValue* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     DOM::HTMLAnchorElementImpl& anchor = static_cast<DOM::HTMLAnchorElementImpl&>(element);
     QString href = getURLArg(ATTR_HREF);
     switch (token) {
-    case AnchorHash:            return jsString('#'+KUrl(href).ref());
+    case AnchorHash: {
+        const QString encodedHash = KUrl(href).ref();
+        if (encodedHash.isEmpty()) {
+            return jsString("");
+        }
+        return jsString(QLatin1Char('#') + encodedHash);
+    }
     case AnchorHost:            return jsString(KUrl(href).host());
     case AnchorHostname: {
       KUrl url(href);
@@ -1918,7 +1924,13 @@ JSValue* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     switch(token) {
       case AreaHref:
         return jsString(url.url());
-      case AreaHash:            return jsString(url.isEmpty() ? "" : QString('#'+url.ref()));
+      case AreaHash: {
+          const QString encodedHash = url.ref();
+          if (encodedHash.isEmpty()) {
+              return jsString("");
+          }
+          return jsString(QLatin1Char('#') + encodedHash);
+      }
       case AreaHost:            return jsString(url.host());
       case AreaHostName: {
         if (url.port()<=0)
