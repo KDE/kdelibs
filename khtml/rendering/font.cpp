@@ -129,10 +129,13 @@ static inline void closeAndDrawWord(QPainter *p, Qt::LayoutDirection d,
     wordStart = wordEnd;
 }
 
-void Font::drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, int len,
+void Font::drawText( QPainter *p, int x, int y, const QChar *str, int slen, int pos, int len,
         int toAdd, Qt::LayoutDirection d, int from, int to, QColor bg, int uy, int h, int deco ) const
 {
-    if (!str) return;
+    if (!str || slen == 0) { // #188910
+        return;
+    }
+
     QString qstr = QString::fromRawData(str, slen);
 
     const QFontMetrics& fm = cfi->fm;
