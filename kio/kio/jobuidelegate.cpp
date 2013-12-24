@@ -82,6 +82,7 @@ KIO::RenameDialog_Result KIO::JobUiDelegate::askFileRename(KJob * job,
                                                      sizeSrc, sizeDest,
                                                      ctimeSrc, ctimeDest, mtimeSrc,
                                                      mtimeDest);
+    dlg.setWindowModality(Qt::WindowModal);
     connect(job, SIGNAL(finished(KJob*)), &dlg, SLOT(reject())); // #192976
     KIO::RenameDialog_Result res = static_cast<RenameDialog_Result>(dlg.exec());
     if (res == R_AUTO_RENAME) {
@@ -99,6 +100,7 @@ KIO::SkipDialog_Result KIO::JobUiDelegate::askSkip(KJob *job,
 {
     // We now do it in process. So this method is a useless wrapper around KIO::open_RenameDialog.
     KIO::SkipDialog dlg( window(), multi, error_text );
+    dlg.setWindowModality(Qt::WindowModal);
     connect(job, SIGNAL(finished(KJob*)), &dlg, SLOT(reject())); // #192976
     return static_cast<KIO::SkipDialog_Result>(dlg.exec());
 }
@@ -143,8 +145,9 @@ bool KIO::JobUiDelegate::askDeleteConfirmation(const KUrl::List& urls,
             }
         }
 
-        QWidget* widget = window();
         int result;
+        QWidget* widget = window();
+        const KMessageBox::Options options = KMessageBox::Notify | KMessageBox::WindowModal;
         switch(deletionType) {
         case Delete:
             result = KMessageBox::warningContinueCancelList(
@@ -154,7 +157,7 @@ bool KIO::JobUiDelegate::askDeleteConfirmation(const KUrl::List& urls,
 		i18n("Delete Files"),
 		KStandardGuiItem::del(),
 		KStandardGuiItem::cancel(),
-		keyName, KMessageBox::Notify);
+		keyName, options);
             break;
         case EmptyTrash:
 	    result = KMessageBox::warningContinueCancel(
@@ -164,7 +167,7 @@ bool KIO::JobUiDelegate::askDeleteConfirmation(const KUrl::List& urls,
 		KGuiItem(i18nc("@action:button", "Empty Trash"),
 		KIcon("user-trash")),
 		KStandardGuiItem::cancel(),
-		keyName, KMessageBox::Notify);
+		keyName, options);
 	    break;
         case Trash:
         default:
@@ -175,7 +178,7 @@ bool KIO::JobUiDelegate::askDeleteConfirmation(const KUrl::List& urls,
 		i18n("Move to Trash"),
 		KGuiItem(i18nc("Verb", "&Trash"), "user-trash"),
 		KStandardGuiItem::cancel(),
-		keyName, KMessageBox::Notify);
+		keyName, options);
         }
         if (!keyName.isEmpty()) {
             // Check kmessagebox setting... erase & copy to konquerorrc.
@@ -210,30 +213,32 @@ int KIO::JobUiDelegate::requestMessageBox(KIO::JobUiDelegate::MessageBoxType typ
 
     const KGuiItem buttonYesGui (buttonYes, iconYes);
     const KGuiItem buttonNoGui (buttonNo, iconNo);
+    KMessageBox::Options options = (KMessageBox::Notify | KMessageBox::WindowModal);
 
     switch (type) {
     case QuestionYesNo:
         result = KMessageBox::questionYesNo(
                     window(), text, caption, buttonYesGui,
-                    buttonNoGui, dontAskAgainName);
+                    buttonNoGui, dontAskAgainName, options);
         break;
     case WarningYesNo:
         result = KMessageBox::warningYesNo(
                     window(), text, caption, buttonYesGui,
-                    buttonNoGui, dontAskAgainName);
+                    buttonNoGui, dontAskAgainName,
+                    options | KMessageBox::Dangerous);
         break;
     case WarningYesNoCancel:
         result = KMessageBox::warningYesNoCancel(
                     window(), text, caption, buttonYesGui, buttonNoGui,
-                    KStandardGuiItem::cancel(), dontAskAgainName);
+                    KStandardGuiItem::cancel(), dontAskAgainName, options);
         break;
     case WarningContinueCancel:
         result = KMessageBox::warningContinueCancel(
                     window(), text, caption, buttonYesGui,
-                    KStandardGuiItem::cancel(), dontAskAgainName);
+                    KStandardGuiItem::cancel(), dontAskAgainName, options);
         break;
     case Information:
-        KMessageBox::information(window(), text, caption, dontAskAgainName);
+        KMessageBox::information(window(), text, caption, dontAskAgainName, options);
         result = 1; // whatever
         break;
     case SSLMessageBox:
@@ -266,7 +271,7 @@ int KIO::JobUiDelegate::requestMessageBox(KIO::JobUiDelegate::MessageBoxType typ
             result = -1;
             KMessageBox::information(window(),
                                      i18n("The peer SSL certificate chain appears to be corrupt."),
-                                     i18n("SSL"));
+                                     i18n("SSL"), QString(), options);
         }
         // KSslInfoDialog deletes itself (Qt::WA_DeleteOnClose).
         delete kid;
