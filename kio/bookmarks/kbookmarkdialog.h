@@ -131,6 +131,9 @@ protected:
 
 protected Q_SLOTS:
   void newFolderButton();
+
+private:
+  void fillGroup(QTreeWidgetItem* parentItem, const KBookmarkGroup& group, const KBookmarkGroup& selectGroup);
 };
 
 #endif

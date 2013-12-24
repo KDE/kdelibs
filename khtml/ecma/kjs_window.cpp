@@ -2870,8 +2870,13 @@ JSValue* Location::getValueProperty(ExecState *exec, int token) const
 {
   KUrl url = m_frame->m_part->url();
   switch(token) {
-    case Hash:
-      return jsString( UString(url.htmlRef().isNull() ? QString("") : '#' + url.htmlRef()) );
+    case Hash: {
+        const QString encodedHash = url.ref();
+        if (encodedHash.isEmpty()) {
+            return jsString("");
+        }
+        return jsString(QLatin1Char('#') + encodedHash);
+    }
     case Host: {
       UString str = url.host();
       if (url.port() > 0)
