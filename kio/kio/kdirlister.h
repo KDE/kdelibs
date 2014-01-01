@@ -399,9 +399,8 @@ public:
    * This method will NOT start listing a directory, you should only call
    * this when receiving the finished() signal.
    *
-   * The items in the KFileItemList are references to the items used
-   * by KDirLister, so e.g. an item gets destroyed when the deleteItem()
-   * signal is emitted.
+   * The items in the KFileItemList are copies of the items used
+   * by KDirLister.
    *
    * @param which specifies whether the returned list will contain all entries
    *              or only the ones that passed the nameFilter(), mimeFilter(),
@@ -417,9 +416,8 @@ public:
    * This method will NOT start listing @p dir, you should only call
    * this when receiving the finished() signal.
    *
-   * The items in the KFileItemList are references to the items used
-   * by KDirLister, so e.g. an item gets destroyed when the deleteItem()
-   * signal is emitted.
+   * The items in the KFileItemList are copies of the items used
+   * by KDirLister.
    *
    * @param dir specifies the url for which the items should be returned. This
    *            is only useful if you use KDirLister with multiple URLs
@@ -541,12 +539,10 @@ Q_SIGNALS:
    *
    * @param _fileItem the fileItem to delete
    */
-  void deleteItem( const KFileItem &_fileItem ); // KDE5: remove, and port to itemsDeleted
+  QT_MOC_COMPAT void deleteItem( const KFileItem &_fileItem ); // KDE5: remove, and port to itemsDeleted
 
   /**
-   * Signal that items have been deleted
-   * Note that this signal is newer than deleteItem, so
-   * when items are deleted, both signals are emitted, for compatibility reasons.
+   * Signal that items have been deleted.
    *
    * @since 4.1.2
    * @param items the list of deleted items
