@@ -324,6 +324,10 @@ quint64 FileUndoManager::currentCommandSerialNumber() const
 
 void FileUndoManager::undo()
 {
+    if (d->m_commands.isEmpty()) {
+        return;
+    }
+
     // Make a copy of the command to undo before broadcastPop() pops it.
     UndoCommand cmd = d->m_commands.last();
     assert(cmd.m_valid);
