@@ -731,7 +731,6 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, RenderStyle* fall
         fontDirty = false;
 
         if (propsToApply.size()) {
-            CSSStyleSelector::style = style;
             for (unsigned int i = 0; i < propsToApply.size(); ++i) {
 		if ( fontDirty && propsToApply[i]->priority >= (1 << 30) ) {
 		    // we are past the font properties, time to update to the
@@ -739,7 +738,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, RenderStyle* fall
 #ifdef APPLE_CHANGES
 		    checkForGenericFamilyChange(style, parentStyle);
 #endif
-		    CSSStyleSelector::style->htmlFont().update( logicalDpiY );
+		    style->htmlFont().update(logicalDpiY);
 		    fontDirty = false;
 		}
 		DOM::CSSProperty *prop = propsToApply[i]->prop;
@@ -751,7 +750,7 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, RenderStyle* fall
 #ifdef APPLE_CHANGES
 	        checkForGenericFamilyChange(style, parentStyle);
 #endif
-		CSSStyleSelector::style->htmlFont().update( logicalDpiY );
+		style->htmlFont().update(logicalDpiY);
             }
         }
 
@@ -4012,7 +4011,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             // before we evaluate line-height, e.g., font: 1em/1em.  FIXME: Still not
             // good enough: style="font:1em/1em; font-size:36px" should have a line-height of 36px.
             if (fontDirty)
-                CSSStyleSelector::style->htmlFont().update( logicalDpiY );
+                style->htmlFont().update(logicalDpiY);
 
 	    applyRule( CSS_PROP_LINE_HEIGHT, font->lineHeight );
 	    applyRule( CSS_PROP_FONT_FAMILY, font->family );
