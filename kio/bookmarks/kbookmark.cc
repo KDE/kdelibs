@@ -248,21 +248,12 @@ QDomElement KBookmarkGroup::findToolbar() const
 {
     if ( element.attribute("toolbar") == "yes" )
         return element;
-    for (QDomNode n = element.firstChild(); !n.isNull() ; n = n.nextSibling() )
+    for (QDomElement e = element.firstChildElement("folder"); !e.isNull();
+        e = e.nextSiblingElement("folder") )
     {
-        QDomElement e = n.toElement();
-        // Search among the "folder" children only
-        if ( e.tagName() == "folder" )
-        {
-            if ( e.attribute("toolbar") == "yes" )
-                return e;
-            else
-            {
-                QDomElement result = KBookmarkGroup(e).findToolbar();
-                if (!result.isNull())
-                    return result;
-            }
-        }
+        QDomElement result = KBookmarkGroup(e).findToolbar();
+        if (!result.isNull())
+            return result;
     }
     return QDomElement();
 }
