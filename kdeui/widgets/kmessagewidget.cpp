@@ -94,6 +94,10 @@ void KMessageWidgetPrivate::init(KMessageWidget *q_ptr)
 
     KAction* closeAction = KStandardAction::close(q, SLOT(animatedHide()), q);
 
+    // The default shortcut assigned by KStandardAction is Ctrl+W,
+    // which might conflict with application-specific shortcuts.
+    closeAction->setShortcut(QKeySequence());
+
     closeButton = new QToolButton(content);
     closeButton->setAutoRaise(true);
     closeButton->setDefaultAction(closeAction);
