@@ -82,10 +82,10 @@ const ClassInfo MathObjectImp::info = { "Math", 0, &mathTable, 0 };
   trunc         MathObjectImp::Trunc    DontEnum|Function 1
   hypot         MathObjectImp::Hypot    DontEnum|Function 0
   imul          MathObjectImp::Imul     DontEnum|Function 2
+  fround        MathObjectImp::FRound   DontEnum|Function 1
 @end
 */
 
-//   fround        MathObjectImp::FRound   DontEnum|Function 1
 
 MathObjectImp::MathObjectImp(ExecState * /*exec*/,
                              ObjectPrototype *objProto)
@@ -342,6 +342,12 @@ JSValue *MathFuncImp::callAsFunction(ExecState *exec, JSObject* /*thisObj*/, con
       result = a * b;
       break;
   }
+  case MathObjectImp::FRound:
+      if (isNaN(arg) || isinf(arg))
+          return jsNumber(arg);
+
+      result = static_cast<double>(static_cast<float>(arg));
+      break;
 
   default:
     result = 0.0;
