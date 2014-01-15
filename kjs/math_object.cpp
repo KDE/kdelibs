@@ -27,6 +27,7 @@
 #include "operations.h"
 #include <math.h>
 #include <time.h>
+#include <limits.h>
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -80,11 +81,11 @@ const ClassInfo MathObjectImp::info = { "Math", 0, &mathTable, 0 };
   tanh          MathObjectImp::TanH     DontEnum|Function 1
   trunc         MathObjectImp::Trunc    DontEnum|Function 1
   hypot         MathObjectImp::Hypot    DontEnum|Function 0
+  imul          MathObjectImp::Imul     DontEnum|Function 2
 @end
 */
 
 //   fround        MathObjectImp::FRound   DontEnum|Function 1
-//   imul          MathObjectImp::Imul     DontEnum|Function 1
 
 MathObjectImp::MathObjectImp(ExecState * /*exec*/,
                              ObjectPrototype *objProto)
@@ -326,6 +327,20 @@ JSValue *MathFuncImp::callAsFunction(ExecState *exec, JSObject* /*thisObj*/, con
 
     result = ::sqrt(sum);
     break;
+  }
+  case MathObjectImp::Imul:
+  {
+      if (args.size() < 2)
+          return jsUndefined();
+      int32_t a = args[0]->toInt32(exec);
+      if (exec->hadException())
+          return jsNumber(a);
+      int32_t b = args[1]->toInt32(exec);
+      if (exec->hadException())
+          return jsNumber(b);
+
+      result = a * b;
+      break;
   }
 
   default:
