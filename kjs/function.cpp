@@ -956,7 +956,7 @@ double parseIntOverflow(const char* s, int length, int radix)
     return number;
 }
 
-static double parseInt(const UString &s, int radix)
+double parseInt(const UString &s, int radix)
 {
     int length = s.size();
     int p = 0;
@@ -1015,7 +1015,7 @@ static double parseInt(const UString &s, int radix)
     return sign * number;
 }
 
-static double parseFloat(const UString &s)
+double parseFloat(const UString &s)
 {
     // Check for 0x prefix here, because toDouble allows it, but we must treat it as 0.
     // Need to skip any whitespace and then one + or - sign.
