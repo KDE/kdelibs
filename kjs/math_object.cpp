@@ -27,6 +27,7 @@
 #include "operations.h"
 #include <math.h>
 #include <time.h>
+#include <limits.h>
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -66,8 +67,25 @@ const ClassInfo MathObjectImp::info = { "Math", 0, &mathTable, 0 };
   sin           MathObjectImp::Sin      DontEnum|Function 1
   sqrt          MathObjectImp::Sqrt     DontEnum|Function 1
   tan           MathObjectImp::Tan      DontEnum|Function 1
+  acosh         MathObjectImp::ACosH    DontEnum|Function 1
+  acosh         MathObjectImp::ASinH    DontEnum|Function 1
+  atanh         MathObjectImp::ATanH    DontEnum|Function 1
+  cbrt          MathObjectImp::Cbrt     DontEnum|Function 1
+  cosh          MathObjectImp::CosH     DontEnum|Function 1
+  exmp1         MathObjectImp::Exmp1    DontEnum|Function 1
+  log1p         MathObjectImp::Log1p    DontEnum|Function 1
+  log10         MathObjectImp::Log10    DontEnum|Function 1
+  log2          MathObjectImp::Log2     DontEnum|Function 1
+  sign          MathObjectImp::Sign     DontEnum|Function 1
+  sinh          MathObjectImp::SinH     DontEnum|Function 1
+  tanh          MathObjectImp::TanH     DontEnum|Function 1
+  trunc         MathObjectImp::Trunc    DontEnum|Function 1
+  hypot         MathObjectImp::Hypot    DontEnum|Function 0
+  imul          MathObjectImp::Imul     DontEnum|Function 2
+  fround        MathObjectImp::FRound   DontEnum|Function 1
 @end
 */
+
 
 MathObjectImp::MathObjectImp(ExecState * /*exec*/,
                              ObjectPrototype *objProto)
@@ -220,6 +238,116 @@ JSValue *MathFuncImp::callAsFunction(ExecState *exec, JSObject* /*thisObj*/, con
   case MathObjectImp::Tan:
     result = ::tan(arg);
     break;
+
+  //ES6 (draft 08.11.2013)
+  case MathObjectImp::ACosH:
+    result = ::acosh(arg);
+    break;
+  case MathObjectImp::ASinH:
+    result = ::asinh(arg);
+    break;
+  case MathObjectImp::ATanH:
+    result = ::atanh(arg);
+    break;
+  case MathObjectImp::Cbrt:
+    result = ::cbrt(arg);
+    break;
+  case MathObjectImp::CosH:
+    result = ::cosh(arg);
+    break;
+  case MathObjectImp::Exmp1:
+    result = ::expm1(arg);
+    break;
+  case MathObjectImp::Log1p:
+    result = ::log1p(arg);
+    break;
+  case MathObjectImp::Log10:
+    result = ::log10(arg);
+    break;
+  case MathObjectImp::Log2:
+    result = ::log2(arg);
+    break;
+  case MathObjectImp::Sign:
+      if (isNaN(arg))
+      {
+          result = KJS::NaN;
+      }
+      else if (signbit(arg))
+      {
+          if (arg == 0)
+              result = -0.0;
+          else
+              result = -1.0;
+      }
+      else
+      {
+          if (arg == 0)
+              result = 0.0;
+          else
+              result = 1.0;
+      }
+    break;
+  case MathObjectImp::SinH:
+    result = ::sinh(arg);
+    break;
+  case MathObjectImp::TanH:
+    result = ::tanh(arg);
+    break;
+  case MathObjectImp::Trunc:
+    result = ::trunc(arg);
+    break;
+  case MathObjectImp::Hypot:
+  {
+    if (args.size() == 0)
+    {
+        result = 0;
+        break;
+    }
+
+    double sum = 0.0;
+    bool foundNaN = false;
+    for (int i = 0; i < args.size(); ++i)
+    {
+        double num = args[i]->toNumber(exec);
+        if (isInf(num))
+            return jsNumber(KJS::Inf);
+        if (foundNaN)
+            continue;
+        if (isNaN(num))
+        {
+            foundNaN = true;
+            continue;
+        }
+
+        sum += ::pow(num, 2);
+    }
+
+    if (foundNaN)
+        return jsNumber(KJS::NaN);
+
+    result = ::sqrt(sum);
+    break;
+  }
+  case MathObjectImp::Imul:
+  {
+      if (args.size() < 2)
+          return jsUndefined();
+      int32_t a = args[0]->toInt32(exec);
+      if (exec->hadException())
+          return jsNumber(a);
+      int32_t b = args[1]->toInt32(exec);
+      if (exec->hadException())
+          return jsNumber(b);
+
+      result = a * b;
+      break;
+  }
+  case MathObjectImp::FRound:
+      if (isNaN(arg) || isinf(arg))
+          return jsNumber(arg);
+
+      result = static_cast<double>(static_cast<float>(arg));
+      break;
 
   default:
     result = 0.0;

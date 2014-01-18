@@ -42,6 +42,9 @@ using std::strncpy;
 using std::memset;
 using std::memcpy;
 
+static const double MAX_SAFE_INTEGER = 9007199254740991.0; //(2^53)-1
+static const double MIN_SAFE_INTEGER = -9007199254740991.0; //-((2^53)-1)
+
 // ------------------------------ NumberInstance ----------------------------
 
 const ClassInfo NumberInstance::info = {"Number", 0, 0, 0};
@@ -462,6 +465,15 @@ const ClassInfo NumberObjectImp::info = {"Function", &InternalFunctionImp::info,
   POSITIVE_INFINITY     NumberObjectImp::PosInfinity    DontEnum|DontDelete|ReadOnly
   MAX_VALUE             NumberObjectImp::MaxValue       DontEnum|DontDelete|ReadOnly
   MIN_VALUE             NumberObjectImp::MinValue       DontEnum|DontDelete|ReadOnly
+
+  MAX_SAFE_INTEGER      NumberObjectImp::MaxSafeInteger DontEnum|DontDelete|ReadOnly
+  MIN_SAFE_INTEGER      NumberObjectImp::MinSafeInteger DontEnum|DontDelete|ReadOnly
+  isFinite              NumberObjectImp::IsFinite       DontEnum|Function 1
+  isInteger             NumberObjectImp::IsInteger      DontEnum|Function 1
+  isNaN                 NumberObjectImp::IsNaN          DontEnum|Function 1
+  isSafeInteger         NumberObjectImp::IsSafeInteger  DontEnum|Function 1
+  parseInt              NumberObjectImp::ParseInt       DontEnum|Function 2
+  parseFloat            NumberObjectImp::ParseFloat     DontEnum|Function 1
 @end
 */
 NumberObjectImp::NumberObjectImp(ExecState* exec, FunctionPrototype* funcProto, NumberPrototype* numberProto)
@@ -476,7 +488,7 @@ NumberObjectImp::NumberObjectImp(ExecState* exec, FunctionPrototype* funcProto, 
 
 bool NumberObjectImp::getOwnPropertySlot(ExecState* exec, const Identifier& propertyName, PropertySlot& slot)
 {
-    return getStaticValueSlot<NumberObjectImp, InternalFunctionImp>(exec, &numberTable, this, propertyName, slot);
+    return getStaticPropertySlot<NumberFuncImp, NumberObjectImp, InternalFunctionImp>(exec, &numberTable, this, propertyName, slot);
 }
 
 JSValue* NumberObjectImp::getValueProperty(ExecState*, int token) const
@@ -493,6 +505,10 @@ JSValue* NumberObjectImp::getValueProperty(ExecState*, int token) const
         return jsNumberCell(1.7976931348623157E+308);
     case MinValue:
         return jsNumberCell(5E-324);
+    case MaxSafeInteger:
+        return jsNumber(MAX_SAFE_INTEGER);
+    case MinSafeInteger:
+        return jsNumber(MIN_SAFE_INTEGER);
     }
     return jsNull();
 }
@@ -519,5 +535,57 @@ JSValue* NumberObjectImp::callAsFunction(ExecState* exec, JSObject*, const List&
     double n = args.isEmpty() ? 0 : args[0]->toNumber(exec);
     return jsNumber(n);
 }
+
+NumberFuncImp::NumberFuncImp(ExecState* exec, int i, int l, const Identifier& name)
+  : InternalFunctionImp(static_cast<FunctionPrototype*>(exec->lexicalInterpreter()->builtinFunctionPrototype()), name)
+  , id(i)
+{
+  putDirect(exec->propertyNames().length, l, DontDelete|ReadOnly|DontEnum);
+}
+
+JSValue* NumberFuncImp::callAsFunction(ExecState* exec, JSObject* /*thisObj*/, const List& args)
+{
+    double arg = args[0]->toNumber(exec);
+
+    switch (id) {
+    case NumberObjectImp::IsFinite:
+        if (args[0]->type() != NumberType)
+            return jsBoolean(false);
+        return jsBoolean(!isNaN(arg) && !isInf(arg));
+
+    case NumberObjectImp::IsInteger:
+        {
+            if (args[0]->type() != NumberType)
+                return jsBoolean(false);
+            if (isNaN(arg) || isInf(arg))
+                return jsBoolean(false);
+            double num = args[0]->toInteger(exec);
+            return jsBoolean(num == arg);
+        }
+    case NumberObjectImp::IsNaN:
+        if (args[0]->type() != NumberType)
+            return jsBoolean(false);
+        return jsBoolean(isNaN(arg));
+
+    case NumberObjectImp::IsSafeInteger:
+        {
+            if (args[0]->type() != NumberType)
+                return jsBoolean(false);
+            if (isNaN(arg) || isInf(arg))
+                return jsBoolean(false);
+            double num = args[0]->toInteger(exec);
+            if (num != arg)
+                return jsBoolean(false);
+            return jsBoolean(abs(num) < MAX_SAFE_INTEGER);
+        }
+    case NumberObjectImp::ParseInt:
+        return jsNumber(KJS::parseInt(args[0]->toString(exec), args[1]->toInt32(exec)));
+    case NumberObjectImp::ParseFloat:
+        return jsNumber(KJS::parseFloat(args[0]->toString(exec)));
+
+    }
+    return jsUndefined();
+}
+
 
 } // namespace KJS
