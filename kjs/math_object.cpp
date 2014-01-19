@@ -343,7 +343,7 @@ JSValue *MathFuncImp::callAsFunction(ExecState *exec, JSObject* /*thisObj*/, con
       break;
   }
   case MathObjectImp::FRound:
-      if (isNaN(arg) || isinf(arg))
+      if (isNaN(arg) || isInf(arg))
           return jsNumber(arg);
 
       result = static_cast<double>(static_cast<float>(arg));
