@@ -502,6 +502,7 @@ public:
             else
                 buf = new uchar[w];
                 
+#if GIFLIB_MAJOR < 5
             if (curFrame->ImageDesc.Interlace)
             {
                 // Interlaced. Considering we don't do progressive loading of gif's, 
@@ -551,6 +552,7 @@ public:
                 } // for pass..
             } // if interlaced
             else
+#endif
             {
                 for (int line = 0; line < h; ++line)
                 {
