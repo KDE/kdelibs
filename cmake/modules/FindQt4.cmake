@@ -1091,85 +1091,43 @@ IF (QT4_QMAKE_FOUND)
     SET(QT_LINGUIST_EXECUTABLE NOTFOUND)
   ENDIF(QT_QMAKE_CHANGED)
   
-  FIND_PROGRAM(QT_MOC_EXECUTABLE
-    NAMES moc-qt4 moc
-    PATHS ${QT_BINARY_DIR}
-    NO_DEFAULT_PATH
-    )
+  macro(_find_qt4_program VAR NAME)
+    find_program(${VAR}
+      NAMES ${ARGN}
+      PATHS ${QT_BINARY_DIR}
+      NO_DEFAULT_PATH
+      )
+    if (${VAR} AND NOT TARGET ${NAME})
+      add_executable(${NAME} IMPORTED)
+      set_property(TARGET ${NAME} PROPERTY IMPORTED_LOCATION ${${VAR}})
+    endif()
+  endmacro()
 
-  FIND_PROGRAM(QT_UIC_EXECUTABLE
-    NAMES uic-qt4 uic
-    PATHS ${QT_BINARY_DIR}
-    NO_DEFAULT_PATH
-    )
+  _find_qt4_program(QT_MOC_EXECUTABLE Qt4::moc moc-qt4 moc moc4)
+  _find_qt4_program(QT_UIC_EXECUTABLE Qt4::uic uic-qt4 uic uic4)
+  _find_qt4_program(QT_UIC3_EXECUTABLE Qt4::uic3 uic3)
+  _find_qt4_program(QT_RCC_EXECUTABLE Qt4::rcc rcc)
+  if(NOT WINCE)
+    _find_qt4_program(QT_DBUSCPP2XML_EXECUTABLE Qt4::qdbuscpp2xml qdbuscpp2xml)
+    _find_qt4_program(QT_DBUSXML2CPP_EXECUTABLE Qt4::qdbusxml2cpp qdbusxml2cpp)
+  else()
+    FIND_PROGRAM(QT_DBUSCPP2XML_EXECUTABLE
+      NAMES qdbuscpp2xml
+      PATHS ${HOST_BINDIR}
+      NO_DEFAULT_PATH
+      )
 
-  FIND_PROGRAM(QT_UIC3_EXECUTABLE
-    NAMES uic3
-    PATHS ${QT_BINARY_DIR}
-    NO_DEFAULT_PATH
-    )
-
-  FIND_PROGRAM(QT_RCC_EXECUTABLE 
-    NAMES rcc
-    PATHS ${QT_BINARY_DIR}
-    NO_DEFAULT_PATH
-    )
-
-if(NOT WINCE)
-  FIND_PROGRAM(QT_DBUSCPP2XML_EXECUTABLE 
-    NAMES qdbuscpp2xml
-    PATHS ${QT_BINARY_DIR}
-    NO_DEFAULT_PATH
-    )
-
-  FIND_PROGRAM(QT_DBUSXML2CPP_EXECUTABLE 
-    NAMES qdbusxml2cpp
-    PATHS ${QT_BINARY_DIR}
-    NO_DEFAULT_PATH
-    )
-else(NOT WINCE)
-  FIND_PROGRAM(QT_DBUSCPP2XML_EXECUTABLE 
-    NAMES qdbuscpp2xml
-    PATHS ${HOST_BINDIR}
-    NO_DEFAULT_PATH
-    )
-
-  FIND_PROGRAM(QT_DBUSXML2CPP_EXECUTABLE 
-    NAMES qdbusxml2cpp
-    PATHS ${HOST_BINDIR}
-    NO_DEFAULT_PATH
-    )
-endif(NOT WINCE)
-
-  FIND_PROGRAM(QT_LUPDATE_EXECUTABLE
-    NAMES lupdate-qt4 lupdate
-    PATHS ${QT_BINARY_DIR}
-    NO_DEFAULT_PATH
-    )
-
-  FIND_PROGRAM(QT_LRELEASE_EXECUTABLE
-    NAMES lrelease-qt4 lrelease
-    PATHS ${QT_BINARY_DIR}
-    NO_DEFAULT_PATH
-    )
-
-  FIND_PROGRAM(QT_QCOLLECTIONGENERATOR_EXECUTABLE
-    NAMES qcollectiongenerator-qt4 qcollectiongenerator
-    PATHS ${QT_BINARY_DIR}
-    NO_DEFAULT_PATH
-    )
-
-  FIND_PROGRAM(QT_DESIGNER_EXECUTABLE
-    NAMES designer-qt4 designer
-    PATHS ${QT_BINARY_DIR}
-    NO_DEFAULT_PATH
-    )
-
-  FIND_PROGRAM(QT_LINGUIST_EXECUTABLE
-    NAMES linguist-qt4 linguist
-    PATHS ${QT_BINARY_DIR}
-    NO_DEFAULT_PATH
-    )
+    FIND_PROGRAM(QT_DBUSXML2CPP_EXECUTABLE
+      NAMES qdbusxml2cpp
+      PATHS ${HOST_BINDIR}
+      NO_DEFAULT_PATH
+      )
+  endif()
+  _find_qt4_program(QT_LUPDATE_EXECUTABLE Qt4::lupdate lupdate-qt4 lupdate lupdate4)
+  _find_qt4_program(QT_LRELEASE_EXECUTABLE Qt4::lrelease lrelease-qt4 lrelease lrelease4)
+  _find_qt4_program(QT_QCOLLECTIONGENERATOR_EXECUTABLE Qt4::qcollectiongenerator qcollectiongenerator-qt4 qcollectiongenerator)
+  _find_qt4_program(QT_DESIGNER_EXECUTABLE Qt4::designer designer-qt4 designer designer4)
+  _find_qt4_program(QT_LINGUIST_EXECUTABLE Qt4::linguist linguist-qt4 linguist linguist4)
 
   IF (QT_MOC_EXECUTABLE)
      SET(QT_WRAP_CPP "YES")
