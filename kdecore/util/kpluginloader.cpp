@@ -236,8 +236,8 @@ bool KPluginLoader::load()
     d->verificationData = (KDEPluginVerificationData *) lib.resolve("kde_plugin_verification_data");
     if (d->verificationData) {
         if (d->verificationData->dataVersion < KDEPluginVerificationData::PluginVerificationDataVersion
-            || (d->verificationData->KDEVersion > KDE_VERSION)
-            || (KDE_VERSION_MAJOR << 16 != (d->verificationData->KDEVersion & 0xFF0000)))
+            || ((d->verificationData->KDEVersion & 0xFFFF00) > (KDE_VERSION & 0xFFFF00))  // newer minor version
+            || (KDE_VERSION_MAJOR << 16 != (d->verificationData->KDEVersion & 0xFF0000))) // different major version
         {
             d->errorString = i18n("The plugin '%1' uses an incompatible KDE library (%2).", d->name, QString::fromLatin1(d->verificationData->KDEVersionString));
             unload();
