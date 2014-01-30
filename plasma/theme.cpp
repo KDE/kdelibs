@@ -197,6 +197,8 @@ public:
     QTimer *updateNotificationTimer;
     int toolTipDelay;
     CacheTypes cachesToDiscard;
+    QString themeVersion;
+    QString themeMetadataPath;
 
     bool locolor : 1;
     bool compositingActive : 1;
@@ -210,6 +212,7 @@ public:
 
 PackageStructure::Ptr ThemePrivate::packageStructure(0);
 const char *ThemePrivate::defaultTheme = "default";
+
 const char *ThemePrivate::themeRcFile = "plasmarc";
 // the system colors theme is used to cache unthemed svgs with colorization needs
 // these svgs do not follow the theme's colors, but rather the system colors
@@ -220,21 +223,44 @@ EffectWatcher *ThemePrivate::s_blurEffectWatcher = 0;
 
 bool ThemePrivate::useCache()
 {
+    bool cachesTooOld = false;
+
     if (cacheTheme && !pixmapCache) {
         const bool isRegularTheme = themeName != systemColorsTheme;
-        const QString cacheFile = "plasma_theme_" + themeName;
+        QString cacheFile = "plasma_theme_" + themeName;
+
+        // clear any cached values from the previous theme cache
+        themeVersion.clear();
+
+        if (!themeMetadataPath.isEmpty()) {
+            KDirWatch::self()->removeFile(themeMetadataPath);
+        }
+        themeMetadataPath = KStandardDirs::locate("data", "desktoptheme/" + themeName + "/metadata.desktop");
 
         if (isRegularTheme) {
             const QString cacheFileBase = cacheFile + "*.kcache";
 
-            const QString path = KStandardDirs::locate("data", "desktoptheme/" + themeName + "/metadata.desktop");
             // if the path is empty, then we haven't found the theme and so
             // we will leave currentCacheFileName empty, resulting in the deletion of
             // *all* matching cache files
             QString currentCacheFileName;
-            if (!path.isEmpty()) {
-                const KPluginInfo pluginInfo(path);
-                currentCacheFileName = cacheFile + "_v" + pluginInfo.version() + ".kcache";
+            if (!themeMetadataPath.isEmpty()) {
+                // now we record the theme version, if we can
+                const KPluginInfo pluginInfo(themeMetadataPath);
+                themeVersion = pluginInfo.version();
+                if (!themeVersion.isEmpty()) {
+                    cacheFile += "_v" + themeVersion;
+                    currentCacheFileName = cacheFile + ".kcache";
+                }
+
+                // watch the metadata file for changes at runtime
+                KDirWatch::self()->addFile(themeMetadataPath);
+                QObject::connect(KDirWatch::self(), SIGNAL(created(QString)),
+                                 q, SLOT(settingsFileChanged(QString)),
+                                 Qt::UniqueConnection);
+                QObject::connect(KDirWatch::self(), SIGNAL(dirty(QString)),
+                                 q, SLOT(settingsFileChanged(QString)),
+                                 Qt::UniqueConnection);
             }
 
             // now we check for (and remove) old caches
@@ -244,25 +270,51 @@ bool ThemePrivate::useCache()
                     QFile::remove(file);
                 }
             }
+        }
 
+        // now we do a sanity check: if the metadata.desktop file is newer than the cache, drop
+        // the cache
+        if (isRegularTheme && !themeMetadataPath.isEmpty()) {
+            // now we check to see if the theme metadata file itself is newer than the pixmap cache
+            // this is done before creating the pixmapCache object since that can change the mtime
+            // on the cache file
+
+            // FIXME: when using the system colors, if they change while the application is not running
+            // the cache should be dropped; we need a way to detect system color change when the
+            // application is not running.
+            // check for expired cache
+            const QString cacheFilePath = KStandardDirs::locateLocal("cache", cacheFile);
+            if (!cacheFilePath.isEmpty()) {
+                const QFileInfo cacheFileInfo(cacheFilePath);
+                const QFileInfo metadataFileInfo(themeMetadataPath);
+                cachesTooOld = cacheFileInfo.lastModified().toTime_t() > metadataFileInfo.lastModified().toTime_t();
+            }
         }
 
         ThemeConfig config;
         pixmapCache = new KImageCache(cacheFile, config.themeCacheKb() * 1024);
 
-        // now we do a sanity check: if the metadata.desktop file is newer than the cache, drop
-        // the cache
-        if (isRegularTheme) {
-            //check for expired cache
-            // FIXME: when using the system colors, if they change while the application is not running
-            // the cache should be dropped; we need a way to detect system color change when the
-            // application is not running.
-            const QFile f(cacheFile);
-            const QFileInfo fileInfo(f);
-            if (fileInfo.lastModified().toTime_t() > uint(pixmapCache->lastModifiedTime())) {
-                discardCache(PixmapCache | SvgElementsCache);
+        if (cachesTooOld) {
+            discardCache(PixmapCache | SvgElementsCache);
+        }
+    }
+
+    if (cacheTheme && !svgElementsCache) {
+        const QString svgElementsFileNameBase = "plasma-svgelements-" + themeName;
+        QString svgElementsFileName = svgElementsFileNameBase;
+        if (!themeVersion.isEmpty()) {
+            svgElementsFileName += "_v" + themeVersion;
+        }
+
+        // now we check for (and remove) old caches
+        foreach (const QString &file, KGlobal::dirs()->findAllResources("cache", svgElementsFileNameBase + "*")) {
+            if (cachesTooOld || !file.endsWith(svgElementsFileName)) {
+                QFile::remove(file);
             }
         }
+
+        const QString svgElementsFile = KStandardDirs::locateLocal("cache", svgElementsFileName);
+        svgElementsCache = KSharedConfig::openConfig(svgElementsFile);
     }
 
     return cacheTheme;
@@ -338,15 +390,7 @@ void ThemePrivate::discardCache(CacheTypes caches)
     if (caches & SvgElementsCache) {
         discoveries.clear();
         invalidElements.clear();
-
-        if (svgElementsCache) {
-            QFile f(svgElementsCache->name());
-            svgElementsCache = 0;
-            f.remove();
-        }
-
-        const QString svgElementsFile = KStandardDirs::locateLocal("cache", "plasma-svgelements-" + themeName);
-        svgElementsCache = KSharedConfig::openConfig(svgElementsFile);
+        svgElementsCache = 0;
     }
 }
 
@@ -484,8 +528,12 @@ public:
 
         //FIXME: if/when kconfig gets change notification, this will be unnecessary
         KDirWatch::self()->addFile(KStandardDirs::locateLocal("config", ThemePrivate::themeRcFile));
-        QObject::connect(KDirWatch::self(), SIGNAL(created(QString)), &self, SLOT(settingsFileChanged(QString)));
-        QObject::connect(KDirWatch::self(), SIGNAL(dirty(QString)), &self, SLOT(settingsFileChanged(QString)));
+        QObject::connect(KDirWatch::self(), SIGNAL(created(QString)),
+                         &self, SLOT(settingsFileChanged(QString)),
+                         Qt::UniqueConnection);
+        QObject::connect(KDirWatch::self(), SIGNAL(dirty(QString)),
+                         &self, SLOT(settingsFileChanged(QString)),
+                         Qt::UniqueConnection);
     }
 
    Theme self;
@@ -557,7 +605,12 @@ KPluginInfo::List Theme::listThemeInfo()
 
 void ThemePrivate::settingsFileChanged(const QString &file)
 {
-    if (file.endsWith(themeRcFile)) {
+    if (file == themeMetadataPath) {
+        const KPluginInfo pluginInfo(themeMetadataPath);
+        if (themeVersion != pluginInfo.version()) {
+            scheduleThemeChangeNotification(SvgElementsCache);
+        }
+    } else if (file.endsWith(themeRcFile)) {
         config().config()->reparseConfiguration();
         q->settingsChanged();
     }
@@ -1022,7 +1075,7 @@ void Theme::insertIntoCache(const QString& key, const QPixmap& pix, const QStrin
 
 bool Theme::findInRectsCache(const QString &image, const QString &element, QRectF &rect) const
 {
-    if (!d->svgElementsCache) {
+    if (!d->useCache()) {
         return false;
     }
 
@@ -1055,7 +1108,7 @@ bool Theme::findInRectsCache(const QString &image, const QString &element, QRect
 
 QStringList Theme::listCachedRectKeys(const QString &image) const
 {
-    if (!d->svgElementsCache) {
+    if (!d->useCache()) {
         return QStringList();
     }
 
@@ -1078,7 +1131,7 @@ QStringList Theme::listCachedRectKeys(const QString &image) const
 
 void Theme::insertIntoRectsCache(const QString& image, const QString &element, const QRectF &rect)
 {
-    if (!d->svgElementsCache) {
+    if (!d->useCache()) {
         return;
     }
 
@@ -1101,7 +1154,7 @@ void Theme::insertIntoRectsCache(const QString& image, const QString &element, c
 
 void Theme::invalidateRectsCache(const QString& image)
 {
-    if (d->svgElementsCache) {
+    if (d->useCache()) {
         KConfigGroup imageGroup(d->svgElementsCache, image);
         imageGroup.deleteGroup();
     }
@@ -1113,7 +1166,7 @@ void Theme::releaseRectsCache(const QString &image)
 {
     QHash<QString, QSet<QString> >::iterator it = d->invalidElements.find(image);
     if (it != d->invalidElements.end()) {
-        if (!d->svgElementsCache) {
+        if (d->useCache()) {
             KConfigGroup imageGroup(d->svgElementsCache, it.key());
             imageGroup.writeEntry("invalidElements", it.value().toList());
         }
