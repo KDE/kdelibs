@@ -961,7 +961,7 @@ QString defaultValue( const QString &t )
     else if ( type == "uint" )        return "0";
     else if ( type == "bool" )        return "false";
     else if ( type == "double" )      return "0.0";
-    else if ( type == "datedime" )    return "QDateTime()";
+    else if ( type == "datetime" )    return "QDateTime()";
     else if ( type == "longlong" )    return "0";
     else if ( type == "ulonglong" )   return "0";
     else if ( type == "intlist" )     return "QList<int>()";
