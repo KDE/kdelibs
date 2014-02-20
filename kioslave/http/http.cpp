@@ -301,47 +301,47 @@ static QIODevice* createPostBufferDeviceFor (KIO::filesize_t size)
 QByteArray HTTPProtocol::HTTPRequest::methodString() const
 {
     if (!methodStringOverride.isEmpty())
-        return (methodStringOverride + QLatin1Char(' ')).toLatin1();
+        return (methodStringOverride).toLatin1();
 
     switch(method) {
     case HTTP_GET:
-        return "GET ";
+        return "GET";
     case HTTP_PUT:
-        return "PUT ";
+        return "PUT";
     case HTTP_POST:
-        return "POST ";
+        return "POST";
     case HTTP_HEAD:
-        return "HEAD ";
+        return "HEAD";
     case HTTP_DELETE:
-        return "DELETE ";
+        return "DELETE";
     case HTTP_OPTIONS:
-        return "OPTIONS ";
+        return "OPTIONS";
     case DAV_PROPFIND:
-        return "PROPFIND ";
+        return "PROPFIND";
     case DAV_PROPPATCH:
-        return "PROPPATCH ";
+        return "PROPPATCH";
     case DAV_MKCOL:
-        return "MKCOL ";
+        return "MKCOL";
     case DAV_COPY:
-        return "COPY ";
+        return "COPY";
     case DAV_MOVE:
-        return "MOVE ";
+        return "MOVE";
     case DAV_LOCK:
-        return "LOCK ";
+        return "LOCK";
     case DAV_UNLOCK:
-        return "UNLOCK ";
+        return "UNLOCK";
     case DAV_SEARCH:
-        return "SEARCH ";
+        return "SEARCH";
     case DAV_SUBSCRIBE:
-        return "SUBSCRIBE ";
+        return "SUBSCRIBE";
     case DAV_UNSUBSCRIBE:
-        return "UNSUBSCRIBE ";
+        return "UNSUBSCRIBE";
     case DAV_POLL:
-        return "POLL ";
+        return "POLL";
     case DAV_NOTIFY:
-        return "NOTIFY ";
+        return "NOTIFY";
     case DAV_REPORT:
-        return "REPORT ";
+        return "REPORT";
     default:
         Q_ASSERT(false);
         return QByteArray();
@@ -470,6 +470,7 @@ void HTTPProtocol::resetSessionSettings()
   m_request.windowId = config()->readEntry("window-id");
 
   m_request.methodStringOverride = metaData(QLatin1String("CustomHTTPMethod"));
+  m_request.sentMethodString.clear();
 
   kDebug(7113) << "Window Id =" << m_request.windowId;
   kDebug(7113) << "ssl_was_in_use =" << metaData(QLatin1String("ssl_was_in_use"));
@@ -2420,7 +2421,9 @@ bool HTTPProtocol::sendQuery()
   bool hasDavData = false;
 
   {
-    header = toQString(m_request.methodString());
+    m_request.sentMethodString = m_request.methodString();
+    header = toQString(m_request.sentMethodString) + QLatin1Char(' ');
+
     QString davHeader;
 
     // Fill in some values depending on the HTTP method to guide further processing
@@ -3090,7 +3093,7 @@ try_again:
                     error(ERR_DOES_NOT_EXIST, m_request.url.prettyUrl());
                 return false;
             }
-        } else if (m_request.responseCode >= 301 && m_request.responseCode<= 303) {
+        } else if (m_request.responseCode >= 301 && m_request.responseCode<= 308) {
             // NOTE: According to RFC 2616 (section 10.3.[2-4,8]), 301 and 302
             // redirects for a POST operation should not be convered to a GET
             // request. That should only be done for a 303 response. However,
@@ -3102,13 +3105,9 @@ try_again:
             switch (m_request.responseCode) {
               case 301: // Moved Permanently
                 setMetaData(QLatin1String("permanent-redirect"), QLatin1String("true"));
-                if (m_request.method == HTTP_POST) {
-                    m_request.method = HTTP_GET; // FORCE a GET
-                    setMetaData(QLatin1String("redirect-to-get"), QLatin1String("true"));
-                }
-                break;
+                // fall through
               case 302: // Found
-                if (m_request.method == HTTP_POST) {
+                if (m_request.sentMethodString == "POST") {
                     m_request.method = HTTP_GET; // FORCE a GET
                     setMetaData(QLatin1String("redirect-to-get"), QLatin1String("true"));
                 }
@@ -3118,6 +3117,9 @@ try_again:
                     m_request.method = HTTP_GET; // FORCE a GET
                     setMetaData(QLatin1String("redirect-to-get"), QLatin1String("true"));
                 }
+                break;
+              case 308: // Permanent Redirect
+                setMetaData(QLatin1String("permanent-redirect"), QLatin1String("true"));
                 break;
               default:
                 break;
@@ -5185,7 +5187,7 @@ QString HTTPProtocol::authenticationHeader()
                 m_wwwAuth = KAbstractHttpAuthentication::newAuth(cachedChallenge, config());
                 if (m_wwwAuth) {
                     kDebug(7113) << "creating www authentcation header from cached info";
-                    m_wwwAuth->setChallenge(cachedChallenge, m_request.url, m_request.methodString());
+                    m_wwwAuth->setChallenge(cachedChallenge, m_request.url, m_request.sentMethodString);
                     m_wwwAuth->generateResponse(authinfo.username, authinfo.password);
                 }
             }
@@ -5208,7 +5210,7 @@ QString HTTPProtocol::authenticationHeader()
                 m_proxyAuth = KAbstractHttpAuthentication::newAuth(cachedChallenge, config());
                 if (m_proxyAuth) {
                     kDebug(7113) << "creating proxy authentcation header from cached info";
-                    m_proxyAuth->setChallenge(cachedChallenge, m_request.proxyUrl, m_request.methodString());
+                    m_proxyAuth->setChallenge(cachedChallenge, m_request.proxyUrl, m_request.sentMethodString);
                     m_proxyAuth->generateResponse(authinfo.username, authinfo.password);
                 }
             }
@@ -5454,7 +5456,7 @@ try_next_auth_scheme:
             kDebug(7113) << "Trying authentication scheme:" << (*auth)->scheme();
 
             // remove trailing space from the method string, or digest auth will fail
-            (*auth)->setChallenge(bestOffer, authinfo.url, m_request.methodString());
+            (*auth)->setChallenge(bestOffer, authinfo.url, m_request.sentMethodString);
 
             QString username, password;
             bool generateAuthHeader = true;
