@@ -3100,7 +3100,7 @@ try_again:
             // because almost all other client implementations do exactly that
             // in violation of the spec, many servers have simply adapted to
             // this way of doing things! Thus, we are forced to do the same
-            // thing here. Otherwise, we loose compatibility and might not be
+            // thing here. Otherwise, we lose compatibility and might not be
             // able to correctly retrieve sites that redirect.
             switch (m_request.responseCode) {
               case 301: // Moved Permanently
@@ -3108,14 +3108,12 @@ try_again:
                 // fall through
               case 302: // Found
                 if (m_request.sentMethodString == "POST") {
-                    m_request.method = HTTP_GET; // FORCE a GET
-                    setMetaData(QLatin1String("redirect-to-get"), QLatin1String("true"));
+                  setMetaData(QLatin1String("redirect-to-get"), QLatin1String("true"));
                 }
                 break;
               case 303: // See Other
                 if (m_request.method != HTTP_HEAD) {
-                    m_request.method = HTTP_GET; // FORCE a GET
-                    setMetaData(QLatin1String("redirect-to-get"), QLatin1String("true"));
+                  setMetaData(QLatin1String("redirect-to-get"), QLatin1String("true"));
                 }
                 break;
               case 308: // Permanent Redirect

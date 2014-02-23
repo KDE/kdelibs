@@ -1046,26 +1046,23 @@ void TransferJob::slotFinished()
         if (queryMetaData("permanent-redirect")=="true")
             emit permanentRedirection(this, d->m_url, d->m_redirectionURL);
 
-        if (queryMetaData(QLatin1String("redirect-to-get")) == QLatin1String("true")) {
-            d->m_command = CMD_GET;
-            d->m_outgoingMetaData.remove(QLatin1String("CustomHTTPMethod"));
-            d->m_outgoingMetaData.remove(QLatin1String("content-type"));
-        }
-
         if (d->m_redirectionHandlingEnabled) {
             // Honour the redirection
             // We take the approach of "redirecting this same job"
             // Another solution would be to create a subjob, but the same problem
             // happens (unpacking+repacking)
+            const QString redirectToGet = queryMetaData(QLatin1String("redirect-to-get"));
+            if (redirectToGet == QLatin1String("true")) {
+                d->m_command = CMD_GET;
+                d->m_outgoingMetaData.remove(QLatin1String("CustomHTTPMethod"));
+                d->m_outgoingMetaData.remove(QLatin1String("content-type"));
+            }
             d->staticData.truncate(0);
             d->m_incomingMetaData.clear();
             if (queryMetaData("cache") != "reload")
                 addMetaData("cache","refresh");
             d->m_internalSuspended = false;
             // The very tricky part is the packed arguments business
-            QString dummyStr;
-            KUrl dummyUrl;
-            QDataStream istream( d->m_packedArgs );
             switch( d->m_command ) {
                 case CMD_GET:
                 case CMD_STAT:
@@ -1078,6 +1075,8 @@ void TransferJob::slotFinished()
                 case CMD_PUT: {
                     int permissions;
                     qint8 iOverwrite, iResume;
+                    KUrl dummyUrl;
+                    QDataStream istream( d->m_packedArgs );
                     istream >> dummyUrl >> iOverwrite >> iResume >> permissions;
                     d->m_packedArgs.truncate(0);
                     QDataStream stream( &d->m_packedArgs, QIODevice::WriteOnly );
@@ -1086,15 +1085,14 @@ void TransferJob::slotFinished()
                 }
                 case CMD_SPECIAL: {
                     int specialcmd;
+                    QDataStream istream( d->m_packedArgs );
                     istream >> specialcmd;
-                    if (specialcmd == 1) // HTTP POST
-                    {
-                      d->m_outgoingMetaData.remove(QLatin1String("content-type"));
-                      addMetaData("cache","reload");
+                    if (specialcmd == 1) { // HTTP POST
                       d->m_packedArgs.truncate(0);
-                      QDataStream stream( &d->m_packedArgs, QIODevice::WriteOnly );
-                      stream << d->m_redirectionURL;
-                      d->m_command = CMD_GET;
+                      QDataStream stream(&d->m_packedArgs, QIODevice::WriteOnly);
+                      Q_ASSERT(d->m_outgoingDataSource);
+                      d->m_outgoingDataSource->reset();
+                      stream << specialcmd << d->m_redirectionURL << d->m_outgoingDataSource->size();
                     }
                     break;
                 }
@@ -1324,7 +1322,7 @@ void TransferJobPrivate::slotDataReqFromDevice()
     m_extraFlags |= JobPrivate::EF_TransferJobNeedData;
 
     if (m_outgoingDataSource)
-        dataForSlave = m_outgoingDataSource.data()->read(MAX_READ_BUF_SIZE);
+        dataForSlave = m_outgoingDataSource->read(MAX_READ_BUF_SIZE);
 
     if (dataForSlave.isEmpty())
     {
@@ -1593,25 +1591,11 @@ static KIO::PostErrorJob* precheckHttpPost( const KUrl& url, const QByteArray& p
 
 TransferJob *KIO::http_post( const KUrl& url, const QByteArray &postData, JobFlags flags )
 {
-    bool redirection = false;
-    KUrl _url(url);
-    if (_url.path().isEmpty())
-    {
-      redirection = true;
-      _url.setPath("/");
-    }
-
-    TransferJob* job = precheckHttpPost(_url, postData, flags);
-    if (job)
-        return job;
-
-    // Send http post command (1), decoded path and encoded query
-    KIO_ARGS << (int)1 << _url << static_cast<qint64>(postData.size());
-    job = TransferJobPrivate::newJob(_url, CMD_SPECIAL, packedArgs, postData, flags);
-
-    if (redirection)
-      QTimer::singleShot(0, job, SLOT(slotPostRedirection()) );
-
+    QBuffer* device = new QBuffer;
+    device->setData(postData);
+    device->open(QIODevice::ReadOnly);
+    TransferJob* job = http_post(url, device, device->size(), flags);
+    device->setParent(job);
     return job;
 }
 
@@ -1640,7 +1624,7 @@ TransferJob *KIO::http_post( const KUrl& url, QIODevice* ioDevice, qint64 size, 
     job = TransferJobPrivate::newJob(_url, CMD_SPECIAL, packedArgs, ioDevice, flags);
 
     if (redirection)
-      QTimer::singleShot(0, job, SLOT(slotPostRedirection()) );
+      QTimer::singleShot(0, job, SLOT(slotPostRedirection()));
 
     return job;
 }

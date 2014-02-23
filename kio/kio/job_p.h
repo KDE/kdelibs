@@ -29,6 +29,8 @@
 #include "jobuidelegate.h"
 #include "kjobtrackerinterface.h"
 
+#include <QPointer>
+
 #define KIO_ARGS QByteArray packedArgs; QDataStream stream( &packedArgs, QIODevice::WriteOnly ); stream
 
 namespace KIO {
@@ -269,7 +271,7 @@ namespace KIO {
             : SimpleJobPrivate(url, command, packedArgs),
               m_internalSuspended(false), m_errorPage(false),
               m_isMimetypeEmitted(false), m_subJob(0),
-              m_outgoingDataSource(QWeakPointer<QIODevice>(ioDevice))
+              m_outgoingDataSource(ioDevice)
             { }
 
         bool m_internalSuspended;
@@ -280,7 +282,7 @@ namespace KIO {
         QString m_mimetype;
         bool m_isMimetypeEmitted;
         TransferJob *m_subJob;
-        QWeakPointer<QIODevice> m_outgoingDataSource;
+        QPointer<QIODevice> m_outgoingDataSource;
 
         /**
          * Flow control. Suspend data processing from the slave.
