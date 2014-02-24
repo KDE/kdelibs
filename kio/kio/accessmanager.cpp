@@ -250,10 +250,12 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
         }
         case PutOperation: {
             //kDebug( 7044 ) << "PutOperation:" << reqUrl;
-            if (outgoingData)
-                kioJob = KIO::storedPut(outgoingData->readAll(), reqUrl, -1, KIO::HideProgressInfo);
-            else
+            if (outgoingData) {
+                kioJob = KIO::http_post(reqUrl, outgoingData, sizeFromRequest(req), KIO::HideProgressInfo);
+                metaData.insert(QL1S("CustomHTTPMethod"), QL1S("PUT"));
+            } else {
                 kioJob = KIO::put(reqUrl, -1, KIO::HideProgressInfo);
+            }
             break;
         }
         case PostOperation: {
@@ -272,7 +274,12 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
         }
         case DeleteOperation: {
             //kDebug(7044) << "DeleteOperation:" << reqUrl;
-            kioJob = KIO::http_delete(reqUrl, KIO::HideProgressInfo);
+            if (outgoingData) {
+                kioJob = KIO::http_post(reqUrl, outgoingData, sizeFromRequest(req), KIO::HideProgressInfo);
+                metaData.insert(QL1S("CustomHTTPMethod"), QL1S("DELETE"));
+            } else {
+                kioJob = KIO::http_delete(reqUrl, KIO::HideProgressInfo);
+            }
             break;
         }
         case CustomOperation: {
