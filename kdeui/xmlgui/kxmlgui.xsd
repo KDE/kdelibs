@@ -385,7 +385,7 @@
                         <xsd:attribute name="deleted" type="xsd:boolean" use="optional" />
                     </xsd:complexType>
                 </xsd:element>
-                <xsd:element minOccurs="0" name="State">
+                <xsd:element minOccurs="0" maxOccurs="unbounded" name="State">
 		<!-- Where should this be? -->
                     <xsd:annotation>
                         <xsd:documentation>
