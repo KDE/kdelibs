@@ -224,13 +224,13 @@ void XMLHttpRequest::putValueProperty(ExecState *exec, int token, JSValue *value
 // Token according to RFC 2616
 static bool isValidFieldName(const QString& name)
 {
-    int l = name.length();
+    const int l = name.length();
     if (l == 0)
         return false;
-    
+
     const QChar* c = name.constData();
     for (int i = 0; i < l; ++i, ++c) {
-        int u = c->unicode();
+        ushort u = c->unicode();
         if (u < 32 || u > 126)
             return false;
         switch (u) {
@@ -239,7 +239,7 @@ static bool isValidFieldName(const QString& name)
         case '\\': case '"': case '/':
         case '[': case ']': case '?': case '=':
         case '{': case '}': case '\t': case ' ':
-	    return false;
+            return false;
         default:
             break;
         }
@@ -249,13 +249,13 @@ static bool isValidFieldName(const QString& name)
 
 static bool isValidFieldValue(const QString& name)
 {
-    int l = name.length();
+    const int l = name.length();
     if (l == 0)
         return true;
 
     const QChar* c = name.constData();
     for (int i = 0; i < l; ++i, ++c) {
-        int u = c->unicode();
+        ushort u = c->unicode();
         if ( u == '\n' || u == '\r' )
            return false;
     }
@@ -614,10 +614,9 @@ void XMLHttpRequest::setRequestHeader(const QString& _name, const QString& _valu
       ec = DOMException::SYNTAX_ERR;
       return;
   }
+
   QString name = _name.toLower();
   QString value = _value.trimmed();
-  if (value.isEmpty())
-      return;
 
   // Content-type needs to be set separately from the other headers
   if(name == "content-type") {
@@ -974,16 +973,10 @@ JSValue *XMLHttpRequestProtoFunc::callAsFunction(ExecState *exec, JSObject *this
       {
       if (args.size() < 2)
           return throwError(exec, SyntaxError, "Not enough arguments");
-      JSValue* keyArgument = args[0];
-      JSValue* valArgument = args[1];
-      QString key, val;
-      if (!keyArgument->isUndefinedOrNull()) {
-          key = keyArgument->toString(exec).qstring();
-      }
-      if (!valArgument->isUndefinedOrNull()) {
-          val = valArgument->toString(exec).qstring();
-      }
-      request->setRequestHeader(key, val, ec);
+
+      QString headerFieldName = args[0]->toString(exec).qstring();
+      QString headerFieldValue = args[1]->toString(exec).qstring();
+      request->setRequestHeader(headerFieldName, headerFieldValue, ec);
       setDOMException(exec, ec);
       return jsUndefined();
       }
