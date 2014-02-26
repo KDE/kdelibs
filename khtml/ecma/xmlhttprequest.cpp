@@ -493,8 +493,6 @@ void XMLHttpRequest::send(const QString& _body, int& ec)
     job = KIO::http_post( url, buf, KIO::HideProgressInfo );
   } else if (m_method == QLatin1String("HEAD")) {
     job = KIO::mimetype(url, KIO::HideProgressInfo);
-  } else if (m_method == QLatin1String("DELETE")) {
-    job = KIO::http_delete(url, KIO::HideProgressInfo);
   } else if (m_method == QLatin1String("PUT")) {
     job = KIO::put(url, -1, KIO::HideProgressInfo);
   } else {
