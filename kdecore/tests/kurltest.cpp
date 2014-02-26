@@ -668,8 +668,11 @@ void KUrlTest::testUpUrl()
   // Going up from a relative url is not supported (#170695)
   KUrl invalid("tmp");
   QVERIFY(invalid.isValid());
+  QVERIFY(invalid.hasPath());
+  QVERIFY(invalid.directory().isEmpty());
   up = invalid.upUrl();
   QVERIFY(!up.isValid());
+
 }
 
 void KUrlTest::testSetFileName() // and addPath
@@ -877,6 +880,12 @@ void KUrlTest::testIsRelative()
   QVERIFY(KUrl("blah").isRelative());
   QVERIFY(!KUrl("http://www.kde.org").isRelative());
   QVERIFY(KUrl("foo/bar").isRelative());
+  KUrl rel1("f%o#o@b a&r?");
+  QVERIFY(rel1.isRelative());
+  QCOMPARE(rel1.prettyUrl(), QString("f%25o#o@b a&r?"));
+  QCOMPARE(rel1.url(), QString("f%25o#o@b%20a&r?"));
+  QCOMPARE(rel1.path(), QString("f%o"));
+  QCOMPARE(QUrl(rel1).toString(), QString("f%o#o@b a&r?"));
 }
 
 void KUrlTest::testRelativePath()
