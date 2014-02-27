@@ -874,7 +874,7 @@ void KNewFileMenuPrivate::_k_slotSymLink()
         return;
 
     if (linkUrl.isRelative())
-        m_copyData.m_src = linkUrl.url();
+        m_copyData.m_src = QUrl(linkUrl).toString();
     else if (linkUrl.isLocalFile())
         m_copyData.m_src = linkUrl.toLocalFile();
     else {
