@@ -1444,12 +1444,8 @@ void HTTPProtocol::rename( const KUrl& src, const KUrl& dest, KIO::JobFlags flag
     davError();
 }
 
-void HTTPProtocol::del(const KUrl& _url, bool isFile)
+void HTTPProtocol::del(const KUrl& url, bool)
 {
-  KUrl url(_url);
-  if (!isFile) {
-    url.adjustPath(KUrl::AddTrailingSlash);
-  }
   kDebug(7113) << url;
 
   if (!maybeSetRequestUrl(url))
