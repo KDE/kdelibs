@@ -2359,33 +2359,40 @@ void Ftp::copy( const KUrl &src, const KUrl &dest, int permissions, KIO::JobFlag
   bool bDestLocal = dest.isLocalFile();
   QString  sCopyFile;
 
-  if(bSrcLocal && !bDestLocal)                    // File -> Ftp
-  {
+  if(bSrcLocal && !bDestLocal) {                    // File -> Ftp
     sCopyFile = src.toLocalFile();
     kDebug(7102) << "local file" << sCopyFile << "-> ftp" << dest.path();
     cs = ftpCopyPut(iError, iCopyFile, sCopyFile, dest, permissions, flags);
-    if( cs == statusServerError) sCopyFile = dest.url();
-  }
-  else if(!bSrcLocal && bDestLocal)               // Ftp -> File
-  {
+    if(cs == statusServerError) {
+      sCopyFile = dest.url();
+    }
+  } else if(!bSrcLocal && bDestLocal) {               // Ftp -> File
     sCopyFile = dest.toLocalFile();
     kDebug(7102) << "ftp" << src.path() << "-> local file" << sCopyFile;
     cs = ftpCopyGet(iError, iCopyFile, sCopyFile, src, permissions, flags);
-    if( cs == statusServerError ) sCopyFile = src.url();
-  }
-  else {
-    error( ERR_UNSUPPORTED_ACTION, QString() );
+    if(cs == statusServerError) {
+      sCopyFile = src.url();
+    }
+  } else {
+    error(ERR_UNSUPPORTED_ACTION, QString());
     return;
   }
 
   // perform clean-ups and report error (if any)
-  if(iCopyFile != -1)
+  if(iCopyFile != -1) {
     ::close(iCopyFile);
+  }
+
   ftpCloseCommand();                        // must close command!
-  if(iError)
-    error(iError, sCopyFile);
-  else
+
+  if (cs == statusSuccess) {
     finished();
+    return;
+  }
+
+  if(iError) {
+    error(iError, sCopyFile);
+  }
 }
 
 
