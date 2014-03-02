@@ -2564,6 +2564,12 @@ Ftp::StatusCode Ftp::ftpCopyGet(int& iError, int& iCopyFile, const QString &sCop
 
 Ftp::StatusCode Ftp::ftpSendMimeType(int& iError, const KUrl& url)
 {
+  // Emit proper mimetype for zero sized files. #323491
+  if (m_size == 0) {
+    mimeType(QLatin1String("application/x-zerosize"));
+    return statusSuccess;
+  }
+
   const int totalSize = ((m_size == UnknownSize || m_size > 1024) ? 1024 : m_size);
   QByteArray buffer(totalSize, '\0');
 
