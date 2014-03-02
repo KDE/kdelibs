@@ -284,22 +284,17 @@ namespace KIO {
      *
      * Example:
      * \code
-     *    job = KIO::http_post( url, postData, KIO::HideProgressInfo );
-     *    job->addMetaData("content-type", contentType );
+     *    job = KIO::http_post( url, postData, KIO::HideProgressInfo);
+     *    job->addMetaData("content-type", contentType);
      *    job->addMetaData("referrer", referrerURL);
      * \endcode
      *
-     * @p postData is the data that you want to send and
-     * @p contentType is the complete HTTP header line that
-     * specifies the content's MIME type, for example
-     * "Content-Type: text/xml".
+     * You MUST specify the "content-type" meta data. It is mandatory.
+     * It can be preceeded with the optional text "Content-Type:", e.g.
+     * "Content-Type: application/x-www-form-urlencoded".
      *
-     * You MUST specify content-type!
-     *
-     * Often @p contentType is
-     * "Content-Type: application/x-www-form-urlencoded" and
-     * the @p postData is then an ASCII string (without null-termination!)
-     * with characters like space, linefeed and percent escaped like %20,
+     * @p postData is usually an encoded ASCII string (without null-termination!)
+     * and can contain spaces, linefeeds and percent escaped characters such as %20,
      * %0A and %25.
      *
      * @param url Where to write the data.
@@ -318,8 +313,19 @@ namespace KIO {
      * to avoid holding the content of very large post requests, e.g. multimedia file
      * uploads, in memory.
      *
+     * Example:
+     * \code
+     *    job = KIO::http_post( url, device, device->size(), KIO::HideProgressInfo);
+     *    job->addMetaData("content-type", contentType);
+     *    job->addMetaData("referrer", referrerURL);
+     * \endcode
+     *
+     * You MUST specify the "content-type" meta data. It is mandatory.
+     * It can be preceeded with the optional text "Content-Type:", e.g.
+     * "Content-Type: application/x-www-form-urlencoded".
+     *
      * @param url Where to write the data.
-     * @param postData Encoded data to post.
+     * @param device the QIODevice that provides the encoded post data.
      * @param size Size of the encoded post data.
      * @param flags Can be HideProgressInfo here
      * @return the job handling the operation.
