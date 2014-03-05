@@ -582,7 +582,7 @@ bool KWebPage::handleReply(QNetworkReply* reply, QString* contentType, KIO::Meta
                             return true;
                     }
                     if (!downloadResource(replyUrl, suggestedFileName, d->windowWidget()))
-                        break;
+                        return true; // file dialog was cancelled, stop here
                 }
                 return true;
             case KParts::BrowserOpenOrSaveQuestion::Cancel:
