@@ -34,7 +34,6 @@ QSpellEnchantDict::QSpellEnchantDict(QSpellEnchantClient *client,
       m_dict(dict),
       m_client(client)
 {
-    qDebug()<<"Enchant dict for"<<language << dict;
 }
 
 QSpellEnchantDict::~QSpellEnchantDict()
@@ -83,8 +82,6 @@ bool QSpellEnchantDict::storeReplacement(const QString &bad,
 
 bool QSpellEnchantDict::addToPersonal(const QString &word)
 {
-    qDebug() << "QSpellEnchantDict::addToPersonal: word = "
-             << word;
     enchant_dict_add_to_pwl(m_dict, word.toUtf8(),
                             word.toUtf8().length());
     return true;
