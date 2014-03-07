@@ -2310,12 +2310,12 @@ KDateTime KDateTime::fromString(const QString &string, const QString &format,
                         int offset = it.value().offsetAtZoneTime(qdt, &offset2);
                         QDateTime ut(qdt);
                         ut.setTimeSpec(Qt::UTC);
-                        ut.addSecs(-offset);
+                        ut = ut.addSecs(-offset);
                         if (it.value().abbreviation(ut) != zoneAbbrev)
                         {
                             if (offset == offset2)
                                 continue;     // abbreviation doesn't apply at specified time
-                            ut.addSecs(offset - offset2);
+                            ut = ut.addSecs(offset - offset2);
                             if (it.value().abbreviation(ut) != zoneAbbrev)
                                 continue;     // abbreviation doesn't apply at specified time
                             offset = offset2;
@@ -2351,7 +2351,7 @@ KDateTime KDateTime::fromString(const QString &string, const QString &format,
                 // For a date-only value, use the start of the day.
                 QDateTime dtUTC = qdt;
                 dtUTC.setTimeSpec(Qt::UTC);
-                dtUTC.addSecs(-utcOffset);
+                dtUTC = dtUTC.addSecs(-utcOffset);
                 const KTimeZones::ZoneMap z = zones->zones();
                 for (KTimeZones::ZoneMap::ConstIterator it = z.constBegin();  it != z.constEnd();  ++it)
                 {
