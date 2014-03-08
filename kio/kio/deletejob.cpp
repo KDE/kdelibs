@@ -346,8 +346,15 @@ void DeleteJobPrivate::deleteNextDir()
             } else {
                 // Call rmdir - works for kioslaves with canDeleteRecursive too,
                 // CMD_DEL will trigger the recursive deletion in the slave.
-                SimpleJob* job = KIO::rmdir( *it );
-                job->addMetaData(QString::fromLatin1("recurse"), "true");
+                SimpleJob* job;
+                if (isHttpProtocol(it->protocol())) {
+                  KUrl url (*it);
+                  url.adjustPath(KUrl::AddTrailingSlash);
+                  job = KIO::http_delete(url, KIO::HideProgressInfo);
+                } else {
+                  job = KIO::rmdir(*it);
+                  job->addMetaData(QString::fromLatin1("recurse"), "true");
+                }
                 Scheduler::setJobPriority(job, 1);
                 dirs.erase(it);
                 q->addSubjob( job );
