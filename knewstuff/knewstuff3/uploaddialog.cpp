@@ -416,7 +416,7 @@ bool UploadDialog::init(const QString &configfile)
 
     setCaption(i18n("Share Hot New Stuff"));
 
-    setButtons(KDialog::Cancel | KDialog::User1 | KDialog::User2 | KDialog::User3 | KDialog::Help);
+    setButtons(KDialog::Cancel | KDialog::User1 | KDialog::User2 | KDialog::User3 /*| KDialog::Help*/);
     setButtonGuiItem( BackButton, KStandardGuiItem::back(KStandardGuiItem::UseRTL) );
 
     setButtonText( NextButton, i18nc("Opposite to Back", "Next") );
