@@ -622,28 +622,9 @@ void XMLHttpRequest::setRequestHeader(const QString& _name, const QString& _valu
     return;
   }
 
-  // Sanitize the referrer header to protect against spoofing...
-  if(name == "referer") {
-    KUrl referrerURL(value);
-    if (urlMatchesDocumentDomain(referrerURL))
-      m_requestHeaders[name] = referrerURL.url();
-    return;
-  }
-
-  // Sanitize the request headers below and handle them as if they are
-  // calls to open. Otherwise, we will end up ignoring them all together!
-  // TODO: Do something about "put" which kio_http sort of supports and
-  // the webDAV headers such as PROPFIND etc...
-  if (name == "get"  || name == "post") {
-    KUrl reqURL(doc->URL(), value);
-    open(name, reqURL, async, ec);
-    return;
-  }
-
   // Reject all banned headers.
   if (!canSetRequestHeader(_name)) {
-      kWarning(6070) << "Refusing to set unsafe XMLHttpRequest header "
-                     << name << endl;
+      kWarning(6070) << "Refusing to set unsafe XMLHttpRequest header" << _name;
       return;
   }
 
