@@ -266,40 +266,40 @@ static bool isValidFieldValue(const QString& name)
 
 static bool canSetRequestHeader(const QString& name)
 {
-    static QSet<CaseInsensitiveString> forbiddenHeaders;
+    if (name.startsWith(QLatin1String("sec-"), Qt::CaseInsensitive) ||
+        name.startsWith(QLatin1String("proxy-"), Qt::CaseInsensitive)) {
+        return false;
+    }
 
+    static QSet<CaseInsensitiveString> forbiddenHeaders;
     if (forbiddenHeaders.isEmpty()) {
-	static const char* const hdrs[] = {
-	    "accept-charset",
-	    "accept-encoding",
-	    "content-length",
-	    "connect",
-	    "copy",
-	    "date",
-	    "delete",
-	    "expect",
-	    "head",
-	    "host",
-	    "keep-alive",
-	    "lock",
-	    "mkcol",
-	    "move",
-	    "options",
-	    "put",
-	    "propfind",
-	    "proppatch",
-	    "proxy-authorization",
-	    "referer",
-	    "te",
-	    "trace",
-	    "trailer",
-	    "transfer-encoding",
-	    "unlock",
-	    "upgrade",
-	    "via"
-	};
-	for (size_t i = 0; i < sizeof(hdrs)/sizeof(char*); ++i)
-	    forbiddenHeaders.insert(CaseInsensitiveString(hdrs[i]));
+        static const char* const hdrs[] = {
+            "accept-charset",
+            "accept-encoding",
+            "access-control-request-headers",
+            "access-control-request-method",
+            "connection",
+            "content-length",
+            "content-transfer-encoding",
+            "cookie",
+            "cookie2",
+            "date",
+            "dnt",
+            "expect",
+            "host",
+            "keep-alive",
+            "origin",
+            "referer",
+            "te",
+            "trailer",
+            "transfer-encoding",
+            "upgrade",
+            "user-agent",
+            "via"
+        };
+        for (size_t i = 0; i < sizeof(hdrs)/sizeof(char*); ++i) {
+            forbiddenHeaders.insert(CaseInsensitiveString(hdrs[i]));
+        }
     }
 
     return !forbiddenHeaders.contains(name);
@@ -613,37 +613,17 @@ void XMLHttpRequest::setRequestHeader(const QString& _name, const QString& _valu
       return;
   }
 
-  QString name = _name.toLower();
   QString value = _value.trimmed();
 
   // Content-type needs to be set separately from the other headers
-  if(name == "content-type") {
+  if (_name.compare(QLatin1String("content-type"), Qt::CaseInsensitive) == 0) {
     contentType = "Content-type: " + value;
-    return;
-  }
-
-  // Sanitize the referrer header to protect against spoofing...
-  if(name == "referer") {
-    KUrl referrerURL(value);
-    if (urlMatchesDocumentDomain(referrerURL))
-      m_requestHeaders[name] = referrerURL.url();
-    return;
-  }
-
-  // Sanitize the request headers below and handle them as if they are
-  // calls to open. Otherwise, we will end up ignoring them all together!
-  // TODO: Do something about "put" which kio_http sort of supports and
-  // the webDAV headers such as PROPFIND etc...
-  if (name == "get"  || name == "post") {
-    KUrl reqURL(doc->URL(), value);
-    open(name, reqURL, async, ec);
     return;
   }
 
   // Reject all banned headers.
   if (!canSetRequestHeader(_name)) {
-      kWarning(6070) << "Refusing to set unsafe XMLHttpRequest header "
-                     << name << endl;
+      kWarning(6070) << "Refusing to set unsafe XMLHttpRequest header" << _name;
       return;
   }
 

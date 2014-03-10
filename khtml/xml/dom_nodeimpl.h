@@ -82,7 +82,7 @@ public:
     NodeImpl *parentNode() const { return static_cast<NodeImpl*>(m_parent); }
     NodeImpl *previousSibling() const { return m_previous; }
     NodeImpl *nextSibling() const { return m_next; }
-    virtual NodeListImpl *childNodes();
+    virtual WTF::PassRefPtr<NodeListImpl> childNodes();
     virtual NodeImpl *firstChild() const;
     virtual NodeImpl *lastChild() const;
 

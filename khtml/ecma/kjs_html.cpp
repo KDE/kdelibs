@@ -2564,18 +2564,19 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, JSValue *val
       // read-only: form
       // read-only: text  <--- According to the DOM, but JavaScript and JScript both allow changes.
       // So, we'll do it here and not add it to our DOM headers.
-      case OptionText:            { SharedPtr<DOM::NodeListImpl> nl(option.childNodes());
-                                    for (unsigned int i = 0; i < nl->length(); i++) {
+      case OptionText:            { RefPtr<DOM::NodeListImpl> nl(option.childNodes());
+                                    const unsigned int length = nl->length();
+                                    for (unsigned int i = 0; i < length; ++i) {
                                         if (nl->item(i)->nodeType() == DOM::Node::TEXT_NODE) {
                                             static_cast<DOM::TextImpl*>(nl->item(i))->setData(str, exception);
                                             return;
                                         }
-                                  }
-                                  // No child text node found, creating one
-                                  DOM::TextImpl* t = option.document()->createTextNode(str.implementation());
-                                  int dummyexception;
-                                  option.appendChild(t, dummyexception); // #### exec->setException ?
-                                  return;
+                                    }
+                                    // No child text node found, creating one
+                                    DOM::TextImpl* t = option.document()->createTextNode(str.implementation());
+                                    int dummyexception;
+                                    option.appendChild(t, dummyexception); // #### exec->setException ?
+                                    return;
       }
       // read-only: index
       case OptionSelected:        { option.setSelected(value->toBoolean(exec)); return; }
