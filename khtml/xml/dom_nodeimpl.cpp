@@ -123,7 +123,7 @@ unsigned short NodeImpl::nodeType() const
   return 0;
 }
 
-NodeListImpl *NodeImpl::childNodes()
+WTF::PassRefPtr<DOM::NodeListImpl> NodeImpl::childNodes()
 {
   return new ChildNodeListImpl(this);
 }

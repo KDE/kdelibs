@@ -205,7 +205,7 @@ Node Node::parentNode() const
 NodeList Node::childNodes() const
 {
     if (!impl) return 0;
-    return impl->childNodes();
+    return impl->childNodes().get();
 }
 
 Node Node::firstChild() const
