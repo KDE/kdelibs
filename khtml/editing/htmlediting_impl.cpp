@@ -2335,7 +2335,7 @@ RemoveNodeCommandImpl::RemoveNodeCommandImpl(DocumentImpl *document, NodeImpl *r
     m_parent->ref();
 
     RefPtr<DOM::NodeListImpl> children = m_parent->childNodes();
-    for (int i = children->length(); i >= 0; --i) {
+    for (long i = children->length() - 1; i >= 0; --i) {
         NodeImpl *node = children->item(i);
         if (node == m_removeChild)
             break;
