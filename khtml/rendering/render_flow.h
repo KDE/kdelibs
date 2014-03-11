@@ -49,7 +49,7 @@ public:
 
     virtual RenderFlow* continuation() const { return m_continuation; }
     void setContinuation(RenderFlow* c) { m_continuation = c; }
-    RenderFlow* continuationBefore(RenderObject* beforeChild);
+    RenderFlow* continuationBefore(const RenderObject* beforeChild);
 
     void addChildWithContinuation(RenderObject* newChild, RenderObject* beforeChild);
     virtual void addChildToFlow(RenderObject* newChild, RenderObject* beforeChild) = 0;
