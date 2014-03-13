@@ -20,9 +20,7 @@
 
 #include "kacl.h"
 
-#ifdef HAVE_POSIX_ACL
 #include <config-acl.h>
-#endif
 
 #include <sys/types.h>
 #include <pwd.h>
