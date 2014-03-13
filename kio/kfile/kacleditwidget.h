@@ -20,9 +20,7 @@
 #ifndef KACLEDITWIDGET_H
 #define KACLEDITWIDGET_H
 
-#ifdef HAVE_POSIX_ACL
 #include <config-acl.h>
-#endif
 
 #if defined(HAVE_POSIX_ACL) || defined(Q_MOC_RUN)
 
