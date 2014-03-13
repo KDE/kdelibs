@@ -2257,14 +2257,8 @@ Ftp::StatusCode Ftp::ftpPut(int& iError, int iCopyFile, const KUrl& dest_url,
   return statusSuccess;
 }
 
-/** Use the SIZE command to get the file size.
-    Warning : the size depends on the transfer mode, hence the second arg. */
-bool Ftp::ftpSize( const QString & path, char mode )
+const char* Ftp::ftpSendSizeCmd(const QString& path)
 {
-  m_size = UnknownSize;
-  if( !ftpDataMode(mode) )
-      return false;
-
   // Some servers do not allow absolute path for SIZE; so we use
   // relative paths whenever possible. #326292
   QString currentPath(m_currentPath);
@@ -2281,30 +2275,40 @@ bool Ftp::ftpSize( const QString & path, char mode )
   }
 
   if (!ftpSendCmd(buf) || m_iRespType != 2) {
-      return false;
+    return 0;
   }
 
   // skip leading "213 " (response code)
-  QByteArray psz (ftpResponse(4));
-  if(psz.isEmpty())
+  return ftpResponse(4);
+}
+
+
+/** Use the SIZE command to get the file size.
+    Warning : the size depends on the transfer mode, hence the second arg. */
+bool Ftp::ftpSize(const QString & path, char mode)
+{
+  m_size = UnknownSize;
+  if (!ftpDataMode(mode)) {
     return false;
+  }
+
+  const QByteArray psz(ftpSendSizeCmd(path));
+  if (psz.isEmpty()) {
+    return false;
+  }
+
   bool ok = false;
   m_size = psz.trimmed().toLongLong(&ok);
-  if (!ok) m_size = UnknownSize;
+  if (!ok) {
+    m_size = UnknownSize;
+  }
+
   return true;
 }
 
 bool Ftp::ftpFileExists(const QString& path)
 {
-  QByteArray buf;
-  buf = "SIZE ";
-  buf += remoteEncoding()->encode(path);
-  if( !ftpSendCmd( buf ) || (m_iRespType != 2) )
-    return false;
-
-  // skip leading "213 " (response code)
-  const char* psz = ftpResponse(4);
-  return psz != 0;
+  return ftpSendSizeCmd(path) != 0;
 }
 
 // Today the differences between ASCII and BINARY are limited to
