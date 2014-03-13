@@ -32,6 +32,18 @@
 #define M_PI 3.14159265358979323846
 #endif  /*  M_PI  */
 
+#if COMPILER(MSVC)
+static double cbrt(double x)
+{
+	return pow(abs(x), 1.0 / 3.0);
+}
+
+static double log2(double x)
+{
+    return log(x) / log(2);
+}
+#endif
+
 using namespace KJS;
 
 // ------------------------------ MathObjectImp --------------------------------

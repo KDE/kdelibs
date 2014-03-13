@@ -167,6 +167,13 @@ private:
   bool ftpSize( const QString & path, char mode );
 
   /**
+   * Sends the SIZE command to the server and returns the response.
+   * @param path the path to file whose size is to be retrieved.
+   * @return response from the server
+   */
+  const char* ftpSendSizeCmd(const QString& path);
+
+  /**
    * Returns true if the file exists.
    * Implemented using the SIZE command.
    */

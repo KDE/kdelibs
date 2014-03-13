@@ -276,6 +276,7 @@ else(STATIC_LIBRARY)
   set(LIBRARY_TYPE SHARED)
 endif(STATIC_LIBRARY)
 
+if(NOT WIN32)
 # ACL stuff (used in kio/ and kioslaves/)
 macro_optional_find_package(ACL)
 set_package_properties(ACL PROPERTIES DESCRIPTION "Support for manipulating access control lists"
@@ -286,6 +287,7 @@ set_package_properties(ACL PROPERTIES DESCRIPTION "Support for manipulating acce
 
 macro_bool_to_01(ACL_FOUND HAVE_LIBACL HAVE_POSIX_ACL)
 configure_file(config-acl.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-acl.h )
+endif()
 
 include(ConfigureChecks.cmake)
 
