@@ -503,6 +503,8 @@ void NodeImpl::dispatchGenericEvent( EventImpl *evt, int &/*exceptioncode */)
     while (it.hasNext())
         it.next()->deref(); // this may delete us
 
+    DocumentImpl::updateDocumentsRendering();
+
     deref();
 }
 
