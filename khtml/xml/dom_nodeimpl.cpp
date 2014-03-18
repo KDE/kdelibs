@@ -395,25 +395,24 @@ void NodeImpl::dispatchEvent(EventImpl *evt, int &exceptioncode, bool tempEvent)
 {
     evt->setTarget(this);
 
-    // Since event handling code could cause this object to be deleted, grab a reference to the view now
-    KHTMLView *view = document()->view();
-
     dispatchGenericEvent( evt, exceptioncode );
 
+    KHTMLPart *part = document()->part();
     // If tempEvent is true, this means that the DOM implementation will not be storing a reference to the event, i.e.
     // there is no way to retrieve it from javascript if a script does not already have a reference to it in a variable.
     // So there is no need for the interpreter to keep the event in its cache
-    if (tempEvent && view && view->part() && view->part()->jScript())
-        view->part()->jScript()->finishedWithEvent(evt);
+    if (tempEvent && part && part->jScript())
+        part->jScript()->finishedWithEvent(evt);
 }
 
 void NodeImpl::dispatchGenericEvent( EventImpl *evt, int &/*exceptioncode */)
 {
     // ### check that type specified
 
+    ref();
+
     // work out what nodes to send event to
     QList<EventTargetImpl*> nodeChain;
-    NodeImpl *n;
 
     if (evt->target()->eventTargetType() != DOM_NODE) {
         // The target is the only thing that goes into the chain.
@@ -425,7 +424,7 @@ void NodeImpl::dispatchGenericEvent( EventImpl *evt, int &/*exceptioncode */)
         if (evt->id() == EventImpl::LOAD_EVENT && evt->target()->eventTargetType() == WINDOW)
             evt->setTarget(document());
     } else if (inDocument()) {
-        for (n = this; n; n = n->parentNode()) {
+        for (NodeImpl *n = this; n; n = n->parentNode()) {
             n->ref();
             nodeChain.prepend(n);
         }
@@ -499,17 +498,14 @@ void NodeImpl::dispatchGenericEvent( EventImpl *evt, int &/*exceptioncode */)
             dispatchUIEvent(EventImpl::DOMACTIVATE_EVENT, static_cast<UIEventImpl*>(evt)->detail());
     }
 
-    // copy this over into a local variable, as the following deref() calls might cause this to be deleted.
-    DocumentImpl *doc = m_document.get();
-    doc->ref();
-
     // deref all nodes in chain
     it.toFront();
     while (it.hasNext())
         it.next()->deref(); // this may delete us
 
     DocumentImpl::updateDocumentsRendering();
-    doc->deref();
+
+    deref();
 }
 
 bool NodeImpl::dispatchHTMLEvent(int _id, bool canBubbleArg, bool cancelableArg)
@@ -532,23 +528,19 @@ void NodeImpl::dispatchWindowEvent(int _id, bool canBubbleArg, bool cancelableAr
 
 void NodeImpl::dispatchWindowEvent(EventImpl* evt)
 {
-    DocumentImpl *doc = document();
-    doc->ref();
-    
-    int exceptioncode = 0;
-    
-    evt->setTarget( doc->windowEventTarget() );
+    evt->setTarget( document()->windowEventTarget() );
     evt->ref();
+
+    int exceptioncode = 0;
     dispatchGenericEvent( evt, exceptioncode );
 
     if (evt->id() == EventImpl::LOAD_EVENT) {
         // Trigger Load Event on the enclosing frame if there is one
-        DOM::HTMLPartContainerElementImpl* elt = doc->ownerElement();
+        DOM::HTMLPartContainerElementImpl* elt = document()->ownerElement();
         if (elt)
             elt->slotEmitLoadEvent();
     }
 
-    doc->deref();
     evt->deref();
 }
 
