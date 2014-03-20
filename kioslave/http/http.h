@@ -97,6 +97,8 @@ public:
       file = 0;
       expireDate = 0;
       servedDate = 0;
+      lastModifiedDate = 0;
+      fileUseCount = 0;
     }
 
     enum CachePlan {
@@ -104,8 +106,8 @@ public:
       ValidateCached,
       IgnoreCached
     };
-    CachePlan plan(time_t maxCacheAge) const;
 
+    CachePlan plan(int maxCacheAge) const;
     QByteArray serialize() const;
     bool deserialize(const QByteArray &);
 
@@ -116,9 +118,9 @@ public:
     quint32 bytesCached;
     QString etag; // entity tag header as described in the HTTP standard.
     QFile *file; // file on disk - either a QTemporaryFile (write) or QFile (read)
-    time_t servedDate; // Date when the resource was served by the origin server
-    time_t lastModifiedDate; // Last modified.
-    time_t expireDate; // Date when the cache entry will expire
+    qint64 servedDate; // Date when the resource was served by the origin server
+    qint64 lastModifiedDate; // Last modified.
+    qint64 expireDate; // Date when the cache entry will expire
     QString charset;
   };
 
@@ -400,11 +402,6 @@ protected:
   void davParsePropstats( const QDomNodeList& propstats, KIO::UDSEntry& entry );
   void davParseActiveLocks( const QDomNodeList& activeLocks,
                             uint& lockCount );
-
-  /**
-   * Parses a date & time string
-   */
-  long parseDateTime( const QString& input, const QString& type );
 
   /**
    * Returns the error code from a "HTTP/1.1 code Code Name" string

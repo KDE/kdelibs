@@ -298,6 +298,51 @@ static QIODevice* createPostBufferDeviceFor (KIO::filesize_t size)
     return device;
 }
 
+static qint64 toTime_t(const QString& value, KDateTime::TimeFormat format)
+{
+    const KDateTime dt = KDateTime::fromString(value, format);
+    return (dt.isValid() ? (dt.toUtc().dateTime().toMSecsSinceEpoch()/1000) : -1);
+}
+
+static qint64 parseDateTime( const QString& input, const QString& type )
+{
+  if (type == QLatin1String("dateTime.tz") ) {
+    return toTime_t(input, KDateTime::ISODate);
+  } else if (type == QLatin1String("dateTime.rfc1123")) {
+    return toTime_t(input, KDateTime::RFCDate);
+  }
+
+  // format not advertised... try to parse anyway
+  qint64 tsec = toTime_t(input, KDateTime::RFCDate);
+  if (tsec == -1)
+    tsec = toTime_t(input, KDateTime::ISODate);
+
+  return tsec;
+}
+
+// Since a lot of webdav servers seem not to send the content-type information
+// for the requested directory listings, we attempt to guess the mime-type from
+// the resource name so long as the resource is not a directory.
+static void updateUDSEntryMimeType(UDSEntry* entry)
+{
+  const QString mimeType(entry->stringValue(KIO::UDSEntry::UDS_MIME_TYPE));
+  const qint64 type = entry->numberValue(KIO::UDSEntry::UDS_FILE_TYPE);
+  const QString name (entry->stringValue(KIO::UDSEntry::UDS_NAME));
+
+  kDebug(7113) << "item:" << name << ", mimeType:" << mimeType;
+
+  if (mimeType.isEmpty() && type != S_IFDIR) {
+    KMimeType::Ptr mime = KMimeType::findByUrl(name, 0, false, true);
+    if (mime && !mime->isDefault()) {
+      kDebug(7113) << "Setting" << mime->name() << "as guessed mime type for" << name;
+      entry->insert(KIO::UDSEntry::UDS_GUESSED_MIME_TYPE, mime->name());
+    }
+  }
+}
+
+/************************************************************************************************************************/
+
+
 QByteArray HTTPProtocol::HTTPRequest::methodString() const
 {
     if (!methodStringOverride.isEmpty())
@@ -534,7 +579,7 @@ void HTTPProtocol::resetSessionSettings()
   }
 
   m_request.cacheTag.etag.clear();
-  // -1 is also the value returned by KDateTime::toTime_t() from an invalid instance.
+
   m_request.cacheTag.servedDate = -1;
   m_request.cacheTag.lastModifiedDate = -1;
   m_request.cacheTag.expireDate = -1;
@@ -856,18 +901,7 @@ void HTTPProtocol::davStatList( const KUrl& url, bool stat )
 
       davParsePropstats( propstats, entry );
 
-      // Since a lot of webdav servers seem not to send the content-type information
-      // for the requested directory listings, we attempt to guess the mime-type from
-      // the resource name so long as the resource is not a directory.
-      if (entry.stringValue(KIO::UDSEntry::UDS_MIME_TYPE).isEmpty() &&
-          entry.numberValue(KIO::UDSEntry::UDS_FILE_TYPE) != S_IFDIR) {
-        int accuracy = 0;
-        KMimeType::Ptr mime = KMimeType::findByUrl(thisURL.fileName(), 0, false, true, &accuracy);
-        if (mime && !mime->isDefault() && accuracy == 100) {
-          kDebug(7113) << "Setting" << mime->name() << "as guessed mime type for" << thisURL.fileName();
-          entry.insert( KIO::UDSEntry::UDS_GUESSED_MIME_TYPE, mime->name());
-        }
-      }
+      updateUDSEntryMimeType(&entry);
 
       if ( stat ) {
         // return an item
@@ -1144,25 +1178,6 @@ void HTTPProtocol::davParseActiveLocks( const QDomNodeList& activeLocks,
   }
 }
 
-long HTTPProtocol::parseDateTime( const QString& input, const QString& type )
-{
-  if ( type == QLatin1String("dateTime.tz") )
-  {
-    return KDateTime::fromString( input, KDateTime::ISODate ).toTime_t();
-  }
-  else if ( type == QLatin1String("dateTime.rfc1123") )
-  {
-    return KDateTime::fromString( input, KDateTime::RFCDate ).toTime_t();
-  }
-
-  // format not advertised... try to parse anyway
-  time_t time = KDateTime::fromString( input, KDateTime::RFCDate ).toTime_t();
-  if ( time != 0 )
-    return time;
-
-  return KDateTime::fromString( input, KDateTime::ISODate ).toTime_t();
-}
-
 QString HTTPProtocol::davProcessLocks()
 {
     if ( hasMetaData( QLatin1String("davLockCount") ) )
@@ -1302,12 +1317,8 @@ void HTTPProtocol::get( const KUrl& url )
   resetSessionSettings();
 
   m_request.method = HTTP_GET;
-
-  QString tmp(metaData(QLatin1String("cache")));
-  if (!tmp.isEmpty())
-    m_request.cacheTag.policy = parseCacheControl(tmp);
-  else
-    m_request.cacheTag.policy = DEFAULT_CACHE_CONTROL;
+  const QString tmp (metaData(QLatin1String("cache")));
+  m_request.cacheTag.policy = (tmp.isEmpty() ? DEFAULT_CACHE_CONTROL : parseCacheControl(tmp));
 
   proceedUntilResponseContent();
 }
@@ -3655,18 +3666,16 @@ void HTTPProtocol::cacheParseResponseHeader(const HeaderTokenizer &tokenizer)
         return;
     }
 
-    // -1 is also the value returned by KDateTime::toTime_t() from an invalid instance.
     m_request.cacheTag.servedDate = -1;
     m_request.cacheTag.lastModifiedDate = -1;
     m_request.cacheTag.expireDate = -1;
 
-    const qint64 currentDate = time(0);
+    const qint64 currentDate = QDateTime::currentMSecsSinceEpoch()/1000;
     bool mayCache = m_request.cacheTag.ioMode != NoCache;
 
     TokenIterator tIt = tokenizer.iterator("last-modified");
     if (tIt.hasNext()) {
-        m_request.cacheTag.lastModifiedDate =
-              KDateTime::fromString(toQString(tIt.next()), KDateTime::RFCDate).toTime_t();
+        m_request.cacheTag.lastModifiedDate = toTime_t(toQString(tIt.next()), KDateTime::RFCDate);
 
         //### might be good to canonicalize the date by using KDateTime::toString()
         if (m_request.cacheTag.lastModifiedDate != -1) {
@@ -3679,7 +3688,7 @@ void HTTPProtocol::cacheParseResponseHeader(const HeaderTokenizer &tokenizer)
         qint64 dateHeader = -1;
         tIt = tokenizer.iterator("date");
         if (tIt.hasNext()) {
-            dateHeader = KDateTime::fromString(toQString(tIt.next()), KDateTime::RFCDate).toTime_t();
+            dateHeader = toTime_t(toQString(tIt.next()), KDateTime::RFCDate);
             // -1 on error
         }
 
@@ -3724,7 +3733,7 @@ void HTTPProtocol::cacheParseResponseHeader(const HeaderTokenizer &tokenizer)
         qint64 expiresHeader = -1;
         tIt = tokenizer.iterator("expires");
         if (tIt.hasNext()) {
-            expiresHeader = KDateTime::fromString(toQString(tIt.next()), KDateTime::RFCDate).toTime_t();
+            expiresHeader = toTime_t(toQString(tIt.next()), KDateTime::RFCDate);
             kDebug(7113) << "parsed expire date from 'expires' header:" << tIt.current();
         }
 
@@ -4623,7 +4632,7 @@ QString HTTPProtocol::findCookies( const QString &url)
 
 /******************************* CACHING CODE ****************************/
 
-HTTPProtocol::CacheTag::CachePlan HTTPProtocol::CacheTag::plan(time_t maxCacheAge) const
+HTTPProtocol::CacheTag::CachePlan HTTPProtocol::CacheTag::plan(int maxCacheAge) const
 {
     //notable omission: we're not checking cache file presence or integrity
     switch (policy) {
@@ -4644,7 +4653,7 @@ HTTPProtocol::CacheTag::CachePlan HTTPProtocol::CacheTag::plan(time_t maxCacheAg
     }
 
     Q_ASSERT((policy == CC_Verify || policy == CC_Refresh));
-    time_t currentDate = time(0);
+    qint64 currentDate = QDateTime::currentMSecsSinceEpoch()/1000;
     if ((servedDate != -1 && currentDate > (servedDate + maxCacheAge)) ||
         (expireDate != -1 && currentDate > expireDate)) {
         return ValidateCached;
@@ -4697,33 +4706,20 @@ QByteArray HTTPProtocol::CacheTag::serialize() const
     stream << quint8(0);
 
     stream << fileUseCount;
-
-    // time_t overflow will only be checked when reading; we have no way to tell here.
-    stream << qint64(servedDate);
-    stream << qint64(lastModifiedDate);
-    stream << qint64(expireDate);
+    stream << servedDate;
+    stream << lastModifiedDate;
+    stream << expireDate;
 
     stream << bytesCached;
     Q_ASSERT(ret.size() == BinaryCacheFileHeader::size);
     return ret;
 }
 
-
 static bool compareByte(QDataStream *stream, quint8 value)
 {
     quint8 byte;
     *stream >> byte;
     return byte == value;
-}
-
-static bool readTime(QDataStream *stream, time_t *time)
-{
-    qint64 intTime = 0;
-    *stream >> intTime;
-    *time = static_cast<time_t>(intTime);
-
-    qint64 check = static_cast<qint64>(*time);
-    return check == intTime;
 }
 
 // If starting a new file cacheFileWriteVariableSizeHeader() must have been called *before*
@@ -4748,15 +4744,9 @@ bool HTTPProtocol::CacheTag::deserialize(const QByteArray &d)
     }
 
     stream >> fileUseCount;
-
-    // read and check for time_t overflow
-    ok = ok && readTime(&stream, &servedDate);
-    ok = ok && readTime(&stream, &lastModifiedDate);
-    ok = ok && readTime(&stream, &expireDate);
-    if (!ok) {
-        return false;
-    }
-
+    stream >> servedDate;
+    stream >> lastModifiedDate;
+    stream >> expireDate;
     stream >> bytesCached;
 
     return true;
