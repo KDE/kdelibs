@@ -57,7 +57,7 @@ public:
      *         will be ignored
      * @param flags for future extensions (currently unused)
      *
-     * @return an error code indicating success (== 0) or failure (> 0).
+     * @return an error code indicating success (== 0) or failure (< 0).
      */
     int findServiceFor( const QString& serviceType,
                         const QString& constraint = QString(),
