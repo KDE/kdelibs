@@ -8,30 +8,30 @@
 
 <!ENTITY Alt	"<keycap>Alt</keycap>">
 <!ENTITY Backspace	"<keycap>Backspace</keycap>">
-<!ENTITY cdrom	'<hardware>CD-ROM Çı¶¯Æ÷</hardware>'>
+<!ENTITY cdrom	'<hardware>CD-ROM é©±åŠ¨å™¨</hardware>'>
 <!ENTITY Ctrl	"<keycap>Ctrl</keycap>">
 <!ENTITY dpi	'<acronym>dpi</acronym>'>
-<!ENTITY eg     "<abbrev>Èç</abbrev>">
+<!ENTITY eg     "<abbrev>å¦‚</abbrev>">
 <!ENTITY Enter	"<keycap>Enter</keycap>">
 <!ENTITY Esc	"<keycap>Esc</keycap>">
-<!ENTITY etc    "<abbrev>µÈµÈ</abbrev>">
-<!ENTITY FAQ	'³£¼ûÎÊÌâ½â´ğ'>
+<!ENTITY etc    "<abbrev>ç­‰ç­‰</abbrev>">
+<!ENTITY FAQ	'å¸¸è§é—®é¢˜è§£ç­”'>
 <!ENTITY ie     "<abbrev>i.e.</abbrev>">
-<!ENTITY infocenter	"<application>ĞÅÏ¢ÖĞĞÄ</application>">
-<!ENTITY kcontrolcenter	"<application>&kde; ¿ØÖÆÖĞĞÄ</application>">
+<!ENTITY infocenter	"<application>ä¿¡æ¯ä¸­å¿ƒ</application>">
+<!ENTITY kcontrolcenter	"<application>&kde; æ§åˆ¶ä¸­å¿ƒ</application>">
 <!ENTITY kicon	"<guiicon>
 <inlinemediaobject>
- <objectinfo><title>&kde; µÄ K Í¼±ê</title></objectinfo>
+ <objectinfo><title>&kde; çš„ K å›¾æ ‡</title></objectinfo>
  <imageobject><imagedata fileref='common/kmenu.png' format='PNG'/></imageobject>
  <textobject><phrase>K</phrase></textobject>
 </inlinemediaobject>
 </guiicon> icon"><!-- if image is localised, then entityref should be used 
                       instead of fileref -->
-<!ENTITY kmenu  "<guimenu>K</guimenu> ²Ëµ¥">
-<!ENTITY LMB    "Êó±ê<mousebutton>×ó</mousebutton>¼ü">
-<!ENTITY MMB    "Êó±ê<mousebutton>ÖĞ</mousebutton>¼ü">
-<!ENTITY OS	"²Ù×÷ÏµÍ³"><!-- <acronym>OS</acronym>-->
-<!ENTITY RMB    "Êó±ê<mousebutton>ÓÒ</mousebutton>¼ü">
+<!ENTITY kmenu  "<guimenu>K</guimenu> èœå•">
+<!ENTITY LMB    "é¼ æ ‡<mousebutton>å·¦</mousebutton>é”®">
+<!ENTITY MMB    "é¼ æ ‡<mousebutton>ä¸­</mousebutton>é”®">
+<!ENTITY OS	"æ“ä½œç³»ç»Ÿ"><!-- <acronym>OS</acronym>-->
+<!ENTITY RMB    "é¼ æ ‡<mousebutton>å³</mousebutton>é”®">
 <!ENTITY Shift	"<keycap>Shift</keycap>">
-<!ENTITY systemtray "<application>ÏµÍ³ÍĞÅÌ</application>">
+<!ENTITY systemtray "<application>ç³»ç»Ÿæ‰˜ç›˜</application>">
 <!ENTITY Tab	"<keycap>Tab</keycap>">
