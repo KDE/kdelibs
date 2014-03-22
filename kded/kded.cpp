@@ -82,7 +82,7 @@ extern Q_DBUS_EXPORT void qDBusAddSpyHook(void (*)(const QDBusMessage&));
 extern QDBUS_EXPORT void qDBusAddSpyHook(void (*)(const QDBusMessage&));
 #endif
 
-static void runBuildSycoca(QObject *callBackObj=0, const char *callBackSlot=0)
+static void runBuildSycoca(QObject *callBackObj=0, const char *callBackSlot=0, const char *callBackErrorSlot=0)
 {
    const QString exe = KStandardDirs::findExe(KBUILDSYCOCA_EXENAME);
    Q_ASSERT(!exe.isEmpty());
@@ -98,8 +98,7 @@ static void runBuildSycoca(QObject *callBackObj=0, const char *callBackSlot=0)
    {
       QVariantList argList;
       argList << exe << args << QStringList() << QString();
-      KToolInvocation::klauncher()->callWithCallback("kdeinit_exec_wait", argList, callBackObj,
-                                                         callBackSlot);
+      KToolInvocation::klauncher()->callWithCallback("kdeinit_exec_wait", argList, callBackObj, callBackSlot, callBackErrorSlot);
    }
    else
    {
@@ -537,7 +536,7 @@ void Kded::recreate(bool initial)
    if (!initial)
    {
       updateDirWatch(); // Update tree first, to be sure to miss nothing.
-      runBuildSycoca(this, SLOT(recreateDone()));
+      runBuildSycoca(this, SLOT(recreateDone()), SLOT(recreateFailed(QDBusError)));
    }
    else
    {
@@ -558,6 +557,17 @@ void Kded::recreate(bool initial)
    }
 }
 
+void Kded::recreateFailed(const QDBusError &error)
+{
+    kWarning() << error;
+    for(; m_recreateCount; m_recreateCount--)
+    {
+       QDBusMessage msg = m_recreateRequests.takeFirst();
+       QDBusConnection::sessionBus().send(msg.createErrorReply(error));
+    }
+    afterRecreateFinished();
+}
+
 void Kded::recreateDone()
 {
    updateResourceList();
@@ -567,6 +577,11 @@ void Kded::recreateDone()
       QDBusMessage msg = m_recreateRequests.takeFirst();
       QDBusConnection::sessionBus().send(msg.createReply());
    }
+   afterRecreateFinished();
+}
+
+void Kded::afterRecreateFinished()
+{
    m_recreateBusy = false;
 
    // Did a new request come in while building?
