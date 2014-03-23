@@ -138,6 +138,7 @@ public Q_SLOTS:
     * Recreating finished
     */
    void recreateDone();
+   void recreateFailed(const QDBusError &error);
 
    /**
     * Collect all directories to watch
@@ -173,7 +174,9 @@ protected Q_SLOTS:
 
    void runDelayedCheck();
 
-protected:
+private:
+   void afterRecreateFinished();
+
    /**
     * Scans dir for new files and new subdirectories.
     */
