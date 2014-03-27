@@ -479,7 +479,7 @@ bool KIO::Integration::sslConfigFromMetaData(const KIO::MetaData& metadata, QSsl
 {
     bool success = false;
 
-    if (metadata.contains(QL1S("ssl_in_use"))) {
+    if (metadata.value(QL1S("ssl_in_use")) == QL1S("TRUE")) {
         const QSsl::SslProtocol sslProto = qSslProtocolFromString(metadata.value(QL1S("ssl_protocol_version")));
         QList<QSslCipher> cipherList;
         cipherList << QSslCipher(metadata.value(QL1S("ssl_cipher_name")), sslProto);
