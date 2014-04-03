@@ -1,7 +1,8 @@
 <para>Per avere informazioni dettagliate su come compilare e installare le
-applicazioni di &kde;, vedi <ulink url="http://techbase.kde.org/Getting_Started_(it)">
-Generare KDE4 dal codice sorgente</ulink></para>
+applicazioni di &kde;, vedi <ulink
+url="http://techbase.kde.org/Getting_Started#Building_and_Running_KDE_Software_From_Source">
+Building and Running KDE Software From Source</ulink></para>
 
 <para>Siccome &kde; usa <command>cmake</command> non dovresti avere problemi a
-compilarlo. Se invece dovessi incontrarne, per piacere, segnalali alle liste di
+compilarle. Se invece dovessi incontrarne, segnalali alle liste di
 distribuzione di &kde;.</para>
