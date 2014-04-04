@@ -374,7 +374,9 @@ cmake_policy(SET CMP0011 OLD)
 cmake_policy(SET CMP0017 NEW)
 
 # since cmake 3.0: use of the LOCATION target property is disallowed while it is used in KDE4Macros.cmake
-cmake_policy(SET CMP0026 OLD)
+if (${CMAKE_MAJOR_VERSION} GREATER 2)
+  cmake_policy(SET CMP0026 OLD)
+endif (${CMAKE_MAJOR_VERSION} GREATER 2)
 
 # Only do something if it hasn't been found yet
 if(NOT KDE4_FOUND)
