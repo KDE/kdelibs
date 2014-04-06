@@ -630,9 +630,9 @@ i18n("Asia/Magadan");
 i18n("Moscow+08 - Magadan");
 i18n("Asia/Makassar");
 // i18n: comment to the previous timezone
-i18n("east & south Borneo, Celebes, Bali, Nusa Tengarra, west Timor");
+i18n("east & south Borneo, Celebes, Bali, Nusa Tenggara, west Timor");
 // i18n: comment to the previous timezone
-i18n("east & south Borneo, Sulawesi (Celebes), Bali, Nusa Tengarra, west Timor");
+i18n("east & south Borneo, Sulawesi (Celebes), Bali, Nusa Tenggara, west Timor");
 i18n("Asia/Manila");
 i18n("Asia/Muscat");
 i18n("Asia/Nicosia");
@@ -685,7 +685,7 @@ i18n("Asia/Thimphu");
 i18n("Asia/Tokyo");
 i18n("Asia/Ujung_Pandang");
 // i18n: comment to the previous timezone
-i18n("east & south Borneo, Celebes, Bali, Nusa Tengarra, west Timor");
+i18n("east & south Borneo, Celebes, Bali, Nusa Tenggara, west Timor");
 i18n("Asia/Ulaanbaatar");
 // i18n: comment to the previous timezone
 i18n("most locations");
