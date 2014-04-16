@@ -86,8 +86,13 @@ bool CSSFontFaceSource::isValid() const
 
 void CSSFontFaceSource::notifyFinished(khtml::CachedObject */*finishedObj*/)
 {
+    if (m_face->installed()) {
+        // kWarning() << "Font already added from other src";
+        return;
+    }
+
     WTF::Vector<DOMString> names = m_face->familyNames();
-    unsigned size = names.size();
+    const unsigned size = names.size();
 
     m_id = QFontDatabase::addApplicationFontFromData( m_font->font() );
 
@@ -95,6 +100,9 @@ void CSSFontFaceSource::notifyFinished(khtml::CachedObject */*finishedObj*/)
         kDebug(6080) << "WARNING: downloaded web font" << (size?names[0].string():QString()) << "was rejected by the font subsystem.";
         return;
     }
+
+    m_face->setInstalled();
+
     QString nativeName = QFontDatabase::applicationFontFamilies( m_id )[0];
     for (unsigned i = 0; i < size; i++) {
         if (names[i].string() != nativeName) {
@@ -102,6 +110,7 @@ void CSSFontFaceSource::notifyFinished(khtml::CachedObject */*finishedObj*/)
         }
         khtml::Font::invalidateCachedFontFamily( names[i].string() );
     }
+
     if (m_face && m_refed) {
         m_face->fontLoaded(this);
     }
@@ -222,7 +231,6 @@ SimpleFontData* CSSFontFaceSource::getFontData(const FontDef& fontDescription, b
 CSSFontFace::~CSSFontFace()
 {
     deleteAllValues(m_sources);
-
 }
 
 bool CSSFontFace::isLoaded() const
@@ -245,6 +253,16 @@ bool CSSFontFace::isValid() const
             return true;
     }
     return false;
+}
+
+void CSSFontFace::setInstalled()
+{
+    m_installed = true;
+}
+
+bool CSSFontFace::installed() const
+{
+    return m_installed;
 }
 
 void CSSFontFace::refLoaders()
@@ -493,7 +511,7 @@ void CSSFontSelector::addFontFaceRule(const CSSFontFaceRuleImpl* fontFaceRule)
     // Each item in the src property's list is a single CSSFontFaceSource. Put them all into a CSSFontFace.
     CSSFontFace* fontFace = 0;
 
-    int srcLength = srcList->length();
+    const int srcLength = srcList->length();
 
     bool foundLocal = false;
 
