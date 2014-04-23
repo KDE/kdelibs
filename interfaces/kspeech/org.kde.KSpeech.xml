@@ -145,6 +145,11 @@
             <arg name="voiceType" type="i" direction="in"/>
             <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
         </method>
+
+	<method name="setPunctuationType">
+	  <arg name="punctuation" type="i" direction="in"/>
+	  <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+	<method>  
         
         <method name="setSpeed">
             <arg name="speed" type="i" direction="in"/>
