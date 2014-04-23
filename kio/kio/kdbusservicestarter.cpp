@@ -86,7 +86,7 @@ int KDBusServiceStarter::findServiceFor( const QString& serviceType,
         {
             if ( error )
                 *error = err;
-            kDebug() << "Couldn't start service" << serviceType << ":" << err;
+            kWarning() << "Couldn't start service" << dbusService << "for" << serviceType << ":" << err;
             return -2;
         }
     }
