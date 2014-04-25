@@ -3783,9 +3783,11 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 	            fontDef.family += ",";
 		    fontDef.family += face;
                 }
-		fontDirty |= style->setFontDef( fontDef );
 	    }
 	}
+        if (hasFamilyName) {
+            fontDirty |= style->setFontDef( fontDef );
+        }
         break;
     }
     case CSS_PROP_QUOTES:
