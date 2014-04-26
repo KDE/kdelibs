@@ -4272,6 +4272,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
                 break;
         }
         break;
+    }
     case CSS_PROP_TEXT_OVERFLOW: {
         // This property is supported by WinIE, and so we leave off the "-khtml-" in order to
         // work with WinIE-specific pages that use the property.
@@ -4280,7 +4281,6 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             return;
         style->setTextOverflow(primitiveValue->getIdent() == CSS_VAL_ELLIPSIS);
         break;
-    }
     }
     case CSS_PROP_WORD_WRAP: {
         HANDLE_INITIAL_AND_INHERIT_ON_INHERITED_PROPERTY(wordWrap, WordWrap)
