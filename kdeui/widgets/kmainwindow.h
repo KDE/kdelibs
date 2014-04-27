@@ -89,7 +89,7 @@ class KToolBar;
  * readProperties(). To save special data about your data, reimplement
  * saveGlobalProperties(). To warn user that application or
  * windows have unsaved data on close or logout, reimplement
- * queryClose() and/or queryExit().
+ * queryClose().
  *
  * You have to implement session restoring also in your main() function.
  * There are also kRestoreMainWindows convenience functions which
@@ -488,10 +488,6 @@ protected:
 
     /**
      * Reimplemented to call the queryClose() and queryExit() handlers.
-     *
-     * We recommend that you reimplement the handlers rather than closeEvent().
-     * If you do it anyway, ensure to call the base implementation to keep
-     * queryExit() running.
      */
     virtual void closeEvent ( QCloseEvent *);
 
@@ -532,6 +528,10 @@ protected:
 
        @see queryClose()
        @see KApplication::sessionSaving()
+
+       @deprecated since 4.14 Do not reimplement queryExit. Either reimplement queryClose
+       (called for every window) or connect QCoreApplication::aboutToQuit() into a slot
+       of a non-gui object (not a KMainWindow, it will be deleted before that!).
      */
     virtual bool queryExit();
 
