@@ -755,10 +755,23 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
         // FIXME: this does not reflect the full range of weights
         // that can be expressed with CSS
         FontDef def = style->htmlFont().getFontDef();
-        if (def.weight == QFont::Bold)
-            return new CSSPrimitiveValueImpl(CSS_VAL_BOLD);
-        else
-            return new CSSPrimitiveValueImpl(CSS_VAL_NORMAL);
+        switch (def.weight) {
+            case QFont::Light:
+                return new CSSPrimitiveValueImpl(CSS_VAL_300);
+            case QFont::Normal:
+                //return new CSSPrimitiveValueImpl(CSS_VAL_400);
+                return new CSSPrimitiveValueImpl(CSS_VAL_NORMAL);
+            case QFont::DemiBold:
+                return new CSSPrimitiveValueImpl(CSS_VAL_600);
+            case QFont::Bold:
+                //return new CSSPrimitiveValueImpl(CSS_VAL_700);
+                return new CSSPrimitiveValueImpl(CSS_VAL_BOLD);
+            case QFont::Black:
+                return new CSSPrimitiveValueImpl(CSS_VAL_900);
+            default:
+                // Should not happen
+                return new CSSPrimitiveValueImpl(CSS_VAL_NORMAL);
+        }
     }
     case CSS_PROP_HEIGHT:
         if (renderer)
