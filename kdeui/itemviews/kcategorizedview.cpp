@@ -730,16 +730,7 @@ QModelIndex KCategorizedView::indexAt(const QPoint &point) const
     while (bottom <= top) {
         const int middle = (bottom + top) / 2;
         const QModelIndex index = d->proxyModel->index(middle, modelColumn(), rootIndex());
-        QRect rect = visualRect(index);
-        const int verticalOff = verticalOffset();
-        int horizontalOff = horizontalOffset();
-        if (layoutDirection() == Qt::RightToLeft) {
-            horizontalOff *= -1;
-        }
-        rect.topLeft().ry() += verticalOff;
-        rect.topLeft().rx() += horizontalOff;
-        rect.bottomRight().ry() += verticalOff;
-        rect.bottomRight().rx() += horizontalOff;
+        const QRect rect = visualRect(index);
         if (rect.contains(point)) {
             if (index.model()->flags(index) & Qt::ItemIsEnabled) {
                 return index;
@@ -748,15 +739,41 @@ QModelIndex KCategorizedView::indexAt(const QPoint &point) const
         }
         bool directionCondition;
         if (layoutDirection() == Qt::LeftToRight) {
-            directionCondition = point.x() > rect.bottomRight().x();
+            directionCondition = point.x() >= rect.bottomLeft().x();
         } else {
-            directionCondition = point.x() < rect.bottomLeft().x();
+            directionCondition = point.x() <= rect.bottomRight().x();
         }
-        if (point.y() > rect.bottomRight().y() ||
-            (point.y() > rect.topLeft().y() && point.y() < rect.bottomRight().y() && directionCondition)) {
-            bottom = middle + 1;
-        } else {
+        if (point.y() < rect.topLeft().y()) {
             top = middle - 1;
+        } else if (directionCondition) {
+            bottom = middle + 1;
+        } else if (point.y() <= rect.bottomRight().y()) {
+            top = middle - 1;
+        } else {
+            bool after = true;
+            for (int i = middle - 1;i >= bottom;i--) {
+                const QModelIndex newIndex =
+                    d->proxyModel->index(i, modelColumn(), rootIndex());
+                const QRect newRect = visualRect(newIndex);
+                if (newRect.topLeft().y() < rect.topLeft().y()) {
+                    break;
+                } else if (newRect.contains(point)) {
+                    if (newIndex.model()->flags(newIndex) & Qt::ItemIsEnabled) {
+                        return newIndex;
+                    }
+                    return QModelIndex();
+                } else if ((layoutDirection() == Qt::LeftToRight) ?
+                           (newRect.topLeft().x() <= point.x()) :
+                           (newRect.topRight().x() >= point.x())) {
+                    break;
+                } else if (newRect.bottomRight().y() >= point.y()) {
+                    after = false;
+                }
+            }
+            if (!after) {
+                return QModelIndex();
+            }
+            bottom = middle + 1;
         }
     }
     return QModelIndex();
