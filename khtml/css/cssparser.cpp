@@ -1185,10 +1185,12 @@ bool CSSParser::parseValue( int propId, bool important )
     case CSS_PROP_FONT:
             // [ [ 'font-style' || 'font-variant' || 'font-weight' ]? 'font-size' [ / 'line-height' ]?
         // 'font-family' ] | caption | icon | menu | message-box | small-caption | status-bar | inherit
-        if ( id >= CSS_VAL_CAPTION && id <= CSS_VAL_STATUS_BAR )
+        if ( id >= CSS_VAL_CAPTION && id <= CSS_VAL_STATUS_BAR ) {
             valid_primitive = true;
-        else
+        } else {
+            ShorthandScope scope(this, CSS_PROP_FONT);
             return parseFont(important);
+        }
         break;
 
     case CSS_PROP_LIST_STYLE:
@@ -2177,6 +2179,12 @@ CSSValueListImpl *CSSParser::parseFontFamily()
                                   (nextValue->unit == CSSPrimitiveValue::CSS_STRING ||
                                    nextValue->unit == CSSPrimitiveValue::CSS_IDENT));
 
+        if (value->id == CSS_VAL_INHERIT && inShorthand() && currFace.isNull() && nextValBreaksFont) {
+            // fail (#169610)
+            delete list;
+            return 0;
+        }
+
         if (value->id >= CSS_VAL_SERIF && value->id <= CSS_VAL_MONOSPACE) {
             if (!currFace.isNull()) {
                 currFace += ' ';
@@ -2209,13 +2217,13 @@ CSSValueListImpl *CSSParser::parseFontFamily()
                     currFace.clear();
                 }
                 list->append(new FontFamilyValueImpl( qString( value->string ) ) );
+            }
+            else {
+                currFace = qString( value->string);
+            }
         }
         else {
-                currFace = qString( value->string);
-        }
-        }
-	else {
- 	    //kDebug( 6080 ) << "invalid family part";
+            //kDebug( 6080 ) << "invalid family part";
             break;
         }
 
@@ -2223,7 +2231,7 @@ CSSValueListImpl *CSSParser::parseFontFamily()
             break;
 
         if (nextValBreaksFont) {
-        value = valueList->next();
+            value = valueList->next();
             if ( !currFace.isNull() )
                 list->append( new FontFamilyValueImpl( currFace ) );
             currFace.clear();
