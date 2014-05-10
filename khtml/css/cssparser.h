@@ -93,7 +93,7 @@ namespace DOM {
         ValueList() : m_current(0) { }
         ~ValueList();
         void addValue(const Value& v) { m_values.append(v); }
-        unsigned int size() const { return m_values.size(); }
+        int size() const { return m_values.size(); }
         Value* current() { return m_current < m_values.size() ? &m_values[m_current] : 0; }
         Value* next() { ++m_current; return current(); }
     private:
