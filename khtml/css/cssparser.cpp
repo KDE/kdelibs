@@ -56,8 +56,8 @@ using namespace DOM;
 
 ValueList::~ValueList()
 {
-     unsigned numValues = m_values.size();
-     for (unsigned i = 0; i < numValues; i++)
+     const int numValues = m_values.size();
+     for (int i = 0; i < numValues; ++i)
          if (m_values[i].unit == Value::Function)
              delete m_values[i].function;
 }
@@ -480,7 +480,7 @@ bool CSSParser::parseValue( int propId, bool important )
 
     int id = value->id;
 
-    int num = inShorthand() ? 1 : valueList->size();
+    const int num = inShorthand() ? 1 : valueList->size();
 
     if ( id == CSS_VAL_INHERIT ) {
         if (num != 1)
@@ -696,20 +696,10 @@ bool CSSParser::parseValue( int propId, bool important )
             valid_primitive = true;
         break;
 
-    case CSS_PROP_FONT_WEIGHT:  // normal | bold | bolder | lighter | 100 | 200 | 300 | 400 |
-        // 500 | 600 | 700 | 800 | 900 | inherit
-        if (id >= CSS_VAL_NORMAL && id <= CSS_VAL_900) {
-            // Already correct id
+    case CSS_PROP_FONT_WEIGHT: // normal | bold | bolder | lighter | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 | inherit
+        id = parseFontWeight(value, false);
+        if (id) {
             valid_primitive = true;
-        } else if ( validUnit( value, FInteger|FNonNeg, false ) ) {
-            int weight = (int)value->fValue;
-            if ( (weight % 100) )
-                break;
-            weight /= 100;
-            if ( weight >= 1 && weight <= 9 ) {
-                id = CSS_VAL_100 + weight - 1;
-                valid_primitive = true;
-            }
         }
         break;
     case CSS_PROP__KHTML_BORDER_TOP_RIGHT_RADIUS:
@@ -1195,10 +1185,12 @@ bool CSSParser::parseValue( int propId, bool important )
     case CSS_PROP_FONT:
             // [ [ 'font-style' || 'font-variant' || 'font-weight' ]? 'font-size' [ / 'line-height' ]?
         // 'font-family' ] | caption | icon | menu | message-box | small-caption | status-bar | inherit
-        if ( id >= CSS_VAL_CAPTION && id <= CSS_VAL_STATUS_BAR )
+        if ( id >= CSS_VAL_CAPTION && id <= CSS_VAL_STATUS_BAR ) {
             valid_primitive = true;
-        else
+        } else {
+            ShorthandScope scope(this, CSS_PROP_FONT);
             return parseFont(important);
+        }
         break;
 
     case CSS_PROP_LIST_STYLE:
@@ -1482,7 +1474,7 @@ bool CSSParser::parse4Values(int propId, const int *properties,  bool important 
      * right, bottom, and left, respectively.
      */
 
-    int num = inShorthand() ? 1 : valueList->size();
+    const int num = inShorthand() ? 1 : valueList->size();
     //qDebug("parse4Values: num=%d %d", num,  valueList->numValues );
 
     ShorthandScope scope(this, propId);
@@ -1616,8 +1608,9 @@ bool CSSParser::parseContent( int propId, bool important )
 
 CSSValueImpl* CSSParser::parseCounterContent(ValueList *args, bool counters)
 {
-    if (counters || (args->size() != 1 && args->size() != 3))
-        if (!counters || (args->size() != 3 && args->size() != 5))
+    const int argsSize = args->size();
+    if (counters || (argsSize != 1 && argsSize != 3))
+        if (!counters || (argsSize != 3 && argsSize != 5))
             return 0;
 
     CounterImpl *counter = new CounterImpl;
@@ -1982,8 +1975,9 @@ bool CSSParser::parseShape( int propId, bool important )
     if ( fname != "rect(" || !args )
         return false;
 
+    const int argsSize = args->size();
     // rect( t, r, b, l ) || rect( t r b l )
-    if ( args->size() != 4 && args->size() != 7 )
+    if ( argsSize != 4 && argsSize != 7 )
         return false;
     RectImpl *rect = new RectImpl();
     bool valid = true;
@@ -2009,7 +2003,7 @@ bool CSSParser::parseShape( int propId, bool important )
         else
             rect->setLeft( length );
         a = args->next();
-        if ( a && args->size() == 7 ) {
+        if ( a && argsSize == 7 ) {
             if ( a->unit == Value::Operator && a->iValue == ',' ) {
                 a = args->next();
             } else {
@@ -2031,76 +2025,40 @@ bool CSSParser::parseShape( int propId, bool important )
 // [ 'font-style' || 'font-variant' || 'font-weight' ]? 'font-size' [ / 'line-height' ]? 'font-family'
 bool CSSParser::parseFont( bool important )
 {
-//     kDebug(6080) << "parsing font property current=" << valueList->currentValue;
-    bool valid = true;
     Value *value = valueList->current();
     CSSValueListImpl* family = 0;
     CSSPrimitiveValueImpl *style = 0, *variant = 0, *weight = 0, *size = 0, *lineHeight = 0;
-    // optional font-style, font-variant and font-weight
-    while ( value ) {
-//         kDebug( 6080 ) << "got value " << value->id << " / " << (value->unit == CSSPrimitiveValue::CSS_STRING ||
-        //                                    value->unit == CSSPrimitiveValue::CSS_IDENT ? qString( value->string ) : QString() )
-//                         << endl;
-        int id = value->id;
-        if ( id ) {
-            if ( id == CSS_VAL_NORMAL ) {
-                // do nothing, it's the initial value for all three
-            }
-            /*
-              else if ( id == CSS_VAL_INHERIT ) {
-              // set all non set ones to inherit
-              // This is not that simple as the inherit could also apply to the following font-size.
-              // very ahrd to tell without looking ahead.
-              inherit = true;
-                } */
-            else if ( id == CSS_VAL_ITALIC || id == CSS_VAL_OBLIQUE ) {
-                if ( style )
-                    goto invalid;
-                style = new CSSPrimitiveValueImpl( id );
-            } else if ( id == CSS_VAL_SMALL_CAPS ) {
-                if ( variant )
-                    goto invalid;
-                variant = new CSSPrimitiveValueImpl( id );
-            } else if ( id >= CSS_VAL_BOLD && id <= CSS_VAL_LIGHTER ) {
-                if ( weight )
-                    goto invalid;
-                weight = new CSSPrimitiveValueImpl( id );
-            } else {
-                valid = false;
-            }
-        } else if ( !weight && validUnit( value, FInteger|FNonNeg, true ) ) {
-            int w = (int)value->fValue;
-            int val = 0;
-            if ( w == 100 )
-                val = CSS_VAL_100;
-            else if ( w == 200 )
-                val = CSS_VAL_200;
-            else if ( w == 300 )
-                val = CSS_VAL_300;
-            else if ( w == 400 )
-                val = CSS_VAL_400;
-            else if ( w == 500 )
-                val = CSS_VAL_500;
-            else if ( w == 600 )
-                val = CSS_VAL_600;
-            else if ( w == 700 )
-                val = CSS_VAL_700;
-            else if ( w == 800 )
-                val = CSS_VAL_800;
-            else if ( w == 900 )
-                val = CSS_VAL_900;
 
-            if ( val )
-                weight = new CSSPrimitiveValueImpl( val );
-            else
-                valid = false;
+    // optional font-style, font-variant and font-weight
+    while (value) {
+        //kWarning() << "got value" << value->id << "/" <<
+        //(value->unit == CSSPrimitiveValue::CSS_STRING || value->unit == CSSPrimitiveValue::CSS_IDENT ? qString(value->string) : QString());
+        const int id = value->id;
+
+        if (id == CSS_VAL_NORMAL) {
+            // do nothing, it's the initial value for all three
+        } else if (id == CSS_VAL_ITALIC || id == CSS_VAL_OBLIQUE) {
+            if (style) {
+                goto invalid;
+            }
+            style = new CSSPrimitiveValueImpl(id);
+        } else if (id == CSS_VAL_SMALL_CAPS) {
+            if (variant) {
+                goto invalid;
+            }
+            variant = new CSSPrimitiveValueImpl(id);
+        } else if (int weightValueId = parseFontWeight(value, true)) {
+            if (weight) {
+                goto invalid;
+            }
+            weight = new CSSPrimitiveValueImpl(weightValueId);
         } else {
-            valid = false;
-        }
-        if ( !valid )
             break;
+        }
+
         value = valueList->next();
     }
+
     if ( !value )
         goto invalid;
 
@@ -2112,20 +2070,25 @@ bool CSSParser::parseFont( bool important )
     if ( !weight )
         weight = new CSSPrimitiveValueImpl( CSS_VAL_NORMAL );
 
-//     kDebug( 6080 ) << "  got style, variant and weight current=" << valueList->currentValue;
+    //kWarning() << "parsed style, variant, weight:" << style->cssText() << variant->cssText() << weight->cssText();
 
-    // now a font size _must_ come
+    // now a font-size _must_ come
     // <absolute-size> | <relative-size> | <length> | <percentage> | inherit
     if ( value->id >= CSS_VAL_XX_SMALL && value->id <= CSS_VAL_LARGER )
         size = new CSSPrimitiveValueImpl( value->id );
     else if ( validUnit( value, FLength|FPercent, strict ) ) {
         size = new CSSPrimitiveValueImpl( value->fValue, (CSSPrimitiveValue::UnitTypes) value->unit );
     }
-    value = valueList->next();
-    if ( !size || !value )
+    if (!size) {
         goto invalid;
+    }
+    //kWarning() << "parsed size:" << size->cssText();
 
-    // kDebug( 6080 ) << "  got size";
+    // now /line-height could come, next font-family _must_ come
+    value = valueList->next();
+    if (!value) {
+        goto invalid;
+    }
 
     if ( value->unit == Value::Operator && value->iValue == '/' ) {
         // line-height
@@ -2143,16 +2106,17 @@ bool CSSParser::parseFont( bool important )
         if ( !value )
             goto invalid;
     }
+    // if undefined set to default
     if ( !lineHeight )
         lineHeight = new CSSPrimitiveValueImpl( CSS_VAL_NORMAL );
+    //kWarning() << "parsed line-height:" << lineHeight->cssText();
 
-//     kDebug( 6080 ) << "  got line height current=" << valueList->currentValue;
-    // font family must come now
+    // font-family _must_ come now
     family = parseFontFamily();
 
     if ( valueList->current() || !family )
         goto invalid;
-    //kDebug( 6080 ) << "  got family, parsing ok!";
+    //kWarning() << "parsed family:" << family->cssText();
 
     addProperty( CSS_PROP_FONT_FAMILY,  family,     important );
     addProperty( CSS_PROP_FONT_STYLE,   style,      important );
@@ -2163,7 +2127,7 @@ bool CSSParser::parseFont( bool important )
     return true;
 
  invalid:
-    //kDebug(6080) << "   -> invalid";
+    //kWarning() << " -> invalid";
     delete family;
     delete style;
     delete variant;
@@ -2172,6 +2136,27 @@ bool CSSParser::parseFont( bool important )
     delete lineHeight;
 
     return false;
+}
+
+int CSSParser::parseFontWeight(Value *val, bool strict)
+{
+    const int valId = val->id;
+    if (valId >= CSS_VAL_NORMAL && valId <= CSS_VAL_900) {
+        // Valid primitive
+        return valId;
+    }
+    if (validUnit(val, FInteger|FNonNeg, strict)) {
+        int weight = static_cast<int>(val->fValue);
+        if ((weight % 100)) {
+            // Invalid
+            return 0;
+        }
+        weight /= 100;
+        if (weight >= 1 && weight <= 9) {
+            return (CSS_VAL_100 + weight - 1);
+        }
+    }
+    return 0;
 }
 
 CSSValueListImpl *CSSParser::parseFontFamily()
@@ -2193,6 +2178,12 @@ CSSValueListImpl *CSSParser::parseFontFamily()
                                  ((nextValue->id >= CSS_VAL_SERIF && nextValue->id <= CSS_VAL_MONOSPACE) ||
                                   (nextValue->unit == CSSPrimitiveValue::CSS_STRING ||
                                    nextValue->unit == CSSPrimitiveValue::CSS_IDENT));
+
+        if (value->id == CSS_VAL_INHERIT && inShorthand() && currFace.isNull() && nextValBreaksFont) {
+            // fail (#169610)
+            delete list;
+            return 0;
+        }
 
         if (value->id >= CSS_VAL_SERIF && value->id <= CSS_VAL_MONOSPACE) {
             if (!currFace.isNull()) {
@@ -2226,13 +2217,13 @@ CSSValueListImpl *CSSParser::parseFontFamily()
                     currFace.clear();
                 }
                 list->append(new FontFamilyValueImpl( qString( value->string ) ) );
+            }
+            else {
+                currFace = qString( value->string);
+            }
         }
         else {
-                currFace = qString( value->string);
-        }
-        }
-	else {
- 	    //kDebug( 6080 ) << "invalid family part";
+            //kDebug( 6080 ) << "invalid family part";
             break;
         }
 
@@ -2240,7 +2231,7 @@ CSSValueListImpl *CSSParser::parseFontFamily()
             break;
 
         if (nextValBreaksFont) {
-        value = valueList->next();
+            value = valueList->next();
             if ( !currFace.isNull() )
                 list->append( new FontFamilyValueImpl( currFace ) );
             currFace.clear();

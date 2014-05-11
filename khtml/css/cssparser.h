@@ -93,7 +93,7 @@ namespace DOM {
         ValueList() : m_current(0) { }
         ~ValueList();
         void addValue(const Value& v) { m_values.append(v); }
-        unsigned int size() const { return m_values.size(); }
+        int size() const { return m_values.size(); }
         Value* current() { return m_current < m_values.size() ? &m_values[m_current] : 0; }
         Value* next() { ++m_current; return current(); }
     private:
@@ -168,6 +168,9 @@ namespace DOM {
 	bool parseFont(bool important);
 	bool parseFontFaceSrc();
         bool parseCounter(int propId, bool increment, bool important);
+
+        // returns parsed font-weight's css value id if valid, otherwise 0 (CSS_VAL_INVALID)
+        int parseFontWeight(Value *val, bool strict);
 
         bool parseColorParameters(Value*, int* colorValues, bool parseAlpha);
         bool parseHSLParameters(Value*, double* colorValues, bool parseAlpha);
