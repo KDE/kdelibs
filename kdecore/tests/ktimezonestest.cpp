@@ -133,7 +133,7 @@ void KTimeZonesTest::zone()
     QVERIFY(london.isValid());
     QCOMPARE(london.countryCode(), QString("GB"));
     QCOMPARE(london.latitude(), float(51*3600 + 28*60 + 30)/3600.0f);
-    QCOMPARE(london.longitude(), -float(0*3600 + 18*60 + 45)/3600.0f);
+    QCOMPARE(london.longitude(), -float(0*3600 + 18*60 + 55)/3600.0f);
     QCOMPARE(london.comment(), QString("Great Britain"));
     QCOMPARE(losAngeles.longitude(), -float(118*3600 + 14*60 + 34)/3600.0f);
 }
@@ -152,7 +152,7 @@ void KTimeZonesTest::zonetabChange()
     QObject::connect(&timer, SIGNAL(timeout()), &loop, SLOT(quit()));
     QSignalSpy timeoutSpy(&timer, SIGNAL(timeout()));
 
-    QCOMPARE(KSystemTimeZones::zones().count(), 4);
+    QCOMPARE(KSystemTimeZones::zones().count(), 5);
     KTimeZone london = KSystemTimeZones::zone("Europe/London");
     QVERIFY(london.isValid());
     QCOMPARE(london.countryCode(), QString("GB"));
@@ -176,7 +176,7 @@ void KTimeZonesTest::zonetabChange()
     QDBusConnection::sessionBus().send(message);
     timer.start(1000);
     loop.exec();
-    QCOMPARE(KSystemTimeZones::zones().count(), 6);
+    QCOMPARE(KSystemTimeZones::zones().count(), 7);
     QVERIFY(london.isValid());
     QCOMPARE(london.countryCode(), QString("XX"));
     QCOMPARE(london.latitude(), -float(51*3600 + 28*60 + 30)/3600.0f);
@@ -187,6 +187,7 @@ void KTimeZonesTest::zonetabChange()
     QVERIFY(KSystemTimeZones::zone("Europe/Paris").isValid());
     QVERIFY(KSystemTimeZones::zone("Europe/London").isValid());
     QVERIFY(KSystemTimeZones::zone("Africa/Cairo").isValid());
+    QVERIFY(KSystemTimeZones::zone("Africa/Johannesburg").isValid());
     QVERIFY(KSystemTimeZones::zone("Asia/Dili").isValid());
     QVERIFY(KSystemTimeZones::zone("America/Los_Angeles").isValid());
 
@@ -196,7 +197,7 @@ void KTimeZonesTest::zonetabChange()
     QDBusConnection::sessionBus().send(message);
     timer.start(1000);
     loop.exec();
-    QCOMPARE(KSystemTimeZones::zones().count(), 4);
+    QCOMPARE(KSystemTimeZones::zones().count(), 5);
     QVERIFY(london.isValid());
     QCOMPARE(london.countryCode(), QString("GB"));
     QCOMPARE(london.latitude(), float(51*3600 + 28*60 + 30)/3600.0f);
@@ -288,6 +289,12 @@ void KTimeZonesTest::offsetAtZoneTime()
     QCOMPARE(offset2, 0);
     QCOMPARE(london.offsetAtZoneTime(bGmt, &offset2), 0);
     QCOMPARE(offset2, 0);
+
+    KTimeZone johannesburg = KSystemTimeZones::zone("Africa/Johannesburg");
+    QVERIFY(johannesburg.isValid());
+    QDateTime recent(QDate(2013,5,10), QTime(13,0,0), Qt::LocalTime);
+    QCOMPARE(johannesburg.offsetAtZoneTime(recent, &offset2), 7200);
+    QCOMPARE(offset2, 7200);
 }
 
 void KTimeZonesTest::abbreviation()
@@ -415,6 +422,11 @@ void KTimeZonesTest::tzfile()
     tzcairo = new KTzfileTimeZone(&tzsource, "Africa/Cairo");
     QCOMPARE(tzcairo->offsetAtUtc(winter), 7200);
     delete tzcairo;
+    KTimeZone *johannesburg = new KTzfileTimeZone(&tzsource, "Africa/Johannesburg");
+    delete johannesburg;
+    johannesburg = new KTzfileTimeZone(&tzsource, "Africa/Johannesburg");
+    QCOMPARE(johannesburg->offsetAtUtc(winter), 7200);
+    delete johannesburg;
 }
 
 void KTimeZonesTest::tzfileDstShifts()
@@ -519,6 +531,12 @@ void KTimeZonesTest::tzfileOffsetAtUtc()
     QCOMPARE(london.offsetAtUtc(bBst), 3600);           // uses cache
     QCOMPARE(london.offsetAtUtc(bBstBeforeGmt), 3600);  // uses cache
     QCOMPARE(london.offsetAtUtc(bGmt), 0);
+
+    QDateTime recent(QDate(2013,5,10), QTime(13,0,0), Qt::UTC);
+    KTimeZone johannesburg = KTzfileTimeZone(&tzsource, "Africa/Johannesburg");
+    QVERIFY(johannesburg.isValid());
+    QCOMPARE(johannesburg.type(), QByteArray("KTzfileTimeZone"));
+    QCOMPARE(johannesburg.offsetAtUtc(recent), 7200);
 }
 
 void KTimeZonesTest::tzfileOffsetAtZoneTime()
@@ -575,6 +593,13 @@ void KTimeZonesTest::tzfileOffsetAtZoneTime()
     QCOMPARE(offset2, 0);
     QCOMPARE(sysLondon.offsetAtZoneTime(bGmt, &offset2), 0);
     QCOMPARE(offset2, 0);
+
+    KTimeZone johannesburg = KTzfileTimeZone(&tzsource, "Africa/Johannesburg");
+    QVERIFY(johannesburg.isValid());
+    QCOMPARE(johannesburg.type(), QByteArray("KTzfileTimeZone"));
+    QDateTime recent(QDate(2013,5,10), QTime(13,0,0), Qt::LocalTime);
+    QCOMPARE(johannesburg.offsetAtZoneTime(recent, &offset2), 7200);
+    QCOMPARE(offset2, 7200);
 }
 
 void KTimeZonesTest::tzfileUtcOffsets()
