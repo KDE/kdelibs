@@ -1,0 +1,14 @@
+Africa/Johannesburg  Fri Dec 13 20:45:52 1901 UTC = Fri Dec 13 22:15:52 1901 SAST isdst=0 gmtoff=5400
+Africa/Johannesburg  Sat Dec 14 20:45:52 1901 UTC = Sat Dec 14 22:15:52 1901 SAST isdst=0 gmtoff=5400
+Africa/Johannesburg  Sat Feb 28 22:29:59 1903 UTC = Sat Feb 28 23:59:59 1903 SAST isdst=0 gmtoff=5400
+Africa/Johannesburg  Sat Feb 28 22:30:00 1903 UTC = Sun Mar  1 00:30:00 1903 SAST isdst=0 gmtoff=7200
+Africa/Johannesburg  Sat Sep 19 23:59:59 1942 UTC = Sun Sep 20 01:59:59 1942 SAST isdst=0 gmtoff=7200
+Africa/Johannesburg  Sun Sep 20 00:00:00 1942 UTC = Sun Sep 20 03:00:00 1942 SAST isdst=1 gmtoff=10800
+Africa/Johannesburg  Sat Mar 20 22:59:59 1943 UTC = Sun Mar 21 01:59:59 1943 SAST isdst=1 gmtoff=10800
+Africa/Johannesburg  Sat Mar 20 23:00:00 1943 UTC = Sun Mar 21 01:00:00 1943 SAST isdst=0 gmtoff=7200
+Africa/Johannesburg  Sat Sep 18 23:59:59 1943 UTC = Sun Sep 19 01:59:59 1943 SAST isdst=0 gmtoff=7200
+Africa/Johannesburg  Sun Sep 19 00:00:00 1943 UTC = Sun Sep 19 03:00:00 1943 SAST isdst=1 gmtoff=10800
+Africa/Johannesburg  Sat Mar 18 22:59:59 1944 UTC = Sun Mar 19 01:59:59 1944 SAST isdst=1 gmtoff=10800
+Africa/Johannesburg  Sat Mar 18 23:00:00 1944 UTC = Sun Mar 19 01:00:00 1944 SAST isdst=0 gmtoff=7200
+Africa/Johannesburg  Mon Jan 18 03:14:07 2038 UTC = Mon Jan 18 05:14:07 2038 SAST isdst=0 gmtoff=7200
+Africa/Johannesburg  Tue Jan 19 03:14:07 2038 UTC = Tue Jan 19 05:14:07 2038 SAST isdst=0 gmtoff=7200

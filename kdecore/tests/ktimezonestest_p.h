@@ -50,7 +50,8 @@ public:
         writeZoneTab(false);
         QDir dir(mDataDir);
         QVERIFY(dir.mkdir("Africa"));
-        QFile::copy(QString::fromLatin1(KDESRCDIR) + QLatin1String("/Cairo"), mDataDir + QLatin1String("/Africa/Cairo"));
+        QVERIFY(QFile::copy(QString::fromLatin1(KDESRCDIR) + QLatin1String("/Cairo"), mDataDir + QLatin1String("/Africa/Cairo")));
+        QVERIFY(QFile::copy(QString::fromLatin1(KDESRCDIR) + QLatin1String("/Johannesburg"), mDataDir + QLatin1String("/Africa/Johannesburg")));
         QVERIFY(dir.mkdir("America"));
         QFile::copy(QString::fromLatin1(KDESRCDIR) + QLatin1String("/Los_Angeles"), mDataDir + QLatin1String("/America/Los_Angeles"));
         QVERIFY(dir.mkdir("Asia"));
@@ -95,12 +96,14 @@ public:
                        "FR	+4852+00220	Europe/Paris\n"
                        "XX	-512830+0001845	Europe/London	Greater Britain\n"
                        "TL	-0833+12535	Asia/Dili\n"
-                       "US	+340308-1181434	America/Los_Angeles	Pacific Time\n";
+                       "US	+340308-1181434	America/Los_Angeles	Pacific Time\n"
+                       "ZA	-2615+02800	Africa/Johannesburg\n";
         else
             fStream << "EG	+3003+03115	Africa/Cairo\n"
                        "FR	+4852+00220	Europe/Paris\n"
                        "GB	+512830-0001845	Europe/London	Great Britain\n"
-                       "US	+340308-1181434	America/Los_Angeles	Pacific Time\n";
+                       "US	+340308-1181434	America/Los_Angeles	Pacific Time\n"
+                       "ZA	-2615+02800	Africa/Johannesburg\n";
         f.close();
     }
 
