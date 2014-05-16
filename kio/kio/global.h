@@ -26,7 +26,7 @@
 #include <QtCore/QMap>
 #include <QtCore/QList>
 #include <QtCore/QVariant>
-#include <QFile>  // for QFile::Permissions
+#include <QtCore/QFile>  // for QFile::Permissions
 
 #include <kiconloader.h>
 #include <QtGui/QPixmap> // for pixmapForUrl
