@@ -394,7 +394,7 @@ PixmapPlane* Image::getSize(QSize size)
     if (size == this->size() || this->size().isEmpty())
         return original;
 
-    return scaled[trSize(size)];
+    return scaled.value(trSize(size));
 }
 
 void Image::derefSize(QSize size)
@@ -404,7 +404,7 @@ void Image::derefSize(QSize size)
     if (size == this->size() || this->size().isEmpty()) return;
 
     QPair<int, int> key = trSize(size);
-    PixmapPlane* plane = scaled[key];
+    PixmapPlane* plane = scaled.value(key);
     --plane->refCount;
     if (plane->refCount == 0)
     {
@@ -420,7 +420,7 @@ void Image::refSize(QSize size)
     if (size == this->size() || this->size().isEmpty()) return;
 
     QPair<int, int> key = trSize(size);
-    PixmapPlane* plane = scaled[key];
+    PixmapPlane* plane = scaled.value(key);
     if (plane)
     {
         ++plane->refCount;
