@@ -121,7 +121,7 @@ int DOM::getValueID(const char *tagStr, int len)
     CSSMediaRuleImpl *mediaRule;
     CSSRuleListImpl *ruleList;
     ParseString string;
-    float val;
+    double val;
     int prop_id;
     unsigned int attribute;
     unsigned int element;
