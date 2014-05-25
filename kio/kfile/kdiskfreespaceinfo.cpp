@@ -33,7 +33,6 @@
 #include <QtCore/QDir>
 #include <windows.h>
 #else
-#include <QtCore/QFileInfo>
 #include <sys/statvfs.h>
 #endif
 
@@ -130,15 +129,6 @@ KDiskFreeSpaceInfo KDiskFreeSpaceInfo::freeSpaceInfo( const QString& path )
     }
 #else
     struct statvfs statvfs_buf;
-
-    // Ignore autofs mountpoints as statvfs would trigger (expensive) automounting
-    // This also matches "special" filesystems like /proc where free space has no meaning
-    if (mp) {
-        QFileInfo fi(info.d->mountPoint);
-        if (fi.isDir() && fi.size() == 0) {
-            return info;
-        }
-    }
 
     // Prefer mountPoint if available, so that it even works with non-existing files.
     const QString pathArg = info.d->mountPoint.isEmpty() ? path : info.d->mountPoint;
