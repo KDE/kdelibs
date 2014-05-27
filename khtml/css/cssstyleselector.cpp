@@ -3515,8 +3515,17 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 
     case CSS_PROP_Z_INDEX:
     {
-        HANDLE_INHERIT_ON_NONINHERITED_PROPERTY(zIndex, ZIndex)
-        else if (isInitial) {
+        if (isInherit) {
+            style->setInheritedNoninherited(true);
+            if (parentStyle->hasAutoZIndex()) {
+                style->setHasAutoZIndex();
+            } else {
+                style->setZIndex(parentStyle->zIndex());
+            }
+            return;
+        }
+
+        if (isInitial) {
             style->setHasAutoZIndex();
             return;
         }
@@ -3541,7 +3550,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         HANDLE_INITIAL_AND_INHERIT_ON_INHERITED_PROPERTY(widows, Widows)
         if (!primitiveValue || primitiveValue->primitiveType() != CSSPrimitiveValue::CSS_NUMBER)
             return;
-        style->setWidows((int)primitiveValue->floatValue(CSSPrimitiveValue::CSS_NUMBER));
+        style->setWidows((short)primitiveValue->floatValue(CSSPrimitiveValue::CSS_NUMBER));
         break;
      }
 
@@ -3550,7 +3559,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         HANDLE_INITIAL_AND_INHERIT_ON_INHERITED_PROPERTY(orphans, Orphans)
         if (!primitiveValue || primitiveValue->primitiveType() != CSSPrimitiveValue::CSS_NUMBER)
             return;
-        style->setOrphans((int)primitiveValue->floatValue(CSSPrimitiveValue::CSS_NUMBER));
+        style->setOrphans((short)primitiveValue->floatValue(CSSPrimitiveValue::CSS_NUMBER));
         break;
     }
 

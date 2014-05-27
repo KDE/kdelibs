@@ -103,14 +103,14 @@ int DOM::getValueID(const char *tagStr, int len)
 
 #define YYDEBUG 0
 #define YYMAXDEPTH 10000
+#define YYPARSE_PARAM parser
 #define YYENABLE_NLS 0
 #define YYLTYPE_IS_TRIVIAL 1
 %}
-%parse-param { CSSParser *parser }
 
 %expect 39
 
-%pure-parser
+%pure_parser
 
 %union {
     CSSRuleImpl *rule;
@@ -121,7 +121,7 @@ int DOM::getValueID(const char *tagStr, int len)
     CSSMediaRuleImpl *mediaRule;
     CSSRuleListImpl *ruleList;
     ParseString string;
-    float val;
+    double val;
     int prop_id;
     unsigned int attribute;
     unsigned int element;
@@ -140,8 +140,7 @@ int DOM::getValueID(const char *tagStr, int len)
 
 %{
 
-// TODO: report this through to the user?
-static inline int cssyyerror(CSSParser *, const char *x )
+static inline int cssyyerror(const char *x )
 {
 #ifdef CSS_DEBUG
     qDebug( "%s", x );
@@ -326,7 +325,8 @@ ruleset_or_import_or_namespace:
 
 khtml_rule:
     KHTML_RULE_SYM '{' maybe_space ruleset_or_import_or_namespace maybe_space '}' {
-        parser->rule = $4;
+        CSSParser *p = static_cast<CSSParser *>(parser);
+	p->rule = $4;
     }
 ;
 
@@ -338,14 +338,15 @@ khtml_decls:
 
 khtml_value:
     KHTML_VALUE_SYM '{' maybe_space expr '}' {
+	CSSParser *p = static_cast<CSSParser *>(parser);
 	if ( $4 ) {
-	    parser->valueList = $4;
+	    p->valueList = $4;
 #ifdef CSS_DEBUG
-	    kDebug( 6080 ) << "   got property for " << parser->id <<
-		(parser->important?" important":"");
+	    kDebug( 6080 ) << "   got property for " << p->id <<
+		(p->important?" important":"");
 	    bool ok =
 #endif
-		parser->parseValue( parser->id, parser->important );
+		p->parseValue( p->id, p->important );
 #ifdef CSS_DEBUG
 	    if ( !ok )
 		kDebug( 6080 ) << "     couldn't parse value!";
@@ -355,25 +356,27 @@ khtml_value:
 	else
 	    kDebug( 6080 ) << "     no value found!";
 #endif
-	delete parser->valueList;
-	parser->valueList = 0;
+	delete p->valueList;
+	p->valueList = 0;
     }
 ;
 
 khtml_selectors:
 	KHTML_SELECTORS_SYM '{' maybe_space selector_list '}' {
+		CSSParser *p = static_cast<CSSParser *>(parser);
 		if ($4) {
-			parser->selectors = *$4;
+			p->selectors = *$4;
 			delete $4;
 			$4 = 0;
 		} else
-			parser->selectors.clear(); // parse error
+			p->selectors.clear(); // parse error
 	}
 ;
 
 khtml_mediaquery:
      KHTML_MEDIAQUERY_SYM S maybe_space media_query '}' {
-         parser->mediaQuery = $4;
+         CSSParser *p = static_cast<CSSParser *>(parser);
+         p->mediaQuery = $4;
      }
 ;
 
@@ -402,8 +405,9 @@ charset:
 #ifdef CSS_DEBUG
      kDebug( 6080 ) << "charset rule: " << qString($3);
 #endif
-     if (parser->styleElement && parser->styleElement->isCSSStyleSheet()) {
-         parser->styleElement->append( new CSSCharsetRuleImpl(parser->styleElement, domString($3)) );
+     CSSParser* p = static_cast<CSSParser*>(parser);
+     if (p->styleElement && p->styleElement->isCSSStyleSheet()) {
+         p->styleElement->append( new CSSCharsetRuleImpl(p->styleElement, domString($3)) );
      }
  }
   | CHARSET_SYM error invalid_block {
@@ -415,8 +419,9 @@ charset:
 import_list:
  /* empty */
  | import_list import maybe_sgml {
-     if ( $2 && parser->styleElement && parser->styleElement->isCSSStyleSheet() ) {
-	 parser->styleElement->append( $2 );
+     CSSParser *p = static_cast<CSSParser *>(parser);
+     if ( $2 && p->styleElement && p->styleElement->isCSSStyleSheet() ) {
+	 p->styleElement->append( $2 );
      } else {
 	 delete $2;
      }
@@ -428,8 +433,9 @@ import:
 #ifdef CSS_DEBUG
 	kDebug( 6080 ) << "@import: " << qString($3);
 #endif
-	if ( $5 && parser->styleElement && parser->styleElement->isCSSStyleSheet() )
-	    $$ = new CSSImportRuleImpl( parser->styleElement, domString($3), $5 );
+	CSSParser *p = static_cast<CSSParser *>(parser);
+	if ( $5 && p->styleElement && p->styleElement->isCSSStyleSheet() )
+	    $$ = new CSSImportRuleImpl( p->styleElement, domString($3), $5 );
 	else
 	    $$ = 0;
     }
@@ -451,14 +457,16 @@ NAMESPACE_SYM maybe_space maybe_ns_prefix string_or_uri {
 #ifdef CSS_DEBUG
     kDebug( 6080 ) << "@namespace: " << qString($3) << qString($4);
 #endif
-    $$ = new CSSNamespaceRuleImpl(parser->styleElement, domString($3), domString($4));
+    CSSParser *p = static_cast<CSSParser *>(parser);
+    $$ = new CSSNamespaceRuleImpl(p->styleElement, domString($3), domString($4));
  }
     ;
 
 namespace: 
 namespace_rule maybe_space ';' {
-    if (parser->styleElement && parser->styleElement->isCSSStyleSheet())
-	static_cast<CSSStyleSheetImpl*>(parser->styleElement)->appendNamespaceRule
+    CSSParser *p = static_cast<CSSParser *>(parser);
+    if (p->styleElement && p->styleElement->isCSSStyleSheet())
+	static_cast<CSSStyleSheetImpl*>(p->styleElement)->appendNamespaceRule
                     (static_cast<CSSNamespaceRuleImpl*>($1)); 
                             // can't use ->append since it 
                             // wouldn't keep track of dirtiness
@@ -475,8 +483,9 @@ maybe_ns_prefix:
 rule_list:
    /* empty */
  | rule_list rule maybe_sgml {
-     if ( $2 && parser->styleElement && parser->styleElement->isCSSStyleSheet() ) {
-	 parser->styleElement->append( $2 );
+     CSSParser *p = static_cast<CSSParser *>(parser);
+     if ( $2 && p->styleElement && p->styleElement->isCSSStyleSheet() ) {
+	 p->styleElement->append( $2 );
      } else {
 	 delete $2;
      }
@@ -593,9 +602,10 @@ media_list:
 
 media:
     MEDIA_SYM maybe_space media_list '{' maybe_space ruleset_list '}' {
+	CSSParser *p = static_cast<CSSParser *>(parser);
 	if ( $3 && $6 &&
-	     parser->styleElement && parser->styleElement->isCSSStyleSheet() ) {
-	    $$ = new CSSMediaRuleImpl( static_cast<CSSStyleSheetImpl*>(parser->styleElement), $3, $6 );
+	     p->styleElement && p->styleElement->isCSSStyleSheet() ) {
+	    $$ = new CSSMediaRuleImpl( static_cast<CSSStyleSheetImpl*>(p->styleElement), $3, $6 );
 	} else {
 	    $$ = 0;
 	    delete $3;
@@ -603,8 +613,9 @@ media:
 	}
     }
     | MEDIA_SYM maybe_space '{' maybe_space ruleset_list '}' {
-        if ($5 && parser->styleElement && parser->styleElement->isCSSStyleSheet() ) {
-            $$ = new CSSMediaRuleImpl( static_cast<CSSStyleSheetImpl*>(parser->styleElement), 0, $5);
+        CSSParser *p = static_cast<CSSParser *>(parser);
+        if ($5 && p->styleElement && p->styleElement->isCSSStyleSheet() ) {
+            $$ = new CSSMediaRuleImpl( static_cast<CSSStyleSheetImpl*>(p->styleElement), 0, $5);
         } else {
             $$ = 0;
             delete $5;
@@ -652,8 +663,9 @@ page:
 
 font_face:
     FONT_FACE_SYM maybe_space declaration_block {
-      CSSFontFaceRuleImpl *rule = new CSSFontFaceRuleImpl( parser->styleElement );
-      CSSStyleDeclarationImpl *decl = parser->createFontFaceStyleDeclaration( rule );
+      CSSParser *p = static_cast<CSSParser *>(parser);
+      CSSFontFaceRuleImpl *rule = new CSSFontFaceRuleImpl( p->styleElement );
+      CSSStyleDeclarationImpl *decl = p->createFontFaceStyleDeclaration( rule );
       rule->setDeclaration(decl);
       $$ = rule;
     }
@@ -681,9 +693,10 @@ ruleset:
 #ifdef CSS_DEBUG
 	kDebug( 6080 ) << "got ruleset" << endl << "  selector:";
 #endif
+	CSSParser *p = static_cast<CSSParser *>(parser);
 	if ( $1  ) {
-	    CSSStyleRuleImpl *rule = new CSSStyleRuleImpl( parser->styleElement );
-	    CSSStyleDeclarationImpl *decl = parser->createStyleDeclaration( rule );
+	    CSSStyleRuleImpl *rule = new CSSStyleRuleImpl( p->styleElement );
+	    CSSStyleDeclarationImpl *decl = p->createStyleDeclaration( rule );
 	    rule->setSelector( $1 );
 	    rule->setDeclaration(decl);
 	    $$ = rule;
@@ -692,7 +705,7 @@ ruleset:
 	    if ($1) qDeleteAll(*$1);
 	    delete $1;
 	    $1 = 0;
-	    parser->clearProperties();
+	    p->clearProperties();
 	}
     }
   ;
@@ -706,7 +719,7 @@ selector_list:
 	    $1->print();
 #endif
 	    $$->append( $1 );
-	    khtml::CSSStyleSelector::precomputeAttributeDependencies(parser->document(), $1);
+	    khtml::CSSStyleSelector::precomputeAttributeDependencies(static_cast<CSSParser *>(parser)->document(), $1);
 	} else {
 	    $$ = 0;
 	}
@@ -715,7 +728,7 @@ selector_list:
 	if ( $1 && $4 ) {
 	    $$ = $1;
 	    $$->append( $4 );
-	    khtml::CSSStyleSelector::precomputeAttributeDependencies(parser->document(), $4);
+	    khtml::CSSStyleSelector::precomputeAttributeDependencies(static_cast<CSSParser *>(parser)->document(), $4);
 #ifdef CSS_DEBUG
 	    kDebug( 6080 ) << "   got simple selector:";
 	    $4->print();
@@ -802,23 +815,25 @@ simple_selector:
 	$$ = $1;
         if ( $$ ) {
             $$->tagLocalName = LocalName::fromId(anyLocalName);
-            $$->tagNamespace = NamespaceName::fromId(parser->defaultNamespace());
+            $$->tagNamespace = NamespaceName::fromId(static_cast<CSSParser*>(parser)->defaultNamespace());
         }
     }
     | namespace_selector element_name {
         $$ = new CSSSelector();
         $$->tagLocalName = LocalName::fromId(localNamePart($2));
         $$->tagNamespace = NamespaceName::fromId(namespacePart($2));
-        if (parser->styleElement && parser->styleElement->isCSSStyleSheet())
-            static_cast<CSSStyleSheetImpl*>(parser->styleElement)->determineNamespace($$->tagNamespace, domString($1));
+	CSSParser *p = static_cast<CSSParser *>(parser);
+        if (p->styleElement && p->styleElement->isCSSStyleSheet())
+            static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace($$->tagNamespace, domString($1));
     }
     | namespace_selector element_name specifier_list {
         $$ = $3;
         if ($$) {
             $$->tagLocalName = LocalName::fromId(localNamePart($2));
             $$->tagNamespace = NamespaceName::fromId(namespacePart($2));
-            if (parser->styleElement && parser->styleElement->isCSSStyleSheet())
-                static_cast<CSSStyleSheetImpl*>(parser->styleElement)->determineNamespace($$->tagNamespace, domString($1));
+            CSSParser *p = static_cast<CSSParser *>(parser);
+            if (p->styleElement && p->styleElement->isCSSStyleSheet())
+                static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace($$->tagNamespace, domString($1));
         }
     }
     | namespace_selector specifier_list {
@@ -826,8 +841,9 @@ simple_selector:
         if ($$) {
             $$->tagLocalName = LocalName::fromId(anyLocalName);
             $$->tagNamespace = NamespaceName::fromId(anyNamespace);
-            if (parser->styleElement && parser->styleElement->isCSSStyleSheet())
-                static_cast<CSSStyleSheetImpl*>(parser->styleElement)->determineNamespace($$->tagNamespace, domString($1));
+            CSSParser *p = static_cast<CSSParser *>(parser);
+            if (p->styleElement && p->styleElement->isCSSStyleSheet())
+                static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace($$->tagNamespace, domString($1));
         }
     }
   ;
@@ -842,33 +858,36 @@ simple_css3_selector:
 	$$ = $1;
         if ( $$ ) {
             $$->tagLocalName = LocalName::fromId(anyLocalName);
-            $$->tagNamespace = NamespaceName::fromId(parser->defaultNamespace());
+            $$->tagNamespace = NamespaceName::fromId(static_cast<CSSParser*>(parser)->defaultNamespace());
         }
     }
     | namespace_selector element_name {
         $$ = new CSSSelector();
         $$->tagLocalName = LocalName::fromId(localNamePart($2));
         $$->tagNamespace = NamespaceName::fromId(namespacePart($2));
-        if (parser->styleElement && parser->styleElement->isCSSStyleSheet())
-            static_cast<CSSStyleSheetImpl*>(parser->styleElement)->determineNamespace($$->tagNamespace, domString($1));
+	CSSParser *p = static_cast<CSSParser *>(parser);
+        if (p->styleElement && p->styleElement->isCSSStyleSheet())
+            static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace($$->tagNamespace, domString($1));
     }
     | namespace_selector specifier {
         $$ = $2;
         if ($$) {
             $$->tagLocalName = LocalName::fromId(anyLocalName);
             $$->tagNamespace = NamespaceName::fromId(anyNamespace);
-            if (parser->styleElement && parser->styleElement->isCSSStyleSheet())
-                static_cast<CSSStyleSheetImpl*>(parser->styleElement)->determineNamespace($$->tagNamespace, domString($1));
+            CSSParser *p = static_cast<CSSParser *>(parser);
+            if (p->styleElement && p->styleElement->isCSSStyleSheet())
+                static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace($$->tagNamespace, domString($1));
         }
     }
   ;
 
 element_name:
     IDENT {
-      $$ = makeId(parser->defaultNamespace(), parser->getLocalNameId(domString($1)));
+      CSSParser *p = static_cast<CSSParser *>(parser);
+      $$ = makeId(p->defaultNamespace(), p->getLocalNameId(domString($1)));
     }
     | '*' {
-	$$ = makeId(parser->defaultNamespace(), anyLocalName);
+	$$ = makeId(static_cast<CSSParser*>(parser)->defaultNamespace(), anyLocalName);
     }
   ;
 
@@ -894,12 +913,14 @@ specifier_list:
 
 specifier:
     HASH {
+        CSSParser *p = static_cast<CSSParser *>(parser);
+
 	$$ = new CSSSelector();
 	$$->match = CSSSelector::Id;
         $$->attrLocalName = LocalName::fromId(localNamePart(ATTR_ID));
         $$->attrNamespace = NamespaceName::fromId(namespacePart(ATTR_ID));
 
-        bool caseSensitive = parser->document()->htmlMode() == DocumentImpl::XHtml || !parser->document()->inCompatMode();
+        bool caseSensitive = p->document()->htmlMode() == DocumentImpl::XHtml || !p->document()->inCompatMode();
         if (caseSensitive)
             $$->value = domString($1);
         else
@@ -912,13 +933,14 @@ specifier:
 
 class:
     '.' IDENT {
+        CSSParser *p = static_cast<CSSParser *>(parser);
 
 	$$ = new CSSSelector();
 	$$->match = CSSSelector::Class;
         $$->attrLocalName = LocalName::fromId(localNamePart(ATTR_CLASS));
         $$->attrNamespace = NamespaceName::fromId(namespacePart(ATTR_CLASS));
 
-        bool caseSensitive = parser->document()->htmlMode() == DocumentImpl::XHtml || !parser->document()->inCompatMode();
+        bool caseSensitive = p->document()->htmlMode() == DocumentImpl::XHtml || !p->document()->inCompatMode();
         if (caseSensitive)
             $$->value = domString($2);
         else
@@ -928,7 +950,8 @@ class:
 
 attrib_id:
     IDENT maybe_space {
-      $$ = makeId(emptyNamespace, parser->getLocalNameId(domString($1)));
+      CSSParser *p = static_cast<CSSParser *>(parser);
+      $$ = makeId(emptyNamespace, p->getLocalNameId(domString($1)));
     }
     ;
 
@@ -951,8 +974,9 @@ attrib:
         $$->attrLocalName = LocalName::fromId(localNamePart($4));
         $$->attrNamespace = NamespaceName::fromId(namespacePart($4));
         $$->match = CSSSelector::Set;
-        if (parser->styleElement && parser->styleElement->isCSSStyleSheet())
-            static_cast<CSSStyleSheetImpl*>(parser->styleElement)->determineNamespace($$->attrNamespace, domString($3));
+        CSSParser *p = static_cast<CSSParser *>(parser);
+        if (p->styleElement && p->styleElement->isCSSStyleSheet())
+            static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace($$->attrNamespace, domString($3));
     }
     | '[' maybe_space namespace_selector attrib_id match maybe_space ident_or_string maybe_space ']' {
         $$ = new CSSSelector();
@@ -960,8 +984,9 @@ attrib:
         $$->attrNamespace = NamespaceName::fromId(namespacePart($4));
         $$->match = (CSSSelector::Match)$5;
         $$->value = domString($7);
-        if (parser->styleElement && parser->styleElement->isCSSStyleSheet())
-            static_cast<CSSStyleSheetImpl*>(parser->styleElement)->determineNamespace($$->attrNamespace, domString($3));
+        CSSParser *p = static_cast<CSSParser *>(parser);
+        if (p->styleElement && p->styleElement->isCSSStyleSheet())
+            static_cast<CSSStyleSheetImpl*>(p->styleElement)->determineNamespace($$->attrNamespace, domString($3));
    }
   ;
 
@@ -1081,13 +1106,14 @@ declaration_list:
 declaration:
     property ':' maybe_space expr prio {
 	$$ = false;
+	CSSParser *p = static_cast<CSSParser *>(parser);
 	if ( $1 && $4 ) {
-	    parser->valueList = $4;
+	    p->valueList = $4;
 #ifdef CSS_DEBUG
 	    kDebug( 6080 ) << "   got property: " << $1 <<
 		($5?" important":"");
 #endif
-	        bool ok = parser->parseValue( $1, $5 );
+	        bool ok = p->parseValue( $1, $5 );
                 if ( ok )
 		    $$ = ok;
 #ifdef CSS_DEBUG
@@ -1097,8 +1123,8 @@ declaration:
 	} else {
             delete $4;
         }
-	delete parser->valueList;
-	parser->valueList = 0;
+	delete p->valueList;
+	p->valueList = 0;
     }
     | error invalid_block {
         $$ = false;

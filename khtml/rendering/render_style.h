@@ -315,8 +315,8 @@ public:
 
     EBoxSizing box_sizing;
 
-    signed int z_index :31;
-    bool z_auto        : 1;
+    int z_index;
+    bool z_auto;
 };
 
 //------------------------------------------------
@@ -1335,10 +1335,10 @@ public:
     bool flowAroundFloats() const { return  noninherited_flags.f._flowAroundFloats; }
     void setFlowAroundFloats(bool b=true) {  noninherited_flags.f._flowAroundFloats = b; }
 
-    int zIndex() const { return box->z_auto? 0 : box->z_index; }
+    int zIndex() const { return box->z_index; }
     void setZIndex(int v) { SET_VAR(box,z_auto,false ); SET_VAR(box, z_index, v); }
     bool hasAutoZIndex() const { return box->z_auto; }
-    void setHasAutoZIndex() { SET_VAR(box, z_auto, true ); }
+    void setHasAutoZIndex() { SET_VAR(box, z_auto, true ); SET_VAR(box, z_index, 0); }
 
     void setWidows(short w) { SET_VAR(inherited, widows, w); }
     void setOrphans(short o) { SET_VAR(inherited, orphans, o); }
