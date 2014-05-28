@@ -119,7 +119,7 @@ void ProspectiveTokenizer::reset()
     m_lastStartTag.clear();
     m_lastStartTagId = 0;
     
-    m_urlToLoad = "";
+    m_urlToLoad = DOMString();
     m_linkIsStyleSheet = false;
     m_lastCharacterIndex = 0;
     clearLastCharacters();
@@ -878,8 +878,9 @@ void ProspectiveTokenizer::emitCSSRule()
     if (rule.toLower() == "import" && !m_cssRuleValue.isEmpty()) {
         DOMString value = DOMString(m_cssRuleValue.data(), m_cssRuleValue.size());
         DOMString url = parseURL(value);
-        if (!url.isEmpty())
-            m_document->docLoader()->registerPreload( m_document->docLoader()->requestStyleSheet( m_urlToLoad, m_document->part()->encoding() ) ); // #### charset
+        if (!url.isEmpty()) {
+            m_document->docLoader()->registerPreload(m_document->docLoader()->requestStyleSheet(url, m_document->part()->encoding())); // #### charset
+        }
     }
     m_cssRule.clear();
     m_cssRuleValue.clear();
