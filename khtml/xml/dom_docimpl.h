@@ -218,7 +218,7 @@ public:
     TextImpl *createTextNode ( const DOMString &data ) { return createTextNode(data.implementation()); }
     TextImpl *createTextNode ( const char *latin1 ) { return createTextNode(DOMString(latin1)); }
     CommentImpl *createComment ( DOMStringImpl* data );
-    CDATASectionImpl *createCDATASection ( DOMStringImpl* data );
+    CDATASectionImpl *createCDATASection ( DOMStringImpl* data, int &exceptioncode );
     ProcessingInstructionImpl *createProcessingInstruction ( const DOMString &target, DOMStringImpl* data );
     EntityReferenceImpl *createEntityReference ( const DOMString &name );
     NodeImpl *importNode( NodeImpl *importedNode, bool deep, int &exceptioncode );
