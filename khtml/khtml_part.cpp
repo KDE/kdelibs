@@ -1284,11 +1284,7 @@ QVariant KHTMLPart::executeScript(const QString& filename, int baseLine, const D
   if (!proxy || proxy->paused())
     return QVariant();
 
-  //Make sure to initialize the interpreter before creating Completion
-  (void)proxy->interpreter();
-
   KJS::Completion comp;
-
   QVariant ret = proxy->evaluate(filename, baseLine, script, n, &comp);
 
   /*
@@ -1333,7 +1329,6 @@ QVariant KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
 
   if (!proxy || proxy->paused())
     return QVariant();
-  (void)proxy->interpreter();//Make sure stuff is initialized
 
   ++(d->m_runningScripts);
   KJS::Completion comp;
