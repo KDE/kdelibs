@@ -264,9 +264,15 @@ Comment Document::createComment( const DOMString &data )
 
 CDATASection Document::createCDATASection( const DOMString &data )
 {
-    // ### DOM1 spec says raise exception if html documents - what about XHTML documents?
-    if (impl) return ((DocumentImpl *)impl)->createCDATASection( data.implementation() );
-    return 0;
+    if (!impl) {
+        return 0;
+    }
+    int exceptioncode = 0;
+    CDATASectionImpl *d = ((DocumentImpl *)impl)->createCDATASection(data.implementation(), exceptioncode);
+    if (exceptioncode) {
+        throw DOMException(exceptioncode);
+    }
+    return d;
 }
 
 ProcessingInstruction Document::createProcessingInstruction( const DOMString &target, const DOMString &data )
@@ -299,8 +305,15 @@ Attr Document::createAttributeNS( const DOMString &namespaceURI, const DOMString
 
 EntityReference Document::createEntityReference( const DOMString &name )
 {
-    if (impl) return ((DocumentImpl *)impl)->createEntityReference( name );
-    return 0;
+    if (!impl) {
+        return 0;
+    }
+    int exceptioncode = 0;
+    EntityReferenceImpl *er = ((DocumentImpl *)impl)->createEntityReference(name, exceptioncode);
+    if (exceptioncode) {
+        throw DOMException(exceptioncode);
+    }
+    return er;
 }
 
 Element Document::getElementById( const DOMString &elementId ) const

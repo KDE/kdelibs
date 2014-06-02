@@ -381,10 +381,6 @@ JSValue* HTMLDocument::getValueProperty(ExecState *exec, int token)
     case Scripts:
       return getHTMLCollection(exec,doc.scripts());
     case All:
-      // Disable document.all when we try to be Netscape-compatible
-      if ( exec->dynamicInterpreter()->compatMode() == Interpreter::NetscapeCompat )
-        return jsUndefined();
-      else
       if ( exec->dynamicInterpreter()->compatMode() == Interpreter::IECompat )
         return getHTMLCollection(exec,doc.all());
       else // enabled but hidden
