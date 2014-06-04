@@ -197,8 +197,8 @@ int main(int argc, char **argv) {
 
         if (style_sheet != NULL) {
 
-            xmlDocPtr doc = xmlParseFile( QFile::encodeName( checkFilename ).constData() );
-
+            xmlDocPtr doc = xmlReadFile( QFile::encodeName( checkFilename ).constData(),
+                                         NULL, XML_PARSE_NOENT|XML_PARSE_DTDLOAD|XML_PARSE_NONET );
             xmlDocPtr res = xsltApplyStylesheet(style_sheet, doc, &params[0]);
 
             xmlFreeDoc(doc);
