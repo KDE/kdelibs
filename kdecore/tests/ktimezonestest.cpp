@@ -133,7 +133,7 @@ void KTimeZonesTest::zone()
     QVERIFY(london.isValid());
     QCOMPARE(london.countryCode(), QString("GB"));
     QCOMPARE(london.latitude(), float(51*3600 + 28*60 + 30)/3600.0f);
-    QCOMPARE(london.longitude(), -float(0*3600 + 18*60 + 55)/3600.0f);
+    QCOMPARE(london.longitude(), -float(0*3600 + 18*60 + 45)/3600.0f);
     QCOMPARE(london.comment(), QString("Great Britain"));
     QCOMPARE(losAngeles.longitude(), -float(118*3600 + 14*60 + 34)/3600.0f);
 }
