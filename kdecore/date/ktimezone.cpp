@@ -1309,7 +1309,7 @@ int KTimeZoneData::transitionIndex(const QDateTime &dt, int *secondIndex, bool *
             if (phaseDiff > 0)
             {
                 // Get UTC equivalent as if 'dt' was in the next phase
-                if (dtutc.secsTo(d->transitions[next].time()) + nextPhase.utcOffset() < phaseDiff)
+                if (dtutc.msecsTo(d->transitions[next].time())/1000 + nextPhase.utcOffset() <= phaseDiff)
                 {
                     // The time falls in the gap between the two phases,
                     // so return an invalid value.
