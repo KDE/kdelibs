@@ -40,6 +40,15 @@
 
 extern bool kde_kiosk_exception;
 
+static QByteArray lookup(const KConfigIniBackend::BufferFragment& fragment, QHash<KConfigIniBackend::BufferFragment, QByteArray>* cache)
+{
+    QHash<KConfigIniBackend::BufferFragment, QByteArray>::iterator it = cache->find(fragment);
+    if (it == cache->constEnd()) {
+        it = cache->insert(fragment, fragment.toByteArray());
+    }
+    return it.value();
+}
+
 QString KConfigIniBackend::warningProlog(const QFile &file, int line)
 {
     return QString::fromLatin1("KConfigIni: In file %2, line %1: ")
@@ -93,6 +102,14 @@ KConfigIniBackend::parseConfig(const QByteArray& currentLocale, KEntryMap& entry
     BufferFragment contents(buffer.data(), buffer.size());
     unsigned int len = contents.length();
     unsigned int startOfLine = 0;
+
+    // Reduce memory overhead by making use of implicit sharing
+    // This assumes that config files contain only a small amount of
+    // different fragments which are repeated often.
+    // This is often the case, especially sub groups will all have
+    // the same list of keys and similar values as well.
+    QHash<BufferFragment, QByteArray> cache;
+    cache.reserve(4096);
 
     while (startOfLine < len) {
         BufferFragment line = contents.split('\n', &startOfLine);
@@ -245,9 +262,9 @@ KConfigIniBackend::parseConfig(const QByteArray& currentLocale, KEntryMap& entry
                 rawKey.reserve(aKey.length() + locale.length() + 2);
                 rawKey.append(aKey.toVolatileByteArray());
                 rawKey.append('[').append(locale.toVolatileByteArray()).append(']');
-                entryMap.setEntry(currentGroup, rawKey, line.toByteArray(), entryOptions);
+                entryMap.setEntry(currentGroup, rawKey, lookup(line, &cache), entryOptions);
             } else {
-                entryMap.setEntry(currentGroup, aKey.toByteArray(), line.toByteArray(), entryOptions);
+                entryMap.setEntry(currentGroup, lookup(aKey, &cache), lookup(line, &cache), entryOptions);
             }
         }
 next_line:

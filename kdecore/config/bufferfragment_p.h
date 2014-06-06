@@ -141,7 +141,12 @@ public:
     {
         return (other.size() != (int)len || memcmp(d,other.constData(),len) != 0);
     }
-    
+
+    bool operator==(const BufferFragment& other) const
+    {
+        return other.len == len && !memcmp(d, other.d, len);
+    }
+
     int indexOf(char c, unsigned int from = 0) const 
     {
         const char* cursor = d + from - 1;
@@ -177,5 +182,22 @@ private:
     char* d;
     unsigned int len;
 };
+
+uint qHash(const KConfigIniBackend::BufferFragment& fragment)
+{
+    const uchar *p = reinterpret_cast<const uchar*>(fragment.constData());
+    const int len = fragment.length();
+
+    // This algorithm is copied from qhash.cpp (Qt5 version).
+    // Sadly this code is not accessible from the outside without going through abstraction
+    // layers. Even QByteArray::fromRawData would do an allocation internally...
+    uint h = 0;
+
+    for (int i = 0; i < len; ++i) {
+        h = 31 * h + p[i];
+    }
+
+    return h;
+}
 
 #endif

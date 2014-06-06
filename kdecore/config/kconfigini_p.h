@@ -30,10 +30,9 @@
 class KConfigIniBackend : public KConfigBackend
 {
 private:
-    class BufferFragment;
-    
     KLockFile::Ptr lockFile;
 public:
+    class BufferFragment;
 
     KConfigIniBackend();
     ~KConfigIniBackend();
