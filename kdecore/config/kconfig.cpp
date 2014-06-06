@@ -321,16 +321,22 @@ QStringList KConfigPrivate::groupList(const QByteArray& group) const
     return groups.toList();
 }
 
+static bool isGroupOrSubGroupMatch(const QByteArray& potentialGroup, const QByteArray& group)
+{
+    if (!potentialGroup.startsWith(group)) {
+      return false;
+    }
+    return potentialGroup.length() == group.length() || potentialGroup[group.length()] == '\x1d';
+}
+
 // List all sub groups, including subsubgroups
 QSet<QByteArray> KConfigPrivate::allSubGroups(const QByteArray& parentGroup) const
 {
     QSet<QByteArray> groups;
-    QByteArray theGroup = parentGroup + '\x1d';
-    groups << parentGroup;
 
     for (KEntryMap::const_iterator entryMapIt = entryMap.begin(); entryMapIt != entryMap.end(); ++entryMapIt) {
         const KEntryKey& key = entryMapIt.key();
-        if (key.mKey.isNull() && key.mGroup.startsWith(theGroup)) {
+        if (key.mKey.isNull() && isGroupOrSubGroupMatch(key.mGroup, parentGroup)) {
             groups << key.mGroup;
         }
     }
@@ -339,12 +345,10 @@ QSet<QByteArray> KConfigPrivate::allSubGroups(const QByteArray& parentGroup) con
 
 bool KConfigPrivate::hasNonDeletedEntries(const QByteArray& group) const
 {
-    const QSet<QByteArray> allGroups = allSubGroups(group);
-
-    Q_FOREACH(const QByteArray& aGroup, allGroups) {
-        // Could be optimized, let's use the slow way for now
+    for (KEntryMap::const_iterator it = entryMap.begin(); it != entryMap.end(); ++it) {
+        const KEntryKey& key = it.key();
         // Check for any non-deleted entry
-        if (!keyListImpl(aGroup).isEmpty())
+        if (isGroupOrSubGroupMatch(key.mGroup, group) && !key.mKey.isNull() && !it->bDeleted)
             return true;
     }
     return false;
