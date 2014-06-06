@@ -363,7 +363,7 @@ QStringList KConfigPrivate::keyListImpl(const QByteArray& theGroup) const
         QSet<QString> tmp;
         for (; it != theEnd && it.key().mGroup == theGroup; ++it) {
             const KEntryKey& key = it.key();
-            if (key.mGroup == theGroup && !key.mKey.isNull() && !it->bDeleted)
+            if (!key.mKey.isNull() && !it->bDeleted)
                 tmp << QString::fromUtf8(key.mKey);
         }
         keys = tmp.toList();
