@@ -168,6 +168,7 @@ namespace DOM {
 	bool parseFont(bool important);
 	bool parseFontFaceSrc();
         bool parseCounter(int propId, bool increment, bool important);
+        bool parseListStyleShorthand(bool important);
 
         // returns parsed font-weight's css value id if valid, otherwise 0 (CSS_VAL_INVALID)
         int parseFontWeight(Value *val, bool strict);
