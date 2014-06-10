@@ -362,6 +362,14 @@ void CSSParser::addProperty( int propId, CSSValueImpl *value, bool important )
     parsedProperties[numParsedProperties++] = prop;
 }
 
+void CSSParser::rollbackParsedProperties(int toNumParsedProperties)
+{
+    while (numParsedProperties > toNumParsedProperties) {
+            --numParsedProperties;
+            delete parsedProperties[numParsedProperties];
+        }
+}
+
 CSSStyleDeclarationImpl *CSSParser::createStyleDeclaration( CSSStyleRuleImpl *rule )
 {
     QList<CSSProperty*> *propList = new QList<CSSProperty*>;
@@ -753,8 +761,12 @@ bool CSSParser::parseValue( int propId, bool important )
         }
         else if (num == 2) {
             ShorthandScope scope(this, CSS_PROP_BORDER_SPACING);
+            const int oldNumParsedProperties = numParsedProperties;
             if (!parseValue(properties[0], important)) return false;
-            if (!parseValue(properties[1], important)) return false;
+            if (!parseValue(properties[1], important)) {
+                rollbackParsedProperties(oldNumParsedProperties);
+                return false;
+            }
             return true;
         }
         return false;
@@ -1477,6 +1489,7 @@ bool CSSParser::parse4Values(int propId, const int *properties,  bool important 
 
     ShorthandScope scope(this, propId);
 
+    const int oldNumParsedProperties = numParsedProperties;
     // the order is top, right, bottom, left
     switch (num) {
         case 1: {
@@ -1491,8 +1504,10 @@ bool CSSParser::parse4Values(int propId, const int *properties,  bool important 
             break;
         }
         case 2: {
-            if (!parseValue(properties[0], important) || !parseValue(properties[1], important))
+            if (!parseValue(properties[0], important) || !parseValue(properties[1], important)) {
+                rollbackParsedProperties(oldNumParsedProperties);
                 return false;
+                }
             CSSValueImpl *value = parsedProperties[numParsedProperties-2]->value();
             m_implicitShorthand = true;
             addProperty(properties[2], value, important);
@@ -1502,8 +1517,10 @@ bool CSSParser::parse4Values(int propId, const int *properties,  bool important 
             break;
         }
         case 3: {
-            if (!parseValue(properties[0], important) || !parseValue(properties[1], important) || !parseValue(properties[2], important))
+            if (!parseValue(properties[0], important) || !parseValue(properties[1], important) || !parseValue(properties[2], important)) {
+                rollbackParsedProperties(oldNumParsedProperties);
                 return false;
+            }
             CSSValueImpl *value = parsedProperties[numParsedProperties-2]->value();
             m_implicitShorthand = true;
             addProperty(properties[3], value, important);
@@ -1512,8 +1529,10 @@ bool CSSParser::parse4Values(int propId, const int *properties,  bool important 
         }
         case 4: {
             if (!parseValue(properties[0], important) || !parseValue(properties[1], important) ||
-                !parseValue(properties[2], important) || !parseValue(properties[3], important))
+                !parseValue(properties[2], important) || !parseValue(properties[3], important)) {
+                rollbackParsedProperties(oldNumParsedProperties);
                 return false;
+            }
             break;
         }
         default: {
