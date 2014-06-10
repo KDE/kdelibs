@@ -362,6 +362,14 @@ void CSSParser::addProperty( int propId, CSSValueImpl *value, bool important )
     parsedProperties[numParsedProperties++] = prop;
 }
 
+void CSSParser::rollbackParsedProperties(int toNumParsedProperties)
+{
+    while (numParsedProperties > toNumParsedProperties) {
+            --numParsedProperties;
+            delete parsedProperties[numParsedProperties];
+        }
+}
+
 CSSStyleDeclarationImpl *CSSParser::createStyleDeclaration( CSSStyleRuleImpl *rule )
 {
     QList<CSSProperty*> *propList = new QList<CSSProperty*>;
@@ -753,8 +761,12 @@ bool CSSParser::parseValue( int propId, bool important )
         }
         else if (num == 2) {
             ShorthandScope scope(this, CSS_PROP_BORDER_SPACING);
+            const int oldNumParsedProperties = numParsedProperties;
             if (!parseValue(properties[0], important)) return false;
-            if (!parseValue(properties[1], important)) return false;
+            if (!parseValue(properties[1], important)) {
+                rollbackParsedProperties(oldNumParsedProperties);
+                return false;
+            }
             return true;
         }
         return false;
@@ -863,7 +875,7 @@ bool CSSParser::parseValue( int propId, bool important )
         if (id == CSS_VAL_THIN || id == CSS_VAL_MEDIUM || id == CSS_VAL_THICK)
             valid_primitive = true;
         else
-            valid_primitive = ( validUnit( value, FLength, strict ) );
+            valid_primitive = ( validUnit( value, FLength|FNonNeg, strict ) );
         break;
 
     case CSS_PROP_LETTER_SPACING:       // normal | <length> | inherit
@@ -1195,9 +1207,7 @@ bool CSSParser::parseValue( int propId, bool important )
 
     case CSS_PROP_LIST_STYLE:
     {
-        const int properties[3] = { CSS_PROP_LIST_STYLE_TYPE, CSS_PROP_LIST_STYLE_POSITION,
-                                    CSS_PROP_LIST_STYLE_IMAGE };
-        return parseShortHand(propId, properties, 3, important);
+        return parseListStyleShorthand(important);
     }
     case CSS_PROP_WORD_WRAP:
         // normal | break-word
@@ -1424,33 +1434,61 @@ bool CSSParser::parseBorderRadius(bool important) {
     return true;
 }
 
-bool CSSParser::parseShortHand(int propId, const int *properties, int numProperties, bool important )
+bool CSSParser::parseShortHand(int propId, const int *properties, const int numProperties, bool important)
 {
-    /* We try to match as many properties as possible
-     * We setup an array of booleans to mark which property has been found,
-     * and we try to search for properties until it makes no longer any sense
-     */
+    if (valueList->size() > numProperties) {
+        // discard
+        return false;
+    }
+
     ShorthandScope scope(this, propId);
 
-    bool found = false;
+    // Store current numParsedProperties, we need it in case we should rollback later
+    const int oldNumParsedProperties = numParsedProperties;
+
+    // Setup an array of booleans to mark which property has been found
     bool fnd[6]; //Trust me ;)
     for( int i = 0; i < numProperties; i++ )
         fnd[i] = false;
 
+    bool discard = false;
+    unsigned short numValidProperties = 0;
+    bool foundValid = false;
     while ( valueList->current() ) {
-        found = false;
-        for (int propIndex = 0; !found && propIndex < numProperties; ++propIndex) {
-            if (!fnd[propIndex]) {
-                if ( parseValue( properties[propIndex], important ) ) {
-                    fnd[propIndex] = found = true;
+        foundValid = false;
+        for (int propIndex = 0; propIndex < numProperties; ++propIndex) {
+            if (parseValue(properties[propIndex], important)) {
+                foundValid = true;
+                ++numValidProperties;
+                if (fnd[propIndex]) { // found a duplicate
+                    discard = true;
+                } else {
+                    fnd[propIndex] = true;
                 }
+
+                break;
             }
         }
 
         // if we didn't find at least one match, this is an
         // invalid shorthand and we have to ignore it
-        if (!found)
-            return false;
+        if (!foundValid) {
+            discard = true;
+        }
+
+        if (discard) {
+            break;
+        }
+    }
+
+    if (discard) {
+        // Remove valid properties previously added by parseValue(), if any
+        rollbackParsedProperties(oldNumParsedProperties);
+        return false;
+    }
+
+    if (numValidProperties == numProperties) {
+        return true;
     }
 
     // Fill in any remaining properties with the initial value.
@@ -1479,6 +1517,7 @@ bool CSSParser::parse4Values(int propId, const int *properties,  bool important 
 
     ShorthandScope scope(this, propId);
 
+    const int oldNumParsedProperties = numParsedProperties;
     // the order is top, right, bottom, left
     switch (num) {
         case 1: {
@@ -1493,8 +1532,10 @@ bool CSSParser::parse4Values(int propId, const int *properties,  bool important 
             break;
         }
         case 2: {
-            if (!parseValue(properties[0], important) || !parseValue(properties[1], important))
+            if (!parseValue(properties[0], important) || !parseValue(properties[1], important)) {
+                rollbackParsedProperties(oldNumParsedProperties);
                 return false;
+                }
             CSSValueImpl *value = parsedProperties[numParsedProperties-2]->value();
             m_implicitShorthand = true;
             addProperty(properties[2], value, important);
@@ -1504,8 +1545,10 @@ bool CSSParser::parse4Values(int propId, const int *properties,  bool important 
             break;
         }
         case 3: {
-            if (!parseValue(properties[0], important) || !parseValue(properties[1], important) || !parseValue(properties[2], important))
+            if (!parseValue(properties[0], important) || !parseValue(properties[1], important) || !parseValue(properties[2], important)) {
+                rollbackParsedProperties(oldNumParsedProperties);
                 return false;
+            }
             CSSValueImpl *value = parsedProperties[numParsedProperties-2]->value();
             m_implicitShorthand = true;
             addProperty(properties[3], value, important);
@@ -1514,8 +1557,10 @@ bool CSSParser::parse4Values(int propId, const int *properties,  bool important 
         }
         case 4: {
             if (!parseValue(properties[0], important) || !parseValue(properties[1], important) ||
-                !parseValue(properties[2], important) || !parseValue(properties[3], important))
+                !parseValue(properties[2], important) || !parseValue(properties[3], important)) {
+                rollbackParsedProperties(oldNumParsedProperties);
                 return false;
+            }
             break;
         }
         default: {
@@ -2318,6 +2363,106 @@ bool CSSParser::parseFontFaceSrc()
 
     return false;
 }
+// [ <list-style-type> || <list-style-position> || <list-style-image> ]
+bool CSSParser::parseListStyleShorthand(bool important)
+{
+    if (valueList->size() > 3) {
+        // discard
+        return false;
+    }
+
+    CSSValueImpl *type = 0;
+    CSSValueImpl *position = 0;
+    CSSValueImpl *image = 0;
+
+    int numberOfNone = 0;
+    Value *value = valueList->current();
+    while (value) {
+        const int valId = value->id;
+        if (valId == CSS_VAL_NONE) {
+            // just count
+            ++numberOfNone;
+        } else if (valId >= CSS_VAL_DISC && valId <= CSS_VAL__KHTML_CLOSE_QUOTE) {
+            if (!type) {
+                type = new CSSPrimitiveValueImpl(valId);
+            } else {
+                goto invalid;
+            }
+        } else if (valId == CSS_VAL_INSIDE || valId == CSS_VAL_OUTSIDE) {
+            if (!position) {
+                position = new CSSPrimitiveValueImpl(valId);
+            } else {
+                goto invalid;
+            }
+        } else if (value->unit == CSSPrimitiveValue::CSS_URI) {
+            if (!image) {
+                // ### allow string in non strict mode?
+                DOMString uri = domString(value->string);
+                if (!uri.isNull() && styleElement) {
+                    image = new CSSImageValueImpl(uri, styleElement);
+                }
+            } else {
+                goto invalid;
+            }
+        } else {
+            goto invalid;
+        }
+        value = valueList->next();
+    }
+
+    // Set whichever of 'list-style-type' and 'list-style-image' are not otherwise specified, to 'none'
+    switch (numberOfNone) {
+        case 0: {
+            break;
+        }
+        case 1: {
+            if (image && type) {
+                goto invalid;
+            }
+            if (!image) {
+                image = new CSSImageValueImpl();
+            }
+            if (!type) {
+                type = new CSSPrimitiveValueImpl(CSS_VAL_NONE);
+            }
+            break;
+        }
+        case 2: {
+            if (image || type) {
+                goto invalid;
+            } else {
+                image = new CSSImageValueImpl();
+                type = new CSSPrimitiveValueImpl(CSS_VAL_NONE);
+            }
+            break;
+        }
+        default: // numberOfNone == 3
+            goto invalid;
+    }
+
+    // The shorthand is valid: fill-in any remaining properties with default value
+    if (!type) {
+        type = new CSSPrimitiveValueImpl(CSS_VAL_DISC);
+    }
+    if (!position) {
+        position = new CSSPrimitiveValueImpl(CSS_VAL_OUTSIDE);
+    }
+    if (!image) {
+        image = new CSSImageValueImpl();
+    }
+    addProperty(CSS_PROP_LIST_STYLE_TYPE, type, important);
+    addProperty(CSS_PROP_LIST_STYLE_POSITION, position, important);
+    addProperty(CSS_PROP_LIST_STYLE_IMAGE, image, important);
+
+    return true;
+
+invalid:
+    delete type;
+    delete position;
+    delete image;
+
+    return false;
+}
 
 bool CSSParser::parseColorParameters(Value* value, int* colorArray, bool parseAlpha)
 {
@@ -2709,7 +2854,7 @@ static inline int yyerror( const char *str ) {
     return 1;
 }
 
-static const qreal dIntMax = INT_MAX;
+static const double dIntMax = INT_MAX;
 #define END 0
 
 #include "parser.h"

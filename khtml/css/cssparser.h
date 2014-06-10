@@ -134,6 +134,7 @@ namespace DOM {
 	unsigned int defaultNamespace();
 
 	void addProperty( int propId, CSSValueImpl *value, bool important );
+        void rollbackParsedProperties(int toNumParsedProperties);
 	bool hasProperties() const { return numParsedProperties > 0; }
 	CSSStyleDeclarationImpl *createStyleDeclaration( CSSStyleRuleImpl *rule );
 	CSSStyleDeclarationImpl *createFontFaceStyleDeclaration( CSSFontFaceRuleImpl *rule );
@@ -141,7 +142,7 @@ namespace DOM {
 
 	bool parseValue( int propId, bool important );
         bool parseSVGValue( int propId, bool important );
-	bool parseShortHand( int propId, const int *properties, int numProperties, bool important );
+	bool parseShortHand(int propId, const int *properties, const int numProperties, bool important);
 	bool parse4Values( int propId, const int *properties, bool important );
 	bool parseContent( int propId, bool important );
 
@@ -168,6 +169,7 @@ namespace DOM {
 	bool parseFont(bool important);
 	bool parseFontFaceSrc();
         bool parseCounter(int propId, bool increment, bool important);
+        bool parseListStyleShorthand(bool important);
 
         // returns parsed font-weight's css value id if valid, otherwise 0 (CSS_VAL_INVALID)
         int parseFontWeight(Value *val, bool strict);
