@@ -1370,17 +1370,24 @@ void PairImpl::setSecond(CSSPrimitiveValueImpl* second)
 CSSImageValueImpl::CSSImageValueImpl(const DOMString &url, StyleBaseImpl* style)
     : CSSPrimitiveValueImpl(url, CSSPrimitiveValue::CSS_URI)
 {
-    khtml::DocLoader *docLoader = 0;
-    const StyleBaseImpl *root = style;
-    while (root->parent())
-	root = root->parent();
-    if (root->isCSSStyleSheet())
-	docLoader = static_cast<const CSSStyleSheetImpl*>(root)->docLoader();
-    if (docLoader) {
-    KUrl fullURL( style->baseURL(), khtml::parseURL(url).string() );
-    m_image = docLoader->requestImage( fullURL.url() );
-    if(m_image) m_image->ref(this);
-}
+    m_image = 0;
+    if (!url.isEmpty()) {
+        khtml::DocLoader *docLoader = 0;
+        const StyleBaseImpl *root = style;
+        while (root->parent()) {
+            root = root->parent();
+        }
+        if (root->isCSSStyleSheet()) {
+            docLoader = static_cast<const CSSStyleSheetImpl*>(root)->docLoader();
+        }
+        if (docLoader) {
+            KUrl fullURL(style->baseURL(), url.string());
+            m_image = docLoader->requestImage(fullURL.url());
+            if (m_image) {
+                m_image->ref(this);
+            }
+        }
+    }
 }
 
 CSSImageValueImpl::CSSImageValueImpl()
