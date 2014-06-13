@@ -157,9 +157,6 @@ int main(int argc, char **argv) {
         }
     }
 
-    xmlSubstituteEntitiesDefault(1);
-    xmlLoadExtDtdDefaultValue = 1;
-
     QVector<const char *> params;
 #ifndef Q_WS_WIN
     // libxslt parses the path given to outputFile as XPath expression which fails
