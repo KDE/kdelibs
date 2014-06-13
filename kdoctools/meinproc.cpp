@@ -157,9 +157,6 @@ int main(int argc, char **argv) {
         }
     }
 
-    xmlSubstituteEntitiesDefault(1);
-    xmlLoadExtDtdDefaultValue = 1;
-
     QVector<const char *> params;
     {
         const QStringList paramList = args->getOptionList( "param" );
