@@ -52,6 +52,16 @@ extern "C" {
 
 // #define DEBUG_GIFLOADER
 
+static void closeGif(GifFileType* file)
+{
+#if GIFLIB_MAJOR > 5 || (GIFLIB_MAJOR == 5 && GIFLIB_MINOR >= 1)
+    int errorCode;
+    DGifCloseFile(file, &errorCode);
+#else
+    DGifCloseFile(file);
+#endif
+}
+
 namespace khtmlImLoad {
 
 static int INTERLACED_OFFSET[] = { 0, 4, 2, 1 };
@@ -369,7 +379,7 @@ public:
         
         if (DGifSlurp(file) == GIF_ERROR)
         {
-            DGifCloseFile(file);
+            closeGif(file);
             return Error;
         }
         
@@ -378,7 +388,7 @@ public:
         if (file->ImageCount > 1) {
             // Verify it..
             if (!ImageManager::isAcceptableSize(file->SWidth, file->SHeight)) {
-                DGifCloseFile(file);
+                closeGif(file);
                 return Error;
             }
             notifyImageInfo(file->SWidth, file->SHeight);
@@ -390,7 +400,7 @@ public:
             //Extract colormap, geometry, so that we can create the frame
             SavedImage* curFrame = &file->SavedImages[frame];
             if (!ImageManager::isAcceptableSize(curFrame->ImageDesc.Width, curFrame->ImageDesc.Height)) {
-                DGifCloseFile(file);
+                closeGif(file);
                 return Error;
             }
         }
@@ -576,7 +586,7 @@ public:
             frame0->animProvider = new GIFAnimProvider(frame0, image, frameProps, bgColor);
         }
         
-        DGifCloseFile(file);
+        closeGif(file);
 
         return Done;
     }
