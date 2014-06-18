@@ -824,6 +824,9 @@ TCPSlaveBase::SslResult TCPSlaveBase::verifyServerCertificate()
             messageBox(SSLMessageBox /*the SSL info dialog*/, d->host);
         } else if (msgResult == KMessageBox::Cancel) {
             return ResultFailed;
+        } else if (msgResult != KMessageBox::No) {
+            kWarning() << "Unexpected MessageBox response received:" << msgResult;
+            return ResultFailed;
         }
         //fall through on KMessageBox::No
     } while (msgResult == KMessageBox::Yes);
