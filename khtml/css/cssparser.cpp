@@ -859,9 +859,8 @@ bool CSSParser::parseValue( int propId, bool important )
         }
         else if (value->unit == CSSPrimitiveValue::CSS_URI ) {
             // ### allow string in non strict mode?
-            DOMString uri = domString( value->string );
-            if (!uri.isNull() && styleElement) {
-                parsedValue = new CSSImageValueImpl( uri, styleElement );
+            if (styleElement) {
+                parsedValue = new CSSImageValueImpl(domString(value->string), styleElement);
                 valueList->next();
             }
         }
@@ -1583,10 +1582,10 @@ bool CSSParser::parseContent( int propId, bool important )
     CSSValueImpl *parsedValue = 0;
     while ( (val = valueList->current()) ) {
         parsedValue = 0;
-        if (val->unit == CSSPrimitiveValue::CSS_URI && styleElement) {
-            // url
-            DOMString value = domString(val->string);
-            parsedValue = new CSSImageValueImpl( value, styleElement );
+        if (val->unit == CSSPrimitiveValue::CSS_URI) {
+            if (styleElement) {
+                parsedValue = new CSSImageValueImpl(domString(val->string), styleElement);
+            }
 #ifdef CSS_DEBUG
             kDebug( 6080 ) << "content, url=" << value.string() << " base=" << styleElement->baseURL().url( );
 #endif
@@ -1697,14 +1696,14 @@ CSSValueImpl* CSSParser::parseBackgroundColor()
 
 CSSValueImpl* CSSParser::parseBackgroundImage(bool& didParse)
 {
-    if (valueList->current()->id == CSS_VAL_NONE) {
+    Value *v = valueList->current();
+    if (v->id == CSS_VAL_NONE) {
         didParse = true;
         return new CSSImageValueImpl();
-    } else if (valueList->current()->unit == CSSPrimitiveValue::CSS_URI) {
+    } else if (v->unit == CSSPrimitiveValue::CSS_URI) {
         didParse = true;
-        DOMString uri = domString(valueList->current()->string);
-        if (!uri.isNull() && styleElement)
-            return new CSSImageValueImpl(uri, styleElement);
+        if (styleElement)
+            return new CSSImageValueImpl(domString(v->string), styleElement);
         else
             return 0;
     } else {
@@ -2397,9 +2396,8 @@ bool CSSParser::parseListStyleShorthand(bool important)
         } else if (value->unit == CSSPrimitiveValue::CSS_URI) {
             if (!image) {
                 // ### allow string in non strict mode?
-                DOMString uri = domString(value->string);
-                if (!uri.isNull() && styleElement) {
-                    image = new CSSImageValueImpl(uri, styleElement);
+                if (styleElement) {
+                    image = new CSSImageValueImpl(domString(value->string), styleElement);
                 }
             } else {
                 goto invalid;
