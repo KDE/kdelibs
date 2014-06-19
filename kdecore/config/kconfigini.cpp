@@ -43,7 +43,7 @@ extern bool kde_kiosk_exception;
 static QByteArray lookup(const KConfigIniBackend::BufferFragment& fragment, QHash<KConfigIniBackend::BufferFragment, QByteArray>* cache)
 {
     QHash<KConfigIniBackend::BufferFragment, QByteArray>::iterator it = cache->find(fragment);
-    if (it == cache->constEnd()) {
+    if (it == cache->end()) {
         it = cache->insert(fragment, fragment.toByteArray());
     }
     return it.value();
