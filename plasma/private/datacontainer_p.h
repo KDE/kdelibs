@@ -24,7 +24,7 @@
 #include "storage_p.h"
 
 #include <QtCore/QTimerEvent>
-#include <QtCore/QTime>
+#include <QtCore/QElapsedTimer>
 #include <QtCore/QBasicTimer>
 
 class QTimer;
@@ -73,7 +73,7 @@ public:
     DataEngine::Data data;
     QMap<QObject *, SignalRelay *> relayObjects;
     QMap<uint, SignalRelay *> relays;
-    QTime updateTs;
+    QElapsedTimer updateTimer;
     Storage* storage;
     QBasicTimer storageTimer;
     QBasicTimer checkUsageTimer;

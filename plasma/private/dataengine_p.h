@@ -21,11 +21,9 @@
 #define DATAENGINE_P_H
 
 #include <QQueue>
-#include <QTime>
+#include <QElapsedTimer>
 
 #include <kplugininfo.h>
-
-class QTime;
 
 namespace Plasma
 {
@@ -107,7 +105,7 @@ class DataEnginePrivate
         int checkSourcesTimerId;
         int updateTimerId;
         int minPollingInterval;
-        QTime updateTimestamp;
+        QElapsedTimer updateTimer;
         DataEngine::SourceDict sources;
         QQueue<DataContainer*> sourceQueue;
         QString icon;

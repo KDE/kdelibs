@@ -370,12 +370,12 @@ void DataEngine::timerEvent(QTimerEvent *event)
         }
 
         // minPollingInterval
-        if (d->updateTimestamp.elapsed() < d->minPollingInterval) {
+        if (d->updateTimer.elapsed() < d->minPollingInterval) {
             //kDebug() << "hey now.. slow down!";
             return;
         }
 
-        d->updateTimestamp.restart();
+        d->updateTimer.start();
         updateAllSources();
     } else if (event->timerId() == d->checkSourcesTimerId) {
         killTimer(d->checkSourcesTimerId);
@@ -520,7 +520,7 @@ DataEnginePrivate::DataEnginePrivate(DataEngine *e, const KPluginInfo &info)
       package(0),
       publishedService(0)
 {
-    updateTimestamp.start();
+    updateTimer.start();
 
     if (!info.isValid()) {
         engineName = i18n("Unnamed");
