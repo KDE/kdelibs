@@ -36,7 +36,6 @@
 #include "css/cssstyleselector.h"
 #include "css/cssproperties.h"
 #include "css/cssvalues.h"
-#include "css/csshelper.h"
 #include "xml/dom2_eventsimpl.h"
 
 #include <QtCore/QCharRef>
@@ -85,10 +84,9 @@ void HTMLImageElementImpl::parseAttribute(AttributeImpl *attr)
         setChanged();
 
         //Start loading the image already, to generate events
-        DOMString url = attr->value();
-        if (!url.isEmpty()) { //### why do we not hide or something when setting this?
-            DOMString parsedURL = khtml::parseURL(url);
-            CachedImage* newImage = document()->docLoader()->requestImage(parsedURL);
+        DOMString imgSrcUrl = attr->value();
+        if (!imgSrcUrl.isEmpty()) { //### why do we not hide or something when setting this?
+            CachedImage* newImage = document()->docLoader()->requestImage(imgSrcUrl);
             if (newImage && newImage != m_image) {
                 CachedImage* oldImage = m_image;
                 loadEventSent = false;
@@ -98,9 +96,12 @@ void HTMLImageElementImpl::parseAttribute(AttributeImpl *attr)
                     oldImage->deref(this);
             }
 
-            KUrl fullURL = document()->completeURL(parsedURL.string());
-            if (document()->origin()->taintsCanvas(fullURL))
-                unsafe = true;
+            if (m_image) {
+                const KUrl fullURL = KUrl(m_image->url().string());
+                if (document()->origin()->taintsCanvas(fullURL)) {
+                    unsafe = true;
+                }
+            }
         }
     }
     break;
@@ -150,7 +151,7 @@ void HTMLImageElementImpl::parseAttribute(AttributeImpl *attr)
         if ( attr->value()[0] == '#' )
             usemap = attr->value().lower();
         else {
-            QString url = document()->completeURL( khtml::parseURL( attr->value() ).string() );
+            QString url = document()->completeURL(attr->value().string());
             // ### we remove the part before the anchor and hope
             // the map is on the same html page....
             usemap = url;
@@ -437,7 +438,7 @@ void HTMLMapElementImpl::parseAttribute(AttributeImpl *attr)
         }
         else {
             // add name with full url:
-            QString url = document()->completeURL( khtml::parseURL( attr->value() ).string() );
+            QString url = document()->completeURL(attr->value().string());
             if(document()->isHTMLDocument())
                 static_cast<HTMLDocumentImpl*>(document())->mapMap[url] = this;
         }
