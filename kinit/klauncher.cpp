@@ -1075,7 +1075,14 @@ KLauncher::createArgs( KLaunchRequest *request, const KService::Ptr service ,
   {
      request->arg_list.append(*it);
   }
-  request->cwd = service->path();
+
+  const QString& path = service->path();
+  if (!path.isEmpty()) {
+      request->cwd = path;
+  } else if (!urls.isEmpty()) {
+      const KUrl url(urls.first());
+      request->cwd = url.directory();
+  }
 }
 
 ///// IO-Slave functions

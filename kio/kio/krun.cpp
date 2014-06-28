@@ -727,8 +727,11 @@ static bool runTempService(const KService& _service, const KUrl::List& _urls, QW
     KProcess * proc = new KProcess;
     *proc << args;
 
-    if (!_service.path().isEmpty()) {
-        proc->setWorkingDirectory(_service.path());
+    const QString& path = _service.path();
+    if (!path.isEmpty()) {
+        proc->setWorkingDirectory(path);
+    } else if (!_urls.isEmpty()) {
+        proc->setWorkingDirectory(_urls.first().directory());
     }
 
     return runCommandInternal(proc, &_service, KRun::binaryName(_service.exec(), false),
