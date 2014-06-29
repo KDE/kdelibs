@@ -61,6 +61,9 @@ public:
 
   inline void restoreScrollBarState()
   {
+    if ( !m_scrollArea )
+      return;
+
     if ( m_horizontalScrollBarValue >= 0 && m_horizontalScrollBarValue <= m_scrollArea->horizontalScrollBar()->maximum() ) {
       m_scrollArea->horizontalScrollBar()->setValue( m_horizontalScrollBarValue );
       m_horizontalScrollBarValue = -1;
