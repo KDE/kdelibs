@@ -990,18 +990,17 @@ void CSSStyleSelector::addInlineDeclarations(DOM::ElementImpl* e)
 
     int firstLen = values ? values->count() : 0;
     int secondLen = nonCSSValues ? nonCSSValues->count() : 0;
-    uint totalLen = firstLen + secondLen;
+    int totalLen = firstLen + secondLen;
 
-    if ((unsigned)inlineProps.size() < totalLen)
-	{
+    if (inlineProps.size() < totalLen) {
         inlineProps.resize(totalLen + 1);
-	}
+    }
     propsToApply.reserveCapacity(propsToApply.size() + totalLen);
 
     bool inNonCSSDecls = false;
     CSSOrderedProperty *array = (CSSOrderedProperty *)inlineProps.data();
-    for(int i = 0; i < (int)totalLen; i++)
-    {
+    for (int i = 0; i < totalLen; i++) {
+
         if (i == firstLen) {
             values = nonCSSValues;
             inNonCSSDecls = true;
@@ -2117,7 +2116,7 @@ void CSSStyleSelectorList::append( CSSStyleSheetImpl *sheet,
         {
             CSSStyleRuleImpl *r = static_cast<CSSStyleRuleImpl *>(item);
             QList<CSSSelector*> *s = r->selector();
-            for(int j = 0; j < (int)s->count(); j++)
+            for(int j = 0; j < s->count(); j++)
             {
                 CSSOrderedRule *rule = new CSSOrderedRule(r, s->at(j), count());
 		QList<CSSOrderedRule*>::append(rule);
@@ -2162,7 +2161,7 @@ void CSSStyleSelectorList::append( CSSStyleSheetImpl *sheet,
                                 static_cast<CSSStyleRuleImpl *>( childItem );
 
                         QList<CSSSelector*> *s = styleRule->selector();
-                        for( int j = 0; j < ( int ) s->count(); j++ )
+                        for( int j = 0; j < s->count(); j++ )
                         {
                             CSSOrderedRule *orderedRule = new CSSOrderedRule(
                                             styleRule, s->at( j ), count() );
@@ -4578,9 +4577,9 @@ void CSSStyleSelector::addViewportDependentMediaQueryResult(const MediaQueryExp*
 
 bool CSSStyleSelector::affectedByViewportChange() const
 {
-    unsigned s = m_viewportDependentMediaQueryResults.size();
-    for (unsigned i = 0; i < s; i++) {
-        if (m_medium->eval(&m_viewportDependentMediaQueryResults[i]->m_expression) != m_viewportDependentMediaQueryResults[i]->m_result)
+    const int s = m_viewportDependentMediaQueryResults.size();
+    for (int i = 0; i < s; ++i) {
+        if (m_medium->eval(&m_viewportDependentMediaQueryResults.at(i)->m_expression) != m_viewportDependentMediaQueryResults.at(i)->m_result)
             return true;
     }
     return false;
