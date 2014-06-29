@@ -914,7 +914,7 @@ bool CSSParser::parseValue( int propId, bool important )
         if (id >= CSS_VAL_XX_SMALL && id <= CSS_VAL_LARGER)
             valid_primitive = true;
         else
-            valid_primitive = ( validUnit( value, FLength|FPercent, strict ) );
+            valid_primitive = validUnit(value, FLength|FPercent|FNonNeg, strict);
         break;
 
     case CSS_PROP_FONT_STYLE:           // normal | italic | oblique | inherit
@@ -2120,7 +2120,7 @@ bool CSSParser::parseFont( bool important )
     // <absolute-size> | <relative-size> | <length> | <percentage> | inherit
     if ( value->id >= CSS_VAL_XX_SMALL && value->id <= CSS_VAL_LARGER )
         size = new CSSPrimitiveValueImpl( value->id );
-    else if ( validUnit( value, FLength|FPercent, strict ) ) {
+    else if (validUnit(value, FLength|FPercent|FNonNeg, strict)) {
         size = new CSSPrimitiveValueImpl( value->fValue, (CSSPrimitiveValue::UnitTypes) value->unit );
     }
     if (!size) {
