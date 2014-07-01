@@ -1081,7 +1081,9 @@ KLauncher::createArgs( KLaunchRequest *request, const KService::Ptr service ,
       request->cwd = path;
   } else if (!urls.isEmpty()) {
       const KUrl url(urls.first());
-      request->cwd = url.directory();
+      if (url.isLocalFile()) {
+          request->cwd = url.directory();
+      }
   }
 }
 
