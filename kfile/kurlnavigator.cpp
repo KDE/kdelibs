@@ -346,7 +346,7 @@ void KUrlNavigator::Private::openPathSelectorMenu()
     const KUrl firstVisibleUrl = m_navButtons.first()->url();
 
     QString spacer;
-    KMenu* popup = new KMenu(q);
+    QPointer<KMenu> popup = new KMenu(q);
     popup->setLayoutDirection(Qt::LeftToRight);
 
     const QString placePath = retrievePlacePath();
@@ -381,7 +381,10 @@ void KUrlNavigator::Private::openPathSelectorMenu()
         q->setLocationUrl(url);
     }
 
-    popup->deleteLater();
+    // Delete the menu, unless it has been deleted in its own nested event loop already.
+    if (popup) {
+        popup->deleteLater();
+    }
 }
 
 void KUrlNavigator::Private::switchView()
@@ -425,28 +428,28 @@ void KUrlNavigator::Private::openContextMenu()
 {
     q->setActive(true);
 
-    KMenu popup(q);
+    QPointer<KMenu> popup = new KMenu(q);
 
     // provide 'Copy' action, which copies the current URL of
     // the URL navigator into the clipboard
-    QAction* copyAction = popup.addAction(KIcon("edit-copy"), i18n("Copy"));
+    QAction* copyAction = popup->addAction(KIcon("edit-copy"), i18n("Copy"));
 
     // provide 'Paste' action, which copies the current clipboard text
     // into the URL navigator
-    QAction* pasteAction = popup.addAction(KIcon("edit-paste"), i18n("Paste"));
+    QAction* pasteAction = popup->addAction(KIcon("edit-paste"), i18n("Paste"));
     QClipboard* clipboard = QApplication::clipboard();
     pasteAction->setEnabled(!clipboard->text().isEmpty());
 
-    popup.addSeparator();
+    popup->addSeparator();
 
     // provide radiobuttons for toggling between the edit and the navigation mode
-    QAction* editAction = popup.addAction(i18n("Edit"));
+    QAction* editAction = popup->addAction(i18n("Edit"));
     editAction->setCheckable(true);
 
-    QAction* navigateAction = popup.addAction(i18n("Navigate"));
+    QAction* navigateAction = popup->addAction(i18n("Navigate"));
     navigateAction->setCheckable(true);
 
-    QActionGroup* modeGroup = new QActionGroup(&popup);
+    QActionGroup* modeGroup = new QActionGroup(popup);
     modeGroup->addAction(editAction);
     modeGroup->addAction(navigateAction);
     if (q->isUrlEditable()) {
@@ -455,14 +458,14 @@ void KUrlNavigator::Private::openContextMenu()
         navigateAction->setChecked(true);
     }
 
-    popup.addSeparator();
+    popup->addSeparator();
 
     // allow showing of the full path
-    QAction* showFullPathAction = popup.addAction(i18n("Show Full Path"));
+    QAction* showFullPathAction = popup->addAction(i18n("Show Full Path"));
     showFullPathAction->setCheckable(true);
     showFullPathAction->setChecked(q->showFullPath());
 
-    QAction* activatedAction = popup.exec(QCursor::pos());
+    QAction* activatedAction = popup->exec(QCursor::pos());
     if (activatedAction == copyAction) {
         QMimeData* mimeData = new QMimeData();
         mimeData->setText(q->locationUrl().pathOrUrl());
@@ -475,6 +478,11 @@ void KUrlNavigator::Private::openContextMenu()
         q->setUrlEditable(false);
     } else if (activatedAction == showFullPathAction) {
         q->setShowFullPath(showFullPathAction->isChecked());
+    }
+
+    // Delete the menu, unless it has been deleted in its own nested event loop already.
+    if (popup) {
+        popup->deleteLater();
     }
 }
 
