@@ -109,7 +109,7 @@ void KPtyProcessTest::test_shared_pty()
     // read the result back from the second process' pty
     QVERIFY(p2.pty()->waitForReadyRead(1500));
     for (int i = 0; i < 5; ++i) {
-        if (p.pty()->canReadLine())
+        if (p2.pty()->canReadLine())
             break;
         MyQThread::msleep(500);
     }
