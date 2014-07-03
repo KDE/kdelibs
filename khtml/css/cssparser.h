@@ -166,7 +166,7 @@ namespace DOM {
         void addBackgroundValue(CSSValueImpl*& lval, CSSValueImpl* rval);
 
 	bool parseShape( int propId, bool important );
-	bool parseFont(bool important);
+	bool parseFontShorthand(bool important);
 	bool parseFontFaceSrc();
         bool parseCounter(int propId, bool increment, bool important);
         bool parseListStyleShorthand(bool important);
