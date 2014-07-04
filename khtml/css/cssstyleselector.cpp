@@ -3432,16 +3432,10 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     case CSS_PROP_FONT_SIZE:
     {
         FontDef fontDef = style->htmlFont().fontDef;
-        int oldSize;
         int size = 0;
 
-        if(parentNode) {
-            oldSize = parentStyle->font().pixelSize();
-        } else
-            oldSize = m_fontSizes[3];
-
         if (isInherit )
-            size = oldSize;
+            size = parentStyle->font().pixelSize();
         else if (isInitial)
             size = m_fontSizes[3];
         else if(primitiveValue->getIdent()) {
@@ -3453,6 +3447,12 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 #else
 	    const QVector<int>& fontSizes = m_fontSizes;
 #endif
+            int oldSize;
+            if (parentNode) {
+                oldSize = parentStyle->font().pixelSize();
+            } else {
+                oldSize = m_fontSizes[3];
+            }
             switch(primitiveValue->getIdent())
             {
             case CSS_VAL_XX_SMALL: size = fontSizes[0]; break;
