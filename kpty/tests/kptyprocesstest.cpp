@@ -80,11 +80,11 @@ void KPtyProcessTest::test_shared_pty()
     p2.start();
 
     // read the second processes greeting from the first process' pty
-    QVERIFY(p.pty()->waitForReadyRead(1500));
     for (int i = 0; i < 5; ++i) {
-        if (p.pty()->canReadLine())
+        QVERIFY(p.pty()->waitForReadyRead(500));
+        if (p.pty()->canReadLine()) {
             break;
-        MyQThread::msleep(500);
+        }
     }
     QCOMPARE(p.pty()->readAll(), QByteArray("hello from me\r\n"));
 
@@ -93,11 +93,11 @@ void KPtyProcessTest::test_shared_pty()
     QVERIFY(p2.pty()->waitForBytesWritten(1000));
 
     // read the result back from the first process' pty
-    QVERIFY(p.pty()->waitForReadyRead(1500));
     for (int i = 0; i < 5; ++i) {
-        if (p.pty()->canReadLine())
+        QVERIFY(p.pty()->waitForReadyRead(500));
+        if (p.pty()->canReadLine()) {
             break;
-        MyQThread::msleep(500);
+        }
     }
     // This test (or KPtyProcess) is fragile, sometimes the \r\n is missing. Disabled.
     //QCOMPARE(p.pty()->readAll(), QByteArray("hello from process 2\r\n"));
@@ -107,11 +107,11 @@ void KPtyProcessTest::test_shared_pty()
     QVERIFY(p.pty()->waitForBytesWritten(1000));
 
     // read the result back from the second process' pty
-    QVERIFY(p2.pty()->waitForReadyRead(1500));
     for (int i = 0; i < 5; ++i) {
-        if (p.pty()->canReadLine())
+        QVERIFY(p2.pty()->waitForReadyRead(500));
+        if (p2.pty()->canReadLine()) {
             break;
-        MyQThread::msleep(500);
+        }
     }
     QCOMPARE(p2.pty()->readAll(), QByteArray("hi from process 1\r\n"));
 

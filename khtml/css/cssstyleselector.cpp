@@ -506,18 +506,14 @@ void CSSStyleSelector::computeFontSizesFor(int logicalDpiY, int zoomFactor, QVec
     const float toPix = 1.0;
 #else
     Q_UNUSED( isFixed );
-
-    // ### get rid of float / double
-    float toPix = logicalDpiY/72.0f;
-    if (toPix  < 96.0f/72.0f)
-         toPix = 96.0f/72.0f;
+    const float toPix = qMax(logicalDpiY, 96) / 72.0f;
 #endif // ######### fix isFixed code again.
 
     fontSizes.resize( MAXFONTSIZES );
     float scale = 1.0;
     static const float fontFactors[] =      {3.0f/5.0f, 3.0f/4.0f, 8.0f/9.0f, 1.0f, 6.0f/5.0f, 3.0f/2.0f, 2.0f, 3.0f};
     static const float smallFontFactors[] = {3.0f/4.0f, 5.0f/6.0f, 8.0f/9.0f, 1.0f, 6.0f/5.0f, 3.0f/2.0f, 2.0f, 3.0f};
-    float mediumFontSize, minFontSize, factor;
+    float mediumFontSize, factor;
     if (!khtml::printpainter) {
         scale *= zoomFactor / 100.0;
 #ifdef APPLE_CHANGES
@@ -526,18 +522,18 @@ void CSSStyleSelector::computeFontSizesFor(int logicalDpiY, int zoomFactor, QVec
 	else
 #endif
 	    mediumFontSize = settings->mediumFontSize() * toPix;
-        minFontSize = settings->minFontSize() * toPix;
+        m_minFontSize = settings->minFontSize() * toPix;
     }
     else {
         // ### depending on something / configurable ?
         mediumFontSize = 12;
-        minFontSize = 6;
+        m_minFontSize = 6;
     }
     const float* factors = scale*mediumFontSize >= 12.5 ? fontFactors : smallFontFactors;
     for ( int i = 0; i < MAXFONTSIZES; i++ ) {
         factor = scale*factors[i];
-        fontSizes[i] = int(qMax( mediumFontSize*factor +.5f, minFontSize));
-        //kDebug( 6080 ) << "index: " << i << " factor: " << factors[i] << " font pix size: " << int(qMax( mediumFontSize*factor +.5f, minFontSize));
+        fontSizes[i] = qMax(qRound(mediumFontSize * factor), m_minFontSize);
+        //kDebug( 6080 ) << "index: " << i << " factor: " << factors[i] << " font pix size: " << qMax(qRound(mediumFontSize*factor), m_minFontSize);
     }
 }
 
@@ -1974,6 +1970,7 @@ void CSSStyleSelector::setupDefaultRootStyle(DOM::DocumentImpl *d)
     CSSInitialValueImpl i(true);
     applyRule( CSS_PROP_FONT_SIZE, &i );
     style->htmlFont().update( logicalDpiY );
+    fontDirty = false;
 }
 
 void CSSStyleSelector::buildLists()
@@ -3435,22 +3432,10 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     case CSS_PROP_FONT_SIZE:
     {
         FontDef fontDef = style->htmlFont().fontDef;
-        int oldSize;
-        float size = 0;
-
-        float toPix = logicalDpiY/72.0f;
-        if (toPix  < 96.0f/72.0f)
-            toPix = 96.0f/72.0f;
-
-        float minFontSize = settings->minFontSize() * toPix;
-
-        if(parentNode) {
-            oldSize = parentStyle->font().pixelSize();
-        } else
-            oldSize = m_fontSizes[3];
+        int size = 0;
 
         if (isInherit )
-            size = oldSize;
+            size = parentStyle->font().pixelSize();
         else if (isInitial)
             size = m_fontSizes[3];
         else if(primitiveValue->getIdent()) {
@@ -3462,6 +3447,12 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 #else
 	    const QVector<int>& fontSizes = m_fontSizes;
 #endif
+            int oldSize;
+            if (parentNode) {
+                oldSize = parentStyle->font().pixelSize();
+            } else {
+                oldSize = m_fontSizes[3];
+            }
             switch(primitiveValue->getIdent())
             {
             case CSS_VAL_XX_SMALL: size = fontSizes[0]; break;
@@ -3484,28 +3475,29 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 
         } else {
             int type = primitiveValue->primitiveType();
-            if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG) {
-                if ( !khtml::printpainter && type != CSSPrimitiveValue::CSS_EMS && type != CSSPrimitiveValue::CSS_EXS &&
-                     view && view->part())
-                    size = primitiveValue->computeLengthFloat(parentStyle, logicalDpiY) *
-                                view->part()->fontScaleFactor() / 100.0;
-		else
-                    size = primitiveValue->computeLengthFloat(parentStyle, logicalDpiY);
-            }
-            else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
-                size = primitiveValue->floatValue(CSSPrimitiveValue::CSS_PERCENTAGE)
-                       * parentStyle->font().pixelSize() / 100.0;
-            else
+            if (type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG) {
+                if (!khtml::printpainter && type != CSSPrimitiveValue::CSS_EMS && type != CSSPrimitiveValue::CSS_EXS &&
+                     view && view->part()) {
+                    size = qRound(primitiveValue->computeLengthFloat(parentStyle, logicalDpiY) * view->part()->fontScaleFactor() / 100.0);
+                } else {
+                    size = qRound(primitiveValue->computeLengthFloat(parentStyle, logicalDpiY));
+                }
+            } else if (type == CSSPrimitiveValue::CSS_PERCENTAGE) {
+                size = qRound(primitiveValue->floatValue(CSSPrimitiveValue::CSS_PERCENTAGE) * parentStyle->font().pixelSize() / 100.0);
+            } else {
                 return;
-        }
+            }
 
-        // we never want to get smaller than the minimum font size to keep fonts readable
-        // do not however maximize zero as that is commonly used for fancy layouting purposes
-        if (size && size < minFontSize) size = minFontSize;
+            // we never want to get smaller than the minimum font size to keep fonts readable
+            // do not however maximize zero as that is commonly used for fancy layouting purposes
+            if (size) {
+                size = qMax(size, m_minFontSize);
+            }
+        }
 
         //kDebug( 6080 ) << "computed raw font size: " << size;
 
-	fontDef.size = qRound(size);
+        fontDef.size = size;
         fontDirty |= style->setFontDef( fontDef );
         return;
     }
@@ -3764,7 +3756,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 #ifdef APPLE_CHANGES
             fontDef.family = initialDef.firstFamily();
 #else
-            fontDef.family.clear();
+            fontDef.family = initialDef.family;
 #endif
             if (style->setFontDef(fontDef))
                 fontDirty = true;
@@ -4027,28 +4019,10 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 	    fontDirty |= style->setFontDef( fontDef );
         } else if (isInitial) {
             FontDef fontDef;
+            fontDef.size = m_fontSizes[3];
             style->setLineHeight(RenderStyle::initialLineHeight());
-            if (style->setFontDef( fontDef ))
-                fontDirty = true;
-	} else if ( value->isFontValue() ) {
-	    FontValueImpl *font = static_cast<FontValueImpl *>(value);
-	    if ( !font->style || !font->variant || !font->weight ||
-		 !font->size || !font->lineHeight || !font->family )
-		return;
-	    applyRule( CSS_PROP_FONT_STYLE, font->style );
-	    applyRule( CSS_PROP_FONT_VARIANT, font->variant );
-	    applyRule( CSS_PROP_FONT_WEIGHT, font->weight );
-	    applyRule( CSS_PROP_FONT_SIZE, font->size );
-
-            // Line-height can depend on font().pixelSize(), so we have to update the font
-            // before we evaluate line-height, e.g., font: 1em/1em.  FIXME: Still not
-            // good enough: style="font:1em/1em; font-size:36px" should have a line-height of 36px.
-            if (fontDirty)
-                style->htmlFont().update(logicalDpiY);
-
-	    applyRule( CSS_PROP_LINE_HEIGHT, font->lineHeight );
-	    applyRule( CSS_PROP_FONT_FAMILY, font->family );
-	} else if (primitiveValue) {
+            fontDirty |= style->setFontDef(fontDef);
+        } else if (primitiveValue) {
             // Handle system fonts. We extract out properties from a QFont
             // into the RenderStyle. 
             QFont f;
@@ -4166,7 +4140,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
                 if (ident)
                     col = colorForCSSValue( ident );
                 else if (item->color->primitiveType() == CSSPrimitiveValue::CSS_RGBCOLOR)
-                    col.setRgb(item->color->getRGBColorValue());
+                    col.setRgba(item->color->getRGBColorValue());
             }
             ShadowData* shadowData = new ShadowData(x, y, blur, col);
             style->setTextShadow(shadowData, i != 0);

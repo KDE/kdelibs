@@ -1194,16 +1194,9 @@ bool CSSParser::parseValue( int propId, bool important )
         return parse4Values(propId, properties, important);
     }
     case CSS_PROP_FONT:
-            // [ [ 'font-style' || 'font-variant' || 'font-weight' ]? 'font-size' [ / 'line-height' ]?
-        // 'font-family' ] | caption | icon | menu | message-box | small-caption | status-bar | inherit
-        if ( id >= CSS_VAL_CAPTION && id <= CSS_VAL_STATUS_BAR ) {
-            valid_primitive = true;
-        } else {
-            ShorthandScope scope(this, CSS_PROP_FONT);
-            return parseFont(important);
-        }
-        break;
-
+    {
+        return parseFontShorthand(important);
+    }
     case CSS_PROP_LIST_STYLE:
     {
         return parseListStyleShorthand(important);
@@ -2066,12 +2059,23 @@ bool CSSParser::parseShape( int propId, bool important )
     return false;
 }
 
-// [ 'font-style' || 'font-variant' || 'font-weight' ]? 'font-size' [ / 'line-height' ]? 'font-family'
-bool CSSParser::parseFont( bool important )
+// [ [ <'font-style'> || <'font-variant'> || <'font-weight'> ]? <'font-size'> [ / <'line-height'> ]? <'font-family'> ] |
+// caption | icon | menu | message-box | small-caption | status-bar
+bool CSSParser::parseFontShorthand(bool important)
 {
     Value *value = valueList->current();
+    if (valueList->size() == 1) {
+        // Should be a system font identifier
+        if (value->id >= CSS_VAL_CAPTION && value->id <= CSS_VAL_STATUS_BAR) {
+            addProperty(CSS_PROP_FONT, new CSSPrimitiveValueImpl(value->id), important);
+            return true;
+        }
+        return false;
+    }
     CSSValueListImpl* family = 0;
     CSSPrimitiveValueImpl *style = 0, *variant = 0, *weight = 0, *size = 0, *lineHeight = 0;
+
+    ShorthandScope scope(this, CSS_PROP_FONT);
 
     // optional font-style, font-variant and font-weight
     while (value) {
