@@ -14,7 +14,7 @@
 #  KDCRAW_DEFINITIONS - Compiler switches required for using libkdcraw
 #  KDCRAW_VERSION - Version of libkdcraw which was found
 #
-# Copyright (c) 2008-2011, Gilles Caulier, <caulier.gilles@gmail.com>
+# Copyright (c) 2008-2014, Gilles Caulier, <caulier.gilles@gmail.com>
 # Copyright (c) 2011, Michael G. Hansen, <mike@mghansen.de>
 #
 # Redistribution and use is allowed according to the terms of the BSD license.
@@ -39,16 +39,16 @@ else (KDCRAW_INCLUDE_DIR AND KDCRAW_LIBRARIES AND KDCRAW_DEFINITIONS AND KDCRAW_
 
   # Check for a local version of the library.
   if (KDCRAW_LOCAL_DIR)
-    find_file(KDCRAW_LOCAL_FOUND libkdcraw/version.h.cmake ${CMAKE_SOURCE_DIR}/${KDCRAW_LOCAL_DIR} NO_DEFAULT_PATH)
+    find_file(KDCRAW_LOCAL_FOUND libkdcraw/libkdcraw_export.h ${CMAKE_SOURCE_DIR}/${KDCRAW_LOCAL_DIR} NO_DEFAULT_PATH)
     if (NOT KDCRAW_LOCAL_FOUND)
       message(WARNING "KDCRAW_LOCAL_DIR specified as \"${KDCRAW_LOCAL_DIR}\" but libkdcraw could not be found there.")
     endif (NOT KDCRAW_LOCAL_FOUND)
   else (KDCRAW_LOCAL_DIR)
-    find_file(KDCRAW_LOCAL_FOUND libkdcraw/version.h.cmake ${CMAKE_SOURCE_DIR}/libkdcraw NO_DEFAULT_PATH)
+    find_file(KDCRAW_LOCAL_FOUND libkdcraw/libkdcraw_export.h ${CMAKE_SOURCE_DIR}/libkdcraw NO_DEFAULT_PATH)
     if (KDCRAW_LOCAL_FOUND)
       set(KDCRAW_LOCAL_DIR libkdcraw)
     endif (KDCRAW_LOCAL_FOUND)
-    find_file(KDCRAW_LOCAL_FOUND libkdcraw/version.h.cmake ${CMAKE_SOURCE_DIR}/libs/libkdcraw NO_DEFAULT_PATH)
+    find_file(KDCRAW_LOCAL_FOUND libkdcraw/libkdcraw_export.h ${CMAKE_SOURCE_DIR}/libs/libkdcraw NO_DEFAULT_PATH)
     if (KDCRAW_LOCAL_FOUND)
       set(KDCRAW_LOCAL_DIR libs/libkdcraw)
     endif (KDCRAW_LOCAL_FOUND)

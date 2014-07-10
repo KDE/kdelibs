@@ -16,7 +16,7 @@
 #
 
 # Copyright (c) 2012, Victor Dodon <dodonvictor at gmail dot com>
-# Copyright (c) 2012, Gilles Caulier <caulier dot gilles at gmail dot com>
+# Copyright (c) 2012-2014, Gilles Caulier <caulier dot gilles at gmail dot com>
 #
 # Redistribution and use is allowed according to the terms of the BSD license.
 # For details see the accompanying COPYING-CMAKE-SCRIPTS file.
@@ -43,17 +43,17 @@ ELSE(KIPI_INCLUDE_DIR AND KIPI_LIBRARIES AND KIPI_DEFINITIONS AND KIPI_VERSION A
   ENDIF(NOT Kipi_FIND_QUIETLY)
 
   IF(KIPI_LOCAL_DIR)
-    FIND_FILE(KIPI_LOCAL_FOUND libkipi/version.h.cmake ${CMAKE_SOURCE_DIR}/${KIPI_LOCAL_DIR} NO_DEFAULT_PATH)
+    FIND_FILE(KIPI_LOCAL_FOUND libkipi/libkipi_export.h ${CMAKE_SOURCE_DIR}/${KIPI_LOCAL_DIR} NO_DEFAULT_PATH)
     IF(NOT KIPI_LOCAL_FOUND)
       MESSAGE(WARNING "KIPI_LOCAL_DIR specified as \"${KIPI_LOCAL_DIR}\" but libkipi could not be found there.")
     ENDIF(NOT KIPI_LOCAL_FOUND)
   ELSE(KIPI_LOCAL_DIR)
-    FIND_FILE(KIPI_LOCAL_FOUND libkipi/version.h.cmake ${CMAKE_SOURCE_DIR}/libkipi NO_DEFAULT_PATH)
+    FIND_FILE(KIPI_LOCAL_FOUND libkipi/libkipi_export.h ${CMAKE_SOURCE_DIR}/libkipi NO_DEFAULT_PATH)
     IF(KIPI_LOCAL_FOUND)
       SET(KIPI_LOCAL_DIR libkipi)
     ENDIF(KIPI_LOCAL_FOUND)
 
-    FIND_FILE(KIPI_LOCAL_FOUND libkipi/version.h.cmake ${CMAKE_SOURCE_DIR}/libs/libkipi NO_DEFAULT_PATH)
+    FIND_FILE(KIPI_LOCAL_FOUND libkipi/libkipi_export.h ${CMAKE_SOURCE_DIR}/libs/libkipi NO_DEFAULT_PATH)
     IF(KIPI_LOCAL_FOUND)
       SET(KIPI_LOCAL_DIR libs/libkipi)
     ENDIF(KIPI_LOCAL_FOUND)

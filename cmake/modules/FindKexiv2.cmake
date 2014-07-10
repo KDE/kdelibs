@@ -11,7 +11,7 @@
 #  KEXIV2_DEFINITIONS - Compiler switches required for using libkexiv2
 #
 
-# Copyright (c) 2008, Gilles Caulier, <caulier.gilles@gmail.com>
+# Copyright (c) 2008-2014, Gilles Caulier, <caulier.gilles@gmail.com>
 #
 # Redistribution and use is allowed according to the terms of the BSD license.
 # For details see the accompanying COPYING-CMAKE-SCRIPTS file.
@@ -32,11 +32,11 @@ else (KEXIV2_INCLUDE_DIR AND KEXIV2_LIBRARIES AND KEXIV2_DEFINITIONS)
   if (KEXIV2_LOCAL_DIR)
     set(KEXIV2_LOCAL_FOUND TRUE)
   else (KEXIV2_LOCAL_DIR)
-    find_file(KEXIV2_LOCAL_FOUND libkexiv2/version.h.cmake ${CMAKE_SOURCE_DIR}/libkexiv2 ${CMAKE_SOURCE_DIR}/libs/libkexiv2 NO_DEFAULT_PATH)
+    find_file(KEXIV2_LOCAL_FOUND libkexiv2/libkexiv2_export.h ${CMAKE_SOURCE_DIR}/libkexiv2 ${CMAKE_SOURCE_DIR}/libs/libkexiv2 NO_DEFAULT_PATH)
 
     if (KEXIV2_LOCAL_FOUND)
       # Was it found in libkexiv2/ or in libs/libkexiv2?
-      find_file(KEXIV2_LOCAL_FOUND_IN_LIBS libkexiv2/version.h.cmake ${CMAKE_SOURCE_DIR}/libs/libkexiv2 NO_DEFAULT_PATH)
+      find_file(KEXIV2_LOCAL_FOUND_IN_LIBS libkexiv2/libkexiv2_export.h ${CMAKE_SOURCE_DIR}/libs/libkexiv2 NO_DEFAULT_PATH)
       if (KEXIV2_LOCAL_FOUND_IN_LIBS)
         set(KEXIV2_LOCAL_DIR libs/libkexiv2)
       else (KEXIV2_LOCAL_FOUND_IN_LIBS)
