@@ -232,7 +232,7 @@ class KDEUI_EXPORT KDialog : public QDialog //krazy:exclude=qclasses
     ButtonCode defaultButton() const;
 
     /**
-     * Hide or display the a separator line drawn between the action
+     * Hide or display the separator line drawn between the action
      * buttons an the main widget.
      */
     void showButtonSeparator( bool state );
