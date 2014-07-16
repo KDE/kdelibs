@@ -1784,6 +1784,10 @@ void KUrlTest::testMailto()
   KUrl url183433("mailto:test[at]gmail[dot]com");
   QCOMPARE(url183433.prettyUrl(), QString("mailto:test[at]gmail[dot]com"));
   QCOMPARE(url183433.url(), QString("mailto:test[at]gmail[dot]com"));
+
+  // Make sure prettyUrl() doesn't convert the url to mailto://...
+  KUrl urlNoPath("mailto:?to=test@example.com");
+  QCOMPARE(urlNoPath.prettyUrl(), QString("mailto:?to=test@example.com"));
 }
 
 void KUrlTest::testSmb()

@@ -1097,7 +1097,8 @@ QString KUrl::prettyUrl( AdjustPathOption trailing ) const
   QString result = scheme();
   if (!result.isEmpty())
   {
-    if (!authority().isEmpty() || result == QLatin1String("file") || path().isEmpty())
+    if (!authority().isEmpty() || result == QLatin1String("file") || (path().isEmpty()
+        && scheme().compare(QLatin1String("mailto"), Qt::CaseInsensitive) != 0))
         result += QLatin1String("://");
     else
         result += QLatin1Char(':');
