@@ -144,7 +144,7 @@ void Polkit1Backend::setupAction(const QString &action)
 
 Action::AuthStatus Polkit1Backend::actionStatus(const QString &action)
 {
-    PolkitQt1::UnixProcessSubject subject(QCoreApplication::applicationPid());
+    PolkitQt1::SystemBusNameSubject subject(QString::fromUtf8(callerID()));
     PolkitQt1::Authority::Result r = PolkitQt1::Authority::instance()->checkAuthorizationSync(action, subject,
                                                                                               PolkitQt1::Authority::None);
     switch (r) {
@@ -160,21 +160,12 @@ Action::AuthStatus Polkit1Backend::actionStatus(const QString &action)
 
 QByteArray Polkit1Backend::callerID() const
 {
-    QByteArray a;
-    QDataStream s(&a, QIODevice::WriteOnly);
-    s << QCoreApplication::applicationPid();
-
-    return a;
+    return QDBusConnection::systemBus().baseService().toUtf8();
 }
 
 bool Polkit1Backend::isCallerAuthorized(const QString &action, QByteArray callerID)
 {
-    QDataStream s(&callerID, QIODevice::ReadOnly);
-    qint64 pid;
-
-    s >> pid;
-
-    PolkitQt1::UnixProcessSubject subject(pid);
+    PolkitQt1::SystemBusNameSubject subject(QString::fromUtf8(callerID));
     PolkitQt1::Authority *authority = PolkitQt1::Authority::instance();
 
     PolkitResultEventLoop e;
