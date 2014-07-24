@@ -157,8 +157,26 @@ QString transform( const QString &pat, const QString& tss,
 
     INFO(i18n("Parsing document"));
 
-    xmlDocPtr doc = xmlReadFile(QFile::encodeName(pat), NULL,
-                                XML_PARSE_NOENT|XML_PARSE_DTDLOAD|XML_PARSE_NONET);
+    xmlParserCtxtPtr pctxt;
+
+    pctxt = xmlNewParserCtxt();
+    if ( pctxt == NULL ) {
+        return parsed;
+    }
+
+    xmlDocPtr doc = xmlCtxtReadFile(pctxt, QFile::encodeName(pat), NULL,
+                                    XML_PARSE_NOENT|XML_PARSE_DTDLOAD|XML_PARSE_NONET);
+    /* Check both the returned doc (for parsing errors) and the context
+       (for validation errors) */
+    if (doc == NULL) {
+        return parsed;
+    } else {
+        if (pctxt->valid == 0) {
+            xmlFreeDoc(doc);
+            return parsed;
+        }
+    }
+
     xsltTransformContextPtr ctxt;
 
     ctxt = xsltNewTransformContext(style_sheet, doc);
