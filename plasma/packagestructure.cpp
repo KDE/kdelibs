@@ -21,6 +21,7 @@
 
 #include "config-plasma.h"
 
+#include <QDirIterator>
 #include <QDir>
 #include <QMap>
 #include <QMutableListIterator>
@@ -638,7 +639,29 @@ PackageMetadata PackageStructure::metadata()
                 const KArchiveDirectory *source = archive->directory();
                 KTempDir tempdir;
                 source->copyTo(tempdir.name());
-                d->createPackageMetadata(tempdir.name());
+
+                // This is to help with the theme packages, which include an extra folder in their package archive.
+                // Question: Would it be better to search just the first level dirs for metadata.desktop file?
+                // As in /path/Theme Name/Dir1/metadata.desktop and not /path/Theme Name/Dir1/Dir2/metadata.desktop 
+                // This fixes bug https://bugs.kde.org/show_bug.cgi?id=149479 properly.
+                // 2nd rev. Search an extra first directory only.
+
+                QDir dir(tempdir.name());
+                QString filename = "metadata.desktop";
+                QFileInfo metadataFileInfo(dir, filename);
+
+                if (metadataFileInfo.exists()) {
+                    d->createPackageMetadata(metadataFileInfo.absolutePath());
+                } else {
+                    dir.setFilter(QDir::NoDotAndDotDot|QDir::Dirs);
+                    dir.setSorting(QDir::DirsFirst);
+                    QFileInfo firstDir(dir.entryInfoList().first());
+                    metadataFileInfo = QFileInfo(firstDir.filePath(), filename);
+                    if (metadataFileInfo.exists()) {
+                        kWarning() << "Found in: " << metadataFileInfo.absolutePath();
+                        d->createPackageMetadata(metadataFileInfo.absolutePath());
+                    }
+                }
             } else {
                 kWarning() << "Could not open package file:" << d->path;
             }
