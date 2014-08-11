@@ -43,7 +43,8 @@
 <!ENTITY Hannie.Lafeber-Dumoleyn      '<othercredit role="translator"><firstname>Hannie</firstname><surname>Lafeber-Dumoleyn</surname><affiliation><address><email>hannie@kde.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
 <!ENTITY Ruben.Van.Laerhoven      '<othercredit role="translator"><firstname>Ruben</firstname><surname>Van Laerhoven</surname><affiliation><address><email>rubentje1991@gmail.com</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
 <!ENTITY Thom.Castermans      '<othercredit role="translator"><firstname>Thom</firstname><surname>Castermans</surname><affiliation><address><email>thomcastermans@kde.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
-<!ENTITY Ronald.Stroethoff      '<othercredit role="translator"><firstname>Ronald</firstname><surname>Stroethoff</surname><affiliation><address><email>stroet43@zonnet.nl</email></address></affiliation><contrib>Vertaler/Nalezer</contrib></othercredit>'>
+<!ENTITY Ronald.Stroethoff      '<othercredit role="translator"><firstname>Ronald</firstname><surname>Stroethoff</surname><affiliation><address><email>stroet43@zonnet.nl</email></address></affiliation><contrib>Vertaler</contrib></othercredit>'>
+<!ENTITY Ivo.de.Klerk      '<othercredit role="translator"><firstname>Ivo M.</firstname><surname>de Klerk</surname><affiliation><address><email>imklerk@hetnet.nl</email></address></affiliation><contrib>Vertaler</contrib></othercredit>'>
 <!ENTITY kde.nl.groep       "<email>i18n@kde.nl</email>">
 
 <!-- Tekstschema's -->
@@ -87,6 +88,7 @@
 <!ENTITY vertaling.ruben        "<para>Dit document is vertaald in het Nederlands door &Ruben.Van.Laerhoven;.</para>">
 <!ENTITY vertaling.thom         "<para>Dit document is vertaald in het Nederlands door &Thom.Castermans;.</para>">
 <!ENTITY vertaling.ronald       "<para>Dit document is vertaald in het Nederlands door &Ronald.Stroethoff;.</para>">
+<!ENTITY vertaling.ivo          "<para>Dit document is vertaald in het Nederlands door &Ivo.de.Klerk;.</para>">
 
 
 <!-- Gebruiken als template voor nieuwe vertalers/nalezers
