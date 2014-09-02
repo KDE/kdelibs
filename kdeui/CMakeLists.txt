@@ -309,7 +309,8 @@ option(MAC_USE_OSXKEYCHAIN "On OS X, use the keychain as backend for kwallet, in
 
 if (Q_WS_MAC AND MAC_USE_OSXKEYCHAIN)
     FIND_LIBRARY(SECURITY_LIBRARY Security)
-    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kwallet_mac.cpp)
+    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kwallet_mac.cpp util/qosxkeychain.cpp)
+    add_definitions(-DMAC_USE_OSXKEYCHAIN)
 else(Q_WS_MAC AND MAC_USE_OSXKEYCHAIN)
      set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kwallet.cpp)
 else(Q_WS_MAC AND MAC_USE_OSXKEYCHAIN)

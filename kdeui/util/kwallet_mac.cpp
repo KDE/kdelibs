@@ -3,6 +3,7 @@
  * Copyright (C) 2002-2004 George Staikos <staikos@kde.org>
  * Copyright (C) 2008 Michael Leupold <lemma@confuego.org>
  * Copyright (C) 2010 Frank Osterfeld <osterfeld@kde.org>
+ * Copyright (C) 2014 René Bertin <rjvbertin@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -36,9 +37,9 @@
 
 #include <cassert>
 
-#include <Carbon/Carbon.h>
-#include <Security/Security.h>
-#include <Security/SecKeychain.h>
+#include <sys/param.h>
+
+#include "qosxkeychain.h"
 
 using namespace KWallet;
 
@@ -49,30 +50,7 @@ Q_DECLARE_METATYPE(StringToStringStringMapMap)
 typedef QMap<QString, QByteArray> StringByteArrayMap;
 Q_DECLARE_METATYPE(StringByteArrayMap)
 
-namespace {
-    template <typename T>
-    struct CFReleaser {
-        explicit CFReleaser( const T& r ) : ref( r ) {}
-        ~CFReleaser() { CFRelease( ref ); }
-        T ref;
-    };
-}
-
-static QString asQString( CFStringRef sr ) {
-    return QString::fromLatin1( CFStringGetCStringPtr( sr, NULL ) ); //TODO Latin1 correct?
-}
-
-static QString errorString( OSStatus s ) {
-    const CFReleaser<CFStringRef> ref( SecCopyErrorMessageString( s, NULL ) );
-    return asQString( ref.ref );
-}
-
-static bool isError( OSStatus s, QString* errMsg ) {
-    if ( errMsg )
-        *errMsg = errorString( s );
-    return s != 0;
-}
-
+#ifdef OSX_KEYCHAIN_PORT_DISABLED
 static QString appid()
 {
     KComponentData cData = KGlobal::mainComponent();
@@ -85,28 +63,10 @@ static QString appid()
     }
     return qApp->applicationName();
 }
+#endif
 
-static OSStatus removeEntryImplementation(const QString& walletName, const QString& key) {
-    const QByteArray serviceName( walletName.toUtf8() );
-    const QByteArray accountName( key.toUtf8() );
-    SecKeychainItemRef itemRef;
-    QString errMsg;
-    OSStatus result = SecKeychainFindGenericPassword( NULL, serviceName.size(), serviceName.constData(), accountName.size(), accountName.constData(), NULL, NULL, &itemRef );
-    if ( isError( result, &errMsg ) ) {
-        qWarning() << "Could not retrieve password:"  << qPrintable(errMsg);
-        return result;
-    }
-    const CFReleaser<SecKeychainItemRef> itemReleaser( itemRef );
-    result = SecKeychainItemDelete( itemRef );
-    if ( isError( result, &errMsg ) ) {
-        qWarning() << "Could not delete password:"  << qPrintable(errMsg);
-        return result;
-    }
-    return result;
-}
-
-
-const QString Wallet::LocalWallet() {
+/*static*/ const QString Wallet::LocalWallet()
+{
     KConfigGroup cfg(KSharedConfig::openConfig("kwalletrc")->group("Wallet"));
     if (!cfg.readEntry("Use One Wallet", true)) {
         QString tmp = cfg.readEntry("Local Wallet", "localwallet");
@@ -123,7 +83,8 @@ const QString Wallet::LocalWallet() {
     return tmp;
 }
 
-const QString Wallet::NetworkWallet() {
+/*static*/ const QString Wallet::NetworkWallet()
+{
     KConfigGroup cfg(KSharedConfig::openConfig("kwalletrc")->group("Wallet"));
 
     QString tmp = cfg.readEntry("Default Wallet", "kdewallet");
@@ -133,120 +94,157 @@ const QString Wallet::NetworkWallet() {
     return tmp;
 }
 
-const QString Wallet::PasswordFolder() {
+/*static*/ const QString Wallet::PasswordFolder()
+{
     return "Passwords";
 }
 
-const QString Wallet::FormDataFolder() {
+/*static*/ const QString Wallet::FormDataFolder()
+{
     return "Form Data";
 }
 
-class Wallet::WalletPrivate
+#pragma mark ==== Wallet::WalletPrivate ====
+class Wallet::WalletPrivate : public OSXKeychain
 {
 public:
     explicit WalletPrivate(const QString &n)
-     : name(n)
-    {}
-
-    // needed for compilation reasons
-    void walletServiceUnregistered() {
+        : OSXKeychain(n)
+    {
+        isKDEChain = ( n == LocalWallet() || n == NetworkWallet() || n.contains( "wallet", Qt::CaseInsensitive ) );
     }
 
-    QString name;
-    QString folder;
+    // needed for compilation reasons
+    void walletServiceUnregistered()
+    {
+    }
 };
 
 Wallet::Wallet(int handle, const QString& name)
-    : QObject(0L), d(new WalletPrivate(name)) {
+    : QObject(0L), d(new WalletPrivate(name))
+{
     Q_UNUSED(handle);
 }
 
-Wallet::~Wallet() {
+Wallet::~Wallet()
+{
     delete d;
 }
 
-
-QStringList Wallet::walletList() {
+/*static*/ QStringList Wallet::walletList()
+{
 #ifdef OSX_KEYCHAIN_PORT_DISABLED
     return walletLauncher->getInterface().wallets();
 #else
-    return QStringList();
+    // RJVB: Mac OS X's Keychain supports multiple keychains, but they can only be accesses by full path, not
+    // found by name. That makes it cumbersome to map to multiple wallets when using only the wallet name.
+    // However, it would be perfectly possible to create OS X Keychains called Wallet::LocalWallet() and
+    // Wallet::NetworkWallet() in the equivalent of ~/.kde/share/apps/kwallet .
+    QStringList l;
+    OSXKeychain::KeychainList(l);
+    return l;
 #endif
 }
 
 
-void Wallet::changePassword(const QString& name, WId w) {
+/*static*/ void Wallet::changePassword(const QString& name, WId w)
+{
 #ifdef OSX_KEYCHAIN_PORT_DISABLED
     if( w == 0 )
         kDebug(285) << "Pass a valid window to KWallet::Wallet::changePassword().";
     walletLauncher->getInterface().changePassword(name, (qlonglong)w, appid());
+#else
+    Q_UNUSED(w);
+    kWarning() << "Wallet::changePassword unimplemented '" << name << "'";
 #endif
 }
 
 
-bool Wallet::isEnabled() {
+/*static*/ bool Wallet::isEnabled()
+{
     //PENDING(frank) check
     return true;
 }
 
 
-bool Wallet::isOpen(const QString& name) {
+/*static*/ bool Wallet::isOpen(const QString& name)
+{
 #ifdef OSX_KEYCHAIN_PORT_DISABLED
     return walletLauncher->getInterface().isOpen(name); // default is false
 #else
-    return true;
+    return OSXKeychain::IsOpen(name);
+#endif
+}
+
+bool Wallet::isOpen() const
+{
+#ifdef OSX_KEYCHAIN_PORT_DISABLED
+    return d->handle != -1;
+#else
+    return d->isOpen();
 #endif
 }
 
 
-int Wallet::closeWallet(const QString& name, bool force) {
+/*static*/ int Wallet::closeWallet(const QString& name, bool force)
+{
 #ifdef OSX_KEYCHAIN_PORT_DISABLED
     QDBusReply<int> r = walletLauncher->getInterface().close(name, force);
     return r.isValid() ? r : -1;
 #else
-    return 0;
+    Q_UNUSED(force);
+    return OSXKeychain::Lock(name);
 #endif
 }
 
 
-int Wallet::deleteWallet(const QString& name) {
+/*static*/ int Wallet::deleteWallet(const QString& name)
+{
 #ifdef OSX_KEYCHAIN_PORT_DISABLED
     QDBusReply<int> r = walletLauncher->getInterface().deleteWallet(name);
     return r.isValid() ? r : -1;
 #else
-    return -1;
+    return OSXKeychain::Destroy(name);
 #endif
 }
 
 
-Wallet *Wallet::openWallet(const QString& name, WId w, OpenType ot) {
+/*static*/ Wallet *Wallet::openWallet(const QString& name, WId w, OpenType ot)
+{
     Q_UNUSED(w);
     Q_UNUSED(ot);
     Wallet *wallet = new Wallet(-1, name);
     QMetaObject::invokeMethod( wallet, "emitWalletOpened", Qt::QueuedConnection );
+    OSStatus err = wallet->d->unLock();
+    kDebug() << "Opened wallet '" << name << "': " << wallet << " error=" << err;
     return wallet;
 }
 
 
-bool Wallet::disconnectApplication(const QString& wallet, const QString& app) {
+/*static*/ bool Wallet::disconnectApplication(const QString& wallet, const QString& app)
+{
 #ifdef OSX_KEYCHAIN_PORT_DISABLED
     return walletLauncher->getInterface().disconnectApplication(wallet, app); // default is false
 #else
+    kWarning() << "Wallet::disconnectApplication unimplemented, '" << app << "' from '" << wallet << "'";
     return true;
 #endif
 }
 
 
-QStringList Wallet::users(const QString& name) {
+/*static*/ QStringList Wallet::users(const QString& name)
+{
 #ifdef OSX_KEYCHAIN_PORT_DISABLED
     return walletLauncher->getInterface().users(name); // default is QStringList()
 #else
+    kWarning() << "Wallet::users unimplemented, '" << name << "'";
     return QStringList();
 #endif
 }
 
 
-int Wallet::sync() {
+int Wallet::sync()
+{
 #ifdef OSX_KEYCHAIN_PORT_DISABLED
     if (d->handle == -1) {
         return -1;
@@ -258,7 +256,8 @@ int Wallet::sync() {
 }
 
 
-int Wallet::lockWallet() {
+int Wallet::lockWallet()
+{
 #ifdef OSX_KEYCHAIN_PORT_DISABLED
     if (d->handle == -1) {
         return -1;
@@ -271,26 +270,21 @@ int Wallet::lockWallet() {
     if (r.isValid()) {
         return r;
     }
+#else
+    d->currentService.clear();
 #endif
-    return -1;
+    return d->lock();
 }
 
 
-const QString& Wallet::walletName() const {
+const QString& Wallet::walletName() const
+{
     return d->name;
 }
 
 
-bool Wallet::isOpen() const {
-#ifdef OSX_KEYCHAIN_PORT_DISABLED
-    return d->handle != -1;
-#else
-    return true;
-#endif
-}
-
-
-void Wallet::requestChangePassword(WId w) {
+void Wallet::requestChangePassword(WId w)
+{
 #ifdef OSX_KEYCHAIN_PORT_DISABLED
     if( w == 0 )
         kDebug(285) << "Pass a valid window to KWallet::Wallet::requestChangePassword().";
@@ -299,11 +293,15 @@ void Wallet::requestChangePassword(WId w) {
     }
 
     walletLauncher->getInterface().changePassword(d->name, (qlonglong)w, appid());
+#else
+    Q_UNUSED(w);
+    kWarning() << "Wallet::requestChangePassword unimplemented '" << d->name << "'";
 #endif
 }
 
 
-void Wallet::slotWalletClosed(int handle) {
+void Wallet::slotWalletClosed(int handle)
+{
 #ifdef OSX_KEYCHAIN_PORT_DISABLED
     if (d->handle == handle) {
         d->handle = -1;
@@ -311,11 +309,16 @@ void Wallet::slotWalletClosed(int handle) {
         d->name.clear();
         emit walletClosed();
     }
+#else
+    Q_UNUSED(handle);
+    kWarning() << "Wallet::slotWalletClosed unimplemented '" << d->name << "'";
+    d->currentService.clear();
 #endif
 }
 
 
-QStringList Wallet::folderList() {
+QStringList Wallet::folderList()
+{
 #ifdef OSX_KEYCHAIN_PORT_DISABLED
     if (d->handle == -1) {
         return QStringList();
@@ -324,12 +327,13 @@ QStringList Wallet::folderList() {
     QDBusReply<QStringList> r = walletLauncher->getInterface().folderList(d->handle, appid());
     return r;
 #else
-    return QStringList();
+    return QStringList(d->folderList());
 #endif
 }
 
 
-QStringList Wallet::entryList() {
+QStringList Wallet::entryList()
+{
 #ifdef OSX_KEYCHAIN_PORT_DISABLED
     if (d->handle == -1) {
         return QStringList();
@@ -338,12 +342,15 @@ QStringList Wallet::entryList() {
     QDBusReply<QStringList> r = walletLauncher->getInterface().entryList(d->handle, d->folder, appid());
     return r;
 #else
-    return QStringList();
+    QStringList r = QStringList();
+    d->itemList(r);
+    return r;
 #endif
 }
 
 
-bool Wallet::hasFolder(const QString& f) {
+bool Wallet::hasFolder(const QString& f)
+{
 #ifdef OSX_KEYCHAIN_PORT_DISABLED
     if (d->handle == -1) {
         return false;
@@ -352,12 +359,14 @@ bool Wallet::hasFolder(const QString& f) {
     QDBusReply<bool> r = walletLauncher->getInterface().hasFolder(d->handle, f, appid());
     return r; // default is false
 #else
-    return true;
+    d->folderList();
+    return d->serviceList.contains(f);
 #endif
 }
 
 
-bool Wallet::createFolder(const QString& f) {
+bool Wallet::createFolder(const QString& f)
+{
 #ifdef OSX_KEYCHAIN_PORT_DISABLED
     if (d->handle == -1) {
         return false;
@@ -370,12 +379,13 @@ bool Wallet::createFolder(const QString& f) {
 
     return true;				// folder already exists
 #else
-    return true;
+    return setFolder(f);
 #endif
 }
 
 
-bool Wallet::setFolder(const QString& f) {
+bool Wallet::setFolder(const QString &f)
+{
 #ifdef OSX_KEYCHAIN_PORT_DISABLED
     bool rc = false;
 
@@ -397,12 +407,21 @@ bool Wallet::setFolder(const QString& f) {
 
     return rc;
 #else
+    // act as if we just changed folders even if we have no such things; the property
+    // is stored as the ServiceItemAttr (which shows up as the "Where" field in the Keychain Utility).
+    if( f.size() == 0 ){
+        d->currentService.clear();
+    }
+    else{
+        d->currentService = QString(f);
+    }
     return true;
 #endif
 }
 
 
-bool Wallet::removeFolder(const QString& f) {
+bool Wallet::removeFolder(const QString& f)
+{
 #ifdef OSX_KEYCHAIN_PORT_DISABLED
     if (d->handle == -1) {
         return false;
@@ -415,34 +434,34 @@ bool Wallet::removeFolder(const QString& f) {
 
     return r;					// default is false
 #else
+    kWarning() << "Wallet::removeFolder unimplemented (returns true) '" << d->name << "'";
+    if( d->currentService == f ){
+        d->currentService.clear();
+    }
     return true;
 #endif
 }
 
 
-const QString& Wallet::currentFolder() const {
+const QString& Wallet::currentFolder() const
+{
+#ifdef OSX_KEYCHAIN_PORT_DISABLED
     return d->folder;
+#else
+    return d->currentService;
+#endif
 }
 
 
-int Wallet::readEntry(const QString& key, QByteArray& value) {
-    const QByteArray serviceName( walletName().toUtf8() );
-    const QByteArray accountName( key.toUtf8() );
-    UInt32 passwordSize = 0;
-    void* passwordData = 0;
-    QString errMsg;
-    if ( isError( SecKeychainFindGenericPassword( NULL, serviceName.size(), serviceName.constData(), accountName.size(), accountName.constData(), &passwordSize, &passwordData, NULL ), &errMsg ) ) {
-        qWarning() << "Could not retrieve password:"  << qPrintable(errMsg);
-        return -1;
-    }
-
-    value = QByteArray( reinterpret_cast<const char*>( passwordData ), passwordSize );
-    SecKeychainItemFreeContent( NULL, passwordData );
-    return 0;
+int Wallet::readEntry(const QString &key, QByteArray &value)
+{   OSStatus err = d->readItem( key, &value, NULL );
+    kDebug() << "Wallet::readEntry '" << key << "' from wallet " << d->name << ", error=" << ((err)? -1 : 0);
+    return (err)? -1 : 0;
 }
 
 
-int Wallet::readEntryList(const QString& key, QMap<QString, QByteArray>& value) {
+int Wallet::readEntryList(const QString& key, QMap<QString, QByteArray>& value)
+{
 #ifdef OSX_KEYCHAIN_PORT_DISABLED
     registerTypes();
 
@@ -464,12 +483,16 @@ int Wallet::readEntryList(const QString& key, QMap<QString, QByteArray>& value) 
 
     return rc;
 #else
+    Q_UNUSED(key);
+    Q_UNUSED(value);
+    kWarning() << "Wallet::readEntryList unimplemented (returns -1) '" << d->name << "'";
     return -1;
 #endif
 }
 
 
-int Wallet::renameEntry(const QString& oldName, const QString& newName) {
+int Wallet::renameEntry(const QString& oldName, const QString& newName)
+{
 #ifdef OSX_KEYCHAIN_PORT_DISABLED
     int rc = -1;
 
@@ -484,25 +507,30 @@ int Wallet::renameEntry(const QString& oldName, const QString& newName) {
 
     return rc;
 #else
-    return -1;
+    return d->renameItem( oldName, newName );
 #endif
 }
 
 
-int Wallet::readMap(const QString& key, QMap<QString,QString>& value) {
+int Wallet::readMap(const QString &key, QMap<QString,QString> &value)
+{
     QByteArray v;
-    const int ret = readEntry( key, v );
-    if ( ret != 0 )
+    const int ret = (d->readItem( key, &v, NULL ))? -1 : 0;
+    if( ret != 0 ){
         return ret;
-    if ( !v.isEmpty() ) {
-        QDataStream ds( &v, QIODevice::ReadOnly );
+    }
+    if( !v.isEmpty() ){
+        QByteArray w = QByteArray::fromBase64(v);
+        QDataStream ds( &w, QIODevice::ReadOnly );
         ds >> value;
     }
+    kDebug() << "Wallet::readMap '" << key << "' from wallet " << d->name << ", error=0";
     return 0;
 }
 
 
-int Wallet::readMapList(const QString& key, QMap<QString, QMap<QString, QString> >& value) {
+int Wallet::readMapList(const QString& key, QMap<QString, QMap<QString, QString> >& value)
+{
 #ifdef OSX_KEYCHAIN_PORT_DISABLED
     registerTypes();
 
@@ -530,81 +558,100 @@ int Wallet::readMapList(const QString& key, QMap<QString, QMap<QString, QString>
 
     return rc;
 #else
+    Q_UNUSED(key);
+    Q_UNUSED(value);
+    kWarning() << "Wallet::readMapList unimplemented (returns -1) '" << d->name << "'";
     return -1;
 #endif
 }
 
 
-int Wallet::readPassword(const QString& key, QString& value) {
+int Wallet::readPassword(const QString& key, QString& value)
+{
     QByteArray ba;
-    const int ret = readEntry( key, ba );
-    if ( ret == 0 )
+    const int ret = (d->readItem( key, &ba, NULL ))? -1 : 0;
+    if ( ret == 0 ){
         value = QString::fromUtf8( ba.constData() );
+    }
+    kDebug() << "Wallet::readPassword '" << key << "' from wallet " << d->name << ", error=" << ret;
     return ret;
 }
 
 
-int Wallet::readPasswordList(const QString& key, QMap<QString, QString>& value) {
+int Wallet::readPasswordList(const QString& key, QMap<QString, QString>& value)
+{
+    Q_UNUSED(key);
+    Q_UNUSED(value);
+    kWarning() << "Wallet::readPasswordList unimplemented (returns -1) '" << d->name << "'";
     return -1;
 }
 
-static OSStatus writeEntryImplementation( const QString& walletName, const QString& key, const QByteArray& value ) {
-    const QByteArray serviceName( walletName.toUtf8() );
-    const QByteArray accountName( key.toUtf8() );
-    QString errMsg;
-    OSStatus err = SecKeychainAddGenericPassword( NULL, serviceName.size(), serviceName.constData(), accountName.size(), accountName.constData(), value.size(), value.constData(), NULL );
-    if (err == errSecDuplicateItem) {
-        err = removeEntryImplementation( walletName, key );
-        if ( isError( err, &errMsg ) ) {
-            kWarning() << "Could not delete old key in keychain for replacing: " << qPrintable(errMsg);
-            return err;
-        }
-    }
-    if ( isError( err, &errMsg ) ) {
-        kWarning() << "Could not store password in keychain: " << qPrintable(errMsg);
-        return err;
-    }
-    kDebug() << "Succesfully written out key:" << key;
-    return err;
-
+int Wallet::writeEntry(const QString& key, const QByteArray& password )
+{   int ret = d->writeItem( key, password );
+    kDebug() << "wrote entry '" << key << "' to wallet " << d->name << ", error=" << ret;
+    return ret;
 }
 
-int Wallet::writeEntry(const QString& key, const QByteArray& password, EntryType entryType) {
-    Q_UNUSED( entryType )
-    return writeEntryImplementation( walletName(), key, password );
+int Wallet::writeEntry(const QString& key, const QByteArray& password, EntryType entryType)
+{
+    OSXKeychain::EntryType entryCode;
+	switch( entryType ){
+		case Wallet::Password:
+			entryCode = OSXKeychain::Password;
+			break;
+		case Wallet::Map:
+			entryCode = OSXKeychain::Map;
+			break;
+        case Wallet::Stream:
+            entryCode = OSXKeychain::Stream;
+            break;
+		default:
+			entryCode = OSXKeychain::Unknown;
+			break;
+	}
+	int ret = d->writeItem( key, password, &entryCode );
+    kDebug() << "wrote entry '" << key << "' of type=" << (int) entryType << "to wallet " << d->name << ", error=" << ret;
+    return ret;
 }
 
-
-int Wallet::writeEntry(const QString& key, const QByteArray& value) {
-    return writeEntryImplementation( walletName(), key, value );
-}
-
-
-int Wallet::writeMap(const QString& key, const QMap<QString,QString>& value) {
+int Wallet::writeMap(const QString& key, const QMap<QString,QString>& value)
+{
     QByteArray mapData;
     QDataStream ds(&mapData, QIODevice::WriteOnly);
     ds << value;
-    return writeEntry( key, mapData );
+    OSXKeychain::EntryType etype = OSXKeychain::Map;
+    int ret = d->writeItem( key, mapData.toBase64(),
+                           "This is a KDE Wallet::Map item. Its password\n"
+                           "cannot be read in the OS X Keychain Utility.\n"
+                           "Use KDE's own kwalletmanager for that.", &etype );
+    kDebug() << "wrote map '" << key << "' to wallet " << d->name << ", error=" << ret;
+    return ret;
 }
 
 
-int Wallet::writePassword(const QString& key, const QString& value) {
-    return writeEntry( key, value.toUtf8() );
+int Wallet::writePassword(const QString &key, const QString& value)
+{   OSXKeychain::EntryType etype = OSXKeychain::Password;
+    int ret = d->writeItem( key, value.toUtf8(), &etype );
+    kDebug() << "wrote password '" << key << "' to wallet " << d->name << ", error=" << ret;
+    return ret;
 }
 
 
-bool Wallet::hasEntry(const QString& key) {
-    const QByteArray serviceName( walletName().toUtf8() );
-    const QByteArray accountName( key.toUtf8() );
-    return !isError( SecKeychainFindGenericPassword( NULL, serviceName.size(), serviceName.constData(), accountName.size(), accountName.constData(), NULL, NULL, NULL ), 0 );
+bool Wallet::hasEntry(const QString &key)
+{   bool ret = d->hasItem( key, NULL );
+    kDebug() << "wallet '" << d->name << "'" << ((ret)? " has" : " does not have") << " entry '" << key << "'";
+    return ret;
 }
 
-int Wallet::removeEntry(const QString& key) {
-    return removeEntryImplementation( walletName(), key );
+int Wallet::removeEntry(const QString& key)
+{   int ret = d->removeItem( key );
+    kDebug() << "removed entry '" << key << "' from wallet " << d->name << ", error=" << ret;
+    return ret;
 }
 
 
-Wallet::EntryType Wallet::entryType(const QString& key) {
+Wallet::EntryType Wallet::entryType(const QString& key)
+{
 #ifdef OSX_KEYCHAIN_PORT_DISABLED
     int rc = 0;
 
@@ -619,55 +666,85 @@ Wallet::EntryType Wallet::entryType(const QString& key) {
 
     return static_cast<EntryType>(rc);
 #else
+    // RJVB: a priori, entries are always 'password' on OS X, but since we also do use them for storing
+    // maps, it may be best to return Wallet::Unknown to leave some uncertainty and not mislead our caller.
+    OSXKeychain::EntryType etype;
+    if( !d->itemType( key, &etype ) ){
+        switch( etype ){
+            case OSXKeychain::Password:
+                return Wallet::Password;
+                break;
+            case OSXKeychain::Map:
+                return Wallet::Map;
+                break;
+            case OSXKeychain::Stream:
+                return Wallet::Stream;
+                break;
+        }
+    }
     return Wallet::Unknown;
 #endif
 }
 
 
-void Wallet::slotFolderUpdated(const QString& wallet, const QString& folder) {
+void Wallet::slotFolderUpdated(const QString& wallet, const QString& folder)
+{
     if (d->name == wallet) {
         emit folderUpdated(folder);
     }
 }
 
 
-void Wallet::slotFolderListUpdated(const QString& wallet) {
+void Wallet::slotFolderListUpdated(const QString& wallet)
+{
     if (d->name == wallet) {
         emit folderListUpdated();
     }
 }
 
 
-void Wallet::slotApplicationDisconnected(const QString& wallet, const QString& application) {
+void Wallet::slotApplicationDisconnected(const QString& wallet, const QString& application)
+{
 #ifdef OSX_KEYCHAIN_PORT_DISABLED
     if (d->handle >= 0
         && d->name == wallet
         && application == appid()) {
         slotWalletClosed(d->handle);
     }
+#else
+    Q_UNUSED(wallet);
+    Q_UNUSED(application);
+	kWarning() << "Wallet::slotApplicationDisconnected unimplemented '" << d->name << "'";
 #endif
 }
 
-void Wallet::walletAsyncOpened(int tId, int handle) {
+void Wallet::walletAsyncOpened(int tId, int handle)
+{
 #ifdef OSX_KEYCHAIN_PORT_DISABLED
     // ignore responses to calls other than ours
     if (d->transactionId != tId || d->handle != -1) {
         return;
     }
-    
+
     // disconnect the async signal
     disconnect(this, SLOT(walletAsyncOpened(int,int)));
-    
+
     d->handle = handle;
     emit walletOpened(handle > 0);
+#else
+    Q_UNUSED(tId);
+    Q_UNUSED(handle);
+	kWarning() << "Wallet::walletAsyncOpened unimplemented '" << d->name << "'";
 #endif
 }
 
-void Wallet::emitWalletAsyncOpenError() {
+void Wallet::emitWalletAsyncOpenError()
+{
     emit walletOpened(false);
 }
 
-void Wallet::emitWalletOpened() {
+void Wallet::emitWalletOpened()
+{
   emit walletOpened(true);
 }
 
@@ -678,7 +755,11 @@ bool Wallet::folderDoesNotExist(const QString& wallet, const QString& folder)
     QDBusReply<bool> r = walletLauncher->getInterface().folderDoesNotExist(wallet, folder);
     return r;
 #else
-    return false;
+    bool ret = true;
+    if( Wallet::walletList().contains(wallet) ){
+        ret = !Wallet(-1, wallet).hasFolder(folder);
+    }
+    return ret;
 #endif
 }
 
@@ -689,23 +770,38 @@ bool Wallet::keyDoesNotExist(const QString& wallet, const QString& folder, const
     QDBusReply<bool> r = walletLauncher->getInterface().keyDoesNotExist(wallet, folder, key);
     return r;
 #else
-    return false;
+    bool ret = true;
+    if( Wallet::walletList().contains(wallet) ){
+        Wallet w(-1, wallet);
+        if( w.hasFolder(folder) ){
+            ret = !w.hasEntry(key);
+        }
+    }
+    return ret;
 #endif
 }
 
 void Wallet::slotCollectionStatusChanged(int status)
 {
+    Q_UNUSED(status);
+	kWarning() << "Wallet::slotCollectionStatusChanged unimplemented '" << d->name << "' status=" << status;
 }
 
 void Wallet::slotCollectionDeleted()
 {
+#ifdef OSX_KEYCHAIN_PORT_DISABLED
     d->folder.clear();
-    d->name.clear();
+#else
+    d->currentService.clear();
+#endif
+    kDebug() << "Wallet::slotCollectionDeleted: closing private data '" << d->name;
+    d->close();
     emit walletClosed();
 }
 
 
-void Wallet::virtual_hook(int, void*) {
+void Wallet::virtual_hook(int, void*)
+{
     //BASE::virtual_hook( id, data );
 }
 

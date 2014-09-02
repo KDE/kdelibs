@@ -1,5 +1,6 @@
 /*
 *   Copyright (C) 2008 Nicola Gigante <nicola.gigante@gmail.com>
+*   Copyright (C) 2014 René Bertin <rjvbertin@gmail.com>
 *
 *   This program is free software; you can redistribute it and/or modify
 *   it under the terms of the GNU Lesser General Public License as published by
@@ -21,6 +22,7 @@
 #include <Security/Security.h>
 
 #include <QtCore/qplugin.h>
+#include <QtCore/QtCore>
 
 namespace KAuth
 {
@@ -38,25 +40,7 @@ AuthorizationRef authRef()
     return s_authRef;
 }
 
-AuthServicesBackend::AuthServicesBackend()
-    : AuthBackend()
-{
-    setCapabilities(AuthorizeFromHelperCapability | CheckActionExistenceCapability);
-}
-
-void AuthServicesBackend::setupAction(const QString&)
-{
-    // Nothing to do here...
-}
-
-// On OS X, the suggestion is to make the helper grant the actual privilege. The app does instead a
-// "pre-authorization", that's equivalent to look at isCallerAuthorized() in policykit.
-Action::AuthStatus AuthServicesBackend::authorizeAction(const QString &action)
-{
-    return actionStatus(action);
-}
-
-Action::AuthStatus AuthServicesBackend::actionStatus(const QString &action)
+static OSStatus GetActionRights(const QString &action, AuthorizationFlags flags, AuthorizationRef auth=NULL)
 {
     AuthorizationItem item;
     item.name = action.toUtf8();
@@ -68,12 +52,47 @@ Action::AuthStatus AuthServicesBackend::actionStatus(const QString &action)
     rights.count = 1;
     rights.items = &item;
 
-    OSStatus result = AuthorizationCopyRights(authRef(),
-                      &rights,
-                      kAuthorizationEmptyEnvironment,
-                      kAuthorizationFlagExtendRights | kAuthorizationFlagPreAuthorize,
-                      NULL);
+    OSStatus result = AuthorizationCopyRights( (auth)? auth : authRef(),
+                                              &rights,
+                                              kAuthorizationEmptyEnvironment,
+                                              flags, NULL);
+    return result;
+}
 
+// On OS X, the suggestion is to make the helper grant the actual privilege. The app does instead a
+// "pre-authorization", that's equivalent to look at isCallerAuthorized() in policykit.
+// RJVB: grab the privilege from here, the client.
+AuthServicesBackend::AuthServicesBackend()
+    : AuthBackend()
+{
+    setCapabilities(AuthorizeFromClientCapability | CheckActionExistenceCapability);
+}
+
+void AuthServicesBackend::setupAction(const QString&)
+{
+    // Nothing to do here...
+}
+
+// On OS X, the suggestion is to make the helper grant the actual privilege. The app does instead a
+// "pre-authorization", that's equivalent to look at isCallerAuthorized() in policykit.
+// RJVB: grab the privilege from here, the client.
+Action::AuthStatus AuthServicesBackend::authorizeAction(const QString &action)
+{
+    OSStatus result = GetActionRights( action, kAuthorizationFlagExtendRights | kAuthorizationFlagInteractionAllowed );
+//    qWarning() << "AuthServicesBackend::authorizeAction(" << action << ") AuthorizationCopyRights returned" << result;
+    switch (result) {
+        case errAuthorizationSuccess:
+            return Action::Authorized;
+        case errAuthorizationInteractionNotAllowed:
+        default:
+            return Action::Denied;
+    }
+}
+
+Action::AuthStatus AuthServicesBackend::actionStatus(const QString &action)
+{
+    OSStatus result = GetActionRights( action, kAuthorizationFlagExtendRights | kAuthorizationFlagPreAuthorize );
+//    qWarning() << "AuthServicesBackend::actionStatus(" << action << ") AuthorizationCopyRights returned" << result;
     switch (result) {
     case errAuthorizationSuccess:
         return Action::Authorized;
@@ -101,35 +120,28 @@ bool AuthServicesBackend::isCallerAuthorized(const QString &action, QByteArray c
 
     AuthorizationRef auth;
 
-    if (AuthorizationCreateFromExternalForm(&ext, &auth) != noErr)
+    if (AuthorizationCreateFromExternalForm(&ext, &auth) != noErr){
+//        qWarning() << "AuthorizationCreateFromExternalForm(" << action << "," << callerID.constData() << ") failed";
         return false;
+    }
 
-    AuthorizationItem item;
-    item.name = action.toUtf8();
-    item.valueLength = 0;
-    item.value = NULL;
-    item.flags = 0;
-
-    AuthorizationRights rights;
-    rights.count = 1;
-    rights.items = &item;
-
-    OSStatus result = AuthorizationCopyRights(auth,
-                      &rights,
-                      kAuthorizationEmptyEnvironment,
-                      kAuthorizationFlagExtendRights | kAuthorizationFlagInteractionAllowed,
-                      NULL);
+    OSStatus result = GetActionRights( action, kAuthorizationFlagExtendRights | kAuthorizationFlagInteractionAllowed,
+                      auth);
 
     AuthorizationFree(auth, kAuthorizationFlagDefaults);
+//    qWarning() << "AuthServicesBackend::isCallerAuthorized(" << action << "," << callerID.constData() << ") AuthorizationCopyRights returned" << result;
 
     return result == errAuthorizationSuccess;
 }
 
+// RJVB: OS X doesn't distinguish between "action doesn't exist" and "action not allowed". So the
+// best thing we can do is return true and hope that the action will be created if it didn't exist...
 bool AuthServicesBackend::actionExists(const QString& action)
 {
     OSStatus exists = AuthorizationRightGet(action.toUtf8(), NULL);
+//    qWarning() << "AuthServicesBackend::actionExists(" << action << ") AuthorizationRightGet returned" << exists;
 
-    return exists == errAuthorizationSuccess;
+    return true;//exists == errAuthorizationSuccess;
 }
 
 }; // namespace KAuth

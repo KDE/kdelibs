@@ -356,6 +356,13 @@ ActionReply Action::execute(const QString &helperID) const
         return executeActions(QList<Action>() << *this, NULL, helperID) ?
             ActionReply::SuccessReply : ActionReply::AuthorizationDeniedReply;
     } else {
+#if defined(Q_OS_MACX) || defined(__APPLE__) || defined(__MACH__)
+        if( BackendsManager::authBackend()->capabilities() & KAuth::AuthBackend::AuthorizeFromClientCapability ){
+            // RJVB: authorisation through DBus seems to be flaky (at least when using the OSX keychain ... maybe because DBus
+            // isn't built with Keychain support in MacPorts?)
+            return ActionReply::SuccessReply;
+        }
+#endif //APPLE
         if (hasHelper()) {
             // Perform the pre auth here
             if (BackendsManager::authBackend()->capabilities() & KAuth::AuthBackend::PreAuthActionCapability) {
