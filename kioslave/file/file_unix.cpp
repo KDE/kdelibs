@@ -110,17 +110,17 @@ void FileProtocol::copy( const KUrl &srcUrl, const KUrl &destUrl,
     bool dest_exists = ( KDE_lstat( _dest.data(), &buff_dest ) != -1 );
     if ( dest_exists )
     {
+        if ( same_inode( buff_dest, buff_src) )
+        {
+            error(KIO::ERR_IDENTICAL_FILES, dest);
+            return;
+        }
+
         if (S_ISDIR(buff_dest.st_mode))
         {
            error(KIO::ERR_DIR_ALREADY_EXIST, dest);
            return;
         }
-
-	if ( same_inode( buff_dest, buff_src) )
-	{
-	    error(KIO::ERR_IDENTICAL_FILES, dest);
-	    return;
-	}
 
         if (!(_flags & KIO::Overwrite))
         {
@@ -439,17 +439,17 @@ void FileProtocol::rename( const KUrl &srcUrl, const KUrl &destUrl,
     bool dest_exists = ( KDE_lstat( _dest.data(), &buff_dest ) != -1 );
     if ( dest_exists )
     {
+        if ( same_inode( buff_dest, buff_src) )
+        {
+            error(KIO::ERR_IDENTICAL_FILES, dest);
+            return;
+        }
+
         if (S_ISDIR(buff_dest.st_mode))
         {
            error(KIO::ERR_DIR_ALREADY_EXIST, dest);
            return;
         }
-
-	if ( same_inode( buff_dest, buff_src) )
-	{
-	    error(KIO::ERR_IDENTICAL_FILES, dest);
-	    return;
-	}
 
         if (!(_flags & KIO::Overwrite))
         {
