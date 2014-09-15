@@ -206,7 +206,7 @@ div.sect2 {
 }
 
 pre.screen {
-    border 2px solid gray;
+    border: 2px solid gray;
     background: black;
 
     color: white;
