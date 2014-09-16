@@ -40,7 +40,6 @@ void KMountPointTest::testCurrentMountPoints()
         return;
     }
     KMountPoint::Ptr mountWithDevice;
-    KMountPoint::Ptr mountWithDevice;
     foreach(KMountPoint::Ptr mountPoint, mountPoints) {
         kDebug() << "Mount: " << mountPoint->mountedFrom()
           << " (" << mountPoint->realDeviceName() << ") "
