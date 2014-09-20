@@ -829,7 +829,9 @@ void KToolBar::saveSettings(KConfigGroup &cg)
 {
     Q_ASSERT(!cg.name().isEmpty());
 
-    cg.deleteEntry("Hidden"); // remove old key to avoid bugs from the compat code in applySettings. KDE5: remove.
+    if (cg.hasKey("Hidden")) {
+        cg.deleteEntry("Hidden"); // remove old key to avoid bugs from the compat code in applySettings. KDE5: remove.
+    }
 
     const int currentIconSize = iconSize().width();
     //kDebug() << objectName() << currentIconSize << d->iconSizeSettings.toString() << "defaultValue=" << d->iconSizeSettings.defaultValue();
