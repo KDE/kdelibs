@@ -172,12 +172,14 @@ void tst_KToolBar::testIconSizeNoXmlGui()
 
         // Save settings
         kmw.saveMainWindowSettings(group);
-        QCOMPARE(group.groupList().count(), 2); // two subgroups (one for each toolbar)
         // was it the default value?
-        if (iconSize == KIconLoader::global()->currentSize(KIconLoader::MainToolbar))
+        if (iconSize == KIconLoader::global()->currentSize(KIconLoader::MainToolbar)) {
+            QCOMPARE(group.groupList().count(), 0); // nothing to save yet
             QVERIFY(!group.group("Toolbar mainToolBar").hasKey("IconSize"));
-        else
+        } else {
+            QCOMPARE(group.groupList().count(), 2); // one per toolbar
             QVERIFY(group.group("Toolbar mainToolBar").hasKey("IconSize"));
+        }
     }
 
     {
@@ -269,13 +271,13 @@ void tst_KToolBar::testIconSizeXmlGui()
 
         // Save settings
         kmw.saveMainWindowSettings(group);
-        QVERIFY(group.groupList().count() >= 6); // one subgroup for each toolbar
         // was it the default size? (for the main toolbar, we only check that one)
         const bool usingDefaultSize = iconSize == KIconLoader::global()->currentSize(KIconLoader::MainToolbar);
-        if (usingDefaultSize)
+        if (usingDefaultSize) {
             QVERIFY(!group.group("Toolbar mainToolBar").hasKey("IconSize"));
-        else
+        } else {
             QVERIFY(group.group("Toolbar mainToolBar").hasKey("IconSize"));
+        }
 
         // Now emulate a change of the kde-global setting (#168480#c12)
         changeGlobalIconSizeSetting(25, 16);
@@ -349,11 +351,13 @@ void tst_KToolBar::testToolButtonStyleNoXmlGui()
 
         // Save settings
         kmw.saveMainWindowSettings(group);
-        QCOMPARE(group.groupList().count(), 2); // two subgroups (one for each toolbar)
-        if (selectedDefaultForMainToolbar)
+        if (selectedDefaultForMainToolbar) {
+            QCOMPARE(group.groupList().count(), 0); // nothing to save yet
             QVERIFY(!group.group("Toolbar mainToolBar").hasKey("ToolButtonStyle"));
-        else
+        } else {
+            QCOMPARE(group.groupList().count(), 2); // two subgroups (one for each toolbar)
             QVERIFY(group.group("Toolbar mainToolBar").hasKey("ToolButtonStyle"));
+        }
     }
 
     {
