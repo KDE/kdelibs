@@ -509,6 +509,16 @@ protected:
    */
   bool handleAuthenticationHeader(const HeaderTokenizer* tokenizer);
 
+  /**
+   * Handles file -> webdav put requests.
+   */
+  void copyPut(const KUrl& src, const KUrl& dest, KIO::JobFlags flags);
+
+  /**
+   * Stats a remote DAV file and returns true if it exists.
+   */
+  bool davStatDestination();
+
 protected:
   HTTPServerState m_server;
   HTTPRequest m_request;

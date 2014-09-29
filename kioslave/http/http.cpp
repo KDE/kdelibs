@@ -340,6 +340,16 @@ static void updateUDSEntryMimeType(UDSEntry* entry)
   }
 }
 
+static void changeProtocolToHttp(KUrl* url)
+{
+    const QString protocol(url->protocol());
+    if (protocol == QLatin1String("webdavs")) {
+        url->setProtocol(QLatin1String("https"));
+    } else if (protocol == QLatin1String("webdav")) {
+        url->setProtocol(QLatin1String("http"));
+    }
+}
+
 /************************************************************************************************************************/
 
 
@@ -1340,37 +1350,10 @@ void HTTPProtocol::put( const KUrl &url, int, KIO::JobFlags flags )
       if (!davHostOk())
         return;
 
-      const QByteArray request ("<?xml version=\"1.0\" encoding=\"utf-8\" ?>"
-                                "<D:propfind xmlns:D=\"DAV:\"><D:prop>"
-                                "<D:creationdate/>"
-                                "<D:getcontentlength/>"
-                                "<D:displayname/>"
-                                "<D:resourcetype/>"
-                                "</D:prop></D:propfind>");
-
-      davSetRequest( request );
-
-      // WebDAV Stat or List...
-      m_request.method = DAV_PROPFIND;
-      m_request.url.setQuery(QString());
-      m_request.cacheTag.policy = CC_Reload;
-      m_request.davData.depth = 0;
-
-      proceedUntilResponseContent(true);
-
-      if (!m_request.isKeepAlive) {
-          httpCloseConnection(); // close connection if server requested it.
-          m_request.isKeepAlive = true; // reset the keep alive flag.
-      }
-
-      if (m_request.responseCode == 207) {
-        error(ERR_FILE_ALREADY_EXIST, QString());
+      // Checks if the destination exists and return an error if it does.
+      if (!davStatDestination()) {
         return;
       }
-
-      // force re-authentication...
-      delete m_wwwAuth;
-      m_wwwAuth = 0;
     }
   }
 
@@ -1382,32 +1365,39 @@ void HTTPProtocol::put( const KUrl &url, int, KIO::JobFlags flags )
 
 void HTTPProtocol::copy( const KUrl& src, const KUrl& dest, int, KIO::JobFlags flags )
 {
-  kDebug(7113) << src << "->" << dest;
+    kDebug(7113) << src << "->" << dest;
 
-  if (!maybeSetRequestUrl(dest) || !maybeSetRequestUrl(src))
-    return;
-  resetSessionSettings();
+    const bool isSourceLocal = src.isLocalFile();
+    const bool isDestinationLocal = dest.isLocalFile();
 
-  // destination has to be "http(s)://..."
-  KUrl newDest = dest;
-  if (newDest.protocol() == QLatin1String("webdavs"))
-    newDest.setProtocol(QLatin1String("https"));
-  else if (newDest.protocol() == QLatin1String("webdav"))
-    newDest.setProtocol(QLatin1String("http"));
+    if (isSourceLocal && !isDestinationLocal) {
+        copyPut(src, dest, flags);
+    } else {
+        if (!maybeSetRequestUrl(dest) || !maybeSetRequestUrl(src)) {
+            return;
+        }
 
-  m_request.method = DAV_COPY;
-  m_request.davData.desturl = newDest.url();
-  m_request.davData.overwrite = (flags & KIO::Overwrite);
-  m_request.url.setQuery(QString());
-  m_request.cacheTag.policy = CC_Reload;
+        resetSessionSettings();
 
-  proceedUntilResponseHeader();
+        // destination has to be "http(s)://..."
+        KUrl newDest (dest);
+        changeProtocolToHttp(&newDest);
 
-  // The server returns a HTTP/1.1 201 Created or 204 No Content on successful completion
-  if ( m_request.responseCode == 201 || m_request.responseCode == 204 )
-    davFinished();
-  else
-    davError();
+        m_request.method = DAV_COPY;
+        m_request.davData.desturl = newDest.url();
+        m_request.davData.overwrite = (flags & KIO::Overwrite);
+        m_request.url.setQuery(QString());
+        m_request.cacheTag.policy = CC_Reload;
+
+        proceedUntilResponseHeader();
+        
+        // The server returns a HTTP/1.1 201 Created or 204 No Content on successful completion
+        if (m_request.responseCode == 201 || m_request.responseCode == 204) {
+            davFinished();
+        } else {
+            davError();
+        }
+    }
 }
 
 void HTTPProtocol::rename( const KUrl& src, const KUrl& dest, KIO::JobFlags flags )
@@ -1419,11 +1409,8 @@ void HTTPProtocol::rename( const KUrl& src, const KUrl& dest, KIO::JobFlags flag
   resetSessionSettings();
 
   // destination has to be "http://..."
-  KUrl newDest = dest;
-  if (newDest.protocol() == QLatin1String("webdavs"))
-    newDest.setProtocol(QLatin1String("https"));
-  else if (newDest.protocol() == QLatin1String("webdav"))
-    newDest.setProtocol(QLatin1String("http"));
+  KUrl newDest(dest);
+  changeProtocolToHttp(&newDest);
 
   m_request.method = DAV_MOVE;
   m_request.davData.desturl = newDest.url();
@@ -3865,11 +3852,12 @@ bool HTTPProtocol::sendCachedBody()
 {
   infoMessage(i18n("Sending data to %1" ,  m_request.url.host()));
 
+  const qint64 size = m_POSTbuf->size();
   QByteArray cLength ("Content-Length: ");
-  cLength += QByteArray::number(m_POSTbuf->size());
+  cLength += QByteArray::number(size);
   cLength += "\r\n\r\n";
 
-  kDebug(7113) << "sending cached data (size=" << m_POSTbuf->size() << ")";
+  kDebug(7113) << "sending cached data (size=" << size << ")";
 
   // Send the content length...
   bool sendOk = (write(cLength.data(), cLength.size()) == (ssize_t) cLength.size());
@@ -3880,19 +3868,24 @@ bool HTTPProtocol::sendCachedBody()
     return false;
   }
 
+  totalSize(size);
   // Make sure the read head is at the beginning...
   m_POSTbuf->reset();
+  KIO::filesize_t totalBytesSent = 0;
 
   // Send the data...
   while (!m_POSTbuf->atEnd()) {
-      const QByteArray buffer = m_POSTbuf->read(s_MaxInMemPostBufSize);
-      sendOk = (write(buffer.data(), buffer.size()) == (ssize_t) buffer.size());
-      if (!sendOk)  {
+      const QByteArray buffer = m_POSTbuf->read(65536);
+      const ssize_t bytesSent = write(buffer.data(), buffer.size());
+      if (bytesSent != static_cast<ssize_t>(buffer.size()))  {
         kDebug(7113) << "Connection broken when sending message body: ("
                       << m_request.url.host() << ")";
         error( ERR_CONNECTION_BROKEN, m_request.url.host() );
         return false;
       }
+
+      totalBytesSent += bytesSent;
+      processedSize(totalBytesSent);
   }
 
   return true;
@@ -5524,5 +5517,74 @@ try_next_auth_scheme:
     return authRequiresAnotherRoundtrip;
 }
 
+void HTTPProtocol::copyPut(const KUrl& src, const KUrl& dest, JobFlags flags)
+{
+    kDebug(7113) << src << "->" << dest;
+
+    if (!maybeSetRequestUrl(dest)) {
+        return;
+    }
+
+    resetSessionSettings();
+
+    if (!(flags & KIO::Overwrite)) {
+        // check to make sure this host supports WebDAV
+        if (!davHostOk()) {
+            return;
+        }
+
+        // Checks if the destination exists and return an error if it does.
+        if (!davStatDestination()) {
+            return;
+        }
+    }
+
+    m_POSTbuf = new QFile (src.toLocalFile());
+    if (!m_POSTbuf->open(QFile::ReadOnly)) {
+        error(KIO::ERR_CANNOT_OPEN_FOR_READING, QString());
+        return;
+    }
+
+    m_request.method = HTTP_PUT;
+    m_request.cacheTag.policy = CC_Reload;
+
+    proceedUntilResponseContent();
+}
+
+bool HTTPProtocol::davStatDestination()
+{
+    const QByteArray request ("<?xml version=\"1.0\" encoding=\"utf-8\" ?>"
+                              "<D:propfind xmlns:D=\"DAV:\"><D:prop>"
+                              "<D:creationdate/>"
+                              "<D:getcontentlength/>"
+                              "<D:displayname/>"
+                              "<D:resourcetype/>"
+                              "</D:prop></D:propfind>");
+    davSetRequest(request);
+
+    // WebDAV Stat or List...
+    m_request.method = DAV_PROPFIND;
+    m_request.url.setQuery(QString());
+    m_request.cacheTag.policy = CC_Reload;
+    m_request.davData.depth = 0;
+
+    proceedUntilResponseContent(true);
+
+    if (!m_request.isKeepAlive) {
+        httpCloseConnection(); // close connection if server requested it.
+        m_request.isKeepAlive = true; // reset the keep alive flag.
+    }
+
+    if (m_request.responseCode == 207) {
+        error(ERR_FILE_ALREADY_EXIST, QString());
+        return false;
+    }
+
+    // force re-authentication...
+    delete m_wwwAuth;
+    m_wwwAuth = 0;
+
+    return true;
+}
 
 #include "http.moc"
