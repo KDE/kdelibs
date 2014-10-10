@@ -256,6 +256,7 @@ int build_link(const char* tmp, const char *tmp_prefix, const char *kde_prefix)
 int main(int argc, char **argv)
 {
   const char *tmp = 0;
+  const char *xdg_runtime_dir = 0;
   char *tmp_prefix = 0;
   const char *kde_prefix = 0;
   int res = 0;
@@ -285,6 +286,10 @@ int main(int argc, char **argv)
   }
   else if (strcmp(argv[1], "socket") == 0)
   {
+    xdg_runtime_dir = getenv("XDG_RUNTIME_DIR");
+    if (xdg_runtime_dir && xdg_runtime_dir[0])
+      tmp = xdg_runtime_dir;
+
     tmp_prefix = (char *)malloc(strlen(tmp)+strlen("/ksocket-")+1);
     strcpy(tmp_prefix, tmp );
     strcat(tmp_prefix, "/ksocket-" );
