@@ -365,9 +365,10 @@ public:
     CSSImageValueImpl();
     virtual ~CSSImageValueImpl();
 
-    khtml::CachedImage *image() { return m_image; }
+    khtml::CachedImage *requestCssImage(DocumentImpl*);
 protected:
     khtml::CachedImage *m_image;
+    QString m_fullImageUrl;
 };
 
 class FontFamilyValueImpl : public CSSPrimitiveValueImpl
