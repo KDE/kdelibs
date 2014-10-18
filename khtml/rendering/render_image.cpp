@@ -34,8 +34,6 @@
 #include <kdebug.h>
 #include <kglobalsettings.h>
 
-#include "css/csshelper.h"
-#include "misc/helper.h"
 #include "misc/loader.h"
 #include "html/html_formimpl.h"
 #include "html/html_imageimpl.h"
@@ -434,8 +432,7 @@ void RenderImage::updateFromElement()
 
     if (!u.isEmpty() &&
         ( !m_cachedImage || m_cachedImage->url() != u ) ) {
-        CachedImage *new_image = element()->document()->docLoader()->
-                                 requestImage(khtml::parseURL(u));
+        CachedImage *new_image = element()->document()->docLoader()->requestImage(u);
 
         if(new_image && new_image != m_cachedImage)
             updateImage( new_image );

@@ -38,8 +38,6 @@
 #include "css_mediaquery.h"
 #include "cssproperties.h"
 #include "cssvalues.h"
-#include "csshelper.h"
-#include <misc/helper.h>
 
 #include <stdlib.h>
 #include <assert.h>
@@ -2311,9 +2309,8 @@ bool CSSParser::parseFontFaceSrc()
     while ((val = valueList->current())) {
         CSSFontFaceSrcValueImpl* parsedValue = 0;
         if (val->unit == CSSPrimitiveValue::CSS_URI && !expectComma && styleElement) {
-            DOMString uri = khtml::parseURL( domString( val->string ) );
-            parsedValue = new CSSFontFaceSrcValueImpl(
-                              DOMString(KUrl( styleElement->baseURL(), uri.string()).url()), false /*local*/);
+            const QString uri = qString(val->string);
+            parsedValue = new CSSFontFaceSrcValueImpl(DOMString(KUrl(styleElement->baseURL(), uri).url()), false /*local*/);
             uriValue = parsedValue;
             allowFormat = true;
             expectComma = true;

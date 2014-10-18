@@ -36,7 +36,6 @@
 #include "css/css_stylesheetimpl.h"
 #include "css/cssproperties.h"
 #include "css/cssvalues.h"
-#include "css/csshelper.h"
 #include "misc/loader.h"
 #include "dom/dom_string.h"
 #include "dom/dom_doc.h"
@@ -72,7 +71,7 @@ void HTMLBodyElementImpl::parseAttribute(AttributeImpl *attr)
 
     case ATTR_BACKGROUND:
     {
-        QString url = khtml::parseURL( attr->value() ).string();
+        QString url = attr->val()->string();
         if (!url.isEmpty()) {
             url = document()->completeURL( url );
             addCSSProperty(CSS_PROP_BACKGROUND_IMAGE, DOMString("url('"+url+"')") );
@@ -326,7 +325,7 @@ void HTMLFrameElementImpl::parseAttribute(AttributeImpl *attr)
     switch(attr->id())
     {
     case ATTR_SRC:
-        setLocation(khtml::parseURL(attr->val()));
+        setLocation(attr->value());
         break;
     case ATTR_FRAMEBORDER:
     {
@@ -756,7 +755,7 @@ void HTMLIFrameElementImpl::parseAttribute(AttributeImpl *attr )
         addHTMLAlignment( attr->value() );
         break;
     case ATTR_SRC:
-        url = khtml::parseURL(attr->val());
+        url = attr->value();
         setNeedComputeContent();
         // ### synchronously start the process?
         break;

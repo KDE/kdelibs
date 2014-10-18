@@ -55,8 +55,6 @@
 #undef protected
 #include "xml/dom2_eventsimpl.h"
 #include "css/cssstyleselector.h"
-#include "css/csshelper.h"
-#include "misc/helper.h"
 #include "misc/loader.h"
 #include "khtml_settings.h"
 #include "khtml_printsettings.h"
@@ -2782,7 +2780,7 @@ QMap< ElementImpl*, QChar > KHTMLView::buildFallbackAccessKeys() const
             bool text_before = false;
             switch( element->id()) {
                 case ID_A:
-                    url = khtml::parseURL(element->getAttribute(ATTR_HREF)).string();
+                    url = element->getAttribute(ATTR_HREF).string();
                     if( url.isEmpty()) // doesn't have href, it's only an anchor
                         continue;
                     text = static_cast< HTMLElementImpl* >( element )->innerText().string().simplified();

@@ -22,7 +22,6 @@
 // --------------------------------------------------------------------------
 
 #include "html_document.h"
-#include "css/csshelper.h"
 #include "dom/html_misc.h"
 #include "dom/dom_exception.h"
 #include "xml/dom_textimpl.h"
@@ -101,8 +100,7 @@ DOMString HTMLDocument::referrer() const
 DOMString HTMLDocument::completeURL(const DOMString& str) const
 {
     if(!impl) return str;
-    DOMString parsed = khtml::parseURL(str);
-    return ((HTMLDocumentImpl *)impl)->completeURL(parsed.string());
+    return ((HTMLDocumentImpl *)impl)->completeURL(str.string());
 }
 
 DOMString HTMLDocument::domain() const
