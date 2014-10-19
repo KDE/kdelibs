@@ -33,6 +33,7 @@
 #include <QMimeData>
 #include <QAction>
 #include <QApplication>
+#include <QDir>
 
 class KUrlDragPushButton : public KPushButton
 {
@@ -144,12 +145,19 @@ public:
             edit->setCompletionObject( comp );
     }
 
+    void updateCompletionStartDir( const KUrl &newStartDir )
+    {
+        if ( newStartDir.isLocalFile() )
+            myCompletion->setDir(newStartDir.toLocalFile());
+    }
+
     QString text() const {
         return combo ? combo->currentText() : edit->text();
     }
 
     /**
      * replaces ~user or $FOO, if necessary
+     * if text() is a relative path, make it absolute using startDir()
      */
     KUrl url() const {
         const QString txt = text();
@@ -159,10 +167,19 @@ public:
         else
             comp = qobject_cast<KUrlCompletion*>(edit->completionObject());
 
+        KUrl enteredPath;
+        KUrl baseDir(m_startDir);
         if ( comp )
-            return KUrl( comp->replacedPath( txt ) );
+            enteredPath = KUrl( comp->replacedPath( txt ) );
         else
-            return KUrl( txt );
+            enteredPath = KUrl( txt );
+
+        if ( enteredPath.isRelative() && !txt.isEmpty() ) {
+            baseDir.addPath(enteredPath.path());
+            return baseDir;
+        } else {
+            return enteredPath;
+        }
     }
 
     // slots
@@ -171,6 +188,7 @@ public:
     void _k_slotFileDialogFinished();
 
     KUrl m_startDir;
+    bool m_startDirCustomized;
     KUrlRequester *m_parent;
     KLineEdit *edit;
     KComboBox *combo;
@@ -254,7 +272,11 @@ void KUrlRequester::KUrlRequesterPrivate::init()
     connectSignals( m_parent );
     m_parent->connect(myButton, SIGNAL(clicked()), m_parent, SLOT(_k_slotOpenDialog()));
 
+    m_startDir = KUrl::fromPath(QDir::currentPath());
+    m_startDirCustomized = false;
+
     myCompletion = new KUrlCompletion();
+    updateCompletionStartDir(m_startDir);
     setCompletionObject( myCompletion );
 
     QAction* openAction = new QAction(m_parent);
@@ -282,8 +304,8 @@ void KUrlRequester::setText(const QString& text)
 void KUrlRequester::setStartDir(const KUrl& startDir)
 {
     d->m_startDir = startDir;
-    if (startDir.isLocalFile())
-        d->myCompletion->setDir(startDir.toLocalFile());
+    d->m_startDirCustomized = true;
+    d->updateCompletionStartDir(startDir);
 }
 
 void KUrlRequester::changeEvent(QEvent *e)
@@ -385,6 +407,12 @@ void KUrlRequester::KUrlRequesterPrivate::_k_slotFileDialogFinished()
         {
             m_parent->setUrl( newUrl );
             emit m_parent->urlSelected( url() );
+            // remember url as defaultStartDir and update startdir for autocompletion
+            if ( newUrl.isLocalFile() && !m_startDirCustomized ) {
+                m_startDir = newUrl;
+                m_startDir.setPath(m_startDir.directory());
+                updateCompletionStartDir(m_startDir);
+            }
         }
     }
 }
