@@ -868,7 +868,6 @@ int Ftp::ftpOpenPASVDataConnection()
 
   // Check that we can do PASV
   QHostAddress address = m_control->peerAddress();
-  if (address.protocol() != QAbstractSocket::IPv4Protocol)
   if (address.protocol() != QAbstractSocket::IPv4Protocol && !isSocksProxy())
     return ERR_INTERNAL;       // no PASV for non-PF_INET connections
 
