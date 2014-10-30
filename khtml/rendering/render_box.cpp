@@ -1104,7 +1104,7 @@ void RenderBox::relativePositionOffset(int &tx, int &ty) const
         tx -= style()->right().width(containingBlockWidth());
     if(!style()->top().isAuto()) {
         if (style()->top().isPercent()) {
-            float p = style()->top().percent();
+            double p = style()->top().percent();
             bool neg = p < 0.0;
             int ph = calcPercentageHeight(Length((neg?-p:p), Percent));
             if  (ph != -1)
@@ -1115,7 +1115,7 @@ void RenderBox::relativePositionOffset(int &tx, int &ty) const
     }
     else if(!style()->bottom().isAuto()) {
         if (style()->bottom().isPercent()) {
-            float p = style()->bottom().percent();
+            double p = style()->bottom().percent();
             bool neg = p < 0.0;
             int ph = calcPercentageHeight(Length((neg?-p:p), Percent));
             if (ph != -1)
