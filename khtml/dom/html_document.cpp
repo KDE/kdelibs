@@ -100,7 +100,7 @@ DOMString HTMLDocument::referrer() const
 DOMString HTMLDocument::completeURL(const DOMString& str) const
 {
     if(!impl) return str;
-    return ((HTMLDocumentImpl *)impl)->completeURL(str.string());
+    return ((HTMLDocumentImpl *)impl)->completeURL(str.string().trimmed());
 }
 
 DOMString HTMLDocument::domain() const

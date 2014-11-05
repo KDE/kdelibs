@@ -706,7 +706,7 @@ void ProspectiveTokenizer::processAttribute()
         LocalName attrLocal = LocalName::fromString(&attrDS, IDS_NormalizeLower);
         uint attribute = attrLocal.id();
         if (attribute == localNamePart(ATTR_SRC) && m_urlToLoad.isEmpty())
-            m_urlToLoad = DOMString(m_attributeValue.data(), m_attributeValue.size());
+            m_urlToLoad = DOMString(QString(m_attributeValue.data(), m_attributeValue.size()).trimmed());
         break;
     }
     case ID_LINK:
@@ -715,7 +715,7 @@ void ProspectiveTokenizer::processAttribute()
         LocalName attrLocal = LocalName::fromString(&attrDS, IDS_NormalizeLower);
         uint attribute = attrLocal.id();
         if (attribute == localNamePart(ATTR_HREF) && m_urlToLoad.isEmpty())
-            m_urlToLoad = DOMString(m_attributeValue.data(), m_attributeValue.size());
+            m_urlToLoad = DOMString(QString(m_attributeValue.data(), m_attributeValue.size()).trimmed());
         else if (attribute == localNamePart(ATTR_REL)) {
             DOMStringImpl* lowerAttribute = DOMStringImpl(DOMStringImpl::ShallowCopy, m_attributeValue.data(), m_attributeValue.size()).lower();
             QString val = lowerAttribute->string();

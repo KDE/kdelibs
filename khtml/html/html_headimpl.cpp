@@ -55,7 +55,7 @@ void HTMLBaseElementImpl::parseAttribute(AttributeImpl *attr)
     switch(attr->id())
     {
     case ATTR_HREF:
-	m_href = attr->value();
+	m_href = attr->value().string().trimmed();
 	process();
 	break;
     case ATTR_TARGET:
@@ -89,7 +89,7 @@ void HTMLBaseElementImpl::process()
 	return;
 
     if(!m_href.isEmpty() && document()->part())
-	document()->setBaseURL( KUrl( document()->part()->url(), m_href.string() ) );
+	document()->setBaseURL( KUrl( document()->part()->url(), m_href ) );
 
     if(!m_target.isEmpty())
 	document()->setBaseTarget( m_target.string() );

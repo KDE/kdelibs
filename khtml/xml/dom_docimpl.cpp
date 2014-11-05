@@ -1987,7 +1987,7 @@ void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &con
             while (str.length() && (str[str.length()-1] == ';' || str[str.length()-1] == ',')) {
                 str.resize(str.length()-1);
             }
-            QString newURL = document()->completeURL( str );
+            QString newURL = document()->completeURL(str.trimmed());
             if ( ok )
                 v->part()->scheduleRedirection(delay, newURL,  delay < 2 || newURL == URL().url());
         }
@@ -2047,8 +2047,8 @@ bool DocumentImpl::prepareMouseEvent( bool readonly, int _x, int _y, MouseEvent 
             //qDebug("urlnode: %s  (%d)", getTagName(renderInfo.URLElement()->id()).string().toLatin1().constData(), renderInfo.URLElement()->id());
 
             ElementImpl* e =  static_cast<ElementImpl*>(renderInfo.URLElement());
-            DOMString href = e->getAttribute(ATTR_HREF);
-            DOMString target = e->getAttribute(ATTR_TARGET);
+            const DOMString href = e->getAttribute(ATTR_HREF).string().trimmed();
+            const DOMString target = e->getAttribute(ATTR_TARGET);
 
             if (!target.isNull() && !href.isNull()) {
                 ev->target = target;

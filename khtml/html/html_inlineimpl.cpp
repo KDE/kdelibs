@@ -81,7 +81,7 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
             if (k->qKeyEvent()) k->qKeyEvent()->accept();
         }
 
-        QString url = getAttribute(ATTR_HREF).string();
+        QString url = getAttribute(ATTR_HREF).string().trimmed();
         QString utarget = getAttribute(ATTR_TARGET).string();
 
         if ( e && e->button() == 1 )

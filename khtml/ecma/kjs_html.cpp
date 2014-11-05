@@ -1587,8 +1587,8 @@ QHash<int, const HTMLElement::BoundPropInfo*>* HTMLElement::boundPropInfo()
 
 QString KJS::HTMLElement::getURLArg(unsigned id) const
 {
-  const DOMString rel = impl()->getAttribute(id);
-  return !rel.isNull() ? impl()->document()->completeURL(rel.string()) : QString();
+  const QString rel = impl()->getAttribute(id).string().trimmed();
+  return !rel.isNull() ? impl()->document()->completeURL(rel) : rel;
 }
 
 DOM::HTMLElementImpl *toHTMLElement(JSValue *val) {
@@ -2666,7 +2666,7 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, JSValue *val
       switch (token) {
        // read-only: FrameContentDocument:
       case FrameLocation:        {
-                                   frameElement.setLocation(str);
+                                   frameElement.setLocation(str.string());
                                    return;
                                  }
       }

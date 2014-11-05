@@ -47,7 +47,7 @@ public:
     HTMLBaseElementImpl(DocumentImpl *doc)
         : HTMLElementImpl(doc) {}
 
-    DOMString href() const { return m_href; }
+    DOMString href() const { return DOMString(m_href); }
     DOMString target() const { return m_target; }
 
     virtual Id id() const;
@@ -58,7 +58,7 @@ public:
     void process();
 
 protected:
-    DOMString m_href;
+    QString m_href;
     DOMString m_target;
 };
 
