@@ -231,7 +231,8 @@ void HTMLFrameElement::setScrolling( const DOMString &value )
 DOMString HTMLFrameElement::src() const
 {
     if(!impl) return DOMString();
-    return ((ElementImpl *)impl)->getAttribute(ATTR_SRC);
+    const QString s = ((ElementImpl *)impl)->getAttribute(ATTR_SRC).string().trimmed();
+    return !s.isNull() ? impl->document()->completeURL(s) : DOMString();
 }
 
 void HTMLFrameElement::setSrc( const DOMString &value )

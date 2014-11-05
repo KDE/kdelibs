@@ -1551,7 +1551,7 @@ const KJS::HTMLElement::BoundPropInfo KJS::HTMLElement::bpTable[] = {
   {ID_FRAME,    FrameName,         T_String, ATTR_NAME},
   {ID_FRAME,    FrameNoResize,     T_Bool,   ATTR_NORESIZE},
   {ID_FRAME,    FrameScrolling,    T_String, ATTR_SCROLLING},
-  {ID_FRAME,    FrameSrc,          T_String, ATTR_SRC}, //### not URL?
+  {ID_FRAME,    FrameSrc,          T_URL,    ATTR_SRC},
   {ID_FRAME,    FrameLocation,     BoundPropType(T_String | T_ReadOnly), ATTR_SRC},
   {ID_IFRAME,   IFrameFrameBorder, T_String, ATTR_FRAMEBORDER},
   {ID_IFRAME,   IFrameLongDesc,    T_String, ATTR_LONGDESC},
