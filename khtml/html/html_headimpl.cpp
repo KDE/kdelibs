@@ -385,7 +385,7 @@ void HTMLScriptElementImpl::parseAttribute(AttributeImpl *attr)
         // we'll only start doing things once we get insertedIntoDocument()
         if (m_evaluated || m_cachedScript || m_createdByParser || !inDocument())
             return;
-        DOMString url = attr->value();
+        QString url = attr->value().string().trimmed();
         if (!url.isEmpty())
             loadFromUrl(url);
         break;
@@ -490,7 +490,7 @@ void HTMLScriptElementImpl::insertedIntoDocument()
     if (m_createdByParser)
         return;
 
-    DOMString url = getAttribute(ATTR_SRC).string();
+    QString url = getAttribute(ATTR_SRC).string().trimmed();
     if (!url.isEmpty()) {
         loadFromUrl(url);
         return;
@@ -622,7 +622,7 @@ void HTMLScriptElementImpl::setDefer(bool defer)
 
 DOMString HTMLScriptElementImpl::src() const
 {
-    return document()->completeURL(getAttribute(ATTR_SRC).string());
+    return document()->completeURL(getAttribute(ATTR_SRC).string().trimmed());
 }
 
 void HTMLScriptElementImpl::setSrc(const DOMString &value)

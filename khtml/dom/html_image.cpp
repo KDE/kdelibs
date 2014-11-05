@@ -95,8 +95,8 @@ void HTMLAreaElement::setCoords( const DOMString &value )
 DOMString HTMLAreaElement::href() const
 {
     if(!impl) return DOMString();
-    DOMString href = static_cast<ElementImpl*>(impl)->getAttribute(ATTR_HREF);
-    return !href.isNull() ? impl->document()->completeURL(href.string()) : href;
+    const QString href = static_cast<ElementImpl*>(impl)->getAttribute(ATTR_HREF).string().trimmed();
+    return !href.isNull() ? impl->document()->completeURL(href) : DOMString();
 }
 
 void HTMLAreaElement::setHref( const DOMString &value )
@@ -302,8 +302,8 @@ void HTMLImageElement::setLongDesc( const DOMString &value )
 DOMString HTMLImageElement::src() const
 {
     if(!impl) return DOMString();
-    DOMString s = ((ElementImpl *)impl)->getAttribute(ATTR_SRC);
-    return !s.isNull() ? impl->document()->completeURL( s.string() ) : s;
+    const QString s = ((ElementImpl *)impl)->getAttribute(ATTR_SRC).string().trimmed();
+    return !s.isNull() ? impl->document()->completeURL(s) : DOMString();
 }
 
 void HTMLImageElement::setSrc( const DOMString &value )

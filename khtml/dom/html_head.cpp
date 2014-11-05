@@ -58,8 +58,8 @@ HTMLBaseElement::~HTMLBaseElement()
 DOMString HTMLBaseElement::href() const
 {
     if(!impl) return DOMString();
-    DOMString href = static_cast<ElementImpl*>(impl)->getAttribute(ATTR_HREF);
-    return !href.isNull() ? impl->document()->completeURL(href.string()) : href;
+    const QString href = static_cast<ElementImpl*>(impl)->getAttribute(ATTR_HREF).string().trimmed();
+    return !href.isNull() ? impl->document()->completeURL(href) : DOMString();
 }
 
 void HTMLBaseElement::setHref( const DOMString &value )
@@ -134,8 +134,8 @@ void HTMLLinkElement::setCharset( const DOMString &value )
 DOMString HTMLLinkElement::href() const
 {
     if(!impl) return DOMString();
-    DOMString href = static_cast<ElementImpl*>(impl)->getAttribute(ATTR_HREF);
-    return !href.isNull() ? impl->document()->completeURL(href.string()) : href;
+    const QString href = static_cast<ElementImpl*>(impl)->getAttribute(ATTR_HREF).string().trimmed();
+    return !href.isNull() ? impl->document()->completeURL(href) : DOMString();
 }
 
 void HTMLLinkElement::setHref( const DOMString &value )
@@ -379,8 +379,8 @@ void HTMLScriptElement::setDefer( bool _defer )
 DOMString HTMLScriptElement::src() const
 {
     if(!impl) return DOMString();
-    DOMString s = ((ElementImpl *)impl)->getAttribute(ATTR_SRC);
-    return !s.isNull() ? impl->document()->completeURL(s.string()) : s;
+    const QString s = ((ElementImpl *)impl)->getAttribute(ATTR_SRC).string().trimmed();
+    return !s.isNull() ? impl->document()->completeURL(s) : DOMString();
 }
 
 void HTMLScriptElement::setSrc( const DOMString &value )
