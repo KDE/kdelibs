@@ -130,7 +130,7 @@ bool UDevManager::Private::checkOfInterest(const UdevQt::Device &device)
            device.subsystem() == QLatin1String("video4linux") ||
            device.subsystem() == QLatin1String("net") ||
            device.deviceProperty("ID_MEDIA_PLAYER").toString().isEmpty() == false || // media-player-info recognized devices
-           device.deviceProperty("ID_GPHOTO2").toInt() == 1; // GPhoto2 cameras
+           (device.deviceProperty("ID_GPHOTO2").toInt() == 1 && device.parent().deviceProperty("ID_GPHOTO2").toInt() != 1); // GPhoto2 cameras
 }
 
 bool UDevManager::Private::isLidBubtton(const UdevQt::Device& device)
