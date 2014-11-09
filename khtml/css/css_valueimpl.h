@@ -93,8 +93,6 @@ public:
 
     virtual void setChanged();
 
-    void removeCSSHints();
-
 protected:
     DOMString getShortHandValue( const int* properties, int number ) const;
     DOMString getCommonValue(const int* properties, int number) const;
