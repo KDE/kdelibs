@@ -298,9 +298,13 @@ void CaCertificatesPage::addCertificateClicked()
     foreach (const QString &certFile, certFiles) {
         // trying both formats is easiest to program and most user-friendly if somewhat sloppy
         const int prevCertCount = certs.count();
-        certs += QSslCertificate::fromPath(certFile, QSsl::Pem);
-        if (prevCertCount == certs.count()) {
-            certs += QSslCertificate::fromPath(certFile, QSsl::Der);
+        QFile file (certFile);
+        if (file.open(QIODevice::ReadOnly)) {
+            certs += QSslCertificate::fromDevice(&file, QSsl::Pem);
+            if (prevCertCount == certs.count()) {
+                file.reset();
+                certs += QSslCertificate::fromDevice(&file, QSsl::Der);
+            }
         }
         if (prevCertCount == certs.count()) {
             kDebug(7029) << "failed to load certificate file" << certFile;
