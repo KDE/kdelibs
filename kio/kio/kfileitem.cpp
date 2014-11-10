@@ -959,8 +959,7 @@ QStringList KFileItem::overlays() const
         names.append("emblem-symbolic-link");
     }
 
-    if ( !S_ISDIR( d->m_fileMode ) // Locked dirs have a special icon, use the overlay for files only
-         && !isReadable()) {
+    if (!isReadable()) {
         names.append("object-locked");
     }
 
@@ -999,11 +998,6 @@ QStringList KFileItem::overlays() const
         }
     }
 #endif  // Q_OS_WIN
-
-    if ( d->m_pMimeType && d->m_url.fileName().endsWith( QLatin1String( ".gz" ) ) &&
-         d->m_pMimeType->is("application/x-gzip") ) {
-        names.append("application-zip");
-    }
 
     return names;
 }
