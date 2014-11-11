@@ -1587,8 +1587,8 @@ QHash<int, const HTMLElement::BoundPropInfo*>* HTMLElement::boundPropInfo()
 
 QString KJS::HTMLElement::getURLArg(unsigned id) const
 {
-  const QString rel = impl()->getAttribute(id).string().trimmed();
-  return !rel.isNull() ? impl()->document()->completeURL(rel) : rel;
+  const DOMString rel = impl()->getAttribute(id).trimSpaces();
+  return !rel.isNull() ? impl()->document()->completeURL(rel.string()) : QString();
 }
 
 DOM::HTMLElementImpl *toHTMLElement(JSValue *val) {

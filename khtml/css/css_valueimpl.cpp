@@ -1383,9 +1383,9 @@ CSSImageValueImpl::CSSImageValueImpl(const DOMString &url, StyleBaseImpl* style)
     : CSSPrimitiveValueImpl(url, CSSPrimitiveValue::CSS_URI)
 {
     m_image = 0;
-    const QString imgUrl = url.string().trimmed();
+    const DOMString imgUrl = url.trimSpaces();
     if (!imgUrl.isEmpty()) {
-        m_fullImageUrl = KUrl(style->baseURL(), imgUrl).url();
+        m_fullImageUrl = KUrl(style->baseURL(), imgUrl.string()).url();
     } else {
         m_fullImageUrl.clear();
     }

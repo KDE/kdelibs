@@ -906,7 +906,8 @@ JSValue *XMLHttpRequestProtoFunc::callAsFunction(ExecState *exec, JSObject *this
           return throwError(exec, SyntaxError, "Not enough arguments");
 
       QString method = args[0]->toString(exec).qstring();
-      KUrl url = KUrl(request->doc->completeURL(args[1]->toString(exec).qstring()));
+      DOMString urlArg = args[1]->toString(exec).domString().trimSpaces();
+      KUrl url = KUrl(request->doc->completeURL(urlArg.string()));
 
       bool async = true;
       if (args.size() >= 3) {

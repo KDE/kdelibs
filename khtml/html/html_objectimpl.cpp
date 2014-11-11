@@ -695,7 +695,7 @@ void HTMLEmbedElementImpl::parseAttribute(AttributeImpl *attr)
   {
      case ATTR_CODE:
      case ATTR_SRC:
-         url = attr->val()->string().trimmed();
+         url = attr->value().trimSpaces().string();
          setNeedComputeContent();
          break;
      case ATTR_BORDER:
@@ -775,7 +775,7 @@ void HTMLObjectElementImpl::parseAttribute(AttributeImpl *attr)
   switch ( attr->id() )
   {
     case ATTR_DATA:
-      url = attr->val()->string().trimmed();
+      url = attr->value().trimSpaces().string();
       setNeedComputeContent();
       break;
     case ATTR_CLASSID:

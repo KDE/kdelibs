@@ -427,16 +427,16 @@ void RenderImage::updateFromElement()
     else if (element()->id() == ID_IMG)
         alt = static_cast<HTMLImageElementImpl*>(element())->altText();
 
-    const QString u = element()->id() == ID_OBJECT ?
-                  element()->getAttribute(ATTR_DATA).string().trimmed() : element()->getAttribute(ATTR_SRC).string().trimmed();
+    const DOMString u = element()->id() == ID_OBJECT ?
+                  element()->getAttribute(ATTR_DATA).trimSpaces() : element()->getAttribute(ATTR_SRC).trimSpaces();
 
     if (!u.isEmpty()) {
         // Need to compute completeURL, as 'u' can be relative
         // while m_cachedImage->url() is always full url
         DocumentImpl *docImpl = element()->document();
-        const QString fullUrl = docImpl->completeURL(u);
+        const QString fullUrl = docImpl->completeURL(u.string());
         if (!m_cachedImage || m_cachedImage->url() != fullUrl) {
-            CachedImage *new_image = docImpl->docLoader()->requestImage(fullUrl);
+            CachedImage *new_image = docImpl->docLoader()->requestImage(DOMString(fullUrl));
             if (new_image && new_image != m_cachedImage) {
                 updateImage(new_image);
             }

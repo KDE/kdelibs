@@ -95,8 +95,8 @@ void HTMLAnchorElement::setCoords( const DOMString &value )
 DOMString HTMLAnchorElement::href() const
 {
     if(!impl) return DOMString();
-    const QString href = static_cast<ElementImpl*>(impl)->getAttribute(ATTR_HREF).string().trimmed();
-    return !href.isNull() ? impl->document()->completeURL(href) : DOMString();
+    const DOMString href = static_cast<ElementImpl*>(impl)->getAttribute(ATTR_HREF).trimSpaces();
+    return !href.isNull() ? impl->document()->completeURL(href.string()) : href;
 }
 
 void HTMLAnchorElement::setHref( const DOMString &value )

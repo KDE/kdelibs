@@ -974,7 +974,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
              KHTMLGlobal::defaultHTMLSettings()->isHideAdsEnabled() &&
              !strcasecmp( t->attrs->getValue( ATTR_TYPE ), "image" ) )
         {
-            const QString url = doc()->completeURL(t->attrs->getValue(ATTR_SRC)->string().trimmed());
+            const QString url = doc()->completeURL(DOMString(t->attrs->getValue(ATTR_SRC)).trimSpaces().string());
             if (KHTMLGlobal::defaultHTMLSettings()->isAdFiltered(url))
                 return 0;
         }
@@ -1104,7 +1104,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
             KHTMLGlobal::defaultHTMLSettings()->isAdFilterEnabled()&&
             KHTMLGlobal::defaultHTMLSettings()->isHideAdsEnabled())
         {
-            const QString url = doc()->completeURL(t->attrs->getValue(ATTR_SRC)->string().trimmed());
+            const QString url = doc()->completeURL(DOMString(t->attrs->getValue(ATTR_SRC)).trimSpaces().string());
             if (KHTMLGlobal::defaultHTMLSettings()->isAdFiltered(url))
                 return 0;
         }
