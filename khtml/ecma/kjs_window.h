@@ -137,7 +137,7 @@ namespace KJS {
     void closeNow();
     void delayedGoHistory(int steps);
     void goHistory(int steps);
-    void goURL(ExecState* exec, const QString& url, bool lockHistory);
+    void goURL(ExecState* exec, const QString& url, bool lockHistory = false);
 
     static bool targetIsExistingWindow(KHTMLPart* part, const QString& frameName);
     JSValue* openWindow(ExecState *exec, const List &args);

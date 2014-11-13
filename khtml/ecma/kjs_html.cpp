@@ -455,7 +455,7 @@ void KJS::HTMLDocument::putValueProperty(ExecState *exec, int token, JSValue *va
     {
       KHTMLPart *part = doc.part();
       if ( part )
-        Window::retrieveWindow(part)->goURL(exec, value->toString(exec).qstring(), false /*don't lock history*/);
+        Window::retrieveWindow(part)->goURL(exec, value->toString(exec).qstring());
       return;
     }
     case DesignMode:
