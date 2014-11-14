@@ -64,16 +64,18 @@ UPowerManager::UPowerManager(QObject *parent)
     }
 
     if (serviceFound) {
-        connect(&m_manager, SIGNAL(DeviceAdded(QString)),
-                this, SIGNAL(deviceAdded(QString)));
-        connect(&m_manager, SIGNAL(DeviceRemoved(QString)),
-                this, SIGNAL(deviceRemoved(QString)));
-
-        // for UPower >= 0.99.0, changed signature :o/
-        connect(&m_manager, SIGNAL(DeviceAdded(QDBusObjectPath)),
-                this, SLOT(onDeviceAdded(QDBusObjectPath)));
-        connect(&m_manager, SIGNAL(DeviceRemoved(QDBusObjectPath)),
-                this, SLOT(onDeviceRemoved(QDBusObjectPath)));
+        if (m_manager.metaObject()->indexOfSignal("DeviceAdded(QDBusObjectPath)") != -1) {
+            // for UPower >= 0.99.0, changed signature :o/
+            connect(&m_manager, SIGNAL(DeviceAdded(QDBusObjectPath)),
+                    this, SLOT(onDeviceAdded(QDBusObjectPath)));
+            connect(&m_manager, SIGNAL(DeviceRemoved(QDBusObjectPath)),
+                    this, SLOT(onDeviceRemoved(QDBusObjectPath)));
+        } else {
+            connect(&m_manager, SIGNAL(DeviceAdded(QString)),
+                    this, SIGNAL(deviceAdded(QString)));
+            connect(&m_manager, SIGNAL(DeviceRemoved(QString)),
+                    this, SIGNAL(deviceRemoved(QString)));
+        }
     }
 }
 
