@@ -29,6 +29,7 @@
 #include "kglobal.h"
 #include "kglobal_p.h"
 #include <QThread>
+#include <QAtomicInt>
 
 #include <config.h>
 
@@ -314,27 +315,30 @@ QString KGlobal::caption()
  * e.g. a file copy for a file manager, or 'compacting folders on exit' for a mail client,
  * the job progress widget with "keep open" checked, etc.
  */
-static int s_refCount = 0;
-static bool s_allowQuit = false;
+static QBasicAtomicInt s_allowQuit = Q_BASIC_ATOMIC_INITIALIZER(false); // this is used a bool
+static QBasicAtomicInt s_refCount = Q_BASIC_ATOMIC_INITIALIZER(0);
 
 void KGlobal::ref()
 {
-    ++s_refCount;
-    //kDebug() << "KGlobal::ref() : refCount = " << s_refCount;
+    s_refCount.fetchAndAddOrdered(1);
 }
 
 void KGlobal::deref()
 {
-    --s_refCount;
-    //kDebug() << "KGlobal::deref() : refCount = " << s_refCount;
-    if (s_refCount <= 0 && s_allowQuit) {
+    const int prevRefCount = s_refCount.fetchAndAddOrdered(-1);
+    if (prevRefCount <= 1 && int(s_allowQuit)) {
         QCoreApplication::instance()->quit();
     }
 }
 
 void KGlobal::setAllowQuit(bool allowQuit)
 {
-    s_allowQuit = allowQuit;
+    if (QThread::currentThread() == qApp->thread()) {
+        s_allowQuit.fetchAndStoreOrdered(int(allowQuit));
+    }
+    else {
+        qWarning() << "KGlobal::setAllowQuit may only be called from the main thread";
+    }
 }
 
 #undef PRIVATE_DATA
