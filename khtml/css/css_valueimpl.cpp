@@ -959,14 +959,17 @@ void CSSValueListImpl::append(CSSValueImpl *val)
 
 DOM::DOMString CSSValueListImpl::cssText() const
 {
-    DOMString result = "";
+    DOMString separatorString;
+    if (m_separator == Comma) {
+        separatorString = DOMString(", ");
+    } else { // Space
+        separatorString = DOMString(" ");
+    }
 
+    DOMString result = "";
     for (QListIterator<CSSValueImpl*> iterator(m_values); iterator.hasNext();) {
         if (!result.isEmpty()) {
-            if (m_separator == Comma)
-                result += ", ";
-            else if (m_separator == Space)
-                result += " ";
+            result += separatorString;
         }
         result += iterator.next()->cssText();
     }
