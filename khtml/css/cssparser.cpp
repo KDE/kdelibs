@@ -1819,7 +1819,7 @@ CSSValueImpl* CSSParser::parseBackgroundSize()
         return new CSSPrimitiveValueImpl(value->id);
 
     if (value->id == CSS_VAL_AUTO)
-        parsedValue1 = new CSSPrimitiveValueImpl(0, CSSPrimitiveValue::CSS_UNKNOWN);
+        parsedValue1 = new CSSPrimitiveValueImpl(CSS_VAL_AUTO);
     else {
         if (!validUnit(value, FLength|FPercent|FNonNeg, strict))
             return 0;
@@ -1829,7 +1829,7 @@ CSSValueImpl* CSSParser::parseBackgroundSize()
     CSSPrimitiveValueImpl* parsedValue2;
     if ((value = valueList->next())) {
         if (value->id == CSS_VAL_AUTO)
-            parsedValue2 = new CSSPrimitiveValueImpl(0, CSSPrimitiveValue::CSS_UNKNOWN);
+            parsedValue2 = new CSSPrimitiveValueImpl(CSS_VAL_AUTO);
         else {
             if (!validUnit(value, FLength|FPercent|FNonNeg, strict)) {
                 delete parsedValue1;
@@ -1838,7 +1838,7 @@ CSSValueImpl* CSSParser::parseBackgroundSize()
             parsedValue2 = new CSSPrimitiveValueImpl(value->fValue, (CSSPrimitiveValue::UnitTypes)value->unit);
         }
     } else {
-        parsedValue2 = new CSSPrimitiveValueImpl(0, CSSPrimitiveValue::CSS_UNKNOWN);
+        parsedValue2 = new CSSPrimitiveValueImpl(CSS_VAL_AUTO);
     }
 
     PairImpl* pair = new PairImpl(parsedValue1, parsedValue2);
