@@ -99,6 +99,10 @@ DOMString CSSStyleDeclaration::getPropertyPriority( const DOMString &propertyNam
 void CSSStyleDeclaration::setProperty( const DOMString &propName, const DOMString &value, const DOMString &priority )
 {
     if(!impl) return;
+    if (value.isEmpty()) {
+        static_cast<CSSStyleDeclarationImpl *>(impl)->removeProperty(propName);
+        return;
+    }
     static_cast<CSSStyleDeclarationImpl *>(impl)->setProperty( propName, value, priority );
 }
 
