@@ -580,6 +580,13 @@ CachedFontInstance::CachedFontInstance(CachedFontFamily* p, int sz):
     descent = fm.descent();
     height  = fm.height();
     lineSpacing = fm.lineSpacing();
+
+    const QChar zeroChar((ushort)48);
+    if (!fm.inFont(zeroChar)) {
+        m_zeroCharWidth = -1;
+    } else {
+        m_zeroCharWidth = (int)cachedCharWidth(zeroChar);
+    }
 }
 
 void CachedFontInstance::invalidate()
@@ -602,6 +609,13 @@ void CachedFontInstance::invalidate()
     descent = fm.descent();
     height  = fm.height();
     lineSpacing = fm.lineSpacing();
+
+    const QChar zeroChar((ushort)48);
+    if (!fm.inFont(zeroChar)) {
+        m_zeroCharWidth = -1;
+    } else {
+        m_zeroCharWidth = (int)cachedCharWidth(zeroChar);
+    }
 }
 
 CachedFontInstance::~CachedFontInstance()

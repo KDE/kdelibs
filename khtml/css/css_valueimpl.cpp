@@ -1089,12 +1089,21 @@ double CSSPrimitiveValueImpl::computeLengthFloat( khtml::RenderStyle *style, int
     case CSSPrimitiveValue::CSS_EMS:
         factor = style->font().pixelSize();
         break;
-    case CSSPrimitiveValue::CSS_EXS:
-	{
-        QFontMetrics fm = style->fontMetrics();
+    case CSSPrimitiveValue::CSS_EXS: {
+        const QFontMetrics fm = style->fontMetrics();
         factor = fm.xHeight();
         break;
-	}
+        }
+    case CSSPrimitiveValue::CSS_CHS: {
+        const int zw = style->htmlFont().zeroCharWidth();
+        if (zw != -1) {
+            factor = zw;
+        } else {
+            // assume 0.5em
+            return ((double)0.5 * style->font().pixelSize());
+        }
+        break;
+        }
     case CSSPrimitiveValue::CSS_PX:
         break;
     case CSSPrimitiveValue::CSS_CM:
@@ -1214,6 +1223,9 @@ DOM::DOMString CSSPrimitiveValueImpl::cssText() const
 	case CSSPrimitiveValue::CSS_EXS:
 	    text = DOMString(QString::number( m_value.num ) + "ex");
 	    break;
+        case CSSPrimitiveValue::CSS_CHS:
+            text = DOMString(QString::number( m_value.num ) + "ch");
+            break;
 	case CSSPrimitiveValue::CSS_PX:
 	    text = DOMString(QString::number( m_value.num ) + "px");
 	    break;
