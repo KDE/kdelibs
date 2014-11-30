@@ -1696,6 +1696,18 @@ void DocumentImpl::finishParsing (  )
 
 QString DocumentImpl::completeURL(const QString& url) const
 {
+    if (url.startsWith(QLatin1Char('#'))) {
+        const QString ref = KUrl::fromPercentEncoding(url.mid(1).toUtf8());
+        KUrl u = baseURL();
+        if (ref.isEmpty()) {
+            u.setHTMLRef("");
+        }
+        else {
+            u.setHTMLRef(ref);
+        }
+        return u.url();
+    }
+
     return KUrl(baseURL(),url /*,m_decoderMibEnum*/).url();
 }
 
