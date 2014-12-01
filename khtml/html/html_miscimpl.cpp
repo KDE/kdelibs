@@ -268,6 +268,10 @@ NodeImpl *HTMLCollectionImpl::nextItem() const
 
 NodeImpl *HTMLCollectionImpl::namedItem( const DOMString &name ) const
 {
+    if (name.isEmpty()) {
+        return 0;
+    }
+
     //Reset the position. The invariant is that nextNamedItem will start looking
     //from the current position.
     firstItem();
@@ -277,13 +281,17 @@ NodeImpl *HTMLCollectionImpl::namedItem( const DOMString &name ) const
 
 NodeImpl *HTMLCollectionImpl::nextNamedItem( const DOMString &name ) const
 {
-    while (NodeImpl* candidate = m_cache->current.node)
-    {
+    if (name.isEmpty()) {
+        return 0;
+    }
+
+    while (NodeImpl* candidate = m_cache->current.node) {
         //Always advance, for next call
         nextItem();
         if (checkForNameMatch(candidate, name))
             return candidate;
     }
+
     return 0;
 }
 
