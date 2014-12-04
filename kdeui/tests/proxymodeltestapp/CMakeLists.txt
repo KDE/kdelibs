@@ -33,6 +33,7 @@ kde4_add_executable(proxymodeltestapp TEST ${proxymodeltestapp_SRCS})
 target_link_libraries(proxymodeltestapp
    ${KDE4_KDEUI_LIBS}
    proxymodeltestsuite
+   ${QT_QTNETWORK_LIBRARY}
    ${QT_QTSCRIPT_LIBRARY}
 )
 
