@@ -321,6 +321,7 @@ public:
 
 	RenderStyle *style;
 	RenderStyle *parentStyle;
+        RenderStyle *m_rootStyle; // needed to compute 'rem' lengths
 	DOM::ElementImpl *element;
 	DOM::NodeImpl *parentNode;
 	KHTMLView *view;

@@ -450,6 +450,7 @@ bool CSSParser::validUnit( Value *value, int unitflags, bool strict )
     case CSSPrimitiveValue::CSS_EMS:
     case CSSPrimitiveValue::CSS_EXS:
     case CSSPrimitiveValue::CSS_CHS:
+    case CSSPrimitiveValue::CSS_REMS:
     case CSSPrimitiveValue::CSS_PX:
     case CSSPrimitiveValue::CSS_CM:
     case CSSPrimitiveValue::CSS_MM:
@@ -2924,6 +2925,7 @@ int DOM::CSSParser::lex( void *_yylval )
     case RADS:
     case KHERZ:
     case DPI:
+    case REMS:
         length--;
     case MSECS:
     case HERZ:
