@@ -126,7 +126,7 @@ public:
 
     void setFontFace(CSSFontFace* face) { m_face = face; }
 
-    virtual void notifyFinished(khtml::CachedObject * /*finishedObj*/);
+    virtual void notifyFinished(khtml::CachedObject * finishedObj);
     void refLoader();
 
 //    SimpleFontData* getFontData(const FontDef&, bool syntheticBold, bool syntheticItalic, CSSFontSelector*);
