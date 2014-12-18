@@ -1381,8 +1381,8 @@ void Cache::clear()
 #endif
     cache->setAutoDelete( true );
 
+bool crash = false;
 #ifndef NDEBUG
-    bool crash = false;
     for (QDictIterator<CachedObject> it(*cache); it.current(); ++it) {
         if (!it.current()->canDelete()) {
             kdDebug( 6060 ) << " Object in cache still linked to" << endl;
@@ -1409,10 +1409,12 @@ void Cache::clear()
         }
 //         assert(freeList->current()->canDelete());
     }
-    assert(!crash);
 #endif
-
-    delete cache; cache = 0;
+    if (crash) {
+        kdWarning( 6060 ) << "Found undeleteable objects in cache. Leaking memory." << endl;
+    } else {
+        delete cache; cache = 0;
+    }
     delete nullPixmap; nullPixmap = 0;
     delete brokenPixmap; brokenPixmap = 0;
     delete blockedPixmap; blockedPixmap = 0;
