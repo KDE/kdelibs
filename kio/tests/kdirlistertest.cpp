@@ -957,6 +957,37 @@ void KDirListerTest::testRenameCurrentDir() // #294445
     QDir().rmdir(newPath);
 }
 
+void KDirListerTest::slotOpenUrlOnRename(const KUrl & newUrl)
+{
+  QVERIFY(m_dirLister.openUrl(newUrl));
+}
+
+//This tests for a crash if you connect redirects to openUrl, due
+//to internal data being inconsistently exposed.
+//Matches usage in gwenview.
+void KDirListerTest::testRenameCurrentDirOpenUrl()
+{
+    m_items.clear();
+    const QString path = m_tempDir.name() + "newsubdir-1";
+    QVERIFY(QDir().mkdir(path));
+    connect(&m_dirLister, SIGNAL(newItems(KFileItemList)), this, SLOT(slotNewItems(KFileItemList)));
+
+    m_dirLister.openUrl(KUrl(path));
+    QVERIFY(QTest::kWaitForSignal(&m_dirLister, SIGNAL(completed()), 1000));
+    QVERIFY(m_dirLister.isFinished());
+
+    const QString newPath = m_tempDir.name() + "newsubdir-2";
+    QVERIFY(QDir().rename(path, newPath));
+
+    //Connect the redirection to openURL, so that on a rename the new location is opened.
+    //This matches usage in gwenview, and crashes without a fix
+    connect(&m_dirLister, SIGNAL(redirection(KUrl)), this, SLOT(slotOpenUrlOnRename(KUrl)));
+    org::kde::KDirNotify::emitFileRenamed(KUrl(path).url(), KUrl(newPath).url());
+    QVERIFY(QTest::kWaitForSignal(&m_dirLister, SIGNAL(redirection(KUrl,KUrl)), 1000));
+    disconnect(&m_dirLister, 0, this, 0);
+    QDir().rmdir(newPath);
+}
+
 void KDirListerTest::testRedirection()
 {
     m_items.clear();
