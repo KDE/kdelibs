@@ -1856,7 +1856,7 @@ void RenderSelect::updateFromElement()
                 // Prefer label if set
                 DOMString label = optElem->getAttribute(ATTR_LABEL);
                 if (!label.isEmpty())
-                    domText = label.string();
+                    domText = label;
                 domText = domText.implementation()->collapseWhiteSpace(false, false);
 
                 QString   text;
