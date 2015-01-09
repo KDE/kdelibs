@@ -33,6 +33,10 @@
 
 #include <kdebug.h>
 
+#ifdef __APPLE__
+#include "posix_fallocate_mac.h"
+#endif
+
 // Our debug area, disabled by default
 int ksdcArea();
 
@@ -48,7 +52,7 @@ int ksdcArea();
 #warning "No support for POSIX timeouts -- application hangs are possible if the cache is corrupt"
 #endif
 
-#if defined(_POSIX_THREAD_PROCESS_SHARED) && ((_POSIX_THREAD_PROCESS_SHARED == 0) || (_POSIX_THREAD_PROCESS_SHARED >= 200112L)) && !defined(__APPLE__)
+#if defined(_POSIX_THREAD_PROCESS_SHARED) && ((_POSIX_THREAD_PROCESS_SHARED == 0) || (_POSIX_THREAD_PROCESS_SHARED >= 200112L))
 #include <pthread.h>
 #define KSDC_THREAD_PROCESS_SHARED_SUPPORTED 1
 #endif
@@ -77,7 +81,7 @@ int ksdcArea();
 
 // posix_fallocate is used to ensure that the file used for the cache is
 // actually fully committed to disk before attempting to use the file.
-#if defined(_POSIX_ADVISORY_INFO) && ((_POSIX_ADVISORY_INFO == 0) || (_POSIX_ADVISORY_INFO >= 200112L))
+#if (defined(_POSIX_ADVISORY_INFO) && ((_POSIX_ADVISORY_INFO == 0) || (_POSIX_ADVISORY_INFO >= 200112L))) || defined(__APPLE__)
 #define KSDC_POSIX_FALLOCATE_SUPPORTED 1
 #endif
 
