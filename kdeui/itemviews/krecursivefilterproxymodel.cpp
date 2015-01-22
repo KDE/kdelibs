@@ -108,12 +108,9 @@ public:
   void sourceRowsRemoved(const QModelIndex &source_parent, int start, int end);
 
   /**
-    Given that @p index does not match the filter, clear mappings in the QSortFilterProxyModel up to and excluding the
-    first ascendant that does match, and remake the mappings.
-
-    If @p refreshAll is true, this method also refreshes intermediate mappings. This is significant when removing rows.
+    Given that @p index does not match the filter, clear mappings in the QSortFilterProxyModel up to roo, and remake the mappings.
   */
-  void refreshAscendantMapping(const QModelIndex &index, bool refreshAll = false);
+  void refreshAscendantMapping(const QModelIndex &index);
 
   bool ignoreRemove;
   bool completeInsert;
@@ -126,7 +123,7 @@ void KRecursiveFilterProxyModelPrivate::sourceDataChanged(const QModelIndex &sou
 
   QModelIndex source_parent = source_top_left.parent();
 
-  if (!source_parent.isValid() || q->filterAcceptsRow(source_parent.row(), source_parent.parent()))
+  if (!source_parent.isValid() || q->acceptRow(source_parent.row(), source_parent.parent()))
   {
     invokeDataChanged(source_top_left, source_bottom_right);
     return;
@@ -146,27 +143,20 @@ void KRecursiveFilterProxyModelPrivate::sourceDataChanged(const QModelIndex &sou
   refreshAscendantMapping(source_parent);
 }
 
-void KRecursiveFilterProxyModelPrivate::refreshAscendantMapping(const QModelIndex &index, bool refreshAll)
+void KRecursiveFilterProxyModelPrivate::refreshAscendantMapping(const QModelIndex &index)
 {
   Q_Q(KRecursiveFilterProxyModel);
-
   Q_ASSERT(index.isValid());
-  QModelIndex lastAscendant = index;
-  QModelIndex sourceAscendant = index.parent();
+
+  QModelIndex sourceAscendant = index;
   // We got a matching descendant, so find the right place to insert the row.
   // We need to tell the QSortFilterProxyModel that the first child between an existing row in the model
   // has changed data so that it will get a mapping.
-  while(sourceAscendant.isValid() && !q->acceptRow(sourceAscendant.row(), sourceAscendant.parent()))
+  while(sourceAscendant.isValid())
   {
-    if (refreshAll)
-      invokeDataChanged(sourceAscendant, sourceAscendant);
-
-    lastAscendant = sourceAscendant;
+    invokeDataChanged(sourceAscendant, sourceAscendant);
     sourceAscendant = sourceAscendant.parent();
   }
-
-  // Inform the model that its data changed so that it creates new mappings and finds the rows which now match the filter.
-  invokeDataChanged(lastAscendant, lastAscendant);
 }
 
 void KRecursiveFilterProxyModelPrivate::sourceRowsAboutToBeInserted(const QModelIndex &source_parent, int start, int end)
@@ -261,7 +251,7 @@ void KRecursiveFilterProxyModelPrivate::sourceRowsRemoved(const QModelIndex &sou
   // This is needed because QSFPM only invalidates the mapping for the
   // index range given to dataChanged, not its children.
   if (source_parent.isValid())
-    refreshAscendantMapping(source_parent, true);
+    refreshAscendantMapping(source_parent);
 }
 
 KRecursiveFilterProxyModel::KRecursiveFilterProxyModel(QObject* parent)
