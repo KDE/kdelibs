@@ -279,7 +279,7 @@ inline static bool isSpecial( QChar cUnicode )
     }; // 0-32 \'"$`<>|;&(){}*?#!~[]
 
     uint c = cUnicode.unicode ();
-    return (c < sizeof(iqm) * 8) && (iqm[c / 8] & (1 << (c & 7)));
+    return ((c < sizeof(iqm) * 8) && (iqm[c / 8] & (1 << (c & 7)))) || cUnicode.isSpace();
 }
 
 QString KShell::quoteArg( const QString &arg )
