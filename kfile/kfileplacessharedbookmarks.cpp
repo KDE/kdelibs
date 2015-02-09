@@ -123,11 +123,6 @@ KFilePlacesSharedBookmarks::KFilePlacesSharedBookmarks(KBookmarkManager * mgr)
     connect(m_sharedBookmarkManager, SIGNAL(bookmarksChanged(QString)),
               this, SLOT(slotSharedBookmarksChanged()));
 
-    connect(m_placesBookmarkManager, SIGNAL(changed(QString,QString)),
-              this, SLOT(slotBookmarksChanged()));
-    connect(m_placesBookmarkManager, SIGNAL(bookmarksChanged(QString)),
-              this, SLOT(slotBookmarksChanged()));
-    
     integrateSharedBookmarks();
 }
 
@@ -271,7 +266,7 @@ void KFilePlacesSharedBookmarks::slotSharedBookmarksChanged()
     if (dirty) m_placesBookmarkManager->emitChanged();
 }
 
-void KFilePlacesSharedBookmarks::slotBookmarksChanged()
+void KFilePlacesSharedBookmarks::updateSharedBookmarks()
 {
     //kDebug() << "places bookmarks changed";
     bool dirty = exportSharedBookmarks();
