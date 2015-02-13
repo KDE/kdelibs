@@ -254,6 +254,18 @@ h3.title {
     margin-left: 0cm;
 }
 
+.screenshot, .informalfigure {
+    border: 1px solid gray;
+    background-color: rgb(240,240,240);
+}
+
+/* We no longer render <hr>s around <mediaobject>s, but this hides them in case
+ * old generated HTML is displayed with the new style.
+ */
+.mediaobject hr, .mediaobjectco hr {
+    display: none;
+}
+
 /*
  * This gives us the styling for the header and footer.
  * See customization/kde-navig.xsl for where it's used.

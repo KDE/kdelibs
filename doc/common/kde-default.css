@@ -303,7 +303,7 @@ div.mediaobject, div.mediaobjectco {
 }
 
 .caption { 
-  margin: 0em 2em 3em 2em; 
+  margin: 0em 2em 0em 2em;
   text-align: center;
 }
 
