@@ -786,11 +786,14 @@ bool KZip::openArchive( QIODevice::OpenMode mode )
                 {
                     foundSignature = true;
                     dev->seek( dev->pos() - 4 ); // go back 4 bytes, so that the magic bytes can be found...
-                }
-                else if ( buffer[0] == 'P' || buffer[1] == 'P' || buffer[2] == 'P' )
-                {
-                        // We have another P character so we must go back a little to check if it is a magic
-                    dev->seek( dev->pos() - 3 );
+                } else {
+                    for (int i = 0; i < 3; ++i) {
+                        if (buffer[i] == 'P') {
+                            // We have another P character so we must go back a little to check if it is a magic
+                            dev->seek(dev->pos() - 3 + i);
+                            break;
+                        }
+                    }
                 }
             }
         }
