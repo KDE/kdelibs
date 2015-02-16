@@ -63,6 +63,8 @@ private Q_SLOTS:
     void testZipWithNonLatinFileNames();
     void testZipWithOverwrittenFileName();
     void testZipAddLocalDirectory();
+    void testZipReadRedundantDataDescriptor_data();
+    void testZipReadRedundantDataDescriptor();
 
     void cleanupTestCase();
 };
