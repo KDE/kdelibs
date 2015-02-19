@@ -55,7 +55,7 @@ void HTMLBaseElementImpl::parseAttribute(AttributeImpl *attr)
     switch(attr->id())
     {
     case ATTR_HREF:
-	m_href = attr->value().trimSpaces().string();
+	m_href = attr->value().parsedUrl().string();
 	process();
 	break;
     case ATTR_TARGET:
@@ -116,7 +116,7 @@ void HTMLLinkElementImpl::parseAttribute(AttributeImpl *attr)
     switch (attr->id())
     {
     case ATTR_HREF: {
-        const DOMString hrefUrl = attr->value().trimSpaces();
+        const DOMString hrefUrl = attr->value().parsedUrl();
         if (!hrefUrl.isEmpty()) {
             m_url = document()->completeURL(hrefUrl.string());
         }
@@ -385,7 +385,7 @@ void HTMLScriptElementImpl::parseAttribute(AttributeImpl *attr)
         // we'll only start doing things once we get insertedIntoDocument()
         if (m_evaluated || m_cachedScript || m_createdByParser || !inDocument())
             return;
-        const DOMString url = attr->value().trimSpaces();
+        const DOMString url = attr->value().parsedUrl();
         if (!url.isEmpty())
             loadFromUrl(url);
         break;
@@ -490,7 +490,7 @@ void HTMLScriptElementImpl::insertedIntoDocument()
     if (m_createdByParser)
         return;
 
-    const DOMString url = getAttribute(ATTR_SRC).trimSpaces();
+    const DOMString url = getAttribute(ATTR_SRC).parsedUrl();
     if (!url.isEmpty()) {
         loadFromUrl(url);
         return;
@@ -622,7 +622,7 @@ void HTMLScriptElementImpl::setDefer(bool defer)
 
 DOMString HTMLScriptElementImpl::src() const
 {
-    return document()->completeURL(getAttribute(ATTR_SRC).trimSpaces().string());
+    return document()->completeURL(getAttribute(ATTR_SRC).parsedUrl().string());
 }
 
 void HTMLScriptElementImpl::setSrc(const DOMString &value)

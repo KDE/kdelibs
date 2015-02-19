@@ -231,7 +231,7 @@ void HTMLFrameElement::setScrolling( const DOMString &value )
 DOMString HTMLFrameElement::src() const
 {
     if(!impl) return DOMString();
-    const DOMString s = ((ElementImpl *)impl)->getAttribute(ATTR_SRC).trimSpaces();
+    const DOMString s = ((ElementImpl *)impl)->getAttribute(ATTR_SRC).parsedUrl();
     return !s.isNull() ? impl->document()->completeURL(s.string()) : s;
 }
 
@@ -367,7 +367,7 @@ void HTMLIFrameElement::setScrolling( const DOMString &value )
 DOMString HTMLIFrameElement::src() const
 {
     if(!impl) return DOMString();
-    const DOMString s = ((ElementImpl *)impl)->getAttribute(ATTR_SRC).trimSpaces();
+    const DOMString s = ((ElementImpl *)impl)->getAttribute(ATTR_SRC).parsedUrl();
     return !s.isNull() ? impl->document()->completeURL(s.string()) : s;
 }
 

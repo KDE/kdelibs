@@ -2313,7 +2313,7 @@ bool CSSParser::parseFontFaceSrc()
     while ((val = valueList->current())) {
         CSSFontFaceSrcValueImpl* parsedValue = 0;
         if (val->unit == CSSPrimitiveValue::CSS_URI && !expectComma && styleElement) {
-            const DOMString uri = domString(val->string).trimSpaces();
+            const DOMString uri = domString(val->string).parsedUrl();
             parsedValue = new CSSFontFaceSrcValueImpl(DOMString(KUrl(styleElement->baseURL(), uri.string()).url()), false /*local*/);
             uriValue = parsedValue;
             allowFormat = true;

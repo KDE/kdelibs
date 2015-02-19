@@ -504,7 +504,7 @@ void HTMLInputElement::setSize( long value )
 DOMString HTMLInputElement::src() const
 {
     if(!impl) return DOMString();
-    const DOMString s = static_cast<ElementImpl*>(impl)->getAttribute(ATTR_SRC).trimSpaces();
+    const DOMString s = static_cast<ElementImpl*>(impl)->getAttribute(ATTR_SRC).parsedUrl();
     return !s.isNull() ? impl->document()->completeURL(s.string()) : s;
 }
 

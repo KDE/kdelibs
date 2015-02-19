@@ -428,7 +428,7 @@ void RenderImage::updateFromElement()
         alt = static_cast<HTMLImageElementImpl*>(element())->altText();
 
     const DOMString u = element()->id() == ID_OBJECT ?
-                  element()->getAttribute(ATTR_DATA).trimSpaces() : element()->getAttribute(ATTR_SRC).trimSpaces();
+                  element()->getAttribute(ATTR_DATA).parsedUrl() : element()->getAttribute(ATTR_SRC).parsedUrl();
 
     if (!u.isEmpty()) {
         // Need to compute completeURL, as 'u' can be relative
