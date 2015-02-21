@@ -63,6 +63,7 @@ KDECORE_UNIT_TESTS(
  kprocesstest
  kconfigafterkglobaltest1
  kconfigafterkglobaltest2
+ ksharedconfig_in_global_object
  ktcpsockettest
  ksycocathreadtest
  kdebug_unittest
