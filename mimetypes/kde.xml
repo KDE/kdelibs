@@ -18,7 +18,7 @@ Notes:
     <comment>Metalink download</comment>
     <comment xml:lang="ar">تنزيل Metalink</comment>
     <comment xml:lang="ast">Descarga Metalink</comment>
-    <comment xml:lang="bs">metalink preuzimanje</comment>
+    <comment xml:lang="bs">Metalink preuzimanje</comment>
     <comment xml:lang="ca">Baixada de «Metalink»</comment>
     <comment xml:lang="ca@valencia">Baixada de «Metalink»</comment>
     <comment xml:lang="cs">Stahování Metalink</comment>
@@ -432,7 +432,7 @@ Notes:
     <comment>KNewStuff package</comment>
     <comment xml:lang="ar">حزمة KNewStuff</comment>
     <comment xml:lang="ast">Paquete de KNewStuff</comment>
-    <comment xml:lang="bs">paket K‑svežih-novotarija</comment>
+    <comment xml:lang="bs">Paket K‑svežih-novotarija</comment>
     <comment xml:lang="ca">paquet del KNewStuff</comment>
     <comment xml:lang="ca@valencia">paquet del KNewStuff</comment>
     <comment xml:lang="cs">Balíček KNewStuff</comment>
@@ -610,7 +610,7 @@ Notes:
     <comment>mime encapsulated web archive</comment>
     <comment xml:lang="ar">نوع ملفات يغلف أرشف ويب</comment>
     <comment xml:lang="ast">ficheru web encapsuláu mime</comment>
-    <comment xml:lang="bs">MIME učaurena veb arhiva</comment>
+    <comment xml:lang="bs">mIME učaurena veb arhiva</comment>
     <comment xml:lang="ca">arxiu web encapsulat en MIME</comment>
     <comment xml:lang="ca@valencia">arxiu web encapsulat en MIME</comment>
     <comment xml:lang="cs">web archív zapouzdřený v MIME</comment>
@@ -788,7 +788,7 @@ Notes:
     <comment xml:lang="ar">سمة SuperKaramba</comment>
     <comment xml:lang="ast">Tema de SuperKaramba</comment>
     <comment xml:lang="bg">Тема за SuperKaramba</comment>
-    <comment xml:lang="bs">superkaramba tema</comment>
+    <comment xml:lang="bs">Superkaramba tema</comment>
     <comment xml:lang="ca">tema del SuperKaramba</comment>
     <comment xml:lang="ca@valencia">tema del SuperKaramba</comment>
     <comment xml:lang="cs">Motiv Superkaramba</comment>
@@ -1613,7 +1613,7 @@ Notes:
     <comment>Kate file list loader plugin list</comment>
     <comment xml:lang="ar">قائمة ملحقات محملات قائمة ملفات لكيت</comment>
     <comment xml:lang="ast">Llista de complementos de carga de llistes de ficheros de Kate</comment>
-    <comment xml:lang="bs">spisak Kateinog priključka za učitavanje datoteka</comment>
+    <comment xml:lang="bs">Spisak Kateinog priključka za učitavanje datoteka</comment>
     <comment xml:lang="ca">llista del connector carregador de llista de fitxers del Kate</comment>
     <comment xml:lang="ca@valencia">llista del connector carregador de llista de fitxers del Kate</comment>
     <comment xml:lang="da">Liste over plugins til fillisteindlæsning i Kate</comment>
@@ -1967,7 +1967,7 @@ Notes:
     <comment>Windows server</comment>
     <comment xml:lang="ar">خادم ويندوز</comment>
     <comment xml:lang="ast">Sirvidor de Windows</comment>
-    <comment xml:lang="bs">windows server</comment>
+    <comment xml:lang="bs">Windows server</comment>
     <comment xml:lang="ca">servidor Windows</comment>
     <comment xml:lang="ca@valencia">servidor Windows</comment>
     <comment xml:lang="cs">Windows server</comment>
@@ -2026,7 +2026,7 @@ Notes:
     <comment>Windows workgroup</comment>
     <comment xml:lang="ar">مجموعة عمل ويندوز</comment>
     <comment xml:lang="ast">Grupu de trabayu de Windows</comment>
-    <comment xml:lang="bs">windows radna grupa</comment>
+    <comment xml:lang="bs">Windows radna grupa</comment>
     <comment xml:lang="ca">treball en grup Windows</comment>
     <comment xml:lang="ca@valencia">treball en grup Windows</comment>
     <comment xml:lang="cs">Pracovní skupina Windows</comment>
@@ -2325,7 +2325,7 @@ Notes:
     <comment>potato</comment>
     <comment xml:lang="ar">بطاطا</comment>
     <comment xml:lang="ast">potato</comment>
-    <comment xml:lang="bs">Krompirkova datoteka</comment>
+    <comment xml:lang="bs">krompirkova datoteka</comment>
     <comment xml:lang="ca">patata</comment>
     <comment xml:lang="ca@valencia">patata</comment>
     <comment xml:lang="cs">brambora</comment>
@@ -2986,7 +2986,7 @@ Notes:
     <comment xml:lang="ar">مفردات KWordQuiz</comment>
     <comment xml:lang="ast">Vocabulariu de KWordQuiz</comment>
     <comment xml:lang="bg">Речник KWordQuiz</comment>
-    <comment xml:lang="bs">rječnik K‑kviza-riječi</comment>
+    <comment xml:lang="bs">Rječnik K‑kviza-riječi</comment>
     <comment xml:lang="ca">vocabulari del KWordQuiz</comment>
     <comment xml:lang="ca@valencia">vocabulari del KWordQuiz</comment>
     <comment xml:lang="cs">Slovní zásoba KWordQuiz</comment>
@@ -3161,7 +3161,7 @@ Notes:
     <comment>Windows link</comment>
     <comment xml:lang="ar">وصلة ويندوز</comment>
     <comment xml:lang="ast">Enllaz de Windows</comment>
-    <comment xml:lang="bs">windows veza</comment>
+    <comment xml:lang="bs">Windows veza</comment>
     <comment xml:lang="ca">enllaç de Windows</comment>
     <comment xml:lang="ca@valencia">enllaç de Windows</comment>
     <comment xml:lang="cs">Odkaz Windows</comment>
