@@ -29,5 +29,6 @@ install(FILES
     top-middle.png
     top-right.png
     top-left.png
+    part_of_the_kde_family_horizontal_190.png
     1.png 2.png 3.png 4.png 5.png 6.png 7.png 8.png 9.png 10.png
     DESTINATION ${HTML_INSTALL_DIR}/en/common)
