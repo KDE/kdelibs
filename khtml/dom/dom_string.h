@@ -124,8 +124,21 @@ public:
     bool endsWith(const DOMString& str) const;
     bool startsWith(const DOMString& str) const;
 
-    // http://www.w3.org/TR/html/infrastructure.html#urls
+    /**
+     * Return a parsed url.
+     * Used to parse SRC url attribute,
+     * see http://www.w3.org/TR/html/infrastructure.html#urls
+     *
+     * @since 4.14.6
+     */
     DOMString parsedUrl() const;
+
+    /**
+     * @deprecated, use parsedUrl()
+     */
+#ifndef KDE_NO_DEPRECATED
+    KDE_DEPRECATED DOMString trimSpaces() const;
+#endif
 
     /**
      * @internal get a handle to the imlementation of the DOMString

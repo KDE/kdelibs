@@ -336,6 +336,13 @@ DOMString DOMString::parsedUrl() const
     return out;
 }
 
+#ifndef KDE_NO_DEPRECATED
+DOMString DOMString::trimSpaces() const
+{
+    return parsedUrl();
+}
+#endif
+
 // ------------------------------------------------------------------------
 
 bool DOM::strcasecmp( const DOMString &as, const DOMString &bs )
