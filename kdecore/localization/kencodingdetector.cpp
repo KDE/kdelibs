@@ -1031,6 +1031,7 @@ bool KEncodingDetector::analyze(const char *data, int len)
                 //if ( *end == '\0' ) break;
                 QByteArray str( ptr, (end-ptr)+1);
                 str = str.toLower();
+                const int strLength = str.length();
                 int pos=0;
                         //if( (pos = str.find("http-equiv", pos)) == -1) break;
                         //if( (pos = str.find("content-type", pos)) == -1) break;
@@ -1045,19 +1046,22 @@ bool KEncodingDetector::analyze(const char *data, int len)
                 ++pos;
 
                 // skip whitespace before encoding itself
-                while (pos < (int)str.length() && str[pos] <= ' ')
+                while (pos < strLength && str[pos] <= ' ')
                     ++pos;
 
-                // there may also be an opening quote, if this is a charset= and not
-                // a http-equiv.
-                if (pos < (int)str.length() && str[pos] == '"')
+                // there may also be an opening quote, if this is a charset= and not a http-equiv.
+                if (pos < strLength && (str[pos] == '"' || str[pos] == '\''))
                     ++pos;
 
-                if ( pos == (int)str.length())
+                // skip whitespace
+                while (pos < strLength && str[pos] <= ' ')
+                    ++pos;
+
+                if ( pos == strLength)
                     continue;
 
                 int endpos = pos;
-                while( endpos < str.length() &&
+                while( endpos < strLength &&
                         (str[endpos] != ' ' && str[endpos] != '"' && str[endpos] != '\''
                                     && str[endpos] != ';' && str[endpos] != '>') )
                     ++endpos;
