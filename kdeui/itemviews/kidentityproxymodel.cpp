@@ -187,6 +187,17 @@ bool KIdentityProxyModel::dropMimeData(const QMimeData* data, Qt::DropAction act
 }
 
 /*!
+    \\reimp
+    \since 4.14.7
+ */
+QVariant KIdentityProxyModel::headerData(int section, Qt::Orientation orientation, int role) const
+{
+    if (!sourceModel())
+        return QVariant();
+    return sourceModel()->headerData(section, orientation, role);
+}
+
+/*!
     \reimp
  */
 QModelIndex KIdentityProxyModel::index(int row, int column, const QModelIndex& parent) const
