@@ -20,6 +20,9 @@
 #include "kdatetimeedittest.h"
 
 #include <QtCore/QDate>
+#include <QAction>
+#include <QComboBox>
+#include <QMenu>
 
 #include "qtest_kde.h"
 #include "kdebug.h"
@@ -224,3 +227,32 @@ void KDateTimeEditTest::testTimeSpec()
 
     delete m_edit;
 }
+
+template<typename T>
+static T findVisibleChild(QWidget *parent)
+{
+    foreach (T child, parent->findChildren<T>()) {
+        if (child->isVisible())
+            return child;
+    }
+    return 0;
+}
+
+void KDateTimeEditTest::testDateMenu()
+{
+    m_edit = new KDateTimeEdit();
+    KDateTimeEdit::Options options = KDateTimeEdit::ShowDate | KDateTimeEdit::EditDate | KDateTimeEdit::SelectDate | KDateTimeEdit::DatePicker | KDateTimeEdit::DateKeywords;
+    m_edit->setOptions(options);
+    m_edit->setDate(QDate(2002, 1, 1));
+    m_edit->show();
+    QComboBox *combo = findVisibleChild<QComboBox *>(m_edit);
+    QVERIFY(combo);
+    combo->showPopup();
+    QMenu * menu = findVisibleChild<QMenu *>(combo);
+    QVERIFY(menu);
+    QAction* nextMonthAction = menu->actions().at(3);
+    QCOMPARE(nextMonthAction->text(), i18nc("@option next month", "Next Month"));
+    nextMonthAction->trigger();
+    QCOMPARE(m_edit->date(), QDate::currentDate().addMonths(1));
+}
+

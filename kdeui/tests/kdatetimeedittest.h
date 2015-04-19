@@ -40,6 +40,7 @@ private Q_SLOTS:
   void testTimeDisplayFormat();
   void testCalendarSystem();
   void testTimeSpec();
+  void testDateMenu();
 
 private:
 
