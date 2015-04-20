@@ -62,45 +62,28 @@ else (KEXIV2_INCLUDE_DIR AND KEXIV2_LIBRARIES AND KEXIV2_DEFINITIONS)
 
       # use pkg-config to get the directories and then use these values
       # in the FIND_PATH() and FIND_LIBRARY() calls
-      include(UsePkgConfig)
+      include(FindPkgConfig)
     
-      PKGCONFIG(libkexiv2 _KEXIV2IncDir _KEXIV2LinkDir _KEXIV2LinkFlags _KEXIV2Cflags)
+      pkg_check_modules(_pc_KEXIV2 libkexiv2>=0.2.0)
     
-      if(_KEXIV2LinkFlags)
-        # query pkg-config asking for a libkexiv2 >= 0.2.0
-        exec_program(${PKGCONFIG_EXECUTABLE} ARGS --atleast-version=0.2.0 libkexiv2 RETURN_VALUE _return_VALUE OUTPUT_VARIABLE _pkgconfigDevNull )
-        if(_return_VALUE STREQUAL "0")
-            message(STATUS "Found libkexiv2 release >= 0.2.0")
-            set(KEXIV2_VERSION_GOOD_FOUND TRUE)
-        else(_return_VALUE STREQUAL "0")
-            message(STATUS "Found libkexiv2 release < 0.2.0, too old")
-            set(KEXIV2_VERSION_GOOD_FOUND FALSE)
-            set(KEXIV2_FOUND FALSE)
-        endif(_return_VALUE STREQUAL "0")
-      else(_KEXIV2LinkFlags)
-        set(KEXIV2_VERSION_GOOD_FOUND FALSE)
-        set(KEXIV2_FOUND FALSE)
-      endif(_KEXIV2LinkFlags)
     else(NOT WIN32)
-      set(KEXIV2_VERSION_GOOD_FOUND TRUE)
+      set(_pc_KEXIV2_FOUND TRUE)
     endif(NOT WIN32)
 
-    if(KEXIV2_VERSION_GOOD_FOUND)
-        set(KEXIV2_DEFINITIONS "${_KEXIV2Cflags}")
-    
+    if(_pc_KEXIV2_FOUND)
         find_path(KEXIV2_INCLUDE_DIR libkexiv2/version.h
-        ${_KEXIV2IncDir}
+          ${_pc_KEXIV2_INCLUDE_DIRS}
         )
     
         find_library(KEXIV2_LIBRARIES NAMES kexiv2
         PATHS
-        ${_KEXIV2LinkDir}
+        ${_pc_KEXIV2_LIBRARY_DIRS}
         )
     
         if (KEXIV2_INCLUDE_DIR AND KEXIV2_LIBRARIES)
             set(KEXIV2_FOUND TRUE)
         endif (KEXIV2_INCLUDE_DIR AND KEXIV2_LIBRARIES)
-      endif(KEXIV2_VERSION_GOOD_FOUND) 
+      endif(_pc_KEXIV2_FOUND)
       if (KEXIV2_FOUND)
           if (NOT Kexiv2_FIND_QUIETLY)
               message(STATUS "Found libkexiv2: ${KEXIV2_LIBRARIES}")
