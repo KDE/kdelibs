@@ -22,7 +22,6 @@ set(kfile_LIB_SRCS
   kfilewidget.cpp
   kfileplacesitem.cpp
   kfileplacesmodel.cpp
-  kfileplacessharedbookmarks.cpp
   kfileplacesview.cpp
   kfileplaceeditdialog.cpp
   kfilepreviewgenerator.cpp

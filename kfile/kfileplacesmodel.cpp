@@ -19,7 +19,6 @@
 */
 #include "kfileplacesmodel.h"
 #include "kfileplacesitem_p.h"
-#include "kfileplacessharedbookmarks_p.h"
 
 #ifdef _WIN32_WCE
 #include "Windows.h"
@@ -61,10 +60,9 @@
 class KFilePlacesModel::Private
 {
 public:
-    Private(KFilePlacesModel *self) : q(self), bookmarkManager(0), sharedBookmarks(0) {}
+    Private(KFilePlacesModel *self) : q(self), bookmarkManager(0) {}
     ~Private()
     {
-        delete sharedBookmarks;
         qDeleteAll(items);
     }
 
@@ -76,7 +74,6 @@ public:
 
     Solid::Predicate predicate;
     KBookmarkManager *bookmarkManager;
-    KFilePlacesSharedBookmarks * sharedBookmarks;
 
     void reloadAndSignal();
     QList<KFilePlacesItem *> loadBookmarkList();
@@ -93,8 +90,8 @@ public:
 KFilePlacesModel::KFilePlacesModel(QObject *parent)
     : QAbstractItemModel(parent), d(new Private(this))
 {
-    const QString file = KStandardDirs::locateLocal("data", "kfileplaces/bookmarks.xml");
-    d->bookmarkManager = KBookmarkManager::managerForFile(file, "kfilePlaces");
+    const QString file = KStandardDirs().localxdgdatadir() + "user-places.xbel";
+    d->bookmarkManager = KBookmarkManager::managerForExternalFile(file);
 
     // Let's put some places in there if it's empty. We have a corner case here:
     // Given you have bookmarked some folders (which have been saved on
@@ -145,9 +142,6 @@ KFilePlacesModel::KFilePlacesModel(QObject *parent)
         // user-places.xbel will be filled later). (ereslibre)
         d->bookmarkManager->saveAs(file);
     }
-
-    // create after, so if we have own places, they are added afterwards, in case of equal priorities
-    d->sharedBookmarks = new KFilePlacesSharedBookmarks(d->bookmarkManager);
 
     QString predicate("[[[[ StorageVolume.ignored == false AND [ StorageVolume.usage == 'FileSystem' OR StorageVolume.usage == 'Encrypted' ]]"
         " OR "
@@ -632,8 +626,6 @@ bool KFilePlacesModel::dropMimeData(const QMimeData *data, Qt::DropAction action
         return false;
     }
 
-    d->sharedBookmarks->updateSharedBookmarks();
-
     d->reloadAndSignal();
 
     return true;
@@ -661,8 +653,6 @@ void KFilePlacesModel::addPlace(const QString &text, const KUrl &url,
         d->bookmarkManager->root().moveBookmark(bookmark, item->bookmark());
     }
 
-    d->sharedBookmarks->updateSharedBookmarks();
-
     d->reloadAndSignal();
 }
 
@@ -684,8 +674,6 @@ void KFilePlacesModel::editPlace(const QModelIndex &index, const QString &text, 
     bookmark.setIcon(iconName);
     bookmark.setMetaDataItem("OnlyInApp", appName);
 
-    d->sharedBookmarks->updateSharedBookmarks();
-
     d->reloadAndSignal();
     emit dataChanged(index, index);
 }
@@ -703,7 +691,6 @@ void KFilePlacesModel::removePlace(const QModelIndex &index) const
     if (bookmark.isNull()) return;
 
     d->bookmarkManager->root().deleteBookmark(bookmark);
-    d->sharedBookmarks->updateSharedBookmarks();
     d->reloadAndSignal();
 }
 
@@ -718,8 +705,6 @@ void KFilePlacesModel::setPlaceHidden(const QModelIndex &index, bool hidden)
     if (bookmark.isNull()) return;
 
     bookmark.setMetaDataItem("IsHidden", (hidden ? "true" : "false"));
-
-    d->sharedBookmarks->updateSharedBookmarks();
 
     d->reloadAndSignal();
     emit dataChanged(index, index);
