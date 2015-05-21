@@ -1,6 +1,6 @@
-<!-- requires that packagename is defined in the documentation prologue
+<!-- requires that kappname is defined in the documentation prologue
  -->
 <para>&kappname; fa parte del progetto &kde; &kde-http;.</para>
 
-<para>Puoi trovare &kappname; nel pacchetto &package; all'indirizzo &kde-ftp;, 
-il sito &FTP; principale del progetto &kde;.</para>
+<para>Puoi trovare &kappname; nel <ulink url="http://download.kde.org/">
+sito per lo scaricamento dei programmi</ulink> del progetto &kde;.</para>
