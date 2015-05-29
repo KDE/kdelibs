@@ -26,3 +26,5 @@
 <!ENTITY kde.modespec '
  <modespec id="kdems-help">help:</modespec>
   <modespec id="kdems-man">man:</modespec>'>
+
+<!ENTITY olinktype "kde-installation">
