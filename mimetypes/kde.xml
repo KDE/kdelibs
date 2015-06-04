@@ -875,6 +875,7 @@ Notes:
     <comment xml:lang="nb">Calligra Plan prosjekstyringsdokument</comment>
     <comment xml:lang="nds">Projektpleeg-Dokment för Calligra-Plan</comment>
     <comment xml:lang="nl">Calligra-plan projectbeheer-document</comment>
+    <comment xml:lang="nn">Prosjekthandsamingsdokument for Calligra Plan</comment>
     <comment xml:lang="pa">Calligra ਸਕੀਮ ਪ੍ਰੋਜੈਕਟ ਪਰਬੰਧ ਡੌਕੂਮੈਂਟ</comment>
     <comment xml:lang="pl">Dokument zarządzania projektami w Calligra Plan</comment>
     <comment xml:lang="pt">Documento de gestão de projectos do Plan para o Calligra</comment>
@@ -928,6 +929,7 @@ Notes:
     <comment xml:lang="nb">Calligra Plan arbeidspakkedokument</comment>
     <comment xml:lang="nds">Arbeitpaket-Dokment för Calligra-Plan</comment>
     <comment xml:lang="nl">Calligra-plan werkpakket document</comment>
+    <comment xml:lang="nn">Arbeidspakkedokument for Calligra Plan</comment>
     <comment xml:lang="pl">Dokument zawierający pakiet zadań Calligra Plan</comment>
     <comment xml:lang="pt">Documento de pacote de trabalho do Plan para o Calligra</comment>
     <comment xml:lang="pt_BR">Documento do pacote de trabalho do Calligra Plan</comment>
@@ -3845,6 +3847,7 @@ Notes:
     <comment xml:lang="nb">Softimage PIC-bilde</comment>
     <comment xml:lang="nds">PIC-Bild vun Softimage</comment>
     <comment xml:lang="nl">Softimage PIC-image</comment>
+    <comment xml:lang="nn">Softimage PIC-bilete</comment>
     <comment xml:lang="pl">Plik obrazu Softimage PIC</comment>
     <comment xml:lang="pt">Imagem PIC da Softimage</comment>
     <comment xml:lang="pt_BR">Imagem PIC da Softimage</comment>
@@ -3901,6 +3904,7 @@ Notes:
     <comment xml:lang="nb">FIl for Qt oppmerkingsspråk</comment>
     <comment xml:lang="nds">Qt-Schriftsatzspraakdatei</comment>
     <comment xml:lang="nl">Qt Markup Language-bestand</comment>
+    <comment xml:lang="nn">Fil for Qt-oppmerkingsspråk</comment>
     <comment xml:lang="pl">Plik języka znaczników dla Qt</comment>
     <comment xml:lang="pt">Ficheiro na Qt Markup Language</comment>
     <comment xml:lang="pt_BR">Arquivo da Qt Markup Language</comment>
@@ -3956,6 +3960,7 @@ Notes:
     <comment xml:lang="nb">Mobipocket e-bok</comment>
     <comment xml:lang="nds">E-Book för Mobipocket</comment>
     <comment xml:lang="nl">Mobipocket e-book</comment>
+    <comment xml:lang="nn">Mobipocket e-bøk</comment>
     <comment xml:lang="pl">Mobipocket e-book</comment>
     <comment xml:lang="pt">E-Book do Mobipocket</comment>
     <comment xml:lang="pt_BR">E-book do Mobipocket</comment>
