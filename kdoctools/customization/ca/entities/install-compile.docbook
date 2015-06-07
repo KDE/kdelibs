@@ -1,9 +1,9 @@
 <para>Per a informació més detallada sobre com compilar i instal·lar 
-aplicacions &kde; mireu 
+les aplicacions &kde; mireu 
 <ulink url="http://techbase.kde.org/Getting_Started#Building_and_Running_KDE_Software_From_Source">
-Building and Running KDE Software From Source</ulink></para>
+Building and Running KDE Software From Source</ulink>.</para>
 
-<para>Donat que &kde; empra <command>cmake</command> no hauria de produir-se 
+<para>Atès que el &kde; empra <command>cmake</command> no hauria de produir-se 
 cap complicació durant la compilació. Si us trobeu amb cap problema, si us 
-plau, informeu-ne a les llistes de correu de &kde;.</para>
+plau, informeu-ne a les llistes de correu del &kde;.</para>
 

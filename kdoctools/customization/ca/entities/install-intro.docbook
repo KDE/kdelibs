@@ -1,5 +1,5 @@
 <!-- requires that packagename is defined in the documentation prologue -->
 <para>&kappname; forma part del projecte &kde; &kde-http;.</para>
 
-<para>&kappname; pot trobar-se en el paquet &package; en &kde-ftp;, el 
-servidor &FTP; principal del projecte &kde;.</para>
+<para>&kappname; pot trobar-se en el <ulink url="http://download.kde.org/">
+lloc de baixada</ulink> del projecte &kde;.</para>

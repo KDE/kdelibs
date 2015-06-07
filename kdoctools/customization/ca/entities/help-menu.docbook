@@ -24,9 +24,9 @@ mostrant les pàgines d'ajuda per a &kappname;. (Aquest document).</para>
 </menuchoice>
 </term>
 <listitem><para><action>Canvia el cursor del ratolí a una combinació entre
-fletxa i interrogant.</action>  Clicant a sobre dels ítems de &kappname;
-se us obrirà una finestra d'ajuda (si existeix per a aquest ítem en
-particular) explicant la funció de dit ítem.</para></listitem>
+fletxa i interrogant.</action> Fent clic a sobre dels elements de &kappname;
+se us obrirà una finestra d'ajuda (si existeix per a aquest element en
+particular) explicant la funció de dit element.</para></listitem>
 </varlistentry>
 
 <varlistentry>
@@ -61,9 +61,9 @@ autor.</action></para></listitem>
 <varlistentry>
 <term><menuchoice>
 <guimenu>Ajuda</guimenu>
-<guimenuitem>Quant a KDE</guimenuitem>
+<guimenuitem>Quant al KDE</guimenuitem>
 </menuchoice></term>
 <listitem><para><action>Us mostrarà informació quant a la versió del KDE i
-d'altra informació bàsica.</action></para></listitem>
+altra informació bàsica.</action></para></listitem>
 </varlistentry>
 </variablelist>

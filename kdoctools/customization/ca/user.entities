@@ -20,7 +20,7 @@
 <!ENTITY Intro	"<keycap>Retorn</keycap>"><!-- English: &Enter; -->
 <!ENTITY kicon	"<guiicon>
 <inlinemediaobject>
- <objectinfo><title>Les icones del &kde;</title></objectinfo>
+ <objectinfo><title>Icona K del &kde;</title></objectinfo>
  <imageobject><imagedata fileref='common/kmenu.png' format='PNG'/></imageobject>
  <textobject><phrase>K</phrase></textobject>
 </inlinemediaobject>
@@ -39,8 +39,8 @@
 <!ENTITY Tab	"<keycap>Tabulador</keycap>">
 
 <!-- ROLES OF TRANSLATORS -->
-<!ENTITY traductor.Antoni.Bella		'<othercredit role="translator"><firstname>Antoni</firstname><surname>Bella</surname><affiliation><address><email>antonibella5@orange.es</email></address></affiliation><contrib>Traductor</contrib></othercredit>'>
-<!ENTITY revisor.Antoni.Bella		'<othercredit role="reviewer"><firstname>Antoni</firstname><surname>Bella</surname><affiliation><address><email>antonibella5@orange.es</email></address></affiliation><contrib>Revisor</contrib></othercredit>'>
+<!ENTITY traductor.Antoni.Bella		'<othercredit role="translator"><firstname>Antoni</firstname><surname>Bella</surname><affiliation><address><email>antonibella5@yahoo.com</email></address></affiliation><contrib>Traductor</contrib></othercredit>'>
+<!ENTITY revisor.Antoni.Bella		'<othercredit role="reviewer"><firstname>Antoni</firstname><surname>Bella</surname><affiliation><address><email>antonibella5@yahoo.com</email></address></affiliation><contrib>Revisor</contrib></othercredit>'>
 <!ENTITY traductor.Pep.Roca		'<othercredit role="translator"><firstname>Pep</firstname><surname>Roca</surname><affiliation><address><email>pep.roca@gmail.com</email></address></affiliation><contrib>Traductor</contrib></othercredit>'>
 <!ENTITY revisor.Pep.Roca		'<othercredit role="reviewer"><firstname>Pep</firstname><surname>Roca</surname><affiliation><address><email>pep.roca@gmail.com</email></address></affiliation><contrib>Revisor</contrib></othercredit>'>
 <!ENTITY traductor.Rafael.Carreras	'<othercredit role="translator"><firstname>Rafael</firstname><surname>Carreras</surname><affiliation><address><email>rcarreras@caliu.cat</email></address></affiliation><contrib>Traductor</contrib></othercredit>'>
@@ -52,7 +52,7 @@
 
 <!-- CREDITS FOR TRANSLATORS -->
 <!-- Seguir el següent format '<para>Traductor/Revisor de la documentació: &credits.Nom.Cognom;</para>' -->
-<!ENTITY credits.Antoni.Bella		'Antoni Bella <email>antonibella5@orange.es</email>'>
+<!ENTITY credits.Antoni.Bella		'Antoni Bella <email>antonibella5@yahoo.com</email>'>
 <!ENTITY credits.Pep.Roca		'Pep Roca <email>pep.roca@gmail.com</email>'>
 <!ENTITY credits.Rafael.Carreras	'Rafael Carreras <email>rcarreras@caliu.cat</email>'>
 <!ENTITY credits.Manuel.Tortosa		'Manuel Tortosa <email>manutortosa@gmail.com</email>'>
