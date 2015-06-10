@@ -30,6 +30,7 @@
 #include <kstandarddirs.h>
 
 #include <qfile.h>
+#include <qdir.h>
 #include <qfileinfo.h>
 #include <qregexp.h>
 
@@ -57,6 +58,105 @@ using namespace KWallet;
 static void initKWalletDir()
 {
     KGlobal::dirs()->addResourceType("kwallet", "share/apps/kwallet");
+    KGlobal::dirs()->addResourceType("kwallet_e35", "share/apps/kwallet_e35");
+}
+
+/* XXX e35 hack. Checks the compatibility of the db. Returns an
+ * openRCT on error. Zero on success.
+ * Opens the file and modifies the position
+ * of the read location. */
+static int checkCompatibilty(QFile *db) {
+	if (!db->open(IO_ReadOnly)) {
+		return -2;         // error opening file
+	}
+
+	char magicBuf[KWMAGIC_LEN];
+	db->readBlock(magicBuf, KWMAGIC_LEN);
+	if (memcmp(magicBuf, KWMAGIC, KWMAGIC_LEN) != 0) {
+		return -3;         // bad magic
+	}
+
+	db->readBlock(magicBuf, 4);
+
+	// First byte is major version, second byte is minor version
+	if (magicBuf[0] != KWALLET_VERSION_MAJOR) {
+		return -4;         // unknown version
+	}
+
+	if (magicBuf[1] != KWALLET_VERSION_MINOR) {
+		return -4;	   // unknown version
+	}
+
+	if (magicBuf[2] != KWALLET_CIPHER_BLOWFISH_CBC) {
+		return -42;	   // unknown cipher
+	}
+
+	if (magicBuf[3] != KWALLET_HASH_SHA1) {
+		return -42;	   // unknown hash
+	}
+
+    return 0;
+}
+
+
+/* XXX e35 hack. Newer version of kwallet migrate the wallet.
+ * So we change the path
+ * of our kwallet directory to have an _e35 suffix.
+ * Ideally this code will be executed before the migration is done
+ * Then it copies the old wallet to the new location. If not
+ * the user will have to start with a new wallet.
+ * */
+static QString getHiddenPath(const QString& name) {
+    const QString newDirString = KGlobal::dirs()->saveLocation("kwallet_e35");
+    QDir newDir(newDirString);
+    QFileInfo newWallet(newDir.filePath(name));
+    if (newWallet.exists()) {
+        kdDebug() << "Using _e35 suffixed kwallet directory." << endl;
+        // New wallet already exists. Use that.
+        return newWallet.filePath();
+    }
+
+    QDir oldDir(KGlobal::dirs()->saveLocation("kwallet"));
+    QFileInfo oldWallet(oldDir.filePath(name));
+    if (!oldWallet.exists()) {
+        return newWallet.filePath();
+    }
+
+    QFile oldWalletFile(oldDir.filePath(name));
+    int rc = checkCompatibilty(&oldWalletFile);
+    oldWalletFile.close();
+    if (rc) {
+        kdDebug() << "Old Wallet incompatible. User has to start from scratch." << endl;
+        return newWallet.filePath();
+    }
+
+    if (!newDir.exists()) {
+        if (!newDir.mkdir(newDirString)) {
+            kdDebug() << "Failed to create new kwallet save location: " <<
+                newDirString << endl;
+            return newWallet.filePath();
+        }
+    }
+
+    if (!newWallet.exists()) {
+        QFile src(oldWallet.filePath());
+        QFile dst(newWallet.filePath());
+        if (src.open(IO_ReadOnly) && dst.open(IO_WriteOnly)) {
+            uint dataLength = 4096;
+            char *data = new char[dataLength];
+            while(!src.atEnd()) {
+                dst.writeBlock(data, src.readBlock(data, dataLength));
+                dst.flush();
+            }
+            src.close();
+            dst.close();
+            kdDebug() << "Copied " << oldWallet.filePath() << " to "
+                << newWallet.filePath() << endl;
+        } else {
+            kdDebug() << "Failed to copy old wallet." << endl;
+        }
+    }
+    return newWallet.filePath();
 }
 
 Backend::Backend(const QString& name, bool isPath) : _name(name), _ref(0) {
@@ -64,7 +164,7 @@ Backend::Backend(const QString& name, bool isPath) : _name(name), _ref(0) {
 	if (isPath) {
 		_path = name;
 	} else {
-		_path = KGlobal::dirs()->saveLocation("kwallet") + "/" + _name + ".kwl";
+		_path = getHiddenPath(_name + ".kwl");
 	}
 
 	_open = false;
@@ -245,7 +345,7 @@ static int password2hash(const QByteArray& password, QByteArray& hash) {
 
 bool Backend::exists(const QString& wallet) {
 	initKWalletDir();
-	QString path = KGlobal::dirs()->saveLocation("kwallet") + "/" + wallet + ".kwl";
+	QString path = getHiddenPath(wallet + ".kwl");
 	// Note: 60 bytes is presently the minimum size of a wallet file.
 	//       Anything smaller is junk.
 return QFile::exists(path) && QFileInfo(path).size() >= 60;
@@ -279,7 +379,6 @@ QString Backend::openRCToString(int rc) {
 	}
 }
 
-
 int Backend::open(const QByteArray& password) {
 
 	if (_open) {
@@ -304,34 +403,10 @@ int Backend::open(const QByteArray& password) {
 
 	QFile db(_path);
 
-	if (!db.open(IO_ReadOnly)) {
-		return -2;         // error opening file
-	}
-
-	char magicBuf[KWMAGIC_LEN];
-	db.readBlock(magicBuf, KWMAGIC_LEN);
-	if (memcmp(magicBuf, KWMAGIC, KWMAGIC_LEN) != 0) {
-		return -3;         // bad magic
-	}
-
-	db.readBlock(magicBuf, 4);
-
-	// First byte is major version, second byte is minor version
-	if (magicBuf[0] != KWALLET_VERSION_MAJOR) {
-		return -4;         // unknown version
-	}
-
-	if (magicBuf[1] != KWALLET_VERSION_MINOR) {
-		return -4;	   // unknown version
-	}
-
-	if (magicBuf[2] != KWALLET_CIPHER_BLOWFISH_CBC) {
-		return -42;	   // unknown cipher
-	}
-
-	if (magicBuf[3] != KWALLET_HASH_SHA1) {
-		return -42;	   // unknown hash
-	}
+    int err = checkCompatibilty(&db);
+    if (err) {
+        return err;
+    }
 
 	_hashes.clear();
 	// Read in the hashes
