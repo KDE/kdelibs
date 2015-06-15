@@ -3046,7 +3046,7 @@ Notes:
     <comment xml:lang="ar">تشكيلة تفريغ Cachegrind/Callgrind </comment>
     <comment xml:lang="ast">Volcáu d'analís de rendimientu de Cachegrind/Callgrind</comment>
     <comment xml:lang="bs">Cachegrindov/Callgrindov profilni popis</comment>
-    <comment xml:lang="ca">bolcat de perfil Cachegrind/Callgrind</comment>
+    <comment xml:lang="ca">bolcat d'anàlisi de rendiment del Cachegrind/Callgrind</comment>
     <comment xml:lang="ca@valencia">bolcat de perfil Cachegrind/Callgrind</comment>
     <comment xml:lang="cs">Výpis profilu Cachegrind/Callgrind</comment>
     <comment xml:lang="da">Cachegrind/Callgrind profil-dump</comment>
