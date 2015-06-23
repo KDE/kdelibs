@@ -1261,7 +1261,7 @@ void KWalletD::reconfigure() {
 	cfg.setGroup("Wallet");
 	_firstUse = cfg.readBoolEntry("First Use", true);
 	_enabled = cfg.readBoolEntry("Enabled", true);
-	_launchManager = cfg.readBoolEntry("Launch Manager", true);
+	_launchManager = cfg.readBoolEntry("Launch Manager", false);
 	_leaveOpen = cfg.readBoolEntry("Leave Open", false);
 	bool idleSave = _closeIdle;
 	_closeIdle = cfg.readBoolEntry("Close When Idle", false);
