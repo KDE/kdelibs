@@ -66,7 +66,7 @@ Notes:
     <comment xml:lang="sv">Metalink-nerladdning</comment>
     <comment xml:lang="tr">Metalink indirmesi</comment>
     <comment xml:lang="ug">Metalink چۈشۈرۈش</comment>
-    <comment xml:lang="uk">метапосилання звантаження</comment>
+    <comment xml:lang="uk">метапосилання отримання</comment>
     <comment xml:lang="zh_CN">Metalink 下载</comment>
     <comment xml:lang="zh_TW">Metalink 下載</comment>
     <glob pattern="*.metalink"/>
@@ -3274,7 +3274,7 @@ Notes:
     <comment xml:lang="th">รายการดาวน์โหลดของ 'ช่วยดาวน์โหลด-K (KGet)'</comment>
     <comment xml:lang="tr">KGet indirme listesi</comment>
     <comment xml:lang="ug">KGet چۈشۈرۈش تىزىمى</comment>
-    <comment xml:lang="uk">список звантажень KGet</comment>
+    <comment xml:lang="uk">список отримань KGet</comment>
     <comment xml:lang="zh_CN">KGet 下载列表</comment>
     <comment xml:lang="zh_TW">KGet 下載清單</comment>
     <glob pattern="*.kgt"/>
