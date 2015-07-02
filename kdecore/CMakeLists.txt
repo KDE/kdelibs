@@ -337,7 +337,6 @@ set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS}
    localization/probers/nsCharSetProber.cpp
    localization/probers/nsEUCJPProber.cpp
    localization/probers/nsEUCKRProber.cpp
-   localization/probers/nsEUCTWProber.cpp
    localization/probers/nsEscCharsetProber.cpp
    localization/probers/nsEscSM.cpp
    localization/probers/nsGB2312Prober.cpp

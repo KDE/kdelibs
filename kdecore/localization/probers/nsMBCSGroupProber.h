@@ -32,9 +32,8 @@
 #include "nsGB2312Prober.h"
 #include "nsEUCKRProber.h"
 #include "nsBig5Prober.h"
-#include "nsEUCTWProber.h"
 
-#define NUM_OF_PROBERS    7
+#define NUM_OF_PROBERS    6
 namespace kencodingprober {
 class KDE_NO_EXPORT nsMBCSGroupProber: public nsCharSetProber {
 public:

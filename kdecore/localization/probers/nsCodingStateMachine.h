@@ -100,7 +100,6 @@ extern KDE_NO_EXPORT SMModel UTF8SMModel;
 extern KDE_NO_EXPORT SMModel Big5SMModel;
 extern KDE_NO_EXPORT SMModel EUCJPSMModel;
 extern KDE_NO_EXPORT SMModel EUCKRSMModel;
-extern KDE_NO_EXPORT SMModel EUCTWSMModel;
 extern KDE_NO_EXPORT SMModel GB18030SMModel;
 extern KDE_NO_EXPORT SMModel SJISSMModel;
 extern KDE_NO_EXPORT SMModel UCS2LESMModel;

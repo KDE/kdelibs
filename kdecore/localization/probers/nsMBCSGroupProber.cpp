@@ -38,7 +38,6 @@ static const char* const ProberName[] =
   "GB18030",
   "EUCKR",
   "Big5",
-  "EUCTW",
 };
 
 #endif
@@ -51,7 +50,6 @@ nsMBCSGroupProber::nsMBCSGroupProber()
   mProbers[3] = new nsGB18030Prober();
   mProbers[4] = new nsEUCKRProber();
   mProbers[5] = new nsBig5Prober();
-  mProbers[6] = new nsEUCTWProber();
   Reset();
 }
 

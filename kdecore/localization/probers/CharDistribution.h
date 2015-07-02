@@ -106,25 +106,6 @@ protected:
 };
 
 
-class KDE_NO_EXPORT  EUCTWDistributionAnalysis: public CharDistributionAnalysis
-{
-public:
-  EUCTWDistributionAnalysis();
-protected:
-
-  //for euc-TW encoding, we are interested 
-  //  first  byte range: 0xc4 -- 0xfe
-  //  second byte range: 0xa1 -- 0xfe
-  //no validation needed here. State machine has done that
-  int GetOrder(const char* str) 
-  { if ((unsigned char)*str >= (unsigned char)0xc4)  
-      return 94*((unsigned char)str[0]-(unsigned char)0xc4) + (unsigned char)str[1] - (unsigned char)0xa1;
-    else
-      return -1;
-  };
-};
-
-
 class KDE_NO_EXPORT  EUCKRDistributionAnalysis : public CharDistributionAnalysis
 {
 public:
