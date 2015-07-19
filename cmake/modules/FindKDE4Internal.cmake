@@ -355,8 +355,6 @@ cmake_policy(VERSION 2.4.5)
 # this must be executed always, because the CMAKE_MINIMUM_REQUIRED() command above
 # resets the policy settings, so we get a lot of warnings
 
-# CMP0002: in KDE4 we have multiple targets with the same name for the unit tests
-cmake_policy(SET CMP0002 OLD)
 # CMP0003: add the link paths to the link command as with cmake 2.4
 cmake_policy(SET CMP0003 NEW)
 
