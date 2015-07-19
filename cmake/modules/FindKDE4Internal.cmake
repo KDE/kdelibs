@@ -360,7 +360,7 @@ cmake_policy(SET CMP0000 OLD)
 # CMP0002: in KDE4 we have multiple targets with the same name for the unit tests
 cmake_policy(SET CMP0002 OLD)
 # CMP0003: add the link paths to the link command as with cmake 2.4
-cmake_policy(SET CMP0003 OLD)
+cmake_policy(SET CMP0003 NEW)
 
 cmake_policy(SET CMP0005 NEW)
 # since cmake 2.6.3: NEW behaviour is that setting policies doesn't "escape" the file
