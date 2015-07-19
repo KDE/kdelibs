@@ -13,7 +13,7 @@ if(WIN32)
 endif(WIN32)
 
 target_link_libraries(fakehardwaretest solid_static ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTTEST_LIBRARY} )
-add_definitions(-DTEST_DATA="\\"${CMAKE_CURRENT_SOURCE_DIR}/../solid/backends/fakehw/fakecomputer.xml\\"")
+add_definitions(-DTEST_DATA="${CMAKE_CURRENT_SOURCE_DIR}/../solid/backends/fakehw/fakecomputer.xml")
 
 
 ########### halbasictest ###############
@@ -37,7 +37,7 @@ set(solidhwtest_SRCS
 
 
 kde4_add_unit_test(solidhwtest ${solidhwtest_SRCS})
-add_definitions(-DFAKE_COMPUTER_XML="\\"${CMAKE_CURRENT_SOURCE_DIR}/../solid/backends/fakehw/fakecomputer.xml\\"")
+add_definitions(-DFAKE_COMPUTER_XML="${CMAKE_CURRENT_SOURCE_DIR}/../solid/backends/fakehw/fakecomputer.xml")
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../solid/backends/fakehw )
 
@@ -55,7 +55,7 @@ set(solidmttest_SRCS
 
 
 kde4_add_unit_test(solidmttest ${solidmttest_SRCS})
-add_definitions(-DFAKE_COMPUTER_XML="\\"${CMAKE_CURRENT_SOURCE_DIR}/../solid/backends/fakehw/fakecomputer.xml\\"")
+add_definitions(-DFAKE_COMPUTER_XML="${CMAKE_CURRENT_SOURCE_DIR}/../solid/backends/fakehw/fakecomputer.xml")
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../solid/backends/fakehw )
 

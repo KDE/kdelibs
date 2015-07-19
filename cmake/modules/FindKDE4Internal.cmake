@@ -361,8 +361,8 @@ cmake_policy(SET CMP0000 OLD)
 cmake_policy(SET CMP0002 OLD)
 # CMP0003: add the link paths to the link command as with cmake 2.4
 cmake_policy(SET CMP0003 OLD)
-# CMP0005: keep escaping behaviour for definitions added via add_definitions()
-cmake_policy(SET CMP0005 OLD)
+
+cmake_policy(SET CMP0005 NEW)
 # since cmake 2.6.3: NEW behaviour is that setting policies doesn't "escape" the file
 # where this is done, macros and functions are executed with the policies as they
 # were when the were defined. Keep the OLD behaviour so we can set the policies here
