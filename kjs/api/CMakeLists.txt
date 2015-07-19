@@ -10,7 +10,7 @@ set(kjsapi_LIB_SRCS
 
 kde4_add_library(kjsapi ${LIBRARY_TYPE} ${kjsapi_LIB_SRCS})
 
-target_link_libraries(kjsapi ${KJSLIBNAME} ${KDE4_KDECORE_LIBS})
+target_link_libraries(kjsapi LINK_PRIVATE ${KJSLIBNAME} ${KDE4_KDECORE_LIBS})
 
 set_target_properties(kjsapi PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
 install(TARGETS kjsapi EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})

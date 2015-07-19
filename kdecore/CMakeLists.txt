@@ -176,7 +176,7 @@ if (UNIX)
    kde4_add_library(kdefakes ${LIBRARY_TYPE} fakes.c)
    set_target_properties(kdefakes PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION})
    if (NOT HAVE_TRUNC)
-       target_link_libraries(kdefakes  m )
+       target_link_libraries(kdefakes LINK_PRIVATE m )
    endif (NOT HAVE_TRUNC)
    install(TARGETS kdefakes EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
@@ -410,10 +410,10 @@ endif (NOT Q_WS_X11 AND NOT Q_WS_QWS)
 
 kde4_add_library(kdecore ${LIBRARY_TYPE} ${kdecore_LIB_SRCS})
 
-target_link_libraries(kdecore ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${ZLIB_LIBRARY} ${kdecore_OPTIONAL_LIBS})
+target_link_libraries(kdecore LINK_PRIVATE ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${ZLIB_LIBRARY} ${kdecore_OPTIONAL_LIBS})
 
 if(WINCE)
-  target_link_libraries(kdecore ${WCECOMPAT_LIBRARIES} Ceshell.lib)
+  target_link_libraries(kdecore LINK_PRIVATE ${WCECOMPAT_LIBRARIES} Ceshell.lib)
 endif(WINCE)
 
 set(SYS_INOTIFY_H_FOUND 0)
@@ -433,7 +433,7 @@ endif(SYS_INOTIFY_H_FOUND)
 
 if(FAM_FOUND)
    include_directories(${FAM_INCLUDE_DIR})
-   target_link_libraries(kdecore ${FAM_LIBRARIES})
+   target_link_libraries(kdecore LINK_PRIVATE ${FAM_LIBRARIES})
 endif(FAM_FOUND)
 
 if(WIN32)
@@ -446,7 +446,7 @@ else(WIN32)
   endif(APPLE)
 endif(WIN32)
 
-target_link_libraries(kdecore LINK_INTERFACE_LIBRARIES ${kdecore_LINK_INTERFACE_LIBRARIES} )
+target_link_libraries(kdecore LINK_PUBLIC ${kdecore_LINK_INTERFACE_LIBRARIES} )
 
 set_target_properties(kdecore PROPERTIES
                               VERSION ${KDE_NON_GENERIC_LIB_VERSION}

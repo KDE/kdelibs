@@ -212,19 +212,19 @@ endif (NOT DEFINED QT_ONLY)
 kde4_add_library(${KJSLIBNAME} ${LIBRARY_TYPE} ${kjs_LIB_SRCS})
 
 if(WIN32)
-   target_link_libraries(${KJSLIBNAME} ${KDEWIN_LIBRARIES})
+   target_link_libraries(${KJSLIBNAME} LINK_PRIVATE ${KDEWIN_LIBRARIES})
 endif(WIN32)
 
 if(CMAKE_THREAD_LIBS_INIT)
-   target_link_libraries(${KJSLIBNAME} ${CMAKE_THREAD_LIBS_INIT})
+   target_link_libraries(${KJSLIBNAME} LINK_PRIVATE ${CMAKE_THREAD_LIBS_INIT})
 endif(CMAKE_THREAD_LIBS_INIT)
 
 if(UNIX)
-   target_link_libraries(${KJSLIBNAME} m)
+   target_link_libraries(${KJSLIBNAME} LINK_PRIVATE m)
 endif(UNIX)
 
 if(PCRE_FOUND)
-   target_link_libraries(${KJSLIBNAME} ${PCRE_LIBRARIES})
+   target_link_libraries(${KJSLIBNAME} LINK_PRIVATE ${PCRE_LIBRARIES})
 endif(PCRE_FOUND)
 
 set_target_properties(${KJSLIBNAME} PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )

@@ -85,7 +85,8 @@ target_link_libraries(proxymodeltestsuite
    ${Grantlee_CORE_LIBRARIES}
 )
 set_target_properties(proxymodeltestsuite PROPERTIES
-    LINK_INTERFACE_LIBRARIES "" 
+    LINK_INTERFACE_LIBRARIES ""
+    INTERFACE_LINK_LIBRARIES ""
     DEFINE_SYMBOL MAKE_PROXYMODELTESTSUITE_LIB)
 
 if(proxymodeltestsuite_standalone)

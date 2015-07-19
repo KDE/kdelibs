@@ -1099,6 +1099,7 @@ macro (KDE4_ADD_LIBRARY _target_NAME _lib_TYPE)
    # dependencies of shared libraries without breaking binary compatibility.
    if(NOT "${_add_lib_param}" STREQUAL "STATIC")
       set_target_properties(${_target_NAME} PROPERTIES LINK_INTERFACE_LIBRARIES "" )
+      set_target_properties(${_target_NAME} PROPERTIES INTERFACE_LINK_LIBRARIES "" )
    endif(NOT "${_add_lib_param}" STREQUAL "STATIC")
 
 endmacro (KDE4_ADD_LIBRARY _target_NAME _lib_TYPE)

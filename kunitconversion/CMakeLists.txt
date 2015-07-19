@@ -60,7 +60,7 @@ include_directories (${CMAKE_SOURCE_DIR} ${KDE4_KDECORE_INCLUDES})
 
 
 kde4_add_library(kunitconversion ${LIBRARY_TYPE} ${kunitconversion_LIB_SRCS})
-target_link_libraries(kunitconversion ${KDE4_KDECORE_LIBS} ${KUNITCONVERSION_EXTRA_LIBS})
+target_link_libraries(kunitconversion LINK_PRIVATE ${KDE4_KDECORE_LIBS} ${KUNITCONVERSION_EXTRA_LIBS})
 set_target_properties(kunitconversion PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION})
 install(TARGETS kunitconversion EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 install(FILES ${kunitconversion_HEADERS} DESTINATION ${INCLUDE_INSTALL_DIR}/kunitconversion COMPONENT Devel)

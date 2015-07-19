@@ -8,8 +8,8 @@ set(kunittest_LIB_SRCS runner.cpp tester.cpp )
 
 kde4_add_library(kunittest ${LIBRARY_TYPE} ${kunittest_LIB_SRCS})
 
-target_link_libraries(kunittest ${KDE4_KDECORE_LIBS} )
-target_link_libraries(kunittest LINK_INTERFACE_LIBRARIES kdecore ${QT_QTCORE_LIBRARY} )
+target_link_libraries(kunittest LINK_PRIVATE ${KDE4_KDECORE_LIBS} )
+target_link_libraries(kunittest LINK_PUBLIC kdecore ${QT_QTCORE_LIBRARY} )
 
 set_target_properties(kunittest PROPERTIES
    VERSION ${GENERIC_LIB_VERSION}

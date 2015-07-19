@@ -275,31 +275,31 @@ endif(PHONON_FOUND)
 
 kde4_add_library(plasma ${LIBRARY_TYPE} ${plasma_LIB_SRCS})
 
-target_link_libraries(plasma ${QT_QTUITOOLS_LIBRARY} ${QT_QTWEBKIT_LIBRARY}
+target_link_libraries(plasma LINK_PRIVATE ${QT_QTUITOOLS_LIBRARY} ${QT_QTWEBKIT_LIBRARY}
                              ${QT_QTSCRIPT_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTSQL_LIBRARY} ${QT_QTDECLARATIVE_LIBRARY}
                              ${KDE4_KDEUI_LIBS} ${KDE4_KDNSSD_LIBS} ${KDE4_THREADWEAVER_LIBS} ${PLASMA_EXTRA_LIBS})
 
 if(QCA2_FOUND)
-   target_link_libraries(plasma ${QCA2_LIBRARIES})
+   target_link_libraries(plasma LINK_PRIVATE ${QCA2_LIBRARIES})
 endif(QCA2_FOUND)
 
 if(X11_FOUND)
-   target_link_libraries(plasma ${X11_LIBRARIES})
+   target_link_libraries(plasma LINK_PRIVATE ${X11_LIBRARIES})
 endif(X11_FOUND)
 
 if(PHONON_FOUND)
-   target_link_libraries(plasma ${KDE4_PHONON_LIBS})
+   target_link_libraries(plasma LINK_PRIVATE ${KDE4_PHONON_LIBS})
 endif(PHONON_FOUND)
 
 if(DL_LIBRARY)
-    target_link_libraries(plasma ${DL_LIBRARY})
+    target_link_libraries(plasma LINK_PRIVATE ${DL_LIBRARY})
 endif(DL_LIBRARY)
 
 if(QT_QTOPENGL_FOUND)
-    target_link_libraries(plasma ${QT_QTOPENGL_LIBRARY})
+    target_link_libraries(plasma LINK_PRIVATE ${QT_QTOPENGL_LIBRARY})
 endif(QT_QTOPENGL_FOUND)
 
-target_link_libraries(plasma LINK_INTERFACE_LIBRARIES kdeui kdecore ${QT_QTGUI_LIBRARY})
+target_link_libraries(plasma LINK_PUBLIC kdeui kdecore ${QT_QTGUI_LIBRARY})
 
 #do NOT use GENERIC versioning -- the plasma team will take care of versioning
 set_target_properties(plasma PROPERTIES

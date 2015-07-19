@@ -16,8 +16,8 @@ qt4_add_dbus_interface(kimproxy_LIB_SRCS ../interface/org.kde.KIMIface.xml kimif
 
 kde4_add_library(kimproxy ${LIBRARY_TYPE} ${kimproxy_LIB_SRCS})
 
-target_link_libraries(kimproxy  ${KDE4_KIO_LIBS} )
-target_link_libraries(kimproxy  LINK_INTERFACE_LIBRARIES ${QT_QTCORE_LIBRARY} )
+target_link_libraries(kimproxy  LINK_PRIVATE ${KDE4_KIO_LIBS} )
+target_link_libraries(kimproxy  LINK_PUBLIC ${QT_QTCORE_LIBRARY} )
 
 set_target_properties(kimproxy PROPERTIES
    VERSION ${GENERIC_LIB_VERSION}

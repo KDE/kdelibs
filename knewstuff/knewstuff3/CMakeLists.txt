@@ -43,12 +43,13 @@ kde4_add_ui_files(knewstuff3_SRCS
 kde4_add_library(knewstuff3 ${LIBRARY_TYPE} ${knewstuff3_SRCS} )
 
 target_link_libraries(knewstuff3
+  LINK_PRIVATE
     ${KDE4_KIO_LIBS}
     ${KDE4_KDECORE_LIBS}
 )
 
-target_link_libraries(knewstuff3 ${LIBATTICA_LIBRARIES})
-target_link_libraries(knewstuff3 LINK_INTERFACE_LIBRARIES kdeui kdecore ${QT_QTGUI_LIBRARY})
+target_link_libraries(knewstuff3 LINK_PRIVATE ${LIBATTICA_LIBRARIES})
+target_link_libraries(knewstuff3 LINK_PUBLIC kdeui kdecore ${QT_QTGUI_LIBRARY})
 
 set_target_properties(knewstuff3 PROPERTIES
    VERSION ${GENERIC_LIB_VERSION}

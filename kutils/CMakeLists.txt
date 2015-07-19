@@ -11,8 +11,8 @@ set(kemoticons_LIB_SRCS
 )
 
 kde4_add_library(kemoticons ${LIBRARY_TYPE} ${kemoticons_LIB_SRCS})
-target_link_libraries(kemoticons ${KDE4_KIO_LIBS})
-target_link_libraries(kemoticons LINK_INTERFACE_LIBRARIES kdecore kdeui ${QT_QTGUI_LIBRARY})
+target_link_libraries(kemoticons LINK_PRIVATE ${KDE4_KIO_LIBS})
+target_link_libraries(kemoticons LINK_PUBLIC kdecore kdeui ${QT_QTGUI_LIBRARY})
 set_target_properties(kemoticons PROPERTIES
                       VERSION ${GENERIC_LIB_VERSION}
                       SOVERSION ${GENERIC_LIB_SOVERSION})
@@ -57,17 +57,17 @@ elseif (Q_WS_WIN)
 endif (Q_WS_X11)
 
 kde4_add_library(kidletime ${LIBRARY_TYPE} ${kidletime_LIB_SRCS})
-target_link_libraries(kidletime LINK_INTERFACE_LIBRARIES kdecore kdeui ${QT_QTGUI_LIBRARY})
-target_link_libraries(kidletime ${KDE4_KDEUI_LIBS})
+target_link_libraries(kidletime LINK_PUBLIC kdecore kdeui ${QT_QTGUI_LIBRARY})
+target_link_libraries(kidletime LINK_PRIVATE ${KDE4_KDEUI_LIBS})
 
 if (Q_WS_X11)
    if (HAVE_XSCREENSAVER)
-     target_link_libraries(kidletime ${X11_Xss_LIB})
+     target_link_libraries(kidletime LINK_PRIVATE ${X11_Xss_LIB})
    endif (HAVE_XSCREENSAVER)
    if (HAVE_XSYNC)
-     target_link_libraries(kidletime ${X11_Xext_LIB})
+     target_link_libraries(kidletime LINK_PRIVATE ${X11_Xext_LIB})
    endif (HAVE_XSYNC)
-   target_link_libraries(kidletime ${X11_LIBRARIES})
+   target_link_libraries(kidletime LINK_PRIVATE ${X11_LIBRARIES})
 endif (Q_WS_X11)
 
 set_target_properties(kidletime PROPERTIES
@@ -98,8 +98,8 @@ set(kcmutils_LIB_SRCS
 
 kde4_add_library(kcmutils ${LIBRARY_TYPE} ${kcmutils_LIB_SRCS})
 
-target_link_libraries(kcmutils ${KDE4_KDEUI_LIBS})
-target_link_libraries(kcmutils LINK_INTERFACE_LIBRARIES kdecore kdeui ${QT_QTGUI_LIBRARY})
+target_link_libraries(kcmutils LINK_PRIVATE ${KDE4_KDEUI_LIBS})
+target_link_libraries(kcmutils LINK_PUBLIC kdecore kdeui ${QT_QTGUI_LIBRARY})
 set_target_properties(kcmutils PROPERTIES
                       VERSION ${GENERIC_LIB_VERSION}
                       SOVERSION ${GENERIC_LIB_SOVERSION})
@@ -131,8 +131,8 @@ set(kprintutils_LIB_SRCS
 
 kde4_add_library(kprintutils ${LIBRARY_TYPE} ${kprintutils_LIB_SRCS})
 
-target_link_libraries(kprintutils ${KDE4_KPARTS_LIBS})
-target_link_libraries(kprintutils LINK_INTERFACE_LIBRARIES kdecore kdeui ${QT_QTGUI_LIBRARY})
+target_link_libraries(kprintutils LINK_PRIVATE ${KDE4_KPARTS_LIBS})
+target_link_libraries(kprintutils LINK_PUBLIC kdecore kdeui ${QT_QTGUI_LIBRARY})
 set_target_properties(kprintutils PROPERTIES
                       VERSION ${GENERIC_LIB_VERSION}
                       SOVERSION ${GENERIC_LIB_SOVERSION})
@@ -154,8 +154,8 @@ set(kutils_LIB_SRCS
 
 kde4_add_library(kutils ${LIBRARY_TYPE} ${kutils_LIB_SRCS})
 
-target_link_libraries(kutils kemoticons kidletime kcmutils kprintutils ${QT_QTCORE_LIBRARY})
-target_link_libraries(kutils LINK_INTERFACE_LIBRARIES kdecore kdeui ${QT_QTGUI_LIBRARY} kemoticons kidletime kcmutils kprintutils)
+target_link_libraries(kutils LINK_PRIVATE kemoticons kidletime kcmutils kprintutils ${QT_QTCORE_LIBRARY})
+target_link_libraries(kutils LINK_PUBLIC kdecore kdeui ${QT_QTGUI_LIBRARY} kemoticons kidletime kcmutils kprintutils)
 set_target_properties(kutils PROPERTIES
                       VERSION ${GENERIC_LIB_VERSION}
                       SOVERSION ${GENERIC_LIB_SOVERSION})

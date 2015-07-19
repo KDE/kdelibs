@@ -35,6 +35,7 @@ kde4_add_ui_files(nepomukutils_SRCS daterangeselectionwidget.ui)
 kde4_add_library(nepomukutils ${LIBRARY_TYPE} ${nepomukutils_SRCS})
 
 target_link_libraries(nepomukutils
+  LINK_PRIVATE
   ${SOPRANO_LIBRARIES}
   ${QT_QTCORE_LIBRARY}
   nepomuk

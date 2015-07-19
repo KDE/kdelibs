@@ -35,11 +35,11 @@ set(kparts_LIB_SRCS
 
 kde4_add_library(kparts ${LIBRARY_TYPE} ${kparts_LIB_SRCS})
 
-target_link_libraries(kparts  ${KDE4_KDECORE_LIBS} kdeui kio)
-target_link_libraries(kparts  LINK_INTERFACE_LIBRARIES kio kdeui kdecore ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} )
+target_link_libraries(kparts  LINK_PRIVATE ${KDE4_KDECORE_LIBS} kdeui kio)
+target_link_libraries(kparts  LINK_PUBLIC kio kdeui kdecore ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} )
 if(HAVE_NEPOMUK)
-  target_link_libraries(kparts  nepomuk nepomukutils)
-  target_link_libraries(kparts  LINK_INTERFACE_LIBRARIES nepomuk nepomukutils )
+  target_link_libraries(kparts  LINK_PRIVATE nepomuk nepomukutils)
+  target_link_libraries(kparts  LINK_PUBLIC nepomuk nepomukutils )
 endif(HAVE_NEPOMUK)
 
 set_target_properties(kparts PROPERTIES VERSION ${GENERIC_LIB_VERSION} 

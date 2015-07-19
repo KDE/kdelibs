@@ -132,6 +132,7 @@ soprano_add_ontology(nepomuk_LIB_SRCS "${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nepom
 kde4_add_library(nepomuk ${LIBRARY_TYPE} ${nepomuk_LIB_SRCS})
 
 target_link_libraries(nepomuk
+  LINK_PRIVATE
   ${SOPRANO_LIBRARIES}
   ${SOPRANO_CLIENT_LIBRARIES}
   ${QT_QTCORE_LIBRARY}
@@ -142,7 +143,7 @@ target_link_libraries(nepomuk
 )
 
 target_link_libraries(nepomuk
-  LINK_INTERFACE_LIBRARIES
+  LINK_PUBLIC
   kdeui
   ${SOPRANO_LIBRARIES})
 

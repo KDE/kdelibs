@@ -53,8 +53,8 @@ kde4_add_ui_files(knewstuff2_ui_SRCS ui/DownloadDialog.ui ui/UploadDialog.ui)
 
 kde4_add_library(knewstuff2 ${LIBRARY_TYPE} ${knewstuff2_core_SRCS} ${knewstuff2_dxs_SRCS} ${knewstuff2_ui_SRCS} ${knewstuff2_SRCS})
 
-target_link_libraries(knewstuff2 ${KDE4_KIO_LIBS} ${QT_QTNETWORK_LIBRARY})
-target_link_libraries(knewstuff2 LINK_INTERFACE_LIBRARIES kdeui kdecore ${QT_QTGUI_LIBRARY} )
+target_link_libraries(knewstuff2 LINK_PRIVATE ${KDE4_KIO_LIBS} ${QT_QTNETWORK_LIBRARY})
+target_link_libraries(knewstuff2 LINK_PUBLIC kdeui kdecore ${QT_QTGUI_LIBRARY} )
 
 set_target_properties(knewstuff2 PROPERTIES
    VERSION ${GENERIC_LIB_VERSION}

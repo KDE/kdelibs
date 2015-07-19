@@ -24,8 +24,8 @@ kde4_add_library(kdewebkit ${LIBRARY_TYPE}
     ${kdewebkit_LIB_SRCS} 
 )
 
-target_link_libraries(kdewebkit ${KDE4_KPARTS_LIBS} ${QT_QTWEBKIT_LIBRARY})
-target_link_libraries(kdewebkit LINK_INTERFACE_LIBRARIES kparts kio kdecore ${QT_QTWEBKIT_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTCORE_LIBRARY})
+target_link_libraries(kdewebkit LINK_PRIVATE ${KDE4_KPARTS_LIBS} ${QT_QTWEBKIT_LIBRARY})
+target_link_libraries(kdewebkit LINK_PUBLIC kparts kio kdecore ${QT_QTWEBKIT_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTCORE_LIBRARY})
 
 set_target_properties(kdewebkit PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION})
 

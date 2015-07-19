@@ -75,12 +75,12 @@ kde4_add_library(kdnssd ${LIBRARY_TYPE} ${kdnssd_LIB_SRCS})
 
 # KDE 5: don't link against KDEUI_LIBS (when settings.kfgc is changed)
 if (HAVE_DNSSD)
-  target_link_libraries(kdnssd ${KDNSSD_BASE_LIBS} ${DNSSD_LIBRARIES} ${QT_QTNETWORK_LIBRARY})
+  target_link_libraries(kdnssd LINK_PRIVATE ${KDNSSD_BASE_LIBS} ${DNSSD_LIBRARIES} ${QT_QTNETWORK_LIBRARY})
 else (HAVE_DNSSD)
-  target_link_libraries(kdnssd ${KDNSSD_BASE_LIBS} ${QT_QTNETWORK_LIBRARY})
+  target_link_libraries(kdnssd LINK_PRIVATE ${KDNSSD_BASE_LIBS} ${QT_QTNETWORK_LIBRARY})
 endif (HAVE_DNSSD)
 
-target_link_libraries(kdnssd  LINK_INTERFACE_LIBRARIES kdecore ${QT_QTCORE_LIBRARY} )
+target_link_libraries(kdnssd  LINK_PUBLIC kdecore ${QT_QTCORE_LIBRARY} )
 
 set_target_properties(kdnssd PROPERTIES
    VERSION ${GENERIC_LIB_VERSION}

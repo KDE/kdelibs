@@ -18,8 +18,8 @@ kde4_add_ui_files(knotifyconfig_LIB_SRCS ${knotifyconfig_UI} )
 kde4_add_library(knotifyconfig ${LIBRARY_TYPE} ${knotifyconfig_LIB_SRCS})
 
 # Needs KIO for KUrlRequester
-target_link_libraries(knotifyconfig  ${KDE4_KIO_LIBS} ${KDE4_PHONON_LIBS}  )
-target_link_libraries(knotifyconfig  LINK_INTERFACE_LIBRARIES kdecore ${QT_QTGUI_LIBRARY})
+target_link_libraries(knotifyconfig  LINK_PRIVATE ${KDE4_KIO_LIBS} ${KDE4_PHONON_LIBS}  )
+target_link_libraries(knotifyconfig  LINK_PUBLIC kdecore ${QT_QTGUI_LIBRARY})
 
 set_target_properties(knotifyconfig PROPERTIES
    VERSION ${GENERIC_LIB_VERSION}

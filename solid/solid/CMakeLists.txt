@@ -452,11 +452,11 @@ if ( UDEV_FOUND )
    set(solid_OPTIONAL_LIBS ${solid_OPTIONAL_LIBS} ${UDEV_LIBS})
 endif ( UDEV_FOUND )
 
-target_link_libraries(solid ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTGUI_LIBRARY} ${solid_OPTIONAL_LIBS} )
-target_link_libraries(solid LINK_INTERFACE_LIBRARIES ${QT_CORE_LIBRARY} )
+target_link_libraries(solid LINK_PRIVATE ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTGUI_LIBRARY} ${solid_OPTIONAL_LIBS} )
+target_link_libraries(solid LINK_PUBLIC ${QT_CORE_LIBRARY} )
 
 if (WINCE)
-   target_link_libraries(solid ${WCECOMPAT_LIBRARIES})
+   target_link_libraries(solid LINK_PRIVATE ${WCECOMPAT_LIBRARIES})
 endif(WINCE)
 
 set_target_properties(solid PROPERTIES
