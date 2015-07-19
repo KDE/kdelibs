@@ -1,3 +1,4 @@
+cmake_minimum_required(VERSION 2.8.9 FATAL_ERROR)
 project(kdelibs)
 
 # where to look first for cmake modules, before ${CMAKE_ROOT}/Modules/ is checked
