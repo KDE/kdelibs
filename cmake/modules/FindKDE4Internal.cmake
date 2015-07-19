@@ -373,9 +373,9 @@ cmake_policy(SET CMP0011 OLD)
 # in this directory over those from CMAKE_MODULE_PATH
 cmake_policy(SET CMP0017 NEW)
 
-# since cmake 3.0: use of the LOCATION target property is disallowed while it is used in KDE4Macros.cmake
 if (POLICY CMP0026)
-  cmake_policy(SET CMP0026 OLD)
+  # Don't use the LOCATION target property of buildsystem targets.
+  cmake_policy(SET CMP0026 NEW)
 endif (POLICY CMP0026)
 
 # Only do something if it hasn't been found yet
