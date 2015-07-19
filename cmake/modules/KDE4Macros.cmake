@@ -946,13 +946,17 @@ endmacro (KDE4_ADD_UNIT_TEST)
 # This macro is an internal macro only used by kde4_add_executable
 #
 macro (_KDE4_ADD_MANIFEST _target_NAME)
-    set(x ${_target_NAME}_OUTPUT_NAME)
-    if (${x})
-        get_target_property(_var ${_target_NAME} LOCATION )
-        string(REPLACE "${_target_NAME}" "${${x}}" _executable ${_var})
-    else(${x})
-        get_target_property(_executable ${_target_NAME} LOCATION )
-    endif(${x})
+    if (NOT POLICY CMP0026)
+      set(x ${_target_NAME}_OUTPUT_NAME)
+      if (${x})
+          get_target_property(_var ${_target_NAME} LOCATION )
+          string(REPLACE "${_target_NAME}" "${${x}}" _executable ${_var})
+      else(${x})
+          get_target_property(_executable ${_target_NAME} LOCATION )
+      endif(${x})
+    else()
+      set(_executable $<TARGET_FILE:${_target_NAME}>)
+    endif()
         
     if (_kdeBootStrapping)
         set(_cmake_module_path ${CMAKE_SOURCE_DIR}/cmake/modules)
@@ -961,7 +965,6 @@ macro (_KDE4_ADD_MANIFEST _target_NAME)
     endif (_kdeBootStrapping)
        
     set(_manifest ${_cmake_module_path}/Win32.Manifest.in)
-    #message(STATUS ${_executable} ${_manifest})
     add_custom_command(
         TARGET ${_target_NAME}
         POST_BUILD
