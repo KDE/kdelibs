@@ -27,7 +27,7 @@
 </guiicon> icon"><!-- if image is localised, then entityref should be used
                       instead of fileref -->
 <!ENTITY kmenu	"Menú <guimenu>K</guimenu>">
-<!ENTITY Maj	"<keycap>Majús.</keycap>"><!-- English: &Shift; -->
+<!ENTITY Maj	"<keycap>Maj</keycap>"><!-- English: &Shift; -->
 <!ENTITY partman "<application>Gestor de particions del KDE</application>"> <!-- English: &partman; (KDE Partition Manager)-->
 <!ENTITY pex	"<abbrev>p. ex.</abbrev>"><!-- English: &eg; -->
 <!ENTITY PMF	"<acronym>PMF</acronym>"><!-- English: &FAQ; -->
@@ -36,7 +36,7 @@
 <!ENTITY safatasistema	"<application>safata del sistema</application>"><!-- English: &systemtray; -->
 <!ENTITY SO	"sistema operatiu"><!-- English: &OS; -->
 <!ENTITY systemsettings	"<application>Arranjament del sistema</application>"> <!-- English: &systemsettings; -->
-<!ENTITY Tab	"<keycap>Tabulador</keycap>">
+<!ENTITY Tab	"<keycap>Tab</keycap>">
 
 <!-- ROLES OF TRANSLATORS -->
 <!ENTITY traductor.Antoni.Bella		'<othercredit role="translator"><firstname>Antoni</firstname><surname>Bella</surname><affiliation><address><email>antonibella5@yahoo.com</email></address></affiliation><contrib>Traductor</contrib></othercredit>'>
