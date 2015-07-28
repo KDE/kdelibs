@@ -174,7 +174,9 @@ public:
     }
     bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent);
 
-    void updateColumnCount(int maxWidth);
+    void setColumnCount(int columns);
+    QList<QChar> chars() const;
+
 private:
     QList<QChar> m_chars;
     int m_tableNum;

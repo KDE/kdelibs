@@ -241,17 +241,33 @@ void KCharSelectTablePrivate::_k_resizeCells()
     const int viewportWidth = q->viewport()->size().width();
 
     QFontMetrics fontMetrics(font);
-    model->updateColumnCount(viewportWidth);
+
+    // Determine the max width of the displayed characters
+    // fontMetrics.maxWidth() doesn't help because of font fallbacks
+    // (testcase: Malayalam characters)
+    int maxCharWidth = 0;
+    const QList<QChar> chars = model->chars();
+    for (int i = 0 ; i < chars.size(); ++i) {
+        maxCharWidth = qMax(maxCharWidth, fontMetrics.width(chars.at(i)));
+    }
+    // Avoid too narrow cells
+    maxCharWidth = qMax(maxCharWidth, 2 * fontMetrics.xHeight());
+    maxCharWidth = qMax(maxCharWidth, fontMetrics.height());
+    // Add the necessary padding, trying to match the delegate
+    const int textMargin = q->style()->pixelMetric(QStyle::PM_FocusFrameHMargin, 0, q) + 1;
+    maxCharWidth += 2 * textMargin;
+
+    const int columns = qMax(1, viewportWidth / maxCharWidth);
+    model->setColumnCount(columns);
 
     const QChar oldChar = q->chr();
 
-    const int columns = model->columnCount();
-    const int new_w   = viewportWidth / columns;
+    const int new_w = viewportWidth / columns;
     const int rows = model->rowCount();
     q->setUpdatesEnabled(false);
     QHeaderView *hHeader = q->horizontalHeader();
-    const int spaceLeft = viewportWidth % new_w + 1;
-    for (int i = 0;i <= columns;i++) {
+    const int spaceLeft = viewportWidth - new_w * columns;
+    for (int i = 0 ; i <= columns; i++ ) {
         if (i < spaceLeft) {
             hHeader->resizeSection(i, new_w + 1);
         } else {
@@ -925,23 +941,18 @@ bool KCharSelectItemModel::dropMimeData(const QMimeData *data, Qt::DropAction ac
     return true;
 }
 
-void KCharSelectItemModel::updateColumnCount(int maxWidth)
+void KCharSelectItemModel::setColumnCount(int columns)
 {
     emit layoutAboutToBeChanged();
-    QFontMetrics fm(m_font);
-    int maxChar = fm.maxWidth();
-    if (maxChar < 2*fm.xHeight()) {
-        maxChar = 2 * fm.xHeight();
-    }
-    if (maxChar < 5) {
-        maxChar = qMax(5, fm.height());
-    }
-    m_columns  = maxWidth / maxChar;
-    if (m_columns <= 0) {
-        m_columns = 1;
-    }
+    m_columns = columns;
     emit layoutChanged();
 }
+
+QList<QChar> KCharSelectItemModel::chars() const
+{
+    return m_chars;
+}
+
 
 #include "kcharselect.moc"
 #include "kcharselect_p.moc"
