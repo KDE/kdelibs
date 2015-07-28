@@ -180,7 +180,8 @@ void KCharSelectTable::setChar(const QChar &c)
 {
     int pos = d->chars.indexOf(c);
     if (pos != -1) {
-        setCurrentIndex(model()->index(pos / model()->columnCount(), pos % model()->columnCount()));
+        const int columnCount = model()->columnCount();
+        setCurrentIndex(model()->index(pos / columnCount, pos % columnCount));
     }
 }
 
@@ -234,36 +235,42 @@ void KCharSelectTable::resizeEvent(QResizeEvent * e)
 
 void KCharSelectTablePrivate::_k_resizeCells()
 {
-    if (!q->model()) return;
-    static_cast<KCharSelectItemModel*>(q->model())->updateColumnCount(q->viewport()->size().width());
+    KCharSelectItemModel *model = static_cast<KCharSelectItemModel*>(q->model());
+    if (!model) return;
 
-    QChar oldChar = q->chr();
+    const int viewportWidth = q->viewport()->size().width();
 
-    const int new_w   = q->viewport()->size().width() / q->model()->columnCount(QModelIndex());
-    const int columns = q->model()->columnCount(QModelIndex());
-    const int rows = q->model()->rowCount(QModelIndex());
+    QFontMetrics fontMetrics(font);
+    model->updateColumnCount(viewportWidth);
+
+    const QChar oldChar = q->chr();
+
+    const int columns = model->columnCount();
+    const int new_w   = viewportWidth / columns;
+    const int rows = model->rowCount();
     q->setUpdatesEnabled(false);
-    QHeaderView* hv = q->horizontalHeader();
-    int spaceLeft = q->viewport()->size().width() % new_w + 1;
+    QHeaderView *hHeader = q->horizontalHeader();
+    const int spaceLeft = viewportWidth % new_w + 1;
     for (int i = 0;i <= columns;i++) {
         if (i < spaceLeft) {
-            hv->resizeSection(i, new_w + 1);
+            hHeader->resizeSection(i, new_w + 1);
         } else {
-            hv->resizeSection(i, new_w);
+            hHeader->resizeSection(i, new_w);
         }
     }
 
-    hv = q->verticalHeader();
+    QHeaderView *vHeader = q->verticalHeader();
 #ifdef Q_WS_WIN
-    int new_h = QFontMetrics(font).lineSpacing() + 1;
+    int new_h = fontMetrics.lineSpacing() + 1;
 #else
-    int new_h = QFontMetrics(font).xHeight() * 3;
+    int new_h = fontMetrics.xHeight() * 3;
 #endif
-    if (new_h < 5 || new_h < 4 + QFontMetrics(font).height()) {
-        new_h = qMax(5, 4 + QFontMetrics(font).height());
+    const int fontHeight = fontMetrics.height();
+    if (new_h < 5 || new_h < 4 + fontHeight) {
+        new_h = qMax(5, 4 + fontHeight);
     }
     for (int i = 0;i < rows;i++) {
-        hv->resizeSection(i, new_h);
+        vHeader->resizeSection(i, new_h);
     }
 
     q->setUpdatesEnabled(true);
@@ -893,6 +900,47 @@ QVariant KCharSelectItemModel::data(const QModelIndex &index, int role) const
         return QVariant(c);
     }
     return QVariant();
+}
+
+bool KCharSelectItemModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent)
+{
+    Q_UNUSED(row)
+    Q_UNUSED(parent)
+    if (action == Qt::IgnoreAction) {
+        return true;
+    }
+
+    if (!data->hasText()) {
+        return false;
+    }
+
+    if (column > 0) {
+        return false;
+    }
+    QString text = data->text();
+    if (text.isEmpty()) {
+        return false;
+    }
+    emit showCharRequested(text[0]);
+    return true;
+}
+
+void KCharSelectItemModel::updateColumnCount(int maxWidth)
+{
+    emit layoutAboutToBeChanged();
+    QFontMetrics fm(m_font);
+    int maxChar = fm.maxWidth();
+    if (maxChar < 2*fm.xHeight()) {
+        maxChar = 2 * fm.xHeight();
+    }
+    if (maxChar < 5) {
+        maxChar = qMax(5, fm.height());
+    }
+    m_columns  = maxWidth / maxChar;
+    if (m_columns <= 0) {
+        m_columns = 1;
+    }
+    emit layoutChanged();
 }
 
 #include "kcharselect.moc"

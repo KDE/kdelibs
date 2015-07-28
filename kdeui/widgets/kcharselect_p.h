@@ -130,14 +130,14 @@ public:
     }
 
     enum internalRoles {CharacterRole = Qt::UserRole};
-    int rowCount(const QModelIndex&) const
+    int rowCount(const QModelIndex& = QModelIndex()) const
     {
         if (m_chars.count() % m_columns == 0)
             return m_chars.count() / m_columns;
         else
             return m_chars.count() / m_columns + 1;
     }
-    int columnCount(const QModelIndex&) const
+    int columnCount(const QModelIndex& = QModelIndex()) const
     {
         return m_columns;
     }
@@ -154,7 +154,7 @@ public:
         }
         return (Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | Qt::ItemIsSelectable | Qt::ItemIsEnabled);
     }
-    QVariant data(const QModelIndex &index, int role) const;
+    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
     QMimeData *mimeData(const QModelIndexList & indexes) const
     {
         if (indexes.size() != 1) {
@@ -170,50 +170,11 @@ public:
     }
     QStringList mimeTypes() const
     {
-        QStringList types;
-        types << "text/plain";
-        return types;
+        return QStringList() << "text/plain";
     }
-    bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent)
-    {
-        Q_UNUSED(row)
-        Q_UNUSED(parent)
-        if (action == Qt::IgnoreAction) {
-            return true;
-        }
+    bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent);
 
-        if (!data->hasText()) {
-            return false;
-        }
-
-        if (column > 0) {
-            return false;
-        }
-        QString text = data->text();
-        if (text.isEmpty()) {
-            return false;
-        }
-        emit showCharRequested(text[0]);
-        return true;
-    }
-
-    void updateColumnCount(int maxWidth)
-    {
-        emit layoutAboutToBeChanged();
-        QFontMetrics fm(m_font);
-        int maxChar = fm.maxWidth();
-        if (maxChar < 2*fm.xHeight()) {
-            maxChar = 2 * fm.xHeight();
-        }
-        if (maxChar < 5) {
-            maxChar = qMax(5, fm.height());
-        }
-        m_columns  = maxWidth / maxChar;
-        if (m_columns <= 0) {
-            m_columns = 1;
-        }
-        emit layoutChanged();
-    }
+    void updateColumnCount(int maxWidth);
 private:
     QList<QChar> m_chars;
     int m_tableNum;
