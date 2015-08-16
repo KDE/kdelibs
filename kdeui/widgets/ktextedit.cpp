@@ -1066,7 +1066,6 @@ void KTextEdit::setSpellInterface(KTextEditSpellInterface *spellInterface)
 bool KTextEdit::Private::overrideShortcut(const QKeyEvent* event)
 {
   const int key = event->key() | event->modifiers();
-  qDebug() << key;
 
   if ( KStandardShortcut::copy().contains( key ) ) {
     return true;
