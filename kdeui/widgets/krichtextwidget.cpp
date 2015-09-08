@@ -414,7 +414,7 @@ void KRichTextWidget::createActions(KActionCollection *actionCollection)
         << i18nc("@item:inmenu uppercase abc lists", "ABC")
         << i18nc("@item:inmenu lower case roman numerals", "i ii iii")
         << i18nc("@item:inmenu upper case roman numerals", "I II III");
-	
+
         d->action_list_style->setItems(listStyles);
         d->action_list_style->setCurrentItem(0);
         d->richTextActionList.append((d->action_list_style));
@@ -520,7 +520,7 @@ void KRichTextWidget::createActions(KActionCollection *actionCollection)
         actionCollection->removeAction(d->action_text_superscript);
         d->action_text_superscript = 0;
     }
-    
+
 
     disconnect(this, SIGNAL(currentCharFormatChanged(QTextCharFormat)),
                this, SLOT(_k_updateCharFormatActions(QTextCharFormat)));
@@ -621,7 +621,7 @@ void KRichTextWidget::Private::_k_updateMiscActions()
 
     if ( richTextSupport & SupportDedentLists ) {
         if ( richTextEnabled ) {
-            action_list_dedent->setEnabled( q->canDedentList() );   
+            action_list_dedent->setEnabled( q->canDedentList() );
         } else {
             action_list_dedent->setEnabled( false );
         }
@@ -684,7 +684,9 @@ void KRichTextWidget::mouseReleaseEvent(QMouseEvent *event)
         // If the painter is active, paint the selection with the
         // correct format.
         if (textCursor().hasSelection()) {
-            textCursor().setCharFormat(d->painterFormat);
+            QTextCursor c = textCursor();
+            c.setCharFormat(d->painterFormat);
+            setTextCursor(c);
         }
         d->painterActive = false;
         d->action_format_painter->setChecked(false);
