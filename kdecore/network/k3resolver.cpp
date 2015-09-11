@@ -521,7 +521,7 @@ bool KResolver::event(QEvent* e)
       return true;
     }
 
-  return false;
+  return QObject::event(e);
 }
 
 void KResolver::emitFinished()
