@@ -76,7 +76,7 @@ extern "C" KDE_EXPORT int kdemain( int argc, char**argv )
    putenv(strdup("SESSION_MANAGER="));
 
    // Disable the GLib event loop (bug 328571)
-   const bool wasQtNoGlibSet = qgetenv("QT_NO_GLIB").isEmpty();
+   const bool wasQtNoGlibSet = !qgetenv("QT_NO_GLIB").isEmpty();
    if (!wasQtNoGlibSet) {
       qputenv("QT_NO_GLIB", "1");
    }
