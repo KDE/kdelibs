@@ -75,9 +75,20 @@ extern "C" KDE_EXPORT int kdemain( int argc, char**argv )
    // WABA: Make sure not to enable session management.
    putenv(strdup("SESSION_MANAGER="));
 
+   // Disable the GLib event loop (bug 328571)
+   const bool wasQtNoGlibSet = qgetenv("QT_NO_GLIB").isEmpty();
+   if (!wasQtNoGlibSet) {
+      qputenv("QT_NO_GLIB", "1");
+   }
+
    // We need a QCoreApplication to get a DBus event loop
    QCoreApplication app(argc, argv);
    app.setApplicationName( componentData.componentName() );
+
+   // Now get rid of QT_NO_GLIB again so launched processes don't inherit it
+   if (!wasQtNoGlibSet) {
+      qputenv("QT_NO_GLIB", "");
+   }
 
    int maxTry = 3;
    while(true)
