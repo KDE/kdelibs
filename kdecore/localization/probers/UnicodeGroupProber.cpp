@@ -65,7 +65,7 @@ nsProbingState UnicodeGroupProber::HandleData(const char* aBuf, unsigned int aLe
   static bool disableUTF16BE = false;
   double weight_zero;
   
-  if (mActiveSM <= 0) {
+  if (mActiveSM <= 0 || aLen < 2) {
       mState = eNotMe;
       return mState;
   }
