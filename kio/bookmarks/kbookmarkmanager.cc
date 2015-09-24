@@ -423,6 +423,10 @@ bool KBookmarkManager::saveAs( const QString & filename, bool toolbarCache ) con
         QFile::remove( cacheFilename );
     }
 
+    // Create parent dirs
+    QFileInfo info(filename);
+    QDir().mkpath(info.absolutePath());
+
     KSaveFile file( filename );
     if ( file.open() )
     {

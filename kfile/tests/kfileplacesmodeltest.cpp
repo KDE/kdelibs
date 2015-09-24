@@ -185,7 +185,7 @@ void KFilePlacesModelTest::testReparse()
 
     // reparse the bookmark file
 
-    const QString file = KStandardDirs::locateLocal("data", "kfileplaces/bookmarks.xml");
+    const QString file = KStandardDirs().localxdgdatadir() + "user-places.xbel";
     KBookmarkManager *bookmarkManager = KBookmarkManager::managerForFile(file, "kfilePlaces");
 
     bookmarkManager->notifyCompleteChange(QString());
@@ -208,7 +208,7 @@ void KFilePlacesModelTest::testReparse()
 
 void KFilePlacesModelTest::testInternalBookmarksHaveIds()
 {
-    const QString file = KStandardDirs::locateLocal("data", "kfileplaces/bookmarks.xml");
+    const QString file = KStandardDirs().localxdgdatadir() + "user-places.xbel";
     KBookmarkManager *bookmarkManager = KBookmarkManager::managerForFile(file, "kfilePlaces");
     KBookmarkGroup root = bookmarkManager->root();
 
@@ -314,7 +314,7 @@ void KFilePlacesModelTest::testMove()
     QSignalSpy spy_inserted(m_places, SIGNAL(rowsInserted(QModelIndex,int,int)));
     QSignalSpy spy_removed(m_places, SIGNAL(rowsRemoved(QModelIndex,int,int)));
 
-    const QString file = KStandardDirs::locateLocal("data", "kfileplaces/bookmarks.xml");
+    const QString file = KStandardDirs().localxdgdatadir() + "user-places.xbel";
     KBookmarkManager *bookmarkManager = KBookmarkManager::managerForFile(file, "kfilePlaces");
     KBookmarkGroup root = bookmarkManager->root();
     KBookmark trash = m_places->bookmarkForIndex(m_places->index(3, 0));
@@ -484,7 +484,7 @@ void KFilePlacesModelTest::testPlacesLifecycle()
     QCOMPARE(spy_removed.count(), 0);
 
 
-    const QString file = KStandardDirs::locateLocal("data", "kfileplaces/bookmarks.xml");
+    const QString file = KStandardDirs().localxdgdatadir() + "user-places.xbel";
     KBookmarkManager *bookmarkManager = KBookmarkManager::managerForFile(file, "kfilePlaces");
     KBookmarkGroup root = bookmarkManager->root();
     KBookmark before_trash = m_places->bookmarkForIndex(m_places->index(2, 0));
@@ -600,7 +600,7 @@ void KFilePlacesModelTest::testDevicePlugging()
 
     // Move the device in the list, and check that it memorizes the position across plug/unplug
 
-    const QString file = KStandardDirs::locateLocal("data", "kfileplaces/bookmarks.xml");
+    const QString file = KStandardDirs().localxdgdatadir() + "user-places.xbel";
     KBookmarkManager *bookmarkManager = KBookmarkManager::managerForFile(file, "kfilePlaces");
     KBookmarkGroup root = bookmarkManager->root();
     KBookmark before_trash = m_places->bookmarkForIndex(m_places->index(2, 0));
