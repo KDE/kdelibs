@@ -102,7 +102,7 @@ KSycocaEntry* KBuildServiceFactory::createEntry( const QString& file, const char
             return serv;
         } else {
             if (!serv->isDeleted()) {
-                kWarning(7012) << "Invalid Service : " << file;
+                kWarning() << "Invalid Service : " << file;
             }
             delete serv;
             return 0;

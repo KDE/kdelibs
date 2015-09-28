@@ -77,14 +77,14 @@ KSycocaEntry* KBuildServiceTypeFactory::createEntry(const QString &file, const c
 
     const QString type = desktopGroup.readEntry( "Type" );
     if ( type != QLatin1String( "ServiceType" ) ) {
-        kWarning(7012) << "The service type config file " << desktopFile.fileName() << " has Type=" << type << " instead of Type=ServiceType";
+        kWarning() << "The service type config file " << desktopFile.fileName() << " has Type=" << type << " instead of Type=ServiceType";
         return 0;
     }
 
     const QString serviceType = desktopGroup.readEntry( "X-KDE-ServiceType" );
 
     if ( serviceType.isEmpty() ) {
-        kWarning(7012) << "The service type config file " << desktopFile.fileName() << " does not contain a ServiceType=... entry";
+        kWarning() << "The service type config file " << desktopFile.fileName() << " does not contain a ServiceType=... entry";
         return 0;
     }
 
@@ -96,7 +96,7 @@ KSycocaEntry* KBuildServiceTypeFactory::createEntry(const QString &file, const c
     }
 
     if ( !(e->isValid()) ) {
-        kWarning(7012) << "Invalid ServiceType : " << file;
+        kWarning() << "Invalid ServiceType : " << file;
         delete e;
         return 0;
     }
