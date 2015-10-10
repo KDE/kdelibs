@@ -53,19 +53,28 @@ int main(int argc, char **argv)
     KMessage::setMessageHandler(msgHandler);
 
     KMimeType::Ptr s0 = KMimeType::mimeType("application/x-zerosize");
-    Q_ASSERT(!s0); // should NOT be found, otherwise this test is bogus!
     if (s0) {
+        qDebug() << "Found" << s0->name() << "for application/x-zerosize that should not exist";
+        Q_ASSERT(!s0); // should NOT be found, otherwise this test is bogus!
         abort();
         return 1;
     }
 
     KMimeType::Ptr mime = KMimeType::findByUrl(KUrl("/"));
-    Q_ASSERT(mime);
-    Q_ASSERT(mime->name() == "application/octet-stream");
     if (!mime) {
+        qDebug() << "KMimeType::findByUrl(KUrl(\"/\")) returned no mime";
+        Q_ASSERT(mime);
         abort();
         return 2;
     }
+
+    if (mime->name() != "application/octet-stream") {
+        qDebug() << "KMimeType::findByUrl(KUrl(\"/\")) returned a mime different than application/octet-stream";
+        Q_ASSERT(mime->name() == "application/octet-stream");
+        abort();
+        return 3;
+    }
+
     qDebug() << mime->name();
 
     Q_ASSERT(msgHandler->m_messages.count() > 0);
