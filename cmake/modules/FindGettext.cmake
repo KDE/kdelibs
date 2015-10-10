@@ -100,6 +100,17 @@ FIND_PROGRAM(GETTEXT_MSGMERGE_EXECUTABLE msgmerge)
 
 FIND_PROGRAM(GETTEXT_MSGFMT_EXECUTABLE msgfmt)
 
+FUNCTION(_GETTEXT_GET_UNIQUE_TARGET_NAME _name _unique_name)
+   SET(propertyName "_GETTEXT_UNIQUE_COUNTER_${_name}")
+   GET_PROPERTY(currentCounter GLOBAL PROPERTY "${propertyName}")
+   IF(NOT currentCounter)
+      SET(currentCounter 1)
+   ENDIF()
+   SET(${_unique_name} "${_name}_${currentCounter}" PARENT_SCOPE)
+   MATH(EXPR currentCounter "${currentCounter} + 1")
+   SET_PROPERTY(GLOBAL PROPERTY ${propertyName} ${currentCounter} )
+ENDFUNCTION()
+
 MACRO(GETTEXT_CREATE_TRANSLATIONS _potFile _firstPoFile)
 
    SET(_gmoFiles)
@@ -131,7 +142,15 @@ MACRO(GETTEXT_CREATE_TRANSLATIONS _potFile _firstPoFile)
 
    ENDFOREACH (_currentPoFile )
 
-   ADD_CUSTOM_TARGET(translations ${_addToAll} DEPENDS ${_gmoFiles})
+   IF(NOT TARGET translations)
+      ADD_CUSTOM_TARGET(translations)
+   ENDIF()
+
+   _GETTEXT_GET_UNIQUE_TARGET_NAME(translations uniqueTargetName)
+
+   ADD_CUSTOM_TARGET(${uniqueTargetName} ${_addToAll} DEPENDS ${_gmoFiles})
+
+   ADD_DEPENDENCIES(translations ${uniqueTargetName})
 
 ENDMACRO(GETTEXT_CREATE_TRANSLATIONS )
 
@@ -188,7 +207,15 @@ MACRO(GETTEXT_PROCESS_POT_FILE _potFile)
 
    ENDFOREACH (_lang )
 
-   ADD_CUSTOM_TARGET(potfile ${_addToAll} DEPENDS ${_gmoFiles})
+   IF(NOT TARGET potfile)
+      ADD_CUSTOM_TARGET(potfile)
+   ENDIF()
+
+   _GETTEXT_GET_UNIQUE_TARGET_NAME( potfile uniqueTargetName)
+
+   ADD_CUSTOM_TARGET(${uniqueTargetName} ${_addToAll} DEPENDS ${_gmoFiles})
+
+   ADD_DEPENDENCIES(potfile ${uniqueTargetName})
 
 ENDMACRO(GETTEXT_PROCESS_POT_FILE)
 
@@ -229,7 +256,16 @@ MACRO(GETTEXT_PROCESS_PO_FILES _lang)
       ENDIF(_installDest)
       LIST(APPEND _gmoFiles ${_gmoFile})
    ENDFOREACH(_current_PO_FILE)
-   ADD_CUSTOM_TARGET(pofiles ${_addToAll} DEPENDS ${_gmoFiles})
+
+   IF(NOT TARGET pofiles)
+      ADD_CUSTOM_TARGET(pofiles)
+   ENDIF()
+
+   _GETTEXT_GET_UNIQUE_TARGET_NAME( pofiles uniqueTargetName)
+
+   ADD_CUSTOM_TARGET(${uniqueTargetName} ${_addToAll} DEPENDS ${_gmoFiles})
+
+   ADD_DEPENDENCIES(pofiles ${uniqueTargetName})
 ENDMACRO(GETTEXT_PROCESS_PO_FILES)
 
 
