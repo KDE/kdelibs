@@ -54,6 +54,11 @@ if(NOT COMMAND _AUTOMOC4_KDE4_PRE_TARGET_HANDLING)
 endif(NOT COMMAND _AUTOMOC4_KDE4_PRE_TARGET_HANDLING)
 
 
+macro (_SUGGEST_TARGET_NAME _out)
+   string(REPLACE "${CMAKE_SOURCE_DIR}/" "" ${_out} "${CMAKE_CURRENT_SOURCE_DIR}")
+   string(REGEX REPLACE "[^0-9a-zA-Z]" "-" ${_out} "${${_out}}")
+endmacro ()
+
 macro (KDE4_ADD_KCFG_FILES _sources )
    foreach (_current_ARG ${ARGN})
        if( ${_current_ARG} STREQUAL "GENERATE_MOC" )
@@ -301,7 +306,7 @@ macro (KDE4_CREATE_HANDBOOK _docbook)
       DEPENDS ${_docs} ${_KDE4_MEINPROC_EXECUTABLE_DEP} ${_ssheet}
       WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
    )
-   get_filename_component(_targ ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+   _suggest_target_name(_targ)
    set(_targ "${_targ}-handbook")
    add_custom_target(${_targ} ALL DEPENDS ${_doc})
 
@@ -377,7 +382,7 @@ macro (KDE4_CREATE_MANPAGE _docbook _section)
       COMMAND ${KDE4_MEINPROC_EXECUTABLE} --stylesheet ${_ssheet} --check ${_bootstrapOption} ${_input}
       DEPENDS ${_input} ${_KDE4_MEINPROC_EXECUTABLE_DEP} ${_ssheet}
    )
-   get_filename_component(_targ ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+   _suggest_target_name(_targ)
    set(_targ "${_targ}-manpage-${_base}")
    add_custom_target(${_targ} ALL DEPENDS "${_outdoc}")
 
