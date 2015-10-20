@@ -48,6 +48,7 @@ void PartTest::testAutoDeletePart()
     KParts::Part* part = new TestPart(0, 0);
     QPointer<KParts::Part> partPointer(part);
     delete part->widget();
+    QCoreApplication::sendPostedEvents(0, QEvent::DeferredDelete);
     QVERIFY(partPointer.isNull());
 }
 
@@ -57,6 +58,7 @@ void PartTest::testAutoDeleteWidget()
     QPointer<KParts::Part> partPointer(part);
     QPointer<QWidget> widgetPointer(part->widget());
     delete part;
+    QCoreApplication::sendPostedEvents(0, QEvent::DeferredDelete);
     QVERIFY(widgetPointer.isNull());
 }
 
