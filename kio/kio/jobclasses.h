@@ -87,7 +87,7 @@ namespace KIO {
      *
      * \code
      *  if ( job->error() )
-     *      job->ui()->showErrorMessage();
+     *      job->uiDelegate()->showErrorMessage();
      * \endcode
      * @see KIO::Scheduler
      */
@@ -143,7 +143,7 @@ namespace KIO {
          *   i18n( "Could not read\n%1" ).arg( errortext );
          * \endcode
          * Use this to display the error yourself, but for a dialog box
-         * use ui()->showErrorMessage(). Do not call it if error()
+         * use uiDelegate()->showErrorMessage(). Do not call it if error()
          * is not 0.
          * @return the error message and if there is no error, a message
          *         telling the user that the app is broken, so check with
@@ -171,8 +171,8 @@ namespace KIO {
          * to result.
          * @param parent the parent widget for the dialog box, can be 0 for
          *        top-level
-         * @deprecated you should use job->ui()->setWindow(parent)
-         *             and job->ui()->showErrorMessage() instead
+         * @deprecated you should use job->uiDelegate()->setWindow(parent)
+         *             and job->uiDelegate()->showErrorMessage() instead
          */
 #ifndef KDE_NO_DEPRECATED
         KDE_DEPRECATED void showErrorDialog( QWidget *parent = 0 );
