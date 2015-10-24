@@ -36,6 +36,7 @@ private Q_SLOTS:
     void cleanupTestCase();
 
     // Local tests (kio_file only)
+    void copyFolderWithUnaccessibleSubfolder();
     void storedGet();
     void put();
     void storedPut();

@@ -2522,6 +2522,7 @@ public:
     void slotListEntries( const KIO::UDSEntryList& list );
     void slotRedirection( const KUrl &url );
     void gotEntries( KIO::Job * subjob, const KIO::UDSEntryList& list );
+    void slotSubError( ListJob* job, ListJob* subJob);
 
     Q_DECLARE_PUBLIC(ListJob)
 
@@ -2601,6 +2602,8 @@ void ListJobPrivate::slotListEntries( const KIO::UDSEntryList& list )
                     Scheduler::setJobPriority(job, 1);
                     q->connect(job, SIGNAL(entries(KIO::Job*,KIO::UDSEntryList)),
                                SLOT(gotEntries(KIO::Job*,KIO::UDSEntryList)));
+                    q->connect(job, SIGNAL(subError(KIO::ListJob*,KIO::ListJob*)),
+                               SLOT(slotSubError(KIO::ListJob*,KIO::ListJob*)));
                     q->addSubjob(job);
                 }
             }
@@ -2649,8 +2652,17 @@ void ListJobPrivate::gotEntries(KIO::Job *, const KIO::UDSEntryList& list )
     emit q->entries(q, list);
 }
 
+void ListJobPrivate::slotSubError(KIO::ListJob* /*job*/, KIO::ListJob* subJob)
+{
+    Q_Q(ListJob);
+
+    emit q->subError(q, subJob); /*Let the signal of subError go up */
+}
+
 void ListJob::slotResult( KJob * job )
 {
+    Q_D(ListJob);
+
     if (job->error()) {
 	// If we can't list a subdir, the result is still ok
 	// This is why we override KCompositeJob::slotResult - to not set
@@ -2659,7 +2671,7 @@ void ListJob::slotResult( KJob * job )
 	emit subError(this, static_cast<KIO::ListJob*>(job));
     }
     removeSubjob(job);
-    if (!hasSubjobs())
+    if (!hasSubjobs() && !d->m_slave) // if the main directory listing is still running, it will emit result in SimpleJob::slotFinished()
         emitResult();
 }
 

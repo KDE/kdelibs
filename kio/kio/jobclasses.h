@@ -1003,6 +1003,7 @@ namespace KIO {
         Q_PRIVATE_SLOT(d_func(), void slotListEntries( const KIO::UDSEntryList& list ))
         Q_PRIVATE_SLOT(d_func(), void slotRedirection( const KUrl &url ))
         Q_PRIVATE_SLOT(d_func(), void gotEntries( KIO::Job * subjob, const KIO::UDSEntryList& list ))
+        Q_PRIVATE_SLOT(d_func(), void slotSubError( KIO::ListJob* job, KIO::ListJob* subJob))
         Q_DECLARE_PRIVATE(ListJob)
     };
 

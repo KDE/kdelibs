@@ -367,6 +367,47 @@ void JobTest::copyDirectoryToExistingDirectory()
     copyLocalDirectory( src, dest, AlreadyExists );
 }
 
+void JobTest::copyFolderWithUnaccessibleSubfolder()
+{
+    kDebug() ;
+
+    const QString src_dir = homeTmpDir() + "srcHome";
+    const QString dst_dir = homeTmpDir() + "dstHome";
+
+    QDir().remove(src_dir);
+    QDir().remove(dst_dir);
+
+    createTestDirectory(src_dir);
+
+    createTestDirectory(src_dir+"/folder1");
+    createTestDirectory(src_dir+"/folder1/inaccessible");
+
+    KDE::chmod(src_dir+"/folder1/inaccessible",0000); //Make it inaccessible
+    //Copying should throw some warnings, as it cannot access some folders
+
+    KIO::CopyJob* job = KIO::copy( src_dir,  dst_dir, KIO::HideProgressInfo );
+
+    QSignalSpy spy(job, SIGNAL(warning(KJob*,const QString&,const QString&)));
+
+    job->setUiDelegate( 0 ); // no skip dialog, thanks
+    bool ok_copyjob = KIO::NetAccess::synchronousRun(job, 0);
+
+    KDE::chmod(src_dir+"/folder1/inaccessible",0777); //Restore permissions
+
+    KIO::DeleteJob* deljob1 = KIO::del( src_dir, KIO::HideProgressInfo );
+    deljob1->setUiDelegate( 0 ); // no skip dialog, thanks
+    bool ok = KIO::NetAccess::synchronousRun(deljob1, 0);
+    QVERIFY( ok );
+
+    KIO::DeleteJob* deljob2 = KIO::del( dst_dir, KIO::HideProgressInfo );
+    deljob2->setUiDelegate( 0 ); // no skip dialog, thanks
+    ok = KIO::NetAccess::synchronousRun(deljob2, 0);
+    QVERIFY( ok );
+
+    QVERIFY( ok_copyjob );
+    QCOMPARE(spy.count(), 1);
+}
+
 void JobTest::copyFileToOtherPartition()
 {
     kDebug() ;
