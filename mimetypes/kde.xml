@@ -316,7 +316,7 @@ Notes:
     <comment xml:lang="ast">Adautador d'estensión de KHTML</comment>
     <comment xml:lang="bs">KHTML‑ov adapter proširenja</comment>
     <comment xml:lang="ca">Adaptador de l'extensió KHTML</comment>
-    <comment xml:lang="ca@valencia">adaptador d'extensió KHTML</comment>
+    <comment xml:lang="ca@valencia">Adaptador de l'extensió KHTML</comment>
     <comment xml:lang="cs">Adaptér pro KHTML rozšíření</comment>
     <comment xml:lang="da">KHTML udvidelsesadapter</comment>
     <comment xml:lang="de">Adapter für KHTML-Erweiterungen</comment>
@@ -3047,7 +3047,7 @@ Notes:
     <comment xml:lang="ast">Volcáu d'analís de rendimientu de Cachegrind/Callgrind</comment>
     <comment xml:lang="bs">Cachegrindov/Callgrindov profilni popis</comment>
     <comment xml:lang="ca">bolcat d'anàlisi de rendiment del Cachegrind/Callgrind</comment>
-    <comment xml:lang="ca@valencia">bolcat de perfil Cachegrind/Callgrind</comment>
+    <comment xml:lang="ca@valencia">bolcat d'anàlisi de rendiment del Cachegrind/Callgrind</comment>
     <comment xml:lang="cs">Výpis profilu Cachegrind/Callgrind</comment>
     <comment xml:lang="da">Cachegrind/Callgrind profil-dump</comment>
     <comment xml:lang="de">Cachegrind/Callgrind-Profil-Ausgabe</comment>
