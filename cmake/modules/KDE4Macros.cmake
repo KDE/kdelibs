@@ -317,7 +317,9 @@ macro (KDE4_CREATE_HANDBOOK _docbook)
          DEPENDS ${_input} ${_KDE4_MEINPROC_EXECUTABLE_DEP} ${_ssheet}
          WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
       )
-      add_custom_target(htmlhandbook DEPENDS ${_htmlDoc})
+      _suggest_target_name(_targ)
+      set(_targ "${_targ}-htmlhandbook")
+      add_custom_target(${_targ} ALL DEPENDS ${_htmlDoc})
    endif(KDE4_ENABLE_HTMLHANDBOOK)
 
    set(_args ${ARGN})
