@@ -350,7 +350,7 @@ void Part::slotWidgetDestroyed()
     d->m_widget = 0;
     if (d->m_autoDeletePart) {
         kDebug(1000) << "deleting part" << objectName();
-        this->deleteLater();
+        delete this; // ouch, this should probably be deleteLater()
     }
 }
 
