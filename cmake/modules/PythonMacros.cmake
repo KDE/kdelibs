@@ -60,7 +60,7 @@ macro(PYTHON_INSTALL SOURCE_FILE DESTINATION_DIR)
       add_custom_command(
         TARGET "${_rule_name}"
         COMMAND "${CMAKE_COMMAND}" -E echo "${_message}"
-        COMMAND "${PYTHON_EXECUTABLE}" "${_python_compile_py}" "${_bin_py}"
+        COMMAND "${PYTHON_EXECUTABLE}" "${_python_compile_py}" "--destination-dir" "${DESTINATION_DIR}" "${_bin_py}"
         DEPENDS "${_absfilename}"
       )
     else()
@@ -68,7 +68,7 @@ macro(PYTHON_INSTALL SOURCE_FILE DESTINATION_DIR)
         TARGET "${_rule_name}"
         COMMAND "${CMAKE_COMMAND}" -E echo "${_message}"
         COMMAND "${CMAKE_COMMAND}" -E copy "${_absfilename}" "${_bin_py}"
-        COMMAND "${PYTHON_EXECUTABLE}" "${_python_compile_py}" "${_bin_py}"
+        COMMAND "${PYTHON_EXECUTABLE}" "${_python_compile_py}" "--destination-dir" "${DESTINATION_DIR}" "${_bin_py}"
         DEPENDS "${_absfilename}"
       )
     endif()
