@@ -9,6 +9,7 @@
 # This file is in the public domain.
 
 INCLUDE(FindPythonInterp)
+include(PythonMacros)
 
 SET(PYKDE4_FOUND FALSE)
 
@@ -104,45 +105,8 @@ ENDIF(PYTHONINTERP_FOUND)
 # project..
 #
 MACRO(PYKDE4_INSTALL_PYTHON_FILES)
-
-    ADD_CUSTOM_TARGET(pysupport ALL)
     FOREACH (_current_file ${ARGN})
-
-        # Install the source file.
-        INSTALL(FILES ${_current_file} DESTINATION ${DATA_INSTALL_DIR}/${PROJECT_NAME})
-
-        # Byte compile and install the .pyc file.        
-        GET_FILENAME_COMPONENT(_absfilename ${_current_file} ABSOLUTE)
-        GET_FILENAME_COMPONENT(_filename ${_current_file} NAME)
-        GET_FILENAME_COMPONENT(_filenamebase ${_current_file} NAME_WE)
-        GET_FILENAME_COMPONENT(_basepath ${_current_file} PATH)
-        SET(_bin_py ${CMAKE_BINARY_DIR}/${_basepath}/${_filename})
-        SET(_bin_pyc ${CMAKE_BINARY_DIR}/${_basepath}/${_filenamebase}.pyc)
-
-        FILE(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${_basepath})
-
-        SET(_message "-DMESSAGE=Byte-compiling ${_bin_py}")
-
-        GET_FILENAME_COMPONENT(_abs_bin_py ${_bin_py} ABSOLUTE)
-        IF(_abs_bin_py STREQUAL ${_absfilename})    # Don't copy the file onto itself.
-            ADD_CUSTOM_COMMAND(
-                TARGET pysupport
-                COMMAND ${CMAKE_COMMAND} -E echo ${message}
-                COMMAND ${PYTHON_EXECUTABLE} ${current_module_dir}/PythonCompile.py ${_bin_py}
-                DEPENDS ${_absfilename}
-            )
-        ELSE(_abs_bin_py STREQUAL ${_absfilename})
-            ADD_CUSTOM_COMMAND(
-                TARGET pysupport
-                COMMAND ${CMAKE_COMMAND} -E echo ${message}
-                COMMAND ${CMAKE_COMMAND} -E copy ${_absfilename} ${_bin_py}
-                COMMAND ${PYTHON_EXECUTABLE} ${current_module_dir}/PythonCompile.py ${_bin_py}
-                DEPENDS ${_absfilename}
-            )
-        ENDIF(_abs_bin_py STREQUAL ${_absfilename})
-
-        INSTALL(FILES ${_bin_pyc} DESTINATION ${DATA_INSTALL_DIR}/${PROJECT_NAME})
-
+        python_install(${_current_file} ${DATA_INSTALL_DIR}/${PROJECT_NAME})
     ENDFOREACH (_current_file)
 ENDMACRO(PYKDE4_INSTALL_PYTHON_FILES)
 
