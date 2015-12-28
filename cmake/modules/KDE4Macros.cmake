@@ -735,6 +735,12 @@ endmacro (KDE4_ADD_PLUGIN _target_NAME _with_PREFIX)
 # "TEST" (which evaluates to TRUE in cmake), otherwise it is set empty
 # (which evaluates to FALSE in cmake)
 macro(KDE4_CHECK_EXECUTABLE_PARAMS _output_LIST _nogui _test)
+
+   if(POLICY CMP0054)
+      cmake_policy(PUSH)
+      cmake_policy(SET CMP0054 NEW)
+   endif()
+
    set(${_nogui})
    set(${_test})
    set(${_output_LIST} ${ARGN})
@@ -749,38 +755,42 @@ macro(KDE4_CHECK_EXECUTABLE_PARAMS _output_LIST _nogui _test)
 
    set(remove "NOTFOUND")
 
-   if (${first_PARAM} STREQUAL "NOGUI")
+   if ("${first_PARAM}" STREQUAL "NOGUI")
       set(${_nogui} "NOGUI")
       set(remove 0)
-   endif (${first_PARAM} STREQUAL "NOGUI")
+   endif ()
 
-   if (${first_PARAM} STREQUAL "RUN_UNINSTALLED")
+   if ("${first_PARAM}" STREQUAL "RUN_UNINSTALLED")
       set(remove 0)
-   endif (${first_PARAM} STREQUAL "RUN_UNINSTALLED")
+   endif ()
 
-   if (${first_PARAM} STREQUAL "TEST")
+   if ("${first_PARAM}" STREQUAL "TEST")
       set(${_test} "TEST")
       set(remove 0)
-   endif (${first_PARAM} STREQUAL "TEST")
+   endif ()
 
-   if (${second_PARAM} STREQUAL "NOGUI")
+   if ("${second_PARAM}" STREQUAL "NOGUI")
       set(${_nogui} "NOGUI")
       set(remove 0;1)
-   endif (${second_PARAM} STREQUAL "NOGUI")
+   endif ()
 
-   if (${second_PARAM} STREQUAL "RUN_UNINSTALLED")
+   if ("${second_PARAM}" STREQUAL "RUN_UNINSTALLED")
       set(remove 0;1)
-   endif (${second_PARAM} STREQUAL "RUN_UNINSTALLED")
+   endif ()
 
-   if (${second_PARAM} STREQUAL "TEST")
+   if ("${second_PARAM}" STREQUAL "TEST")
       set(${_test} "TEST")
       set(remove 0;1)
-   endif (${second_PARAM} STREQUAL "TEST")
+   endif ()
 
 
    if (NOT "${remove}" STREQUAL "NOTFOUND")
       list(REMOVE_AT ${_output_LIST} ${remove})
    endif (NOT "${remove}" STREQUAL "NOTFOUND")
+
+   if(POLICY CMP0054)
+      cmake_policy(POP)
+   endif()
 
 endmacro(KDE4_CHECK_EXECUTABLE_PARAMS)
 
