@@ -46,6 +46,7 @@ int main(int argc, char **argv)
     // Test what happens when there are no mimetypes installed.
 
     ::setenv("XDG_DATA_DIRS", "/doesnotexist", 1);
+    ::setenv("XDG_DATA_HOME", "/doesnotexisteither", 1);
 
     KComponentData cData("foo");
 
