@@ -260,13 +260,15 @@ bool KDirListerCache::listDir( KDirLister *lister, const KUrl& _u,
 
         // List existing items in a delayed manner, just like things would happen
         // if we were not using the cache.
-        if (!itemU->lstItems.isEmpty()) {
-            kDebug() << "Listing" << itemU->lstItems.count() << "cached items soon";
-            new KDirLister::Private::CachedItemsJob(lister, _url, _reload);
-        } else {
-            // The other lister hasn't emitted anything yet. Good, we'll just listen to it.
-            // One problem could be if we have _reload=true and the existing job doesn't, though.
+        kDebug(7004) << "Listing" << itemU->lstItems.count() << "cached items soon";
+        KDirLister::Private::CachedItemsJob *cachedItemsJob = new KDirLister::Private::CachedItemsJob(lister, _url, _reload);
+
+        if (job) {
+            // The ListJob will take care of emitting completed.
+            // ### If it finishes before the CachedItemsJob, then we'll emit cached items after completed(), not sure how bad this is.
+            cachedItemsJob->setEmitCompleted(false);
         }
+
 
 #ifdef DEBUG_CACHE
         printDebug();
@@ -691,7 +693,7 @@ void KDirListerCache::updateDirectory( const KUrl& _dir )
         // Emit any cached items.
         // updateDirectory() is about the diff compared to the cached items...
         Q_FOREACH(KDirLister *kdl, listers) {
-	    KDirLister::Private::CachedItemsJob* cachedItemsJob = kdl->d->cachedItemsJobForUrl(_dir);
+            KDirLister::Private::CachedItemsJob* cachedItemsJob = kdl->d->cachedItemsJobForUrl(_dir);
             if (cachedItemsJob) {
                 cachedItemsJob->setEmitCompleted(false);
                 cachedItemsJob->done(); // removes from cachedItemsJobs list

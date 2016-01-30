@@ -1025,7 +1025,38 @@ void KDirListerTest::testRedirection()
     m_dirLister.stop(url);
     QVERIFY(!m_dirLister.isFinished());
     disconnect(&m_dirLister, 0, this, 0);
+}
 
+void KDirListerTest::testListEmptyDirFromCache() // #278431
+{
+    m_items.clear();
+
+    KTempDir newDir;
+    const QString path = newDir.name();
+
+    // List and watch an empty dir
+    connect(&m_dirLister, SIGNAL(newItems(KFileItemList)), this, SLOT(slotNewItems(KFileItemList)));
+    m_dirLister.openUrl(QUrl::fromLocalFile(path));
+    QVERIFY(QTest::kWaitForSignal(&m_dirLister, SIGNAL(completed()), 1000));
+    QVERIFY(m_dirLister.isFinished());
+    QVERIFY(m_items.isEmpty());
+
+    // List it with two more dirlisters (one will create a cached items job, the second should also benefit from it)
+    MyDirLister secondDirLister;
+    connect(&secondDirLister, SIGNAL(newItems(KFileItemList)), this, SLOT(slotNewItems(KFileItemList)));
+    secondDirLister.openUrl(KUrl(path), KDirLister::NoFlags);
+    MyDirLister thirdDirLister;
+    connect(&thirdDirLister, SIGNAL(newItems(KFileItemList)), this, SLOT(slotNewItems(KFileItemList)));
+    thirdDirLister.openUrl(KUrl(path), KDirLister::NoFlags);
+
+    // The point of this test is that (with DEBUG_CACHE enabled) it used to assert here
+    // with "HUH? Lister KDirLister(0x7ffd1f044260) is supposed to be listing, but has no job!"
+    // due to the if (!itemU->lstItems.isEmpty()) check which is now removed.
+
+    QVERIFY(!secondDirLister.isFinished()); // we didn't go to the event loop yet
+    QVERIFY(QTest::kWaitForSignal(&secondDirLister, SIGNAL(completed()), 1000));
+    if (!thirdDirLister.isFinished())
+        QVERIFY(QTest::kWaitForSignal(&thirdDirLister, SIGNAL(completed()), 1000));
 }
 
 void KDirListerTest::testWatchingAfterCopyJob() // #331582
