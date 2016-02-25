@@ -479,18 +479,21 @@ Wallet *Wallet::openWallet(const QString& name, WId w, OpenType ot) {
         // Make sure the password prompt window will be visible and activated
         KWindowSystem::allowExternalProcessWindowActivation();
 
+        org::kde::KWallet &interface = walletLauncher->getInterface();
+
         // do the call
         QDBusReply<int> r;
         if (ot == Synchronous) {
-            r = walletLauncher->getInterface().open(name, (qlonglong)w, appid());
+            interface.setTimeout(2 << 30); // Don't timeout after 25s, but 12 days
+            r = interface.open(name, (qlonglong)w, appid());
+            interface.setTimeout(-1); // Back to the default 25s
             // after this call, r would contain a transaction id >0 if OK or -1 if NOK
             // if OK, the slot walletAsyncOpened should have been received, but the transaction id
             // will not match. We'll get that handle from the reply - see below
-        }
-        else if (ot == Asynchronous) {
-            r = walletLauncher->getInterface().openAsync(name, (qlonglong)w, appid(), true);
+        } else if (ot == Asynchronous) {
+            r = interface.openAsync(name, (qlonglong)w, appid(), true);
         } else if (ot == Path) {
-            r = walletLauncher->getInterface().openPathAsync(name, (qlonglong)w, appid(), true);
+            r = interface.openPathAsync(name, (qlonglong)w, appid(), true);
         } else {
             delete wallet;
             return 0;
