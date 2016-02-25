@@ -484,7 +484,7 @@ Wallet *Wallet::openWallet(const QString& name, WId w, OpenType ot) {
         // do the call
         QDBusReply<int> r;
         if (ot == Synchronous) {
-            interface.setTimeout(2 << 30); // Don't timeout after 25s, but 12 days
+            interface.setTimeout(0x7FFFFFFF); // Don't timeout after 25s, but 24 days
             r = interface.open(name, (qlonglong)w, appid());
             interface.setTimeout(-1); // Back to the default 25s
             // after this call, r would contain a transaction id >0 if OK or -1 if NOK
