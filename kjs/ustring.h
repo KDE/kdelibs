@@ -52,9 +52,6 @@
 namespace DOM {
   class DOMString;
 }
-namespace khtml {
-  class AtomicString;
-}
 class QString;
 class QConstString;
 
@@ -234,10 +231,6 @@ namespace KJS {
      * Convenience declaration only ! See UString(const QString&).
      */
     KJS_EXTERNAL_EXPORT UString(const DOM::DOMString&);
-    /**
-     * Convenience declaration only ! See UString(const QString&).
-     */
-    KJS_EXTERNAL_EXPORT UString(const khtml::AtomicString&);
 
     /**
      * Concatenation constructor. Makes operator+ more efficient.
@@ -410,6 +403,11 @@ namespace KJS {
      * Static instance of a null string.
      */
     static const UString &null();
+
+    /**
+     * Maximum permitted string length
+     */
+    static size_t maxUChars();
 
     Rep* rep() const { return m_rep.get(); }
     UString(PassRefPtr<Rep> r) : m_rep(r) { assert(m_rep); }

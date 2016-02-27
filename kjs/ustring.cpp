@@ -65,7 +65,11 @@ extern const double NaN;
 extern const double Inf;
 
 static inline size_t overflowIndicator() { return std::numeric_limits<size_t>::max(); }
-static inline size_t maxUChars() { return std::numeric_limits<size_t>::max() / sizeof(UChar); }
+static inline size_t maxUChars() {
+    // We don't want strings to get too crazy, since OOM hurts... and since we use 32-bit lengths
+    // on 64-bit, too, keeping this small prevents overflows.
+    return 0xFFFFFFF;
+}
 
 static inline UChar* allocChars(size_t length)
 {
@@ -1231,6 +1235,10 @@ UString UString::substr(int pos, int len) const
     return *this;
 
   return UString(Rep::create(m_rep, pos, len));
+}
+
+size_t UString::maxUChars() {
+  return ::KJS::maxUChars();
 }
 
 void UString::copyForWriting()
