@@ -102,7 +102,7 @@ namespace KJS {
    * The initial value of Function.prototype (and thus all objects created
    * with the Function constructor)
    */
-  class FunctionPrototype : public InternalFunctionImp {
+  class KJS_EXPORT FunctionPrototype : public InternalFunctionImp {
   public:
     FunctionPrototype(ExecState *exec);
     virtual ~FunctionPrototype();

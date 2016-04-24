@@ -23,6 +23,8 @@
 #include "ecma/kjs_arraybuffer.h"
 
 #include <kjs/object.h>
+#include <kjs/function.h>
+#include <kjs/function_object.h>
 #include <operations.h>
 #include <array_instance.h>
 #include <dom/dom_exception.h>
@@ -39,7 +41,7 @@ namespace KJS {
 
     //type, TypedArrayClass
     template <class T, class U>
-    class ArrayBufferViewConstructorImp : public JSObject {
+    class ArrayBufferViewConstructorImp : public KJS::FunctionPrototype {
     public:
         ArrayBufferViewConstructorImp(ExecState *exec, DOM::DocumentImpl* d);
         virtual bool implementsConstruct() const;
@@ -215,7 +217,7 @@ namespace KJS {
 
     template <class T, class U>
     ArrayBufferViewConstructorImp<T, U>::ArrayBufferViewConstructorImp(ExecState* exec, DOM::DocumentImpl* d)
-        : JSObject(exec->lexicalInterpreter()->builtinFunctionPrototype()),
+        : KJS::FunctionPrototype(exec),
           doc(d)
     {
     }
@@ -298,7 +300,7 @@ namespace KJS {
     template <class T, class U>
     bool ArrayBufferViewConstructorImp<T, U>::getOwnPropertySlot(ExecState* exec, const Identifier& propertyName, PropertySlot& slot)
     {
-        return getStaticValueSlot<ArrayBufferViewConstructorImp<T, U>, JSObject>(exec, &ArrayBufferViewConstTable, this, propertyName, slot);
+        return getStaticPropertySlot<ArrayBufferViewProtoFunc<T, U>, ArrayBufferViewConstructorImp<T, U>, KJS::FunctionPrototype>(exec, &ArrayBufferViewConstTable, this, propertyName, slot);
     }
 
 
