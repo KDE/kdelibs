@@ -1274,6 +1274,8 @@ void KUrlTest::testBaseURL() // those are tests for the KUrl(base,relative) cons
   KUrl flashBase("http://www.youtube.com/?v=JvOSnRD5aNk");
   KUrl flashComposed(flashBase, flashRel);
   QCOMPARE(flashComposed.url(), QString("javascript:window.location+%22__flashplugin_unique__%22"));
+
+  QCOMPARE(KUrl(KUrl("data:text/plain, main"), "data:text/plain, subpage").url(), QString("data:text/plain,%20subpage"));
 }
 
 void KUrlTest::testSetEncodedFragment_data()
