@@ -543,21 +543,20 @@ void CSSFontSelector::addFontFaceRule(const CSSFontFaceRuleImpl* fontFaceRule)
             foundLocal = true;
         }
 
-        if (!fontFace)
-            fontFace = new CSSFontFace( static_cast<FontTraitsMask>(traitsMask), this );
-
         if (source) {
 #if 0
     // ENABLE(SVG_FONTS)
             source->setSVGFontFaceElement(item->svgFontFaceElement());
 #endif
+
+            if (!fontFace) {
+                fontFace = new CSSFontFace( static_cast<FontTraitsMask>(traitsMask), this );
+            }
             fontFace->addSource(source);
         }
     }
 
-    assert(fontFace);
-
-    if (fontFace && !fontFace->isValid()) {
+    if (!fontFace || !fontFace->isValid()) {
         delete fontFace;
         return;
     }
