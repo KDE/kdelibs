@@ -327,47 +327,24 @@ DateTimeComponents KDateTimeParser::parseDateUnicode(const QString &inputString,
     Q_UNUSED(calendar);
     Q_UNUSED(locale);
     Q_UNUSED(digitSet);
-    QString str = inputString.simplified().toLower();
-    QString fmt = formatString.simplified();
-    int dd = -1;
-    int mm = -1;
-    int yy = 0;
-    bool parsedYear = false;
-    int ey = -1;
-    QString ee;
-    int dayInYear = -1;
-    int isoWeekNumber = -1;
-    int dayOfIsoWeek = -1;
-    int strpos = 0;
-    int fmtpos = 0;
-    //int readLength; // Temporary variable used when reading input
-    bool error = false;
+    Q_UNUSED(inputString);
+    Q_UNUSED(formatString);
+
+    kWarning() << "KDateTimeParser::parseDateUnicode is not implemented";
 
     DateTimeComponents result;
-    result.error = error;
-    result.inputPosition = strpos;
-    result.formatPosition = fmtpos;
-    if (error) {
-        result.day = -1;
-        result.month = -1;
-        result.year = 0;
-        result.parsedYear = false;
-        result.eraName.clear();
-        result.yearInEra = -1;
-        result.dayInYear = -1;
-        result.isoWeekNumber = -1;
-        result.dayOfIsoWeek = -1;
-    } else {
-        result.day = dd;
-        result.month = mm;
-        result.year = yy;
-        result.parsedYear = parsedYear;
-        result.eraName = ee;
-        result.yearInEra = ey;
-        result.dayInYear = dayInYear;
-        result.isoWeekNumber = isoWeekNumber;
-        result.dayOfIsoWeek = dayOfIsoWeek;
-    }
+    result.error = true;
+    result.inputPosition = 0;
+    result.formatPosition = 0;
+    result.day = -1;
+    result.month = -1;
+    result.year = 0;
+    result.parsedYear = false;
+    result.eraName.clear();
+    result.yearInEra = -1;
+    result.dayInYear = -1;
+    result.isoWeekNumber = -1;
+    result.dayOfIsoWeek = -1;
     return result;
 }
 
