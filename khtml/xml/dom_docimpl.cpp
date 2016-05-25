@@ -3053,8 +3053,10 @@ khtml::XPathResultImpl * DocumentImpl::evaluate( DOMString &expression,
                                       int &exceptioncode )
 {
     XPathExpressionImpl *expr = createExpression( expression, resolver, exceptioncode );
-    if ( exceptioncode )
+    if ( exceptioncode ) {
+        delete expr;
         return 0;
+    }
 
     XPathResultImpl *res = expr->evaluate( contextNode, type, 0, exceptioncode );
     delete expr;  // don't need it anymore.

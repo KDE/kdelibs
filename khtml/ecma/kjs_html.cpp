@@ -3350,7 +3350,10 @@ void KJS::HTMLSelectCollection::put(ExecState *exec, const Identifier &propertyN
   DOM::HTMLOptionElementImpl* option = static_cast<DOM::HTMLOptionElementImpl*>(node);
   if ( option->document() != element->document() )
     option = static_cast<DOM::HTMLOptionElementImpl*>(element->ownerDocument()->importNode(option, true, exception));
-  if (exception.triggered()) return;
+  if (exception.triggered()) {
+      delete option;
+      return;
+  }
 
   long diff = long(u) - element->length();
   DOM::HTMLElementImpl* before = 0;
@@ -3360,7 +3363,10 @@ void KJS::HTMLSelectCollection::put(ExecState *exec, const Identifier &propertyN
       element->add(
         static_cast<DOM::HTMLElementImpl*>(element->document()->createElement("OPTION")),
         before, exception);
-      if (exception.triggered()) return;
+      if (exception.triggered()) {
+          return;
+          delete option;
+      }
     }
     // replace an existing entry ?
   } else if (diff < 0) {
