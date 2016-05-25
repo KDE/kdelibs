@@ -1568,7 +1568,8 @@ bool CSSParser::parse4Values(int propId, const int *properties,  bool important 
 // [ <string> | attr(X) | open-quote | close-quote | no-open-quote | no-close-quote ]+ | inherit
 bool CSSParser::parseContent( int propId, bool important )
 {
-    CSSValueListImpl* values = new CSSValueListImpl(CSSValueListImpl::Comma);
+    QScopedPointer<CSSValueListImpl> values(
+            new CSSValueListImpl(CSSValueListImpl::Comma));
 
     bool isValid = true;
     Value *val;
@@ -1634,12 +1635,11 @@ bool CSSParser::parseContent( int propId, bool important )
         valueList->next();
     }
     if ( isValid && values->length() ) {
-        addProperty( propId, values, important );
+        addProperty( propId, values.take(), important );
         valueList->next();
         return true;
     }
 
-    delete values;  // also frees any content by deref
     return false;
 }
 
