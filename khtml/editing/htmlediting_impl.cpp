@@ -608,8 +608,9 @@ static bool isBlockLevelStyle(const CSSStyleDeclarationImpl* style)
 
 static void applyStyleChangeOnTheNode(ElementImpl* element, CSSStyleDeclarationImpl* style)
 {
-    CSSStyleDeclarationImpl *computedStyle = element->document()->defaultView()->getComputedStyle(element, 0);
-    assert(computedStyle);
+    QScopedPointer<CSSStyleDeclarationImpl> computedStyle(
+        element->document()->defaultView()->getComputedStyle(element, 0));
+    assert(!computedStyle.isNull());
 #ifdef DEBUG_COMMANDS
     kDebug() << "[change style]" << element << endl;
 #endif
@@ -864,8 +865,9 @@ void ApplyStyleCommandImpl::surroundNodeRangeWithElement(NodeImpl *startNode, No
 
 static bool /*ApplyStyleCommandImpl::*/checkIfNewStylingNeeded(ElementImpl* element, CSSStyleDeclarationImpl *style)
 {
-    CSSStyleDeclarationImpl *computedStyle = element->document()->defaultView()->getComputedStyle(element, 0);
-    assert(computedStyle);
+    QScopedPointer<CSSStyleDeclarationImpl> computedStyle(
+        element->document()->defaultView()->getComputedStyle(element, 0));
+    assert(!computedStyle.isNull());
 #ifdef DEBUG_COMMANDS
     kDebug() << "[check styling]" << element << endl;
 #endif
