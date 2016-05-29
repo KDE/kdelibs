@@ -384,9 +384,21 @@ enum EBackgroundAttachment {
     BGASCROLL, BGAFIXED, BGALOCAL
 };
 
-struct LengthSize {
+struct BGSize {
+    EBackgroundSizeType type : 2;
     Length width;
     Length height;
+
+    BGSize() :
+        type(BGSLENGTH), width(Length()), height(Length()) {}
+    BGSize(EBackgroundSizeType t) :   // Use to set BGSCONTAIN|BGSCOVER
+        type(t), width(Length()), height(Length()) { Q_ASSERT(t != BGSLENGTH); }
+    BGSize(Length w, Length h) :      // Use to set lenghts
+        type(BGSLENGTH), width(w), height(h) {}
+
+    bool operator==(const BGSize& o) const {
+        return type == o.type && width == o.width && height == o.height;
+    }
 };
 
 struct BackgroundLayer {
@@ -401,8 +413,7 @@ public:
     EBackgroundBox backgroundClip() const { return KDE_CAST_BF_ENUM(EBackgroundBox, m_bgClip); }
     EBackgroundBox backgroundOrigin() const { return KDE_CAST_BF_ENUM(EBackgroundBox, m_bgOrigin); }
     EBackgroundRepeat backgroundRepeat() const { return KDE_CAST_BF_ENUM(EBackgroundRepeat, m_bgRepeat); }
-    LengthSize backgroundSize() const { return m_backgroundSize; }
-    EBackgroundSizeType backgroundSizeType() const { return KDE_CAST_BF_ENUM(EBackgroundSizeType, m_bgSizeType); }
+    BGSize backgroundSize() const { return m_backgroundSize; }
 
     BackgroundLayer* next() const { return m_next; }
     BackgroundLayer* next() { return m_next; }
@@ -423,8 +434,7 @@ public:
     void setBackgroundClip(EBackgroundBox b) { m_bgClip = b; m_clipSet = true; }
     void setBackgroundOrigin(EBackgroundBox b) { m_bgOrigin = b; m_originSet = true; }
     void setBackgroundRepeat(EBackgroundRepeat r) { m_bgRepeat = r; m_repeatSet = true; }
-    void setBackgroundSize(const LengthSize& b) { m_backgroundSize = b; m_backgroundSizeSet = true; }
-    void setBackgroundSizeType(EBackgroundSizeType t) { m_bgSizeType = t; m_backgroundSizeSet = true; }
+    void setBackgroundSize(const BGSize& b) { m_backgroundSize = b; m_backgroundSizeSet = true; }
 
     void clearBackgroundImage() { m_imageSet = false; }
     void clearBackgroundXPosition() { m_xPosSet = false; }
@@ -470,9 +480,8 @@ public:
     KDE_BF_ENUM(EBackgroundBox) m_bgClip : 2;
     KDE_BF_ENUM(EBackgroundBox) m_bgOrigin : 2;
     KDE_BF_ENUM(EBackgroundRepeat) m_bgRepeat : 2;
-    KDE_BF_ENUM(EBackgroundSizeType) m_bgSizeType : 2;
 
-    LengthSize m_backgroundSize;
+    BGSize m_backgroundSize;
 
     bool m_imageSet : 1;
     bool m_attachmentSet : 1;
@@ -1439,8 +1448,7 @@ public:
     static EBackgroundBox initialBackgroundClip() { return BGBORDER; }
     static EBackgroundBox initialBackgroundOrigin() { return BGPADDING; }
     static EBackgroundRepeat initialBackgroundRepeat() { return REPEAT; }
-    static LengthSize initialBackgroundSize() { return LengthSize(); }
-    static EBackgroundSizeType initialBackgroundSizeType() { return BGSLENGTH; }
+    static BGSize initialBackgroundSize() { return BGSize(); }
     static bool initialBorderCollapse() { return false; }
     static EBorderStyle initialBorderStyle() { return BNONE; }
     static ECaptionSide initialCaptionSide() { return CAPTOP; }

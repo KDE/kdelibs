@@ -4423,10 +4423,8 @@ void CSSStyleSelector::mapBackgroundRepeat(BackgroundLayer* layer, DOM::CSSValue
 
 void CSSStyleSelector::mapBackgroundSize(BackgroundLayer* layer, CSSValueImpl* value)
 {
-    LengthSize b = RenderStyle::initialBackgroundSize();
-
     if (value->cssValueType() == CSSValue::CSS_INITIAL) {
-        layer->setBackgroundSize(b);
+        layer->setBackgroundSize(RenderStyle::initialBackgroundSize());
         return;
     }
 
@@ -4436,11 +4434,11 @@ void CSSStyleSelector::mapBackgroundSize(BackgroundLayer* layer, CSSValueImpl* v
     CSSPrimitiveValueImpl* primitiveValue = static_cast<CSSPrimitiveValueImpl*>(value);
     const int id = primitiveValue->getIdent();
     if (id == CSS_VAL_CONTAIN) {
-        layer->setBackgroundSizeType(BGSCONTAIN);
+        layer->setBackgroundSize(BGSize(BGSCONTAIN));
         return;
     }
     if (id == CSS_VAL_COVER) {
-        layer->setBackgroundSizeType(BGSCOVER);
+        layer->setBackgroundSize(BGSize(BGSCOVER));
         return;
     }
 
@@ -4482,9 +4480,7 @@ void CSSStyleSelector::mapBackgroundSize(BackgroundLayer* layer, CSSValueImpl* v
         }
     }
 
-    b.width = firstLength;
-    b.height = secondLength;
-    layer->setBackgroundSize(b);
+    layer->setBackgroundSize(BGSize(firstLength, secondLength));
 }
 
 void CSSStyleSelector::mapBackgroundXPosition(BackgroundLayer* layer, DOM::CSSValueImpl* value)

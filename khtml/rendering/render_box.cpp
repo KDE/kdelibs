@@ -471,7 +471,7 @@ static void calculateBackgroundSize(const BackgroundLayer* bgLayer, int& scaledW
     CachedImage* bg = bgLayer->backgroundImage();
 
     if (bgLayer->isBackgroundSizeSet()) {
-        if (bgLayer->backgroundSizeType() == BGSLENGTH) {
+        if (bgLayer->backgroundSize().type == BGSLENGTH) {
             int w = scaledWidth;
             int h = scaledHeight;
 
@@ -510,7 +510,7 @@ static void calculateBackgroundSize(const BackgroundLayer* bgLayer, int& scaledW
             float ih = bg->pixmap_size().height();
             float w = scaledWidth/iw;        
             float h = scaledHeight/ih;
-            float r = (bgLayer->backgroundSizeType() == BGSCONTAIN) ? qMin(w,h) : qMax(w,h);
+            float r = (bgLayer->backgroundSize().type == BGSCONTAIN) ? qMin(w,h) : qMax(w,h);
             scaledWidth = qMax(1, static_cast<int>(iw*r));
             scaledHeight = qMax(1, static_cast<int>(ih*r));
         }
