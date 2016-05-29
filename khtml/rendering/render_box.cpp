@@ -504,8 +504,8 @@ static void calculateBackgroundSize(const BackgroundLayer* bgLayer, int& scaledW
             scaledHeight = qMax(1, h);
         } else {
             // 'cover' and 'contain' scaling ratio
-            assert( bgLayer->backgroundSizeType() == BGSCONTAIN ||
-                    bgLayer->backgroundSizeType() == BGSCOVER);
+            assert( bgLayer->backgroundSize().type == BGSCONTAIN ||
+                    bgLayer->backgroundSize().type == BGSCOVER);
             float iw = bg->pixmap_size().width();
             float ih = bg->pixmap_size().height();
             float w = scaledWidth/iw;        
