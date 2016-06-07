@@ -120,6 +120,7 @@ else if (isInitial) \
 
 #define HANDLE_BACKGROUND_INHERIT_AND_INITIAL(prop, Prop) \
 if (isInherit) { \
+    style->setInheritedNoninherited(true); \
     BackgroundLayer* currChild = style->accessBackgroundLayers(); \
     BackgroundLayer* prevChild = 0; \
     const BackgroundLayer* currParent = parentStyle->backgroundLayers(); \
@@ -3906,6 +3907,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             return;
         }
         else if (isInherit) {
+            style->setInheritedNoninherited(true);
             style->inheritBackgroundLayers(*parentStyle->backgroundLayers());
             style->setBackgroundColor(parentStyle->backgroundColor());
         }
