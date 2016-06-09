@@ -1260,13 +1260,16 @@ void CSSParser::addBackgroundValue(CSSValueImpl*& lval, CSSValueImpl* rval)
 
 bool CSSParser::parseBackgroundShorthand(bool important)
 {
-    // Position must come before color in this array because a plain old "0" is a legal color
-    // in quirks mode but it's usually the X coordinate of a position.
-    // FIXME: Add CSS_PROP_BACKGROUND_SIZE to the shorthand.
-    const int numProperties = 7;
+    // Order is important in this array:
+    // 'position' must come before color because a plain old "0" is a legal color in quirks mode
+    //  but it's usually the X coordinate of a position.
+    // 'size' must be the next property after 'position' in order to correctly parse '/size'.
+    // 'origin' must come before 'clip' because the first <box> value found belongs to 'origin',
+    //  the second (if any) to 'clip'.
+    const int numProperties = 8;
     const int properties[numProperties] = { CSS_PROP_BACKGROUND_IMAGE, CSS_PROP_BACKGROUND_REPEAT,
-        CSS_PROP_BACKGROUND_ATTACHMENT, CSS_PROP_BACKGROUND_POSITION,  CSS_PROP_BACKGROUND_CLIP,
-        CSS_PROP_BACKGROUND_ORIGIN, CSS_PROP_BACKGROUND_COLOR };
+        CSS_PROP_BACKGROUND_ATTACHMENT, CSS_PROP_BACKGROUND_POSITION, CSS_PROP_BACKGROUND_SIZE,
+        CSS_PROP_BACKGROUND_ORIGIN, CSS_PROP_BACKGROUND_CLIP, CSS_PROP_BACKGROUND_COLOR };
 
     ShorthandScope scope(this, CSS_PROP_BACKGROUND);
 
@@ -1302,20 +1305,36 @@ bool CSSParser::parseBackgroundShorthand(bool important)
             if (!parsedProperty[i]) {
                 CSSValueImpl *val1 = 0, *val2 = 0;
                 int propId1, propId2;
-		if (parseBackgroundProperty(properties[i], propId1, propId2, val1, val2)) {
-		    parsedProperty[i] = found = true;
+                if (parseBackgroundProperty(properties[i], propId1, propId2, val1, val2)) {
+                    parsedProperty[i] = found = true;
                     addBackgroundValue(values[i], val1);
-                    if (properties[i] == CSS_PROP_BACKGROUND_POSITION)
+                    if (properties[i] == CSS_PROP_BACKGROUND_POSITION) {
                         addBackgroundValue(positionYValue, val2);
-		}
-	    }
-	}
+                        // after 'position' there could be '/size', check for it
+                        const Value* v = valueList->current();
+                        if (v && v->unit == Value::Operator && v->iValue == '/') {
+                            // next property _must_ be 'size'
+                            valueList->next();
+                            ++i; // 'size' is at the next position in properties[] array
+                            CSSValueImpl *retVal1 = 0, *retVal2 = 0;
+                            if (parseBackgroundProperty(properties[i], propId1, propId2, retVal1, retVal2)) {
+                                parsedProperty[i] = true;
+                                addBackgroundValue(values[i], retVal1);
+                            } else {
+                                goto fail;
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         // if we didn't find at least one match, this is an
         // invalid shorthand and we have to ignore it
         if (!found)
             goto fail;
-    }
+
+    } // end of while loop
 
     // Fill in any remaining properties with the initial value.
     for (i = 0; i < numProperties; ++i) {
@@ -1817,31 +1836,47 @@ void CSSParser::parseBackgroundPosition(CSSValueImpl*& value1, CSSValueImpl*& va
 CSSValueImpl* CSSParser::parseBackgroundSize()
 {
     Value* value = valueList->current();
+
+    // Parse the first value.
     CSSPrimitiveValueImpl* parsedValue1;
 
-    if (value->id == CSS_VAL_COVER || value->id == CSS_VAL_CONTAIN)
+    if (value->id == CSS_VAL_COVER || value->id == CSS_VAL_CONTAIN) {
+        valueList->next();
         return new CSSPrimitiveValueImpl(value->id);
+    }
 
     if (value->id == CSS_VAL_AUTO)
         parsedValue1 = new CSSPrimitiveValueImpl(CSS_VAL_AUTO);
-    else {
-        if (!validUnit(value, FLength|FPercent|FNonNeg, strict))
-            return 0;
+    else if (validUnit(value, FLength|FPercent|FNonNeg, strict)) {
         parsedValue1 = new CSSPrimitiveValueImpl(value->fValue, (CSSPrimitiveValue::UnitTypes)value->unit);
+    } else {
+        return 0;
     }
 
-    CSSPrimitiveValueImpl* parsedValue2;
-    if ((value = valueList->next())) {
-        if (value->id == CSS_VAL_AUTO)
+    // Parse the second value, if any.
+    value = valueList->next();
+
+    // First check for the comma.  If so, we are finished parsing this value or value pair.
+    if (value && value->unit == Value::Operator && value->iValue == ',') {
+        value = 0;
+    }
+
+    CSSPrimitiveValueImpl* parsedValue2 = 0;
+    if (value) {
+        if (value->id == CSS_VAL_AUTO) {
             parsedValue2 = new CSSPrimitiveValueImpl(CSS_VAL_AUTO);
-        else {
-            if (!validUnit(value, FLength|FPercent|FNonNeg, strict)) {
-                delete parsedValue1;
-                return 0;
-            }
+        } else if (validUnit(value, FLength|FPercent|FNonNeg, strict)) {
             parsedValue2 = new CSSPrimitiveValueImpl(value->fValue, (CSSPrimitiveValue::UnitTypes)value->unit);
+        } else if (!inShorthand()) {
+            delete parsedValue1;
+            return 0;
         }
+    }
+
+    if (parsedValue2) {
+        valueList->next();
     } else {
+        // If only one value is given the second is assumed to be ‘auto’
         parsedValue2 = new CSSPrimitiveValueImpl(CSS_VAL_AUTO);
     }
 
@@ -1913,7 +1948,7 @@ bool CSSParser::parseBackgroundProperty(int propId, int& propId1, int& propId2,
                     break;
                 case CSS_PROP_BACKGROUND_POSITION:
                     parseBackgroundPosition(currValue, currValue2);
-                    // unlike the other functions, parseBackgroundPosition advances the valueList pointer
+                    // parseBackgroundPosition advances the valueList pointer
                     break;
                 case CSS_PROP_BACKGROUND_POSITION_X: {
                     BackgroundPosKind pos;
@@ -1950,8 +1985,7 @@ bool CSSParser::parseBackgroundProperty(int propId, int& propId1, int& propId2,
                 case CSS_PROP__KHTML_BACKGROUND_SIZE:
                 case CSS_PROP_BACKGROUND_SIZE:
                     currValue = parseBackgroundSize();
-                    if (currValue)
-                        valueList->next();
+                    // parseBackgroundSize advances the valueList pointer
                     break;
             }
 
