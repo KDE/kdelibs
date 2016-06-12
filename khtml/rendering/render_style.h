@@ -1481,6 +1481,7 @@ public:
     static CachedImage* initialBackgroundImage() { return 0; }
     static CachedImage* initialListStyleImage() { return 0; }
     static unsigned short initialBorderWidth() { return 3; }
+    static BorderRadii initialBorderRadius() { return BorderRadii(); }
     static int initialLetterWordSpacing() { return 0; }
     static Length initialSize() { return Length(); }
     static Length initialMinSize() { return Length(0, Fixed); }
