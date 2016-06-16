@@ -70,7 +70,7 @@ namespace Kross {
 
             virtual int typeId() { return qMetaTypeId<METATYPE>(); }
             //virtual QVariant toVariant() { return QVariant(typeId(), m_variant); }
-            virtual void* toVoidStar() { return (void*) &m_variant; }
+            virtual void* toVoidStar() { return static_cast<void *>(&m_variant); }
 
         private:
             METATYPE m_variant;
@@ -96,7 +96,7 @@ namespace Kross {
 
             virtual int typeId() { return qVariantFromValue(m_value).type(); }
             //virtual QVariant toVariant() { return qVariantFromValue(m_value); }
-            virtual void* toVoidStar() { return (void*) &m_value; }
+            virtual void* toVoidStar() { return static_cast<void *>(&m_value); }
 
         private:
             VARIANTTYPE m_value;
@@ -121,7 +121,7 @@ namespace Kross {
                     QMetaType::destroy(m_typeId, m_ptr);
             }
             virtual int typeId() { return m_typeId; }
-            virtual void* toVoidStar() { return (void*) &m_ptr; /*return m_ptr;*/ }
+            virtual void* toVoidStar() { return static_cast<void *>(&m_ptr); }
 
         private:
             int m_typeId;
