@@ -126,16 +126,12 @@ static inline void closeAndDrawWord(QPainter *p, Qt::LayoutDirection d,
     wordStart = wordEnd;
 }
 
-void Font::drawText( QPainter *p, int x, int y, const QChar *str, int slen, int pos, int len,
+void Font::drawText( QPainter *p, int x, int y, const QChar *str, const int slen, int pos, int len,
         int toAdd, Qt::LayoutDirection d, int from, int to, QColor bg, int uy, int h, int deco ) const
 {
     if (!str || slen == 0) { // #188910
         return;
     }
-
-    QString qstr = QString::fromRawData(str, slen);
-
-    const QFontMetrics& fm = cfi->fm;
 
     // ### fixme for RTL
     if ( !scFont && !letterSpacing && !wordSpacing && !toAdd && from==-1 ) {
@@ -161,13 +157,6 @@ void Font::drawText( QPainter *p, int x, int y, const QChar *str, int slen, int 
 	    const int totWidth = width( str, slen, pos, len, false /*fast algo*/ );
 	    x += totWidth + toAdd;
 	}
-	QString upper = qstr;
-	QFontMetrics sc_fm = fm;
-	if ( scFont ) {
-	    // draw in small caps
-	    upper = qstr.toUpper();
-	    sc_fm = QFontMetrics( *scFont );
-	}
 
 	// ### sc could be optimized by only painting uppercase letters extra,
 	// and treat the rest WordWise, but I think it's not worth it.
@@ -181,6 +170,8 @@ void Font::drawText( QPainter *p, int x, int y, const QChar *str, int slen, int 
 	  mode = WordWise;
 	else if (letterSpacing || scFont)
 	  mode = CharacterWise;
+
+        const QFontMetrics& fm = cfi->fm;
 
 	if (mode == Whole) {	// most likely variant is treated extra
 
@@ -199,6 +190,15 @@ void Font::drawText( QPainter *p, int x, int y, const QChar *str, int slen, int 
 	        drawDecoration(p, eff_x, uy, y - uy, segmentWidth - 1, h, deco);
 	    return;
 	}
+
+        const QString qstr = QString::fromRawData(str, slen);
+        QString upper = qstr;
+        QFontMetrics sc_fm = fm;
+        if (scFont) {
+            // draw in small caps
+            upper = qstr.toUpper();
+            sc_fm = QFontMetrics(*scFont);
+        }
 
 	// We are using two passes. In the first pass, the widths are collected,
 	// and stored. In the second, the actual characters are drawn.
