@@ -259,7 +259,7 @@ void KDirListerTest::testNewItemsInSymlink() // #213799
     const QString symPath = tempFile.fileName() + "_link";
     tempFile.close();
     bool symlinkOk = ::symlink(QFile::encodeName(path), QFile::encodeName(symPath)) == 0;
-    QVERIFY(symlinkOk);
+    QVERIFY2(symlinkOk, qPrintable(QString("Failed to symlink(%1, %2): %3").arg(path, symPath, strerror(errno))));
     MyDirLister dirLister2;
     m_items2.clear();
     connect(&dirLister2, SIGNAL(newItems(KFileItemList)), this, SLOT(slotNewItems2(KFileItemList)));
@@ -323,6 +323,8 @@ void KDirListerTest::testNewItemsInSymlink() // #213799
 
     // TODO: test file update.
     disconnect(&m_dirLister, 0, this, 0);
+
+    QFile::remove(symPath);
 }
 
 // This test assumes testOpenUrl was run before. So m_dirLister is holding the items already.
