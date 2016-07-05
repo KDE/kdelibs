@@ -34,20 +34,23 @@ private Q_SLOTS:
 
     void initTestCase()
     {
-        //mTestData.setupTimeZoneTest(); // see ktimezonestest_p.h
-    }
-
-    void cleanupTestCase()
-    {
-        //mTestData.cleanupTimeZoneTest();
-    }
-
-    void testSetSelected()
-    {
         if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kded")) {
             QSKIP("kded not running", SkipSingle);
         }
 
+        QDBusInterface ktimezoned("org.kde.kded", "/modules/ktimezoned", "org.kde.KTimeZoned");
+        QDBusReply<QString> reply = ktimezoned.call("localZone");
+        if (!reply.isValid()) {
+            QSKIP("ktimezoned not available", SkipSingle);
+        }
+    }
+
+    void cleanupTestCase()
+    {
+    }
+
+    void testSetSelected()
+    {
         KTimeZoneWidget tzw;
         QVERIFY(tzw.topLevelItemCount() > 0);
         QVERIFY(tzw.selectedItems().isEmpty());
