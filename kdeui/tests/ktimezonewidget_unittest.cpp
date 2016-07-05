@@ -34,6 +34,7 @@ private Q_SLOTS:
 
     void initTestCase()
     {
+        mEnabled = false;
         if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kded")) {
             QSKIP("kded not running", SkipSingle);
         }
@@ -43,6 +44,7 @@ private Q_SLOTS:
         if (!reply.isValid()) {
             QSKIP("ktimezoned not available", SkipSingle);
         }
+        mEnabled = true;
     }
 
     void cleanupTestCase()
@@ -51,6 +53,9 @@ private Q_SLOTS:
 
     void testSetSelected()
     {
+        if (!mEnabled) {
+            QSKIP("ktimezoned not available", SkipSingle);
+        }
         KTimeZoneWidget tzw;
         QVERIFY(tzw.topLevelItemCount() > 0);
         QVERIFY(tzw.selectedItems().isEmpty());
@@ -78,9 +83,9 @@ private Q_SLOTS:
 
     void testCheckableItems()
     {
-        //if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kded")) {
-        //    QSKIP("kded not running", SkipSingle);
-        //}
+        if (!mEnabled) {
+            QSKIP("ktimezoned not available", SkipSingle);
+        }
 
         KTimeZoneWidget tzw;
         tzw.setItemsCheckable(true);
@@ -108,6 +113,7 @@ private:
     // Because we don't use a separate KDEHOME, we can't use TimeZoneTestData.
     // It would remove ktimezonedrc from the user!
     //TimeZoneTestData mTestData;
+    bool mEnabled;
 };
 
 // Tricky problem. The kded module writes out a config file, but unit tests have
