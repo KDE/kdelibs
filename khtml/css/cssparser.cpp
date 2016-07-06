@@ -718,7 +718,7 @@ bool CSSParser::parseValue( int propId, bool important )
         if (num < 1 || num > 2)
             return false;
 
-        if (!validUnit( value, FLength|FNonNeg, strict))
+        if (!validUnit( value, FLength|FPercent|FNonNeg, strict))
             return false;
 
         CSSPrimitiveValueImpl* horiz = new CSSPrimitiveValueImpl( value->fValue,
@@ -727,7 +727,7 @@ bool CSSParser::parseValue( int propId, bool important )
 
         if (num == 2) {
             value = valueList->next();
-            if (!validUnit( value, FLength|FNonNeg, strict)) {
+            if (!validUnit( value, FLength|FPercent|FNonNeg, strict)) {
                 delete horiz;
                 return false;
             }
@@ -1404,7 +1404,7 @@ bool CSSParser::parseBorderRadius(bool important) {
         if (!value || (value->unit == Value::Operator && value->iValue == '/'))
             break; //Saw slash -- exit w/o consuming as we'll use it below.
 
-        if (!validUnit(value, FLength|FNonNeg, strict))
+        if (!validUnit(value, FLength|FPercent|FNonNeg, strict))
             return false;
 
         horiz[c] = new CSSPrimitiveValueImpl( value->fValue, (CSSPrimitiveValue::UnitTypes) value->unit );
@@ -1426,7 +1426,7 @@ bool CSSParser::parseBorderRadius(bool important) {
             if (!value)
                 break;
 
-            if (!validUnit(value, FLength|FNonNeg, strict))
+            if (!validUnit(value, FLength|FPercent|FNonNeg, strict))
                 return false;
 
             vert[c] = new CSSPrimitiveValueImpl( value->fValue, (CSSPrimitiveValue::UnitTypes) value->unit );

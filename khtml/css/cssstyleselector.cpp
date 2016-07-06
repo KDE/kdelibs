@@ -2278,20 +2278,6 @@ static Length convertToLength(CSSPrimitiveValueImpl *primitiveValue, RenderStyle
     return l;
 }
 
-// Extracts out border radii lengths from a pair
-static BorderRadii convertToBorderRadii(CSSPrimitiveValueImpl *value, RenderStyle *style, khtml::RenderStyle *rootStyle, int logicalDpiY)
-{
-    BorderRadii ret;
-    PairImpl* p = value->getPairValue();
-    if (!p)
-        return ret;
-
-    assert(p->first()->isPrimitiveValue() && p->second()->isPrimitiveValue());
-    ret.horizontal = static_cast<CSSPrimitiveValueImpl*>(p->first())->computeLength(style, rootStyle, logicalDpiY);
-    ret.vertical   = static_cast<CSSPrimitiveValueImpl*>(p->second())->computeLength(style, rootStyle, logicalDpiY);
-    return ret;
-}
-
 static inline int nextFontSize(const QVector<int>& a, int v, bool smaller)
 {
     // return the nearest bigger/smaller value in scale a, when v is in range.
@@ -2966,7 +2952,15 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             return;
         }
 
-        BorderRadii bradii = convertToBorderRadii(primitiveValue, style, m_rootStyle, logicalDpiY);
+        PairImpl* p = primitiveValue->getPairValue();
+        if (!p) {
+            return;
+        }
+
+        BorderRadii bradii;
+        bradii.horizontal = convertToLength((p->first()), style, m_rootStyle, logicalDpiY);
+        bradii.vertical = convertToLength((p->second()), style, m_rootStyle, logicalDpiY);
+
         switch(id) {
             case CSS_PROP_BORDER_TOP_RIGHT_RADIUS:
                 style->setBorderTopRightRadius(bradii);
