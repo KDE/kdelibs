@@ -82,17 +82,10 @@ set_package_properties(ZLIB PROPERTIES DESCRIPTION "Support for gzip compressed 
                       )
 
 find_package(Strigi 0.6.3)
-if (WIN32)
-    set (STRIGI_TYPE "OPTIONAL")
-    set (STRIGI_EXTRA_TEXT "")
-else (WIN32)
-    set (STRIGI_TYPE "REQUIRED")
-    set (STRIGI_EXTRA_TEXT "Required by some critical kioslaves")
-endif (WIN32)
 set_package_properties(Strigi PROPERTIES DESCRIPTION "Desktop indexing and search support"
                        URL "http://strigi.sourceforge.net"
-                       TYPE ${STRIGI_TYPE}
-                       PURPOSE ${STRIGI_EXTRA_TEXT}
+                       TYPE OPTIONAL
+                       PURPOSE "Required by some kioslaves for metadata support"
                       )
 
 find_package(LibAttica 0.4.2)
