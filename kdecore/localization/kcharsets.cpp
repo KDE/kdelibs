@@ -21,7 +21,7 @@
 #include "kcharsets.h"
 
 #include "kfilterdev.h"
-#include "kentities.c"
+#include "kentities.cc"
 
 #include "kconfig.h"
 #include "kdebug.h"
@@ -524,7 +524,7 @@ QChar KCharsets::fromEntity(const QString &str)
     }
 
     const QByteArray raw ( str.toLatin1() );
-    const entity *e = kde_findEntity( raw, raw.length() );
+    const entity *e = Perfect_Hash::kde_findEntity( raw, raw.length() );
 
     if(!e)
     {

@@ -1,5 +1,5 @@
-/* ANSI-C code produced by gperf version 3.0.3 */
-/* Command-line: gperf -a -L ANSI-C -E -C -c -o -t -k '*' -Nkde_findEntity -D -Hhash_Entity -Wwordlist_Entity -s 2 kentities.gperf  */
+/* C++ code produced by gperf version 3.0.4 */
+/* Command-line: gperf -a -L C++ -E -C -c -o -t -k '*' -Nkde_findEntity -D -Hhash_Entity -Wwordlist_Entity -s 2 kentities.gperf  */
 
 #if !((' ' == 32) && ('!' == 33) && ('"' == 34) && ('#' == 35) \
       && ('%' == 37) && ('&' == 38) && ('\'' == 39) && ('(' == 40) \
@@ -63,15 +63,16 @@ struct entity {
 };
 /* maximum key range = 1134, duplicates = 0 */
 
-#ifdef __GNUC__
-__inline
-#else
-#ifdef __cplusplus
-inline
-#endif
-#endif
-static unsigned int
-hash_Entity (register const char *str, register unsigned int len)
+class Perfect_Hash
+{
+private:
+  static inline unsigned int hash_Entity (const char *str, unsigned int len);
+public:
+  static const struct entity *kde_findEntity (const char *str, unsigned int len);
+};
+
+inline unsigned int
+Perfect_Hash::hash_Entity (register const char *str, register unsigned int len)
 {
   static const unsigned short asso_values[] =
     {
@@ -134,14 +135,8 @@ hash_Entity (register const char *str, register unsigned int len)
   return hval;
 }
 
-#ifdef __GNUC__
-__inline
-#ifdef __GNUC_STDC_INLINE__
-__attribute__ ((__gnu_inline__))
-#endif
-#endif
 const struct entity *
-kde_findEntity (register const char *str, register unsigned int len)
+Perfect_Hash::kde_findEntity (register const char *str, register unsigned int len)
 {
   enum
     {
