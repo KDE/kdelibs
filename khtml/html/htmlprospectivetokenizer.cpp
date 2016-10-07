@@ -48,17 +48,9 @@
 #include <kdebug.h>
 #include <stdlib.h>
 
-#ifdef __GNUC__
-// The main tokenizer includes this too so we are getting two copies of the data. However, this way the code gets inlined.
-#include "kentities.c"
-#else
-// Not inlined for non-GCC compilers
-struct entity {
-    const char* name;
-    int code;
-};
-const struct entity *kde_findEntity (register const char *str, register unsigned int len);
-#endif
+namespace Aux {
+#include "kentities.cc"
+}
 
 #define PRELOAD_DEBUG 0
 
@@ -265,7 +257,7 @@ unsigned ProspectiveTokenizer::consumeEntity(TokenizerString& source, bool& notE
             // This is the attribute only version, generic version matches somewhat differently
             while (entityName.size() <= 8) {
                 if (cc == ';') {
-                    const entity* e = kde_findEntity(entityName.data(), entityName.size());
+                    const Aux::entity* e = Aux::Perfect_Hash::kde_findEntity(entityName.data(), entityName.size());
                     if (e) {
                         source.advance();
                         return e->code;
@@ -273,7 +265,7 @@ unsigned ProspectiveTokenizer::consumeEntity(TokenizerString& source, bool& notE
                     break;
                 }
                 if (!(cc >= 'a' && cc <= 'z') && !(cc >= 'A' && cc <= 'Z') && !(cc >= '0' && cc <= '9')) {
-                    const entity* e = kde_findEntity(entityName.data(), entityName.size());
+                    const Aux::entity* e = Aux::Perfect_Hash::kde_findEntity(entityName.data(), entityName.size());
                     if (e)
                         return e->code;
                     break;

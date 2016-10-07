@@ -53,7 +53,7 @@
 
 #include <config.h>
 
-#include "kentities.c"
+#include "kentities.cc"
 #include "htmlprospectivetokenizer.h"
 
 #define PROSPECTIVE_TOKENIZER_ENABLED 1
@@ -1014,7 +1014,7 @@ void HTMLTokenizer::parseEntity(TokenizerString &src, QChar *&dest, bool start)
                 // be IE compatible and interpret even unterminated entities
                 // outside tags. like "foo &nbspstuff bla".
                 if ( tag == NoTag ) {
-                    const entity* e = kde_findEntity(cBuffer, cBufferPos);
+                    const entity* e = Perfect_Hash::kde_findEntity(cBuffer, cBufferPos);
                     if ( e && e->code < 256 ) {
                         EntityChar = e->code;
                         entityLen = cBufferPos;
@@ -1024,7 +1024,7 @@ void HTMLTokenizer::parseEntity(TokenizerString &src, QChar *&dest, bool start)
             if(cBufferPos == 9) Entity = SearchSemicolon;
             if(Entity == SearchSemicolon) {
                 if(cBufferPos > 1) {
-                    const entity *e = kde_findEntity(cBuffer, cBufferPos);
+                    const entity *e = Perfect_Hash::kde_findEntity(cBuffer, cBufferPos);
                     // IE only accepts unterminated entities < 256,
                     // Gecko accepts them all, but only outside tags
                     if(e && ( tag == NoTag || e->code < 256 || *src == ';' )) {
