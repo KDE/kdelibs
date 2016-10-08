@@ -430,10 +430,15 @@ QStringList Installation::installDownloadedFileAndUncompress(const KNS3::EntryIn
 
                 if (isarchive) {
                     const KArchiveDirectory *dir = archive->directory();
-                    dir->copyTo(installdir);
+                    //if there is more than an item in the file,
+                    //put contents in a subdirectory with the same name as the file
+                    if (dir->entries().count() > 1) {
+                        installpath = installdir + QLatin1Char('/') + QFileInfo(archive->fileName()).baseName();
+                    }
+                    dir->copyTo(installpath);
 
-                    installedFiles << archiveEntries(installdir, dir);
-                    installedFiles << installdir + '/';
+                    installedFiles << archiveEntries(installpath, dir);
+                    installedFiles << installpath + '/';
 
                     archive->close();
                     QFile::remove(payloadfile);
