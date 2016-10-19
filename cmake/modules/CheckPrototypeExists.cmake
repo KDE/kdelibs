@@ -21,6 +21,13 @@
 INCLUDE(CheckCXXSourceCompiles)
 
 MACRO (CHECK_PROTOTYPE_EXISTS _SYMBOL _HEADER _RESULT)
+   SET(extra_macro_args ${ARGN})
+   LIST(LENGTH extra_macro_args num_extra_args)
+   SET(_PROTOTYPE "")
+   IF (${num_extra_args} EQUAL 1)
+      LIST(GET extra_macro_args 0 _PROTOTYPE)
+   ENDIF ()
+
    SET(_INCLUDE_FILES)
    FOREACH (it ${_HEADER})
       SET(_INCLUDE_FILES "${_INCLUDE_FILES}#include <${it}>\n")
@@ -31,7 +38,7 @@ ${_INCLUDE_FILES}
 int main()
 {
 #ifndef ${_SYMBOL}
-   int i = sizeof(&${_SYMBOL});
+   int i = sizeof(${_PROTOTYPE}&${_SYMBOL});
 #endif
   return 0;
 }
