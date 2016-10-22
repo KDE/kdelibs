@@ -868,6 +868,8 @@ void KUrlTest::testIsRelative()
   // arguable, but necessary for KUrl( baseURL, "//www1.foo.bar" );
   QVERIFY( KUrl::isRelativeUrl("/path") );
   QVERIFY( KUrl::isRelativeUrl("something") );
+  // scheme = alpha *( alpha | digit | "+" | "-" | "." )
+  QVERIFY(!KUrl::isRelativeUrl(QString("abc.123+-xyz://foobar")));
 
   KUrl something("something");
   QCOMPARE(something.url(), QString("something"));

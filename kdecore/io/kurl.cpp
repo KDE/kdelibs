@@ -174,7 +174,7 @@ bool KUrl::isRelativeUrl(const QString &_url)
         return false; // Absolute URL
 
      // Protocol part may only contain alpha, digit, + or -
-     if (!isalpha(c) && !isdigit(c) && (c != '+') && (c != '-'))
+     if (!isalpha(c) && !isdigit(c) && (c != '+') && (c != '-') && (c != '.'))
         return true; // Relative URL
   }
   // URL did not contain ':'
