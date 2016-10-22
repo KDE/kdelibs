@@ -959,10 +959,6 @@ void KFileWidget::slotOk()
             return;
         }
 
-        if ((d->operationMode == Saving) && d->confirmOverwrite && !d->toOverwrite(url)) {
-            return;
-        }
-
         // if we are given a folder when not on directory mode, let's get into it
         if (res && !directoryMode && statJob->statResult().isDir()) {
             // check if we were given more than one folder, in that case we don't know to which one
@@ -999,6 +995,11 @@ void KFileWidget::slotOk()
             KMessageBox::sorry(this, i18n("The file \"%1\" could not be found", url.pathOrUrl()), i18n("Cannot open file"));
             return; // do not emit accepted() if we had ExistingOnly flag and stat failed
         }
+
+        if ((d->operationMode == Saving) && d->confirmOverwrite && !d->toOverwrite(url)) {
+            return;
+        }
+
         ++it;
     }
 
