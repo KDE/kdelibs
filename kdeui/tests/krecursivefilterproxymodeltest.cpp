@@ -550,8 +550,10 @@ private slots:
 
         const QStringList remove1_1_1 = (QStringList() << "rowsAboutToBeRemoved(1.1.1)" << "rowsRemoved(1.1.1)");
 
-        QTest::newRow("toplevel") << "[1*]" << "[1*]" << "1" << ""
+        QTest::newRow("toplevel") << "[1* 2* 3*]" << "[1* 2* 3*]" << "1" << "[2* 3*]"
                                   << (QStringList() << "rowsAboutToBeRemoved(1)" << "rowsRemoved(1)");
+
+        QTest::newRow("remove_hidden") << "[1 2* 3*]" << "[2* 3*]" << "1" << "[2* 3*]" << QStringList();
 
         QTest::newRow("parent_hidden") << "[1[1.1[1.1.1]]]" << "" << "1.1.1" << "" << QStringList();
 
