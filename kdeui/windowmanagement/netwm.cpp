@@ -4368,7 +4368,7 @@ void NETWinInfo::update(const unsigned long dirty_props[]) {
         if (XGetWindowProperty(p->display, p->window, kde_net_wm_block_compositing, 0l,
                                1, False, XA_STRING, &type_ret,
                                &format_ret, &nitems_ret, &unused, &data_ret) == Success) {
-            p->blockCompositing = (data_ret != None);
+            p->blockCompositing = (data_ret != NULL);
             if (data_ret)  // stupid question to everyone - since the result is "Success", is this check required?
                 XFree(data_ret);
         }
