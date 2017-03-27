@@ -3364,8 +3364,8 @@ void KJS::HTMLSelectCollection::put(ExecState *exec, const Identifier &propertyN
         static_cast<DOM::HTMLElementImpl*>(element->document()->createElement("OPTION")),
         before, exception);
       if (exception.triggered()) {
-          return;
           delete option;
+          return;
       }
     }
     // replace an existing entry ?
