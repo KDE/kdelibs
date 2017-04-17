@@ -5493,7 +5493,9 @@ try_next_auth_scheme:
                     if (!authTokens.isEmpty()) {
                         goto try_next_auth_scheme;
                     } else {
-                        error(ERR_UNSUPPORTED_ACTION, i18n("Authorization failed."));
+                        if (!sendErrorPageNotification()) {
+                            error(ERR_UNSUPPORTED_ACTION, i18n("Authorization failed."));
+                        }
                         authRequiresAnotherRoundtrip = false;
                     }
                     //### return false; ?
