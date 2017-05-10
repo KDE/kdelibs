@@ -78,6 +78,11 @@ QByteArray PolicyKitBackend::callerID() const
     return a;
 }
 
+AuthBackend::ExtraCallerIDVerificationMethod Polkit1Backend::extraCallerIDVerificationMethod() const
+{
+    return VerifyAgainstDBusServicePid;
+}
+
 bool PolicyKitBackend::isCallerAuthorized(const QString &action, QByteArray callerID)
 {
     QDataStream s(&callerID, QIODevice::ReadOnly);

@@ -21,6 +21,7 @@
 #ifndef DBUS_HELPER_PROXY_H
 #define DBUS_HELPER_PROXY_H
 
+#include <QDBusContext>
 #include <QVariant>
 #include "HelperProxy.h"
 #include "kauthactionreply.h"
@@ -28,7 +29,7 @@
 namespace KAuth
 {
 
-class DBusHelperProxy : public HelperProxy
+class DBusHelperProxy : public HelperProxy, protected QDBusContext
 {
     Q_OBJECT
     Q_INTERFACES(KAuth::HelperProxy)
@@ -73,6 +74,9 @@ signals:
 
 private slots:
     void remoteSignalReceived(int type, const QString &action, QByteArray blob);
+
+private:
+    bool isCallerAuthorized(const QString &action, const QByteArray &callerID);
 };
 
 } // namespace Auth

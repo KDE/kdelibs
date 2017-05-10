@@ -43,6 +43,12 @@ public:
     };
     Q_DECLARE_FLAGS(Capabilities, Capability)
 
+    enum ExtraCallerIDVerificationMethod {
+        NoExtraCallerIDVerificationMethod,
+        VerifyAgainstDBusServiceName,
+        VerifyAgainstDBusServicePid,
+    };
+
     AuthBackend();
     virtual ~AuthBackend();
     virtual void setupAction(const QString &action) = 0;
@@ -50,6 +56,7 @@ public:
     virtual Action::AuthStatus authorizeAction(const QString &action) = 0;
     virtual Action::AuthStatus actionStatus(const QString &action) = 0;
     virtual QByteArray callerID() const = 0;
+    virtual ExtraCallerIDVerificationMethod extraCallerIDVerificationMethod() const;
     virtual bool isCallerAuthorized(const QString &action, QByteArray callerID) = 0;
     virtual bool actionExists(const QString &action);
 

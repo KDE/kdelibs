@@ -48,6 +48,7 @@ public:
     virtual Action::AuthStatus authorizeAction(const QString&);
     virtual Action::AuthStatus actionStatus(const QString&);
     virtual QByteArray callerID() const;
+    virtual ExtraCallerIDVerificationMethod extraCallerIDVerificationMethod() const;
     virtual bool isCallerAuthorized(const QString &action, QByteArray callerID);
     virtual bool actionExists(const QString& action);
 
