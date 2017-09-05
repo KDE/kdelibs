@@ -44,4 +44,32 @@ if (WIN32)
             endif (CMAKE_BUILD_TOOL STREQUAL  "nmake")
         endif (MINGW)
     ENDMACRO (addExplorerWrapper)
+
+    #
+    # Set execution level for a target to 'asInvoker'
+    #
+    # Syntax:
+    # set_execution_level_as_invoker(_source)
+    #
+    # @param _source name of source list for a given target
+    #
+    # Example:
+    #   set (SOURCE test.c)
+    #   set_execution_level_as_invoker(SOURCE)
+    #   add_executable(atarget, ${SOURCE})
+    #
+    MACRO (set_execution_level_as_invoker _source)
+        # set uiaccess to false in manifest
+        file(READ ${CMAKE_SOURCE_DIR}/cmake/modules/Win32.Manifest.in _tmp)
+        string(REPLACE "true" "false" _out ${_tmp})
+        file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/${_source}.Win32.Manifest ${_out})
+        # create rc file
+        # 1 is the resource ID, ID_MANIFEST
+        # 24 is the resource type, RT_MANIFEST
+        # constants are used because of a bug in windres
+        # see https://stackoverflow.com/questions/33000158/embed-manifest-file-to-require-administrator-execution-level-with-mingw32
+        file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/${_source}.rc "1 24 \"${CMAKE_CURRENT_BINARY_DIR}/${_source}.Win32.Manifest\"\n")
+        # add to source list
+        list(APPEND ${_source} ${CMAKE_CURRENT_BINARY_DIR}/${_source}.rc)
+    ENDMACRO (set_execution_level_as_invoker)
 endif(WIN32)
