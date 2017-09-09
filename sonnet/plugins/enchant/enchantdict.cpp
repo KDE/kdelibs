@@ -82,8 +82,7 @@ bool QSpellEnchantDict::storeReplacement(const QString &bad,
 
 bool QSpellEnchantDict::addToPersonal(const QString &word)
 {
-    enchant_dict_add_to_pwl(m_dict, word.toUtf8(),
-                            word.toUtf8().length());
+    enchant_dict_add(m_dict, word.toUtf8(), word.toUtf8().length());
     return true;
 }
 
