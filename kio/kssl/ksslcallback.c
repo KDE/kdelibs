@@ -28,7 +28,7 @@ bool KSSL_X509CallBack_ca_found;
 extern "C" {
 static int X509Callback(int ok, X509_STORE_CTX *ctx) {
  
-  kDebug(7029) << "X509Callback: ok = " << ok << " error = " << ctx->error << " depth = " << ctx->error_depth;
+  //kDebug(7029) << "X509Callback: ok = " << ok << " error = " << ctx->error << " depth = " << ctx->error_depth;
   // Here is how this works.  We put "ok = 1;" in any case that we
   // don't consider to be an error.  In that case, it will return OK
   // for the certificate check as long as there are no other critical
@@ -39,14 +39,14 @@ static int X509Callback(int ok, X509_STORE_CTX *ctx) {
 
   if (KSSL_X509CallBack_ca)
   {
-     if (KOSSL::self()->X509_cmp(ctx->current_cert, KSSL_X509CallBack_ca) != 0)
+     if (KOSSL::self()->X509_cmp(KOSSL::self()->X509_STORE_CTX_get_current_cert(ctx), KSSL_X509CallBack_ca) != 0)
         return 1; // Ignore errors for this certificate
 
      KSSL_X509CallBack_ca_found = true;
   }
  
   if (!ok) {
-    switch (ctx->error) {
+    switch (KOSSL::self()->X509_STORE_CTX_get_error(ctx)) {
       case X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT:
       case X509_V_ERR_UNABLE_TO_GET_CRL:
       case X509_V_ERR_UNABLE_TO_DECRYPT_CERT_SIGNATURE:

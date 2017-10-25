@@ -55,8 +55,6 @@
 #warning "kssl.cc needs to be ported to QSslSocket"
 #endif
 
-#define sk_dup d->kossl->sk_dup
-
 class KSSLPrivate {
 public:
 	KSSLPrivate() {
@@ -211,6 +209,4 @@ bool KSSL::m_bSSLWorks = false;
 bool KSSL::doesSSLWork() {
 	return m_bSSLWorks;
 }
-
-#undef sk_dup
 

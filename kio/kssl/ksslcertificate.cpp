@@ -200,14 +200,17 @@ QString KSSLCertificate::getSignatureText() const {
     char *s;
     int n, i;
 
-    i = d->kossl->OBJ_obj2nid(d->m_cert->sig_alg->algorithm);
+    const X509_ALGOR *algor;
+    const ASN1_BIT_STRING *sig;
+    d->kossl->X509_get0_signature(&sig, &algor, d->m_cert);
+    i = d->kossl->OBJ_obj2nid(algor->algorithm);
     rc = i18n("Signature Algorithm: ");
     rc += (i == NID_undef)?i18n("Unknown"):QString(d->kossl->OBJ_nid2ln(i));
 
     rc += '\n';
     rc += i18n("Signature Contents:");
-    n = d->m_cert->signature->length;
-    s = (char *)d->m_cert->signature->data;
+    n = sig->length;
+    s = (char *)sig->data;
     for (i = 0; i < n; ++i) {
         if (i%20 != 0) {
             rc += ':';
@@ -233,9 +236,10 @@ void KSSLCertificate::getEmails(QStringList &to) const {
     }
 
     STACK *s = d->kossl->X509_get1_email(d->m_cert);
+    const int size = d->kossl->OPENSSL_sk_num(s);
     if (s) {
-        for(int n=0; n < s->num; n++) {
-            to.append(d->kossl->sk_value(s,n));
+        for(int n=0; n < size; n++) {
+            to.append(d->kossl->OPENSSL_sk_value(s,n));
         }
         d->kossl->X509_email_free(s);
     }
@@ -317,13 +321,13 @@ QString rc = "";
     EVP_PKEY *pkey = d->kossl->X509_get_pubkey(d->m_cert);
     if (pkey) {
         #ifndef NO_RSA
-            if (pkey->type == EVP_PKEY_RSA) {
+            if (d->kossl->EVP_PKEY_base_id(pkey) == EVP_PKEY_RSA) {
                 rc = "RSA";
             }
             else
         #endif
         #ifndef NO_DSA
-            if (pkey->type == EVP_PKEY_DSA) {
+            if (d->kossl->EVP_PKEY_base_id(pkey) == EVP_PKEY_DSA) {
                 rc = "DSA";
             }
             else
@@ -347,8 +351,10 @@ char *x = NULL;
     if (pkey) {
         rc = i18nc("Unknown", "Unknown key algorithm");
         #ifndef NO_RSA
-            if (pkey->type == EVP_PKEY_RSA) {
-                x = d->kossl->BN_bn2hex(pkey->pkey.rsa->n);
+            if (d->kossl->EVP_PKEY_base_id(pkey) == EVP_PKEY_RSA) {
+                const BIGNUM *n, *e;
+                d->kossl->RSA_get0_key(d->kossl->EVP_PKEY_get0_RSA(pkey), &n, &e, NULL);
+                x = d->kossl->BN_bn2hex(n);
                 rc = i18n("Key type: RSA (%1 bit)", strlen(x)*4) + '\n';
 
                 rc += i18n("Modulus: ");
@@ -364,15 +370,18 @@ char *x = NULL;
                 rc += '\n';
                 d->kossl->OPENSSL_free(x);
 
-                x = d->kossl->BN_bn2hex(pkey->pkey.rsa->e);
+                x = d->kossl->BN_bn2hex(e);
                 rc += i18n("Exponent: 0x") + QLatin1String(x) +
                   QLatin1String("\n");
                 d->kossl->OPENSSL_free(x);
             }
         #endif
         #ifndef NO_DSA
-            if (pkey->type == EVP_PKEY_DSA) {
-                x = d->kossl->BN_bn2hex(pkey->pkey.dsa->p);
+            if (d->kossl->EVP_PKEY_base_id(pkey) == EVP_PKEY_DSA) {
+                DSA *dsa = d->kossl->EVP_PKEY_get0_DSA(pkey);
+                const BIGNUM *p, *q, *g;
+                d->kossl->DSA_get0_pqg(dsa, &p, &q, &g);
+                x = d->kossl->BN_bn2hex(p);
                 // hack - this may not be always accurate
                 rc = i18n("Key type: DSA (%1 bit)", strlen(x)*4) + '\n';
 
@@ -389,7 +398,7 @@ char *x = NULL;
                 rc += '\n';
                 d->kossl->OPENSSL_free(x);
 
-                x = d->kossl->BN_bn2hex(pkey->pkey.dsa->q);
+                x = d->kossl->BN_bn2hex(q);
                 rc += i18n("160 bit prime factor: ");
                 for (unsigned int i = 0; i < strlen(x); i++) {
                     if (i%40 != 0 && i%2 == 0) {
@@ -403,7 +412,7 @@ char *x = NULL;
                 rc += '\n';
                 d->kossl->OPENSSL_free(x);
 
-                x = d->kossl->BN_bn2hex(pkey->pkey.dsa->g);
+                x = d->kossl->BN_bn2hex(g);
                 rc += QString("g: ");
                 for (unsigned int i = 0; i < strlen(x); i++) {
                     if (i%40 != 0 && i%2 == 0) {
@@ -417,7 +426,9 @@ char *x = NULL;
                 rc += '\n';
                 d->kossl->OPENSSL_free(x);
 
-                x = d->kossl->BN_bn2hex(pkey->pkey.dsa->pub_key);
+                const BIGNUM *pub_key;
+                d->kossl->DSA_get0_key(dsa, &pub_key, NULL);
+                x = d->kossl->BN_bn2hex(pub_key);
                 rc += i18n("Public key: ");
                 for (unsigned int i = 0; i < strlen(x); i++) {
                     if (i%40 != 0 && i%2 == 0) {
@@ -682,7 +693,7 @@ KSSLCertificate::KSSLValidationList KSSLCertificate::validateVerbose(KSSLCertifi
             return errors;
         }
 
-        X509_STORE_set_verify_cb_func(certStore, X509Callback);
+        d->kossl->X509_STORE_set_verify_cb(certStore, X509Callback);
 
         certLookup = d->kossl->X509_STORE_add_lookup(certStore, d->kossl->X509_LOOKUP_file());
         if (!certLookup) {
@@ -724,9 +735,9 @@ KSSLCertificate::KSSLValidationList KSSLCertificate::validateVerbose(KSSLCertifi
         KSSL_X509CallBack_ca = ca ? ca->d->m_cert : 0;
         KSSL_X509CallBack_ca_found = false;
 
-        certStoreCTX->error = X509_V_OK;
+        d->kossl->X509_STORE_CTX_set_error(certStoreCTX, X509_V_OK);
         rc = d->kossl->X509_verify_cert(certStoreCTX);
-        int errcode = certStoreCTX->error;
+        int errcode = d->kossl->X509_STORE_CTX_get_error(certStoreCTX);
         if (ca && !KSSL_X509CallBack_ca_found) {
             ksslv = KSSLCertificate::Irrelevant;
         } else {
@@ -739,9 +750,9 @@ KSSLCertificate::KSSLValidationList KSSLCertificate::validateVerbose(KSSLCertifi
             d->kossl->X509_STORE_CTX_set_purpose(certStoreCTX,
                                                  X509_PURPOSE_NS_SSL_SERVER);
 
-            certStoreCTX->error = X509_V_OK;
+            d->kossl->X509_STORE_CTX_set_error(certStoreCTX, X509_V_OK);
             rc = d->kossl->X509_verify_cert(certStoreCTX);
-            errcode = certStoreCTX->error;
+            errcode = d->kossl->X509_STORE_CTX_get_error(certStoreCTX);
             ksslv = processError(errcode);
         }
         d->kossl->X509_STORE_CTX_free(certStoreCTX);
@@ -978,7 +989,7 @@ KSSLCertificate::KSSLValidation KSSLCertificate::processError(int ec) {
 
 QString KSSLCertificate::getNotBefore() const {
 #ifdef KSSL_HAVE_SSL
-    return ASN1_UTCTIME_QString(X509_get_notBefore(d->m_cert));
+    return ASN1_UTCTIME_QString(d->kossl->X509_getm_notBefore(d->m_cert));
 #else
     return QString();
 #endif
@@ -987,7 +998,7 @@ QString KSSLCertificate::getNotBefore() const {
 
 QString KSSLCertificate::getNotAfter() const {
 #ifdef KSSL_HAVE_SSL
-    return ASN1_UTCTIME_QString(X509_get_notAfter(d->m_cert));
+    return ASN1_UTCTIME_QString(d->kossl->X509_getm_notAfter(d->m_cert));
 #else
     return QString();
 #endif
@@ -996,7 +1007,7 @@ QString KSSLCertificate::getNotAfter() const {
 
 QDateTime KSSLCertificate::getQDTNotBefore() const {
 #ifdef KSSL_HAVE_SSL
-    return ASN1_UTCTIME_QDateTime(X509_get_notBefore(d->m_cert), NULL);
+    return ASN1_UTCTIME_QDateTime(d->kossl->X509_getm_notBefore(d->m_cert), NULL);
 #else
     return QDateTime::currentDateTime();
 #endif
@@ -1005,7 +1016,7 @@ QDateTime KSSLCertificate::getQDTNotBefore() const {
 
 QDateTime KSSLCertificate::getQDTNotAfter() const {
 #ifdef KSSL_HAVE_SSL
-    return ASN1_UTCTIME_QDateTime(X509_get_notAfter(d->m_cert), NULL);
+    return ASN1_UTCTIME_QDateTime(d->kossl->X509_getm_notAfter(d->m_cert), NULL);
 #else
     return QDateTime::currentDateTime();
 #endif
@@ -1210,7 +1221,8 @@ typedef struct NETSCAPE_X509_st
 // what a piece of crap this is
 QByteArray KSSLCertificate::toNetscape() {
     QByteArray qba;
-#ifdef KSSL_HAVE_SSL
+    // no equivalent in OpenSSL 1.1.0 (?), so behave as if we had no OpenSSL at all
+#if KSSL_HAVE_SSL && OPENSSL_VERSION_NUMBER < 0x10100000L
     NETSCAPE_X509 nx;
     ASN1_OCTET_STRING hdr;
     KTemporaryFile ktf;
@@ -1293,10 +1305,10 @@ QStringList KSSLCertificate::subjAltNames() const {
         return rc;
     }
 
-    int cnt = d->kossl->sk_GENERAL_NAME_num(names);
+    int cnt = d->kossl->OPENSSL_sk_num((STACK *)names);
 
     for (int i = 0; i < cnt; i++) {
-        const GENERAL_NAME *val = (const GENERAL_NAME *)d->kossl->sk_value(names, i);
+        const GENERAL_NAME *val = (const GENERAL_NAME *)d->kossl->OPENSSL_sk_value(names, i);
         if (val->type != GEN_DNS) {
             continue;
         }
@@ -1308,7 +1320,7 @@ QStringList KSSLCertificate::subjAltNames() const {
             rc += s;
         }
     }
-    d->kossl->sk_free(names);
+    d->kossl->OPENSSL_sk_free(names);
 #endif
     return rc;
 }
