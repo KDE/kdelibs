@@ -11,6 +11,16 @@ set(kconf_update_KDEINIT_SRCS
     kconfigutils.cpp
     )
 
+if (WIN32)
+    # set uiaccess to false in manifest
+    file(READ ${CMAKE_SOURCE_DIR}/cmake/modules/Win32.Manifest.in _tmp)
+    string(REPLACE "true" "false" _out ${_tmp})
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/Win32.Manifest ${_out})
+    # create rc file
+    # see https://stackoverflow.com/questions/33000158/embed-manifest-file-to-require-administrator-execution-level-with-mingw32
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/file.rc "1 24 \"${CMAKE_CURRENT_BINARY_DIR}/Win32.Manifest\"\n")
+    list(APPEND kconf_update_KDEINIT_SRCS ${CMAKE_CURRENT_BINARY_DIR}/file.rc)
+endif()
 
 kde4_add_kdeinit_executable( kconf_update NOGUI ${kconf_update_KDEINIT_SRCS})
 
