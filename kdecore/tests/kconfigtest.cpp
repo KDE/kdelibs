@@ -479,12 +479,8 @@ void KConfigTest::testPath()
   QCOMPARE(group.readPathEntry("withBraces", QString()), QString("file://" + HOMEPATH) );
   QVERIFY(group.hasKey("URL"));
   QCOMPARE(group.readEntry("URL", QString()), QString("file://" + HOMEPATH) );
-#if !defined(Q_OS_WIN32) && !defined(Q_OS_MAC)
-  // I don't know if this will work on windows
-  // This test hangs on OS X
   QVERIFY(group.hasKey("hostname"));
-  QCOMPARE(group.readEntry("hostname", QString()), QHostInfo::localHostName());
-#endif
+  QCOMPARE(group.readEntry("hostname", QString()), QString("(hostname)")); // the $ got removed because empty var name
   QVERIFY(group.hasKey("noeol"));
   QCOMPARE(group.readEntry("noeol", QString()), QString("foo"));
 }

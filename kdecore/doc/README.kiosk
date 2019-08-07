@@ -640,18 +640,6 @@ The following syntax is also supported:
 Name[$ei]=${USER}
 
 
-Shell Commands in KDE config files.
-===================================
-
-Since KDE-3.1 arbitrary entries in configuration files can contain shell 
-commands. This way the value of a configuration entry can be determined
-dynamically at runtime. In order to use this the entry must be marked 
-with [$e]. 
-
-Example:
-Host[$e]=$(hostname)
-
-
 KDE Kiosk Application API
 ==========================
 
